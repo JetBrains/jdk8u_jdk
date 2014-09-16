@@ -32,8 +32,6 @@
 void
 CGGlyphImages_GetGlyphImagePtrs(jlong glyphInfos[],
                                 const AWTStrike *strike,
-                                jint rawGlyphCodes[],
-                                const CFIndex len,
-                                BOOL isSubpixelAAEnabled);
+                                jint rawGlyphCodes[], const CFIndex len);
 
 #endif /* __CGGLYPHIMAGES_H */

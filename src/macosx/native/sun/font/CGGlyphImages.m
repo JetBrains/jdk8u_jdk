@@ -32,8 +32,6 @@
 
 #import "sun_awt_SunHints.h"
 
-BOOL subpixelAAEnabled = false;
-
 //#define USE_IMAGE_ALIGNED_MEMORY 1
 //#define CGGI_DEBUG 1
 //#define CGGI_DEBUG_DUMP 1
@@ -212,21 +210,11 @@ CGGI_CopyARGBPixelToRGBPixel(const UInt32 p, UInt8 *dst)
 #endif
 }
 
-static inline void
-CGGI_CopyARGBPixel(const UInt32 pSrc, UInt8 *pDst)
-{
-    *(pDst) = 0xFF - (pSrc & 0xFF);
-    *(pDst + 1) = 0xFF - (pSrc >> 8 & 0xFF);
-    *(pDst + 2) = 0xFF - (pSrc >> 16 & 0xFF);
-}
-
 static void
 CGGI_CopyImageFromCanvasToRGBInfo(CGGI_GlyphCanvas *canvas, GlyphInfo *info)
 {
     UInt32 *src = (UInt32 *)canvas->image->data;
     size_t srcRowWidth = canvas->image->width;
-
-
 
     UInt8 *dest = (UInt8 *)info->image;
     size_t destRowWidth = info->width;
@@ -245,15 +233,9 @@ CGGI_CopyImageFromCanvasToRGBInfo(CGGI_GlyphCanvas *canvas, GlyphInfo *info)
             // dest[destRow + x3] = 0xFF - (p >> 16 & 0xFF);
             // dest[destRow + x3 + 1] = 0xFF - (p >> 8 & 0xFF);
             // dest[destRow + x3 + 2] = 0xFF - (p & 0xFF);
-            if (subpixelAAEnabled) {
-                CGGI_CopyARGBPixel(src[srcRow + x],
-                        dest + destRow + x * 3);
-            } else {
-                CGGI_CopyARGBPixelToRGBPixel(src[srcRow + x],
-                        dest + destRow + x * 3);
-            }
+            CGGI_CopyARGBPixelToRGBPixel(src[srcRow + x],
+                                         dest + destRow + x * 3);
         }
-
     }
 }
 
@@ -330,21 +312,15 @@ static CGGI_GlyphInfoDescriptor rgb =
     { 3, &CGGI_CopyImageFromCanvasToRGBInfo };
 
 static inline CGGI_RenderingMode
-CGGI_GetRenderingMode(const AWTStrike *strike, BOOL sAAE)
+CGGI_GetRenderingMode(const AWTStrike *strike)
 {
-    subpixelAAEnabled = sAAE;
     CGGI_RenderingMode mode;
     mode.cgFontMode = strike->fStyle;
 
     switch (strike->fAAStyle) {
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_DEFAULT:
-
-    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_ON:
-        if (subpixelAAEnabled) {
-            mode.glyphDescriptor = &rgb;
-            break;
-        }
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_OFF:
+    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_ON:
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_GASP:
     default:
         mode.glyphDescriptor = &grey;
@@ -359,6 +335,7 @@ CGGI_GetRenderingMode(const AWTStrike *strike, BOOL sAAE)
 
     return mode;
 }
+
 
 #pragma mark --- Canvas Managment ---
 
@@ -389,8 +366,7 @@ CGGI_InitCanvas(CGGI_GlyphCanvas *canvas,
     canvas->context = CGBitmapContextCreate(canvas->image->data,
                                             width, height, 8, bytesPerRow,
                                             colorSpace,
-                                            kCGImageAlphaPremultipliedFirst
-					    | kCGBitmapByteOrder32Host);
+                                            kCGImageAlphaPremultipliedFirst);
 
     CGContextSetRGBFillColor(canvas->context, 0.0f, 0.0f, 0.0f, 1.0f);
     CGContextSetFontSize(canvas->context, 1);
@@ -823,11 +799,9 @@ CGGI_CreateGlyphsAndScanForComplexities(jlong *glyphInfos,
 void
 CGGlyphImages_GetGlyphImagePtrs(jlong glyphInfos[],
                                 const AWTStrike *strike,
-                                jint rawGlyphCodes[],
-                                const CFIndex len,
-                                BOOL subpixelAAEnabled)
+                                jint rawGlyphCodes[], const CFIndex len)
 {
-    const CGGI_RenderingMode mode = CGGI_GetRenderingMode(strike, subpixelAAEnabled);
+    const CGGI_RenderingMode mode = CGGI_GetRenderingMode(strike);
 
     if (len < MAX_STACK_ALLOC_GLYPH_BUFFER_SIZE) {
         CGRect bboxes[len];

@@ -32,10 +32,8 @@
 #import "CGGlyphOutlines.h"
 #import "AWTStrike.h"
 #import "CoreTextSupport.h"
-#import "jni_util.h"
+//#import "jni_util.h"
 #include "fontscalerdefs.h"
-#include <jni.h>                                       
-#include <jvm_md.h>
 
 /* Use THIS_FILE when it is available. */
 #ifndef THIS_FILE
@@ -299,23 +297,6 @@ JNF_COCOA_EXIT(env);
     return generalPath;
 }
 
-BOOL isSubpixelAAEnabled(JNIEnv *env)
-{
-    jclass systemClass = (*env)->FindClass(env, "sun/font/CStrike");
-    CHECK_NULL_RETURN(systemClass, JNI_FALSE);
-
-    jmethodID getPropertyMethod = (*env)->GetStaticMethodID(env, systemClass, "isSubpixelAAEnabled",
-                                                        "()Z");
-    CHECK_NULL_RETURN(getPropertyMethod, JNI_FALSE);
-    jboolean value = (jboolean) (*env)->CallStaticObjectMethod(env, systemClass,
-                                                          getPropertyMethod, NULL);
-
-    CHECK_NULL_RETURN(value, JNI_FALSE);
-
-    return value; 
-    
-}
-
 /*
  * Class:     sun_font_CStrike
  * Method:    getGlyphImagePtrsNative
@@ -338,10 +319,8 @@ JNF_COCOA_ENTER(env);
         (*env)->GetPrimitiveArrayCritical(env, glyphCodes, NULL);
 
         if (rawGlyphCodes != NULL) {
-	    BOOL subpixelAAEnabled = isSubpixelAAEnabled(env);
-
-	    CGGlyphImages_GetGlyphImagePtrs(glyphInfos, awtStrike,
-                    rawGlyphCodes, len, subpixelAAEnabled);
+    CGGlyphImages_GetGlyphImagePtrs(glyphInfos, awtStrike,
+                                    rawGlyphCodes, len);
 
     (*env)->ReleasePrimitiveArrayCritical(env, glyphCodes,
                                           rawGlyphCodes, JNI_ABORT);
