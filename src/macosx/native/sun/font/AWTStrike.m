@@ -295,7 +295,7 @@ cleanup:
     }
 
     AWT_FONT_CLEANUP_FINISH;
-JNF_COCOA_EXIT(env);
+    JNF_COCOA_EXIT(env);
     return generalPath;
 }
 
