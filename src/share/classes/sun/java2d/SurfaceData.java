@@ -733,14 +733,10 @@ public abstract class SurfaceData
      * the AA text renderer, else it requests the B&W text renderer.
      */
     private TextPipe getTextPipe(SunGraphics2D sg2d, boolean aaHintIsOn) {
+
         /* Try to avoid calling getFontInfo() unless its needed to
          * resolve one of the new AA types.
          */
-
-      if ("true".equals(System.getProperty("apple.awt.graphics.UseQuartz"))) {
-        return lcdTextRenderer;
-      }
-
         switch (sg2d.textAntialiasHint) {
         case SunHints.INTVAL_TEXT_ANTIALIAS_DEFAULT:
             if (aaHintIsOn) {
@@ -751,8 +747,9 @@ public abstract class SurfaceData
         case SunHints.INTVAL_TEXT_ANTIALIAS_OFF:
             return solidTextRenderer;
 
-        case SunHints.INTVAL_TEXT_ANTIALIAS_ON:
-            return aaTextRenderer;
+        // TODO: we have to take into account aaHint on macosx
+        //case SunHints.INTVAL_TEXT_ANTIALIAS_ON:
+        //    return aaTextRenderer;
 
         default:
             switch (sg2d.getFontInfo().aaHint) {

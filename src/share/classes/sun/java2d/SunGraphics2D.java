@@ -721,31 +721,38 @@ public final class SunGraphics2D
                 } else {
                     aahint = SunHints.INTVAL_TEXT_ANTIALIAS_OFF;
                 }
-            } else if (aahint >= SunHints.INTVAL_TEXT_ANTIALIAS_LCD_HRGB) {
-                /* loops for default rendering modes are installed in the SG2D
-                 * constructor. If there are none this will be null.
-                 * Not all compositing modes update the render loops, so
-                 * we also test that this is a mode we know should support
-                 * this. One minor issue is that the loops aren't necessarily
-                 * installed for a new rendering mode until after this
-                 * method is called during pipeline validation. So it is
-                 * theoretically possible that it was set to null for a
-                 * compositing mode, the composite is then set back to Src,
-                 * but the loop is still null when this is called and AA=ON
-                 * is installed instead of an LCD mode.
-                 * However this is done in the right order in SurfaceData.java
-                 * so this is not likely to be a problem - but not
-                 * guaranteed.
-                 */
-                if (
-                    !surfaceData.canRenderLCDText(this)
-//                    loops.drawGlyphListLCDLoop == null ||
-//                    compositeState > COMP_ISCOPY ||
-//                    paintState > PAINT_ALPHACOLOR
-                      ) {
-                    aahint = SunHints.INTVAL_TEXT_ANTIALIAS_ON;
-                } else {
-                    info.lcdRGBOrder = true;
+            }
+        }
+
+        if  (aahint == SunHints.INTVAL_TEXT_ANTIALIAS_ON && FontUtilities.isMacOSX) {
+            // TODO: check subpixel order
+            aahint = SunHints.INTVAL_TEXT_ANTIALIAS_LCD_HBGR;
+        }
+        if (aahint >= SunHints.INTVAL_TEXT_ANTIALIAS_LCD_HRGB) {
+            /* loops for default rendering modes are installed in the SG2D
+             * constructor. If there are none this will be null.
+             * Not all compositing modes update the render loops, so
+             * we also test that this is a mode we know should support
+             * this. One minor issue is that the loops aren't necessarily
+             * installed for a new rendering mode until after this
+             * method is called during pipeline validation. So it is
+             * theoretically possible that it was set to null for a
+             * compositing mode, the composite is then set back to Src,
+             * but the loop is still null when this is called and AA=ON
+             * is installed instead of an LCD mode.
+             * However this is done in the right order in SurfaceData.java
+             * so this is not likely to be a problem - but not
+             * guaranteed.
+             */
+            if (
+                !surfaceData.canRenderLCDText(this)
+//                loops.drawGlyphListLCDLoop == null ||
+//                compositeState > COMP_ISCOPY ||
+//                paintState > PAINT_ALPHACOLOR
+            ) {
+                aahint = SunHints.INTVAL_TEXT_ANTIALIAS_ON;
+            } else {
+                info.lcdRGBOrder = true;
                     /* Collapse these into just HRGB or VRGB.
                      * Pipe selection code needs only to test for these two.
                      * Since these both select the same pipe anyway its
@@ -767,7 +774,6 @@ public final class SunGraphics2D
                     info.lcdSubPixPos =
                         fmhint == SunHints.INTVAL_FRACTIONALMETRICS_ON &&
                         aahint == SunHints.INTVAL_TEXT_ANTIALIAS_LCD_HRGB;
-                }
             }
         }
         info.aaHint = aahint;

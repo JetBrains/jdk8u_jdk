@@ -63,6 +63,11 @@ public abstract class CGLSurfaceData extends OGLSurfaceData {
         this.height = height * scale;
     }
 
+    public boolean canRenderLCDText(SunGraphics2D sg2d) {
+        // TODO: check LCD requirements
+        return true;
+    }
+
     protected CGLSurfaceData(CPlatformView pView, CGLGraphicsConfig gc,
                              ColorModel cm, int type,int width, int height)
     {
