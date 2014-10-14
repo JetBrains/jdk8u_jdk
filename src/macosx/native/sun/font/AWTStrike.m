@@ -341,7 +341,7 @@ JNF_COCOA_ENTER(env);
 	    BOOL subpixelAAEnabled = isSubpixelAAEnabled(env);
 
 	    CGGlyphImages_GetGlyphImagePtrs(glyphInfos, awtStrike,
-                    rawGlyphCodes, len, subpixelAAEnabled);
+                    rawGlyphCodes, len);
 
     (*env)->ReleasePrimitiveArrayCritical(env, glyphCodes,
                                           rawGlyphCodes, JNI_ABORT);

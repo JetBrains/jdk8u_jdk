@@ -32,8 +32,6 @@
 
 #import "sun_awt_SunHints.h"
 
-BOOL subpixelAAEnabled = false;
-
 //#define USE_IMAGE_ALIGNED_MEMORY 1
 //#define CGGI_DEBUG 1
 //#define CGGI_DEBUG_DUMP 1
@@ -202,22 +200,15 @@ static inline void
 CGGI_CopyARGBPixelToRGBPixel(const UInt32 p, UInt8 *dst)
 {
 #if __LITTLE_ENDIAN__
-    *(dst + 2) = 0xFF - (p >> 24 & 0xFF);
-    *(dst + 1) = 0xFF - (p >> 16 & 0xFF);
-    *(dst) = 0xFF - (p >> 8 & 0xFF);
+    *(dst + 2) = 0xFF - (p >> 16 & 0xFF);
+    *(dst + 1) = 0xFF - (p >> 8 & 0xFF);
+    *(dst) = 0xFF - (p & 0xFF);
 #else
+    // TODO: check whether do we need big endian case
     *(dst) = 0xFF - (p >> 16 & 0xFF);
     *(dst + 1) = 0xFF - (p >> 8 & 0xFF);
     *(dst + 2) = 0xFF - (p & 0xFF);
 #endif
-}
-
-static inline void
-CGGI_CopyARGBPixel(const UInt32 pSrc, UInt8 *pDst)
-{
-    *(pDst) = 0xFF - (pSrc & 0xFF);
-    *(pDst + 1) = 0xFF - (pSrc >> 8 & 0xFF);
-    *(pDst + 2) = 0xFF - (pSrc >> 16 & 0xFF);
 }
 
 static void
@@ -225,8 +216,6 @@ CGGI_CopyImageFromCanvasToRGBInfo(CGGI_GlyphCanvas *canvas, GlyphInfo *info)
 {
     UInt32 *src = (UInt32 *)canvas->image->data;
     size_t srcRowWidth = canvas->image->width;
-
-
 
     UInt8 *dest = (UInt8 *)info->image;
     size_t destRowWidth = info->width;
@@ -245,15 +234,9 @@ CGGI_CopyImageFromCanvasToRGBInfo(CGGI_GlyphCanvas *canvas, GlyphInfo *info)
             // dest[destRow + x3] = 0xFF - (p >> 16 & 0xFF);
             // dest[destRow + x3 + 1] = 0xFF - (p >> 8 & 0xFF);
             // dest[destRow + x3 + 2] = 0xFF - (p & 0xFF);
-            if (subpixelAAEnabled) {
-                CGGI_CopyARGBPixel(src[srcRow + x],
-                        dest + destRow + x * 3);
-            } else {
-                CGGI_CopyARGBPixelToRGBPixel(src[srcRow + x],
-                        dest + destRow + x * 3);
-            }
+            CGGI_CopyARGBPixelToRGBPixel(src[srcRow + x],
+                                         dest + destRow + x * 3);
         }
-
     }
 }
 
@@ -330,23 +313,14 @@ static CGGI_GlyphInfoDescriptor rgb =
     { 3, &CGGI_CopyImageFromCanvasToRGBInfo };
 
 static inline CGGI_RenderingMode
-CGGI_GetRenderingMode(const AWTStrike *strike, BOOL sAAE)
+CGGI_GetRenderingMode(const AWTStrike *strike)
 {
-    subpixelAAEnabled = sAAE;
     CGGI_RenderingMode mode;
     mode.cgFontMode = strike->fStyle;
 
     switch (strike->fAAStyle) {
-    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_DEFAULT:
-
-    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_ON:
-        if (subpixelAAEnabled) {
-            mode.glyphDescriptor = &rgb;
-            break;
-        }
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_OFF:
-    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_GASP:
-    default:
+    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_ON:
         mode.glyphDescriptor = &grey;
         break;
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_LCD_HRGB:
@@ -355,10 +329,16 @@ CGGI_GetRenderingMode(const AWTStrike *strike, BOOL sAAE)
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_LCD_VBGR:
         mode.glyphDescriptor = &rgb;
         break;
+    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_GASP:
+    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_DEFAULT:
+    default:
+        // TODO: generate an error?
+        break;
     }
 
     return mode;
 }
+
 
 #pragma mark --- Canvas Managment ---
 
@@ -368,7 +348,8 @@ CGGI_GetRenderingMode(const AWTStrike *strike, BOOL sAAE)
  */
 static inline void
 CGGI_InitCanvas(CGGI_GlyphCanvas *canvas,
-                const vImagePixelCount width, const vImagePixelCount height)
+                const vImagePixelCount width, const vImagePixelCount height,
+                const CGGI_RenderingMode* mode)
 {
     // our canvas is *always* 4-byte ARGB
     size_t bytesPerRow = width * sizeof(UInt32);
@@ -385,12 +366,16 @@ CGGI_InitCanvas(CGGI_GlyphCanvas *canvas,
             reason:@"Failed to allocate memory for the buffer which backs the CGContext for glyph strikes." userInfo:nil] raise];
     }
 
+    uint32_t bmpInfo = kCGImageAlphaPremultipliedFirst;
+    if (mode->glyphDescriptor == &rgb) {
+        bmpInfo |= kCGBitmapByteOrder32Host;
+    }
+
     CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
     canvas->context = CGBitmapContextCreate(canvas->image->data,
                                             width, height, 8, bytesPerRow,
                                             colorSpace,
-                                            kCGImageAlphaPremultipliedFirst
-					    | kCGBitmapByteOrder32Host);
+                                            bmpInfo);
 
     CGContextSetRGBFillColor(canvas->context, 0.0f, 0.0f, 0.0f, 1.0f);
     CGContextSetFontSize(canvas->context, 1);
@@ -428,7 +413,7 @@ CGGI_FreeCanvas(CGGI_GlyphCanvas *canvas)
  * Quick and easy inline to check if this canvas is big enough.
  */
 static inline void
-CGGI_SizeCanvas(CGGI_GlyphCanvas *canvas, const vImagePixelCount width, const vImagePixelCount height, const JRSFontRenderingStyle style)
+CGGI_SizeCanvas(CGGI_GlyphCanvas *canvas, const vImagePixelCount width, const vImagePixelCount height, const CGGI_RenderingMode* mode)
 {
     if (canvas->image != NULL &&
         width  < canvas->image->width &&
@@ -442,8 +427,9 @@ CGGI_SizeCanvas(CGGI_GlyphCanvas *canvas, const vImagePixelCount width, const vI
     CGGI_FreeCanvas(canvas);
     CGGI_InitCanvas(canvas,
                     width * CGGI_GLYPH_CANVAS_SLACK,
-                    height * CGGI_GLYPH_CANVAS_SLACK);
-    JRSFontSetRenderingStyleOnContext(canvas->context, style);
+                    height * CGGI_GLYPH_CANVAS_SLACK,
+                    mode);
+    JRSFontSetRenderingStyleOnContext(canvas->context, mode->cgFontMode);
 }
 
 /*
@@ -601,7 +587,7 @@ CGGI_CreateImageForUnicode
     GlyphInfo *info = CGGI_CreateNewGlyphInfoFrom(advance, bbox, strike, mode);
 
     // fix the context size, just in case the substituted character is unexpectedly large
-    CGGI_SizeCanvas(canvas, info->width, info->height, mode->cgFontMode);
+    CGGI_SizeCanvas(canvas, info->width, info->height, mode);
 
     // align the transform for the real CoreText strike
     CGContextSetTextMatrix(canvas->context, strike->fAltTx);
@@ -677,8 +663,11 @@ CGGI_FillImagesForGlyphsWithSizedCanvas(CGGI_GlyphCanvas *canvas,
 #endif
 }
 
-static NSString *threadLocalCanvasKey =
-    @"Java CoreGraphics Text Renderer Cached Canvas";
+static NSString *threadLocalAACanvasKey =
+    @"Java CoreGraphics Text Renderer Cached Canvas for AA";
+
+static NSString *threadLocalLCDCanvasKey =
+        @"Java CoreGraphics Text Renderer Cached Canvas for LCD";
 
 /*
  * This is the maximum length and height times the above slack squared
@@ -702,7 +691,7 @@ CGGI_FillImagesForGlyphs(jlong *glyphInfos, const AWTStrike *strike,
         CGGI_GLYPH_CANVAS_MAX*CGGI_GLYPH_CANVAS_MAX*CGGI_GLYPH_CANVAS_SLACK*CGGI_GLYPH_CANVAS_SLACK)
     {
         CGGI_GlyphCanvas *tmpCanvas = [[CGGI_GlyphCanvas alloc] init];
-        CGGI_InitCanvas(tmpCanvas, maxWidth, maxHeight);
+        CGGI_InitCanvas(tmpCanvas, maxWidth, maxHeight, mode);
         CGGI_FillImagesForGlyphsWithSizedCanvas(tmpCanvas, strike,
                                                 mode, glyphInfos, uniChars,
                                                 glyphs, len);
@@ -714,13 +703,22 @@ CGGI_FillImagesForGlyphs(jlong *glyphInfos, const AWTStrike *strike,
 
     NSMutableDictionary *threadDict =
         [[NSThread currentThread] threadDictionary];
-    CGGI_GlyphCanvas *canvas = [threadDict objectForKey:threadLocalCanvasKey];
-    if (canvas == nil) {
-        canvas = [[CGGI_GlyphCanvas alloc] init];
-        [threadDict setObject:canvas forKey:threadLocalCanvasKey];
+
+    NSString* theKey;
+
+    if (mode->glyphDescriptor == &rgb) {
+        theKey = threadLocalLCDCanvasKey;
+    } else {
+        theKey = threadLocalAACanvasKey;
     }
 
-    CGGI_SizeCanvas(canvas, maxWidth, maxHeight, mode->cgFontMode);
+    CGGI_GlyphCanvas *canvas = [threadDict objectForKey:theKey];
+    if (canvas == nil) {
+        canvas = [[CGGI_GlyphCanvas alloc] init];
+        [threadDict setObject:canvas forKey:theKey];
+    }
+
+    CGGI_SizeCanvas(canvas, maxWidth, maxHeight, mode);
     CGGI_FillImagesForGlyphsWithSizedCanvas(canvas, strike, mode,
                                             glyphInfos, uniChars, glyphs, len);
 }
@@ -823,11 +821,9 @@ CGGI_CreateGlyphsAndScanForComplexities(jlong *glyphInfos,
 void
 CGGlyphImages_GetGlyphImagePtrs(jlong glyphInfos[],
                                 const AWTStrike *strike,
-                                jint rawGlyphCodes[],
-                                const CFIndex len,
-                                BOOL subpixelAAEnabled)
+                                jint rawGlyphCodes[], const CFIndex len)
 {
-    const CGGI_RenderingMode mode = CGGI_GetRenderingMode(strike, subpixelAAEnabled);
+    const CGGI_RenderingMode mode = CGGI_GetRenderingMode(strike);
 
     if (len < MAX_STACK_ALLOC_GLYPH_BUFFER_SIZE) {
         CGRect bboxes[len];
