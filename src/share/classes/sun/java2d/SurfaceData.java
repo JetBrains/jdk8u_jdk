@@ -747,9 +747,8 @@ public abstract class SurfaceData
         case SunHints.INTVAL_TEXT_ANTIALIAS_OFF:
             return solidTextRenderer;
 
-        // TODO: we have to take into account aaHint on macosx
-        //case SunHints.INTVAL_TEXT_ANTIALIAS_ON:
-        //    return aaTextRenderer;
+        case SunHints.INTVAL_TEXT_ANTIALIAS_ON:
+            return aaTextRenderer;
 
         default:
             switch (sg2d.getFontInfo().aaHint) {

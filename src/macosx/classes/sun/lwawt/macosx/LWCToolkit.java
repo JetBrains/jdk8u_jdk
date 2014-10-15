@@ -367,7 +367,7 @@ public final class LWCToolkit extends LWToolkit {
         super.initializeDesktopProperties();
         Map <Object, Object> fontHints = new HashMap<>();
         fontHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	fontHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HBGR);
+        fontHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         desktopProperties.put(SunToolkit.DESKTOPFONTHINTS, fontHints);
         desktopProperties.put("awt.mouse.numButtons", BUTTONS);
 
@@ -686,11 +686,6 @@ public final class LWCToolkit extends LWToolkit {
     @Override
     public DragSourceContextPeer createDragSourceContextPeer(
             DragGestureEvent dge) throws InvalidDnDOperationException {
-        final LightweightFrame f = SunToolkit.getLightweightFrame(dge.getComponent());
-        if (f != null) {
-            return f.createDragSourceContextPeer(dge);
-        }
-
         return CDragSourceContextPeer.createDragSourceContextPeer(dge);
     }
 
@@ -698,11 +693,6 @@ public final class LWCToolkit extends LWToolkit {
     public <T extends DragGestureRecognizer> T createDragGestureRecognizer(
             Class<T> abstractRecognizerClass, DragSource ds, Component c,
             int srcActions, DragGestureListener dgl) {
-        final LightweightFrame f = SunToolkit.getLightweightFrame(c);
-        if (f != null) {
-            return f.createDragGestureRecognizer(abstractRecognizerClass, ds, c, srcActions, dgl);
-        }
-
         DragGestureRecognizer dgr = null;
 
         // Create a new mouse drag gesture recognizer if we have a class match:
@@ -793,13 +783,6 @@ public final class LWCToolkit extends LWToolkit {
      * Returns true if the application (one of its windows) owns keyboard focus.
      */
     native boolean isApplicationActive();
-
-    /**
-     * Returns true if AWT toolkit is embedded, false otherwise.
-     *
-     * @return true if AWT toolkit is embedded, false otherwise
-     */
-    public static native boolean isEmbedded();
 
     /************************
      * Native methods section
