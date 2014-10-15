@@ -72,7 +72,6 @@ public class BufImgSurfaceData extends SurfaceData {
         initIDs(IndexColorModel.class, ICMColorData.class);
     }
 
-
     public static SurfaceData createData(BufferedImage bufImg) {
         if (bufImg == null) {
             throw new NullPointerException("BufferedImage cannot be null");
@@ -326,11 +325,11 @@ public class BufImgSurfaceData extends SurfaceData {
     }
 
     public RenderLoops getRenderLoops(SunGraphics2D sg2d) {
-        //if (sg2d.paintState <= SunGraphics2D.PAINT_ALPHACOLOR &&
-        //    sg2d.compositeState <= SunGraphics2D.COMP_ISCOPY)
-        //{
-        //    return solidloops;
-        //}
+        if (sg2d.paintState <= SunGraphics2D.PAINT_ALPHACOLOR &&
+            sg2d.compositeState <= SunGraphics2D.COMP_ISCOPY)
+        {
+            return solidloops;
+        }
         return super.getRenderLoops(sg2d);
     }
 

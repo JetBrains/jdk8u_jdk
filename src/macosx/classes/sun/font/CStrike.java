@@ -95,10 +95,6 @@ public final class CStrike extends FontStrike {
             }
         }
     }
-    
-    public static boolean isSubpixelAAEnabled () {
-        return "true".equals(System.getProperty("apple.awt.graphics.UseQuartz"));
-    } 
 
     public long getNativeStrikePtr() {
         if (nativeStrikePtr != 0) {
