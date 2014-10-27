@@ -187,11 +187,6 @@ OGLSD_SetScratchSurface(JNIEnv *env, jlong pConfigInfo)
     }
 
     OGLContext *oglc = cglInfo->context;
-    if (oglc == NULL) {
-        J2dRlsTraceLn(J2D_TRACE_ERROR, "OGLSD_SetScratchContext: ogl context is null");
-        return NULL;
-    }
-
     CGLCtxInfo *ctxinfo = (CGLCtxInfo *)oglc->ctxInfo;
 
 JNF_COCOA_ENTER(env);
