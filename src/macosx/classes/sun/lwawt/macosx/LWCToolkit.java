@@ -367,7 +367,7 @@ public final class LWCToolkit extends LWToolkit {
         super.initializeDesktopProperties();
         Map <Object, Object> fontHints = new HashMap<>();
         fontHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        fontHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HBGR);
+        fontHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         desktopProperties.put(SunToolkit.DESKTOPFONTHINTS, fontHints);
         desktopProperties.put("awt.mouse.numButtons", BUTTONS);
 
@@ -690,6 +690,7 @@ public final class LWCToolkit extends LWToolkit {
         if (f != null) {
             return f.createDragSourceContextPeer(dge);
         }
+
         return CDragSourceContextPeer.createDragSourceContextPeer(dge);
     }
 
@@ -697,7 +698,6 @@ public final class LWCToolkit extends LWToolkit {
     public <T extends DragGestureRecognizer> T createDragGestureRecognizer(
             Class<T> abstractRecognizerClass, DragSource ds, Component c,
             int srcActions, DragGestureListener dgl) {
-
         final LightweightFrame f = SunToolkit.getLightweightFrame(c);
         if (f != null) {
             return f.createDragGestureRecognizer(abstractRecognizerClass, ds, c, srcActions, dgl);
