@@ -38,6 +38,8 @@ import sun.java2d.SurfaceData;
 
 import sun.lwawt.macosx.CPlatformView;
 
+import static sun.java2d.opengl.OGLContext.OGLContextCaps.CAPS_EXT_LCD_SHADER;
+
 public abstract class CGLSurfaceData extends OGLSurfaceData {
 
     protected final int scale;
@@ -100,6 +102,18 @@ public abstract class CGLSurfaceData extends OGLSurfaceData {
     public GraphicsConfiguration getDeviceConfiguration() {
         return graphicsConfig;
     }
+
+    @Override
+    public boolean canRenderLCDText(SunGraphics2D sg2d) {
+        // relax the condition to render the lcd text
+        // by removal the transparency check, because
+        // we have to create translucent buffers due to
+        // shaped windows support on macosx.
+        return getOGLGraphicsConfig().isCapPresent(CAPS_EXT_LCD_SHADER) &&
+               sg2d.compositeState <= SunGraphics2D.COMP_ISCOPY &&
+               sg2d.paintState <= SunGraphics2D.PAINT_OPAQUECOLOR;
+    }
+
 
     /**
      * Creates a SurfaceData object representing the primary (front) buffer of
