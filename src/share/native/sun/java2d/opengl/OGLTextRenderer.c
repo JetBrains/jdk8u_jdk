@@ -296,7 +296,7 @@ OGLTR_AddToGlyphCache(GlyphInfo *glyph, jboolean rgbOrder)
  *            Cr = (Ag*(Cs^Ga) + (1-Ag)*(Cd^Ga)) ^ (1/Ga)
  */
 static const char *lcdTextShaderSource =
-    "uniform vec3 src_adj;"
+    "uniform vec4 src_adj;"
     "uniform sampler2D glyph_tex;"
     "uniform sampler2D dst_tex;"
     "uniform sampler3D invgamma_tex;"
@@ -315,7 +315,7 @@ static const char *lcdTextShaderSource =
          // gamma adjust the dest color using the invgamma LUT
     "    vec3 dst_adj = vec3(texture3D(invgamma_tex, dst_clr.stp));"
          // linearly interpolate the three color values
-    "    vec3 result = mix(dst_adj, src_adj, glyph_clr);"
+    "    vec3 result = mix(dst_adj, src_adj.xyz, glyph_clr * src_adj.w);"
          // gamma re-adjust the resulting color (alpha is always set to 1.0)
     "    gl_FragColor = vec4(vec3(texture3D(gamma_tex, result.stp)), 1.0);"
     "}";
@@ -479,7 +479,7 @@ static jboolean
 OGLTR_UpdateLCDTextColor(jint contrast)
 {
     double gamma = ((double)contrast) / 100.0;
-    GLfloat radj, gadj, badj;
+    GLfloat radj, gadj, badj, aadj;
     GLfloat clr[4];
     GLint loc;
 
@@ -502,10 +502,11 @@ OGLTR_UpdateLCDTextColor(jint contrast)
     radj = (GLfloat)pow(clr[0], gamma);
     gadj = (GLfloat)pow(clr[1], gamma);
     badj = (GLfloat)pow(clr[2], gamma);
+    aadj = (GLfloat)pow(clr[3], gamma);
 
     // update the "src_adj" parameter of the shader program with this value
     loc = j2d_glGetUniformLocationARB(lcdTextProgram, "src_adj");
-    j2d_glUniform3fARB(loc, radj, gadj, badj);
+    j2d_glUniform3fARB(loc, radj, gadj, badj, aadj);
 
     return JNI_TRUE;
 }
