@@ -506,7 +506,7 @@ OGLTR_UpdateLCDTextColor(jint contrast)
 
     // update the "src_adj" parameter of the shader program with this value
     loc = j2d_glGetUniformLocationARB(lcdTextProgram, "src_adj");
-    j2d_glUniform3fARB(loc, radj, gadj, badj, aadj);
+    j2d_glUniform4fARB(loc, radj, gadj, badj, aadj);
 
     return JNI_TRUE;
 }
