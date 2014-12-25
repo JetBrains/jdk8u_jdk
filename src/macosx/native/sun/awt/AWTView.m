@@ -889,11 +889,11 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
     // text, or 'text in progress'.  We also need to send the event if we get an insert text out of the blue!
     // (i.e., when the user uses the Character palette or Inkwell), or when the string to insert is a complex
     // Unicode value.
-    NSUInteger utf8Length = [aString lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    JNIEnv *env = [ThreadUtilities getJNIEnv];
+    jstring insertedText =  JNFNSToJavaString(env, aString);
+    jsize insertedLength = (*env)->GetStringLength(env, insertedText);
 
-    if ([self hasMarkedText] || !fProcessingKeystroke || (utf8Length > 1)) {
-        JNIEnv *env = [ThreadUtilities getJNIEnv];
-
+    if ([self hasMarkedText] || !fProcessingKeystroke || (insertedLength > 1)) {
         static JNF_MEMBER_CACHE(jm_selectPreviousGlyph, jc_CInputMethod, "selectPreviousGlyph", "()V");
         // We need to select the previous glyph so that it is overwritten.
         if (fPAHNeedsToSelect) {
@@ -902,14 +902,13 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
         }
 
         static JNF_MEMBER_CACHE(jm_insertText, jc_CInputMethod, "insertText", "(Ljava/lang/String;)V");
-        jstring insertedText =  JNFNSToJavaString(env, aString);
         JNFCallVoidMethod(env, fInputMethodLOCKABLE, jm_insertText, insertedText); // AWT_THREADING Safe (AWTRunLoopMode)
-        (*env)->DeleteLocalRef(env, insertedText);
 
         // The input method event will create psuedo-key events for each character in the committed string.
         // We also don't want to send the character that triggered the insertText, usually a return. [3337563]
         fKeyEventsNeeded = NO;
     }
+    (*env)->DeleteLocalRef(env, insertedText);
 
     fPAHNeedsToSelect = NO;
 
