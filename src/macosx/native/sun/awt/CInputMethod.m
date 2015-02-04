@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -70,23 +70,17 @@ static jobject CreateLocaleObjectFromNSString(JNIEnv *env, NSString *name)
     }
 
     // Create the java.util.Locale object
-    jobject localeObj = NULL;
     jobject langObj = (*env)->NewStringUTF(env, language);
-    if (langObj != NULL) {
-        jobject ctryObj = (*env)->NewStringUTF(env, country);
-        if(ctryObj != NULL) {
-            jobject vrntObj = (*env)->NewStringUTF(env, variant);
-            if (vrntObj != NULL) {
-                localeObj = JNFNewObject(env, jm_localeCons,langObj, ctryObj,
-                                         vrntObj);
-                (*env)->DeleteLocalRef(env, vrntObj);
-            }
-            (*env)->DeleteLocalRef(env, ctryObj);
-        }
-        (*env)->DeleteLocalRef(env, langObj);
-    }
+    jobject ctryObj = (*env)->NewStringUTF(env, country);
+    jobject vrntObj = (*env)->NewStringUTF(env, variant);
+    jobject localeObj = JNFNewObject(env, jm_localeCons, langObj, ctryObj, vrntObj); // AWT_THREADING Safe (known object)
+
     // Clean up and return.
     free(language);
+    (*env)->DeleteLocalRef(env, langObj);
+    (*env)->DeleteLocalRef(env, ctryObj);
+    (*env)->DeleteLocalRef(env, vrntObj);
+
     return localeObj;
 }
 
@@ -240,12 +234,10 @@ JNF_COCOA_ENTER(env);
 
         if (sLastKeyboardLocaleObj) {
             JNFDeleteGlobalRef(env, sLastKeyboardLocaleObj);
-            sLastKeyboardLocaleObj = NULL;
         }
-        if (localObj != NULL) {
-            sLastKeyboardLocaleObj = JNFNewGlobalRef(env, localObj);
-            (*env)->DeleteLocalRef(env, localObj);
-        }
+
+        sLastKeyboardLocaleObj = JNFNewGlobalRef(env, localObj);
+        (*env)->DeleteLocalRef(env, localObj);
     }
 
     returnValue = sLastKeyboardLocaleObj;
@@ -313,12 +305,9 @@ JNF_COCOA_ENTER(env);
 
     for(NSString *locale in selectableArray) {
         jobject localeObj = CreateLocaleObjectFromNSString(env, locale);
-        if (localeObj == NULL) {
-            break;
-        }
 
-        if (JNFCallBooleanMethod(env, returnValue, jm_listContains, localeObj) == JNI_FALSE) {
-            JNFCallBooleanMethod(env, returnValue, jm_listAdd, localeObj);
+        if (JNFCallBooleanMethod(env, returnValue, jm_listContains, localeObj) == JNI_FALSE) { // AWT_THREADING Safe (known object)
+            JNFCallBooleanMethod(env, returnValue, jm_listAdd, localeObj); // AWT_THREADING Safe (known object)
         }
 
         (*env)->DeleteLocalRef(env, localeObj);
