@@ -165,10 +165,11 @@ Java_sun_lwawt_macosx_CWrapper_00024NSWindow_orderOut
 JNF_COCOA_ENTER(env);
 
     NSWindow *window = (NSWindow *)jlong_to_ptr(windowPtr);
-    [ThreadUtilities performOnMainThread:@selector(orderOut:)
-                                      on:window
-                              withObject:window
-                           waitUntilDone:NO];
+    [ThreadUtilities performOnMainThreadWaiting:NO block:^(){
+        if ([window isVisible]) {
+            [window orderOut];
+        }
+    }];
 
 JNF_COCOA_EXIT(env);
 }
@@ -185,7 +186,9 @@ Java_sun_lwawt_macosx_CWrapper_00024NSWindow_close
 JNF_COCOA_ENTER(env);
     NSWindow *window = (NSWindow *)jlong_to_ptr(windowPtr);
     [ThreadUtilities performOnMainThreadWaiting:NO block:^(){
-        [window close];
+        if ([window isVisible]) {
+            [window close];
+        }
     }];
 JNF_COCOA_EXIT(env);
 }
