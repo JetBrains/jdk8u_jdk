@@ -305,7 +305,7 @@ AWT_ASSERT_APPKIT_THREAD;
     }
 
     if (self.nsWindow == nil) return nil; // no hope either
-    [self.nsWindow release]; // the property retains the object already
+    //[self.nsWindow release]; // the property retains the object already
 
     self.isEnabled = YES;
     self.javaPlatformWindow = platformWindow;
