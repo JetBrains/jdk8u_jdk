@@ -272,7 +272,7 @@ OGLTR_AddToGlyphCache(GlyphInfo *glyph, jboolean rgbOrder)
  *
  * The "uniform" variables at the top are initialized once the program is
  * linked, and are updated at runtime as needed (e.g. when the source color
- * changes, we will modify the "src_clr" value in OGLTR_UpdateLCDTextColor()).
+ * changes, we will modify the "src_adj" value in OGLTR_UpdateLCDTextColor()).
  *
  * The "main" function is executed for each "fragment" (or pixel) in the
  * glyph image.  We have determined that the pow() function can be quite
@@ -296,7 +296,7 @@ OGLTR_AddToGlyphCache(GlyphInfo *glyph, jboolean rgbOrder)
  *            Cr = (Ag*(Cs^Ga) + (1-Ag)*(Cd^Ga)) ^ (1/Ga)
  */
 static const char *lcdTextShaderSource =
-    "uniform vec4 src_clr;"
+    "uniform vec3 src_adj;"
     "uniform sampler2D glyph_tex;"
     "uniform sampler2D dst_tex;"
     "uniform sampler3D invgamma_tex;"
@@ -310,20 +310,14 @@ static const char *lcdTextShaderSource =
              // zero coverage, so skip this fragment
     "        discard;"
     "    }"
-         // load the RGBA value from the corresponding destination pixel
-    "    vec4 dst_clr = vec4(texture2D(dst_tex, gl_TexCoord[1].st));"
-         // blend src and dst colors as SrcOverNoEa
-    "    vec3 src_comp = vec3(src_clr.rgb + ((1.0 - src_clr.a) * dst_clr.rgb));"
-         // gamma adjust the blended src color using the invgamma LUT
-    "    vec3 src_adj = vec3(texture3D(invgamma_tex, src_comp));"
+         // load the RGB value from the corresponding destination pixel
+    "    vec3 dst_clr = vec3(texture2D(dst_tex, gl_TexCoord[1].st));"
          // gamma adjust the dest color using the invgamma LUT
-    "    vec3 dst_adj = vec3(texture3D(invgamma_tex, dst_clr.rgb));"
+    "    vec3 dst_adj = vec3(texture3D(invgamma_tex, dst_clr.stp));"
          // linearly interpolate the three color values
     "    vec3 result = mix(dst_adj, src_adj, glyph_clr);"
-         // calculate the resulting alpha
-    "    dst_clr.a = src_clr.a + (1.0 - src_clr.a) * dst_clr.a;"
-         // gamma re-adjust the resulting color
-    "    gl_FragColor = vec4(vec3(texture3D(gamma_tex, result.rgb)), dst_clr.a);"
+         // gamma re-adjust the resulting color (alpha is always set to 1.0)
+    "    gl_FragColor = vec4(vec3(texture3D(gamma_tex, result.stp)), 1.0);"
     "}";
 
 /**
@@ -473,24 +467,45 @@ OGLTR_UpdateLCDTextContrast(jint contrast)
 }
 
 /**
- * Updates the current source color ("src_clr") of the LCD text shader program.
+ * Updates the current gamma-adjusted source color ("src_adj") of the LCD
+ * text shader program.  Note that we could calculate this value in the
+ * shader (e.g. just as we do for "dst_adj"), but would be unnecessary work
+ * (and a measurable performance hit, maybe around 5%) since this value is
+ * constant over the entire glyph list.  So instead we just calculate the
+ * gamma-adjusted value once and update the uniform parameter of the LCD
+ * shader as needed.
  */
 static jboolean
 OGLTR_UpdateLCDTextColor(jint contrast)
 {
-    double gamma = 100.0 / ((double)contrast);
+    double gamma = ((double)contrast) / 100.0;
+    GLfloat radj, gadj, badj;
     GLfloat clr[4];
     GLint loc;
 
     J2dTraceLn1(J2D_TRACE_INFO,
                 "OGLTR_UpdateLCDTextColor: contrast=%d", contrast);
 
+    /*
+     * Note: Ideally we would update the "src_adj" uniform parameter only
+     * when there is a change in the source color.  Fortunately, the cost
+     * of querying the current OpenGL color state and updating the uniform
+     * value is quite small, and in the common case we only need to do this
+     * once per GlyphList, so we gain little from trying to optimize too
+     * eagerly here.
+     */
+
     // get the current OpenGL primary color state
     j2d_glGetFloatv(GL_CURRENT_COLOR, clr);
 
-    // update the "src_clr" parameter of the shader program with this value
-    loc = j2d_glGetUniformLocationARB(lcdTextProgram, "src_clr");
-    j2d_glUniform4fARB(loc, clr[0], clr[1], clr[2], clr[3]);
+    // gamma adjust the primary color
+    radj = (GLfloat)pow(clr[0], gamma);
+    gadj = (GLfloat)pow(clr[1], gamma);
+    badj = (GLfloat)pow(clr[2], gamma);
+
+    // update the "src_adj" parameter of the shader program with this value
+    loc = j2d_glGetUniformLocationARB(lcdTextProgram, "src_adj");
+    j2d_glUniform3fARB(loc, radj, gadj, badj);
 
     return JNI_TRUE;
 }
