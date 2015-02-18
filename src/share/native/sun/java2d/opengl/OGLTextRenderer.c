@@ -312,12 +312,10 @@ static const char *lcdTextShaderSource =
     "    }"
          // load the RGB value from the corresponding destination pixel
     "    vec3 dst_clr = vec3(texture2D(dst_tex, gl_TexCoord[1].st));"
-         // gamma adjust the dest color using the invgamma LUT
-    "    vec3 dst_adj = vec3(texture3D(invgamma_tex, dst_clr.stp));"
          // linearly interpolate the three color values
-    "    vec3 result = mix(dst_adj, src_adj, glyph_clr);"
+    "    vec3 result = mix(dst_clr, src_adj, glyph_clr);"
          // gamma re-adjust the resulting color (alpha is always set to 1.0)
-    "    gl_FragColor = vec4(vec3(texture3D(gamma_tex, result.stp)), 1.0);"
+    "    gl_FragColor = vec4(result.rgb, 1.0);"
     "}";
 
 /**
@@ -478,8 +476,6 @@ OGLTR_UpdateLCDTextContrast(jint contrast)
 static jboolean
 OGLTR_UpdateLCDTextColor(jint contrast)
 {
-    double gamma = ((double)contrast) / 100.0;
-    GLfloat radj, gadj, badj;
     GLfloat clr[4];
     GLint loc;
 
@@ -498,14 +494,9 @@ OGLTR_UpdateLCDTextColor(jint contrast)
     // get the current OpenGL primary color state
     j2d_glGetFloatv(GL_CURRENT_COLOR, clr);
 
-    // gamma adjust the primary color
-    radj = (GLfloat)pow(clr[0], gamma);
-    gadj = (GLfloat)pow(clr[1], gamma);
-    badj = (GLfloat)pow(clr[2], gamma);
-
     // update the "src_adj" parameter of the shader program with this value
     loc = j2d_glGetUniformLocationARB(lcdTextProgram, "src_adj");
-    j2d_glUniform3fARB(loc, radj, gadj, badj);
+    j2d_glUniform3fARB(loc, clr[0], clr[1], clr[2]);
 
     return JNI_TRUE;
 }
