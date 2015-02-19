@@ -407,9 +407,9 @@ public abstract class OGLSurfaceData extends SurfaceData
     public boolean canRenderLCDText(SunGraphics2D sg2d) {
         return
             graphicsConfig.isCapPresent(CAPS_EXT_LCD_SHADER) &&
-            sg2d.paintState <= SunGraphics2D.PAINT_ALPHACOLOR &&
+            sg2d.paintState <= SunGraphics2D.PAINT_OPAQUECOLOR &&
             (sg2d.compositeState <= SunGraphics2D.COMP_ISCOPY ||
-             (sg2d.compositeState <= SunGraphics2D.COMP_ALPHA && canHandleComposite(sg2d.composite)));
+            (sg2d.compositeState <= SunGraphics2D.COMP_ALPHA && canHandleComposite(sg2d.composite)));
     }
 
     private boolean canHandleComposite(Composite c) {
