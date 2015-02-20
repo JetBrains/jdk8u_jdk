@@ -301,6 +301,8 @@ static const char *lcdTextShaderSource =
     "uniform sampler2D dst_tex;"
     "uniform sampler3D invgamma_tex;"
     "uniform sampler3D gamma_tex;"
+    "uniform vec3 gamma;"
+    "uniform vec3 invgamma;"
     ""
     "void main(void)"
     "{"
@@ -312,10 +314,12 @@ static const char *lcdTextShaderSource =
     "    }"
          // load the RGB value from the corresponding destination pixel
     "    vec3 dst_clr = vec3(texture2D(dst_tex, gl_TexCoord[1].st));"
+         // gamma adjust the dest color using the invgamma LUT
+    "    vec3 dst_adj = pow(dst_clr.rgb, invgamma);"
          // linearly interpolate the three color values
-    "    vec3 result = mix(dst_clr, src_adj, glyph_clr);"
+    "    vec3 result = mix(dst_adj, src_adj, glyph_clr);"
          // gamma re-adjust the resulting color (alpha is always set to 1.0)
-    "    gl_FragColor = vec4(result.rgb, 1.0);"
+    "    gl_FragColor = vec4(pow(result.rgb, gamma), 1.0);"
     "}";
 
 /**
@@ -420,9 +424,16 @@ OGLTR_UpdateLCDTextContrast(jint contrast)
     int min = 0;
     int max = LUT_EDGE - 1;
     int x, y, z;
+    GLint loc;
 
     J2dTraceLn1(J2D_TRACE_INFO,
                 "OGLTR_UpdateLCDTextContrast: contrast=%d", contrast);
+    
+    loc = j2d_glGetUniformLocationARB(lcdTextProgram, "gamma");
+    j2d_glUniform3fARB(loc, g, g, g);
+
+    loc = j2d_glGetUniformLocationARB(lcdTextProgram, "invgamma");
+    j2d_glUniform3fARB(loc, ig, ig, ig);
 
     for (z = min; z <= max; z++) {
         double zval = ((double)z) / max;
@@ -476,6 +487,8 @@ OGLTR_UpdateLCDTextContrast(jint contrast)
 static jboolean
 OGLTR_UpdateLCDTextColor(jint contrast)
 {
+    double invgamma = ((double)contrast) / 100;
+    GLfloat radj, gadj, badj;
     GLfloat clr[4];
     GLint loc;
 
@@ -494,9 +507,14 @@ OGLTR_UpdateLCDTextColor(jint contrast)
     // get the current OpenGL primary color state
     j2d_glGetFloatv(GL_CURRENT_COLOR, clr);
 
+    // gamma adjust the primary color
+    radj = (GLfloat)pow(clr[0], invgamma);
+    gadj = (GLfloat)pow(clr[1], invgamma);
+    badj = (GLfloat)pow(clr[2], invgamma);
+
     // update the "src_adj" parameter of the shader program with this value
     loc = j2d_glGetUniformLocationARB(lcdTextProgram, "src_adj");
-    j2d_glUniform3fARB(loc, clr[0], clr[1], clr[2]);
+    j2d_glUniform3fARB(loc, radj, gadj, badj);
 
     return JNI_TRUE;
 }
