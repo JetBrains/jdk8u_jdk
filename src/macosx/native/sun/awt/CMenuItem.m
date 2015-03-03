@@ -54,6 +54,7 @@ AWT_ASSERT_APPKIT_THREAD;
         fIsCheckbox = NO;
         fIsEnabled = YES;
     }
+    //NSLog(@"INIT CMENUITEM: %p\n", self);
     return self;
 }
 
@@ -205,6 +206,7 @@ JNF_COCOA_EXIT(env);
 }
 
 - (void)dealloc {
+    //NSLog(@"DEALLOC CMENUITEM: %p\n", self);
     [fMenuItem release];
     fMenuItem = nil;
 
