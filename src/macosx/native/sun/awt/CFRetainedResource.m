@@ -36,6 +36,7 @@
 JNIEXPORT void JNICALL Java_sun_lwawt_macosx_CFRetainedResource_nativeCFRelease
 (JNIEnv *env, jclass clazz, jlong ptr, jboolean releaseOnAppKitThread)
 {
+//    NSLog(@"RELEASE from nativeCFRelease %p\n", jlong_to_ptr(ptr));
     if (releaseOnAppKitThread) {
         [JNFRunLoop performOnMainThreadWaiting:NO withBlock:^(){
             CFRelease(jlong_to_ptr(ptr));

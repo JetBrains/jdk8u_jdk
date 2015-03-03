@@ -38,7 +38,13 @@
         // the peer has been made clobal ref before
         fPeer = peer;
     }
+    //NSLog(@"INIT CMENUCOMPONENT %p\n", self);
     return self;
+}
+
+- (void) dealloc {
+    //NSLog(@"DEALLOC CMENUCOMPONENT %p\n", self);
+    [super dealloc];
 }
 
 -(void) cleanup {
