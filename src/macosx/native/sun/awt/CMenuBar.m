@@ -80,12 +80,10 @@ static BOOL sSetupHelpMenu = NO;
     if (self) {
         fMenuList = [[NSMutableArray alloc] init];
     }
-    //NSLog(@"INIT CMENUBAR: %p\n", self);
     return self;
 }
 
 -(void) dealloc {
-    //NSLog(@"DEALLOC CMENUBAR: %p\n", self);
     [fMenuList release];
     fMenuList = nil;
 

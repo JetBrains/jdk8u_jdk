@@ -44,12 +44,10 @@ AWT_ASSERT_APPKIT_THREAD;
         [fMenu retain];
         [fMenu setAutoenablesItems:NO];
     }
-    //NSLog(@"INIT MENU: %p\n", self);
     return self;
 }
 
 - (void)dealloc {
-    //NSLog(@"DEALLOC MENU: %p\n", self);
     [fMenu release];
     fMenu = nil;
     [super dealloc];
