@@ -62,7 +62,6 @@ static AWTWindow* lastKeyWindow = nil;
 
 // --------------------------------------------------------------
 // NSWindow/NSPanel descendants implementation
-//NSLog(@"INIT: %p\n",self);                                
 #define AWT_NS_WINDOW_IMPLEMENTATION                            \
 - (id) initWithDelegate:(AWTWindow *)delegate                   \
               frameRect:(NSRect)contectRect                     \
@@ -76,11 +75,10 @@ static AWTWindow* lastKeyWindow = nil;
                                                                 \
     if (self == nil) return nil;                                \
                                                                 \
-                                                                \
     [self setDelegate:delegate];                                \
     [self setContentView:view];                                 \
     [self setInitialFirstResponder:view];                       \
-    [self setReleasedWhenClosed:YES];                           \
+    [self setReleasedWhenClosed:NO];                            \
     [self setPreservesContentDuringLiveResize:YES];             \
                                                                 \
     return self;                                                \
@@ -106,12 +104,6 @@ static AWTWindow* lastKeyWindow = nil;
 
 @implementation AWTWindow_Normal
 AWT_NS_WINDOW_IMPLEMENTATION
-
-- (void) dealloc {                                              
- //NSLog(@"DEALLOC: AWTWindow_Normal [%p] \n", self);
- [super dealloc];                                               
-}                                                               
-
 
 // Gesture support
 - (void)postGesture:(NSEvent *)event as:(jint)type a:(jdouble)a b:(jdouble)b {
@@ -176,12 +168,6 @@ AWT_NS_WINDOW_IMPLEMENTATION
 @end
 @implementation AWTWindow_Panel
 AWT_NS_WINDOW_IMPLEMENTATION
-
-- (void) dealloc {                                              
-  //NSLog(@"AWTWindow_Panel [%p] \n", self);
-  [super dealloc];                                               
-}                                                               
-
 @end
 // END of NSWindow/NSPanel descendants implementation
 // --------------------------------------------------------------
@@ -435,9 +421,9 @@ AWT_ASSERT_APPKIT_THREAD;
 
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
     [self.javaPlatformWindow setJObject:nil withEnv:env];
-    [self.nsWindow release];
-    [self.nsWindow release];
-    [self.ownerWindow release];
+
+    self.nsWindow = nil;
+    self.ownerWindow = nil;
     [super dealloc];
 }
 
@@ -566,7 +552,7 @@ AWT_ASSERT_APPKIT_THREAD;
 - (void) windowDidBecomeKey: (NSNotification *) notification {
 AWT_ASSERT_APPKIT_THREAD;
     [AWTToolkit eventCountPlusPlus];
-    AWTWindow *opposite = [[AWTWindow lastKeyWindow] retain];
+    AWTWindow *opposite = [AWTWindow lastKeyWindow];
 
     // Finds appropriate menubar in our hierarchy,
     AWTWindow *awtWindow = self;
@@ -591,8 +577,6 @@ AWT_ASSERT_APPKIT_THREAD;
     [AWTWindow setLastKeyWindow:nil];
 
     [self _deliverWindowFocusEvent:YES oppositeWindow: opposite];
-
-    [opposite release];
 }
 
 - (void) windowDidResignKey: (NSNotification *) notification {
@@ -817,8 +801,8 @@ JNF_COCOA_ENTER(env);
                                                  frameRect:frameRect
                                                contentView:contentView];
         // the window is released is CPlatformWindow.nativeDispose()
-        // We have retained the window in the initializer
-        //if (window) CFRetain(window.nsWindow);
+
+        if (window) CFRetain(window.nsWindow);
     }];
 
 JNF_COCOA_EXIT(env);
@@ -1233,9 +1217,8 @@ JNF_COCOA_ENTER(env);
         // which releases the reference. This, in turn, allows the window
         // itself be deallocated.
         [nsWindow setDelegate: nil];
-        
-        // see nativeCreateNSWindow
-        //[window release];
+
+        [window release];
     }];
 
 JNF_COCOA_EXIT(env);

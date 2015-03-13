@@ -122,8 +122,6 @@ AWT_ASSERT_APPKIT_THREAD;
 #endif /* REMOTELAYER */
     }
 
-    //NSLog(@"INIT AWTView %p\n", self);
-
     return self;
 }
 
@@ -144,7 +142,6 @@ AWT_ASSERT_APPKIT_THREAD;
         fInputMethodLOCKABLE = NULL;
     }
 
-    //NSLog(@"DEALLOC AWTView %p\n", self);
 
     [super dealloc];
 }
