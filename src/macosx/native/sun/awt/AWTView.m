@@ -130,6 +130,8 @@ AWT_ASSERT_APPKIT_THREAD;
 
     self.cglLayer = nil;
 
+    //NSLog(@"Dealloc AWTView (%p) \n", self);
+
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
     (*env)->DeleteGlobalRef(env, m_cPlatformView);
     m_cPlatformView = NULL;
