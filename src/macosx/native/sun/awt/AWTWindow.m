@@ -105,6 +105,14 @@ static AWTWindow* lastKeyWindow = nil;
 @implementation AWTWindow_Normal
 AWT_NS_WINDOW_IMPLEMENTATION
 
+- (void) dealloc {
+AWT_ASSERT_APPKIT_THREAD;
+    
+    //NSLog(@"Dealloc  AWTWindow_Normal (%p) \n", self);
+
+    [super dealloc];
+}
+
 // Gesture support
 - (void)postGesture:(NSEvent *)event as:(jint)type a:(jdouble)a b:(jdouble)b {
     AWT_ASSERT_APPKIT_THREAD;
@@ -168,6 +176,14 @@ AWT_NS_WINDOW_IMPLEMENTATION
 @end
 @implementation AWTWindow_Panel
 AWT_NS_WINDOW_IMPLEMENTATION
+
+- (void) dealloc {
+AWT_ASSERT_APPKIT_THREAD;
+    
+    //NSLog(@"Dealloc  AWTWindow_Panel (%p) \n", self);
+
+    [super dealloc];
+}
 @end
 // END of NSWindow/NSPanel descendants implementation
 // --------------------------------------------------------------
@@ -418,10 +434,11 @@ AWT_ASSERT_APPKIT_THREAD;
 
 - (void) dealloc {
 AWT_ASSERT_APPKIT_THREAD;
-
+    //NSLog(@"Dealloc AWTWindow (%p)\n", self);
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
     [self.javaPlatformWindow setJObject:nil withEnv:env];
 
+    [self.nsWindow release];
     self.nsWindow = nil;
     self.ownerWindow = nil;
     [super dealloc];
