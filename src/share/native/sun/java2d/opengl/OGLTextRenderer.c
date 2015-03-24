@@ -1172,7 +1172,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
 }
 
 JNIEXPORT void JNICALL
-Java_sun_java2d_opengl_OGLTextRenderer_drawGlyphList
+Java_sun_java2d_opengl_OGLTextRenderer_nativeDrawGlyphList
     (JNIEnv *env, jobject self,
      jint numGlyphs, jboolean usePositions,
      jboolean subPixPos, jboolean rgbOrder, jint lcdContrast,

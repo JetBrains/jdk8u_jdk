@@ -25,8 +25,8 @@
 
 package sun.java2d.pipe;
 
-import java.awt.AlphaComposite;
-import java.awt.Composite;
+import java.awt.*;
+
 import sun.font.GlyphList;
 import sun.java2d.SunGraphics2D;
 import sun.java2d.SurfaceData;
@@ -49,6 +49,12 @@ public abstract class BufferedTextPipe extends GlyphListPipe {
     @Native private static final int OFFSET_SUBPIXPOS = 1;
     @Native private static final int OFFSET_POSITIONS = 0;
 
+    static int getContrastForColor (Color color) {
+        // YIQ
+        int yiqValue = ((color.getRed() * 299) + (color.getGreen() * 587) + (color.getBlue() * 114)) / 1000;
+        return yiqValue * 150/255 + 100;
+    }
+
     /**
      * Packs the given parameters into a single int value in order to save
      * space on the rendering queue.  Note that most of these parameters
@@ -61,7 +67,7 @@ public abstract class BufferedTextPipe extends GlyphListPipe {
             (((gl.usePositions() ? 1 : 0)   << OFFSET_POSITIONS) |
              ((gl.isSubPixPos()  ? 1 : 0)   << OFFSET_SUBPIXPOS) |
              ((gl.isRGBOrder()   ? 1 : 0)   << OFFSET_RGBORDER ) |
-             ((sg2d.lcdTextContrast & 0xff) << OFFSET_CONTRAST ));
+             ((getContrastForColor(sg2d.foregroundColor) & 0xff) << OFFSET_CONTRAST ));
     }
 
     protected final RenderQueue rq;

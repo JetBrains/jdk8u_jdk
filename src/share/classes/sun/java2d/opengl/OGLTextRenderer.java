@@ -25,7 +25,9 @@
 
 package sun.java2d.opengl;
 
+import java.lang.ref.WeakReference;
 import java.awt.Composite;
+import java.awt.Color;
 import sun.font.GlyphList;
 import sun.java2d.SunGraphics2D;
 import sun.java2d.loops.GraphicsPrimitive;
@@ -33,21 +35,45 @@ import sun.java2d.pipe.BufferedTextPipe;
 import sun.java2d.pipe.RenderQueue;
 
 class OGLTextRenderer extends BufferedTextPipe {
+    
+    private WeakReference<SunGraphics2D> graphics2dRef = new WeakReference<>(null);
 
     OGLTextRenderer(RenderQueue rq) {
         super(rq);
     }
 
+    static int getContrastForColor (Color color) {
+        // YIQ
+        int yiqValue = ((color.getRed() * 299) + (color.getGreen() * 587) + (color.getBlue() * 114)) / 1000;
+        return yiqValue * 150/255 + 100;
+    }
+
     @Override
-    protected native void drawGlyphList(int numGlyphs, boolean usePositions,
-                                        boolean subPixPos, boolean rgbOrder,
-                                        int lcdContrast,
-                                        float glOrigX, float glOrigY,
-                                        long[] images, float[] positions);
+    protected void drawGlyphList(int numGlyphs, boolean usePositions,
+                                 boolean subPixPos, boolean rgbOrder,
+                                 int lcdContrast,
+                                 float glOrigX, float glOrigY,
+                                 long[] images, float[] positions)
+    {
+        lcdContrast = (graphics2dRef.get() == null) ?
+                      lcdContrast :
+                      getContrastForColor(graphics2dRef.get().getColor());
+
+        nativeDrawGlyphList(numGlyphs, usePositions, subPixPos,
+                      rgbOrder, lcdContrast,
+                      glOrigX, glOrigY, images, positions);
+    }
+
+    protected native void nativeDrawGlyphList(int numGlyphs, boolean usePositions,
+                                              boolean subPixPos, boolean rgbOrder,
+                                              int lcdContrast,
+                                              float glOrigX, float glOrigY,
+                                              long[] images, float[] positions);
 
     @Override
     protected void validateContext(SunGraphics2D sg2d, Composite comp) {
         // assert rq.lock.isHeldByCurrentThread();
+	graphics2dRef = new WeakReference<SunGraphics2D>(sg2d);
         OGLSurfaceData oglDst = (OGLSurfaceData)sg2d.surfaceData;
         OGLContext.validateContext(oglDst, oglDst,
                                    sg2d.getCompClip(), comp,
