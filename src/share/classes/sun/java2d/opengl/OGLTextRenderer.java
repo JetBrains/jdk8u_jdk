@@ -55,9 +55,10 @@ class OGLTextRenderer extends BufferedTextPipe {
                                  float glOrigX, float glOrigY,
                                  long[] images, float[] positions)
     {
-        lcdContrast = (graphics2dRef.get() == null) ?
-                      lcdContrast :
-                      getContrastForColor(graphics2dRef.get().getColor());
+	lcdContrast = 250;
+        // lcdContrast = (graphics2dRef.get() == null) ?
+        //              lcdContrast :
+        //              getContrastForColor(graphics2dRef.get().getColor());
 
         nativeDrawGlyphList(numGlyphs, usePositions, subPixPos,
                       rgbOrder, lcdContrast,

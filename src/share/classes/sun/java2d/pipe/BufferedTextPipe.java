@@ -67,7 +67,8 @@ public abstract class BufferedTextPipe extends GlyphListPipe {
             (((gl.usePositions() ? 1 : 0)   << OFFSET_POSITIONS) |
              ((gl.isSubPixPos()  ? 1 : 0)   << OFFSET_SUBPIXPOS) |
              ((gl.isRGBOrder()   ? 1 : 0)   << OFFSET_RGBORDER ) |
-             ((getContrastForColor(sg2d.foregroundColor) & 0xff) << OFFSET_CONTRAST ));
+             (250 & 0xff) << OFFSET_CONTRAST );
+             //((getContrastForColor(sg2d.foregroundColor) & 0xff) << OFFSET_CONTRAST ));
     }
 
     protected final RenderQueue rq;
