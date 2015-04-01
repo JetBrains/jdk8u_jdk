@@ -33,6 +33,7 @@ import sun.java2d.SunGraphics2D;
 import sun.java2d.loops.GraphicsPrimitive;
 import sun.java2d.pipe.BufferedTextPipe;
 import sun.java2d.pipe.RenderQueue;
+import java.util.HashMap;
 
 class OGLTextRenderer extends BufferedTextPipe {
     
@@ -42,10 +43,18 @@ class OGLTextRenderer extends BufferedTextPipe {
         super(rq);
     }
 
+    private static HashMap<Color, Integer>  contrastByColor = new HashMap<>();
+
     static int getContrastForColor (Color color) {
+        if (contrastByColor.containsKey(color)) {
+          return contrastByColor.get(color);
+        }
+
         // YIQ
         int yiqValue = ((color.getRed() * 299) + (color.getGreen() * 587) + (color.getBlue() * 114)) / 1000;
-        return yiqValue * 150/255 + 100;
+        int contrast = yiqValue * 150/255 + 100;
+        contrastByColor.put(color, contrast);
+        return contrast;
     }
 
     @Override
@@ -55,10 +64,9 @@ class OGLTextRenderer extends BufferedTextPipe {
                                  float glOrigX, float glOrigY,
                                  long[] images, float[] positions)
     {
-	lcdContrast = 250;
-        // lcdContrast = (graphics2dRef.get() == null) ?
-        //              lcdContrast :
-        //              getContrastForColor(graphics2dRef.get().getColor());
+        lcdContrast = (graphics2dRef.get() == null) ?
+                      lcdContrast :
+                      getContrastForColor(graphics2dRef.get().getColor());
 
         nativeDrawGlyphList(numGlyphs, usePositions, subPixPos,
                       rgbOrder, lcdContrast,
