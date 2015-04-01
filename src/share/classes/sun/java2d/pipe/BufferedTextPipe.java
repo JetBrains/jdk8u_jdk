@@ -33,6 +33,7 @@ import sun.java2d.SurfaceData;
 import static sun.java2d.pipe.BufferedOpCodes.*;
 
 import java.lang.annotation.Native;
+import java.util.HashMap;
 
 public abstract class BufferedTextPipe extends GlyphListPipe {
 
@@ -49,10 +50,18 @@ public abstract class BufferedTextPipe extends GlyphListPipe {
     @Native private static final int OFFSET_SUBPIXPOS = 1;
     @Native private static final int OFFSET_POSITIONS = 0;
 
+    private static HashMap<Color, Integer> contrastByColor = new HashMap<>();
+
     static int getContrastForColor (Color color) {
+        if (contrastByColor.containsKey(color)) {
+            return contrastByColor.get(color);
+        }
+
         // YIQ
         int yiqValue = ((color.getRed() * 299) + (color.getGreen() * 587) + (color.getBlue() * 114)) / 1000;
-        return yiqValue * 150/255 + 100;
+        int contrast = yiqValue * 150/255 + 100;
+        contrastByColor.put(color, contrast);
+        return contrast;
     }
 
     /**
@@ -67,8 +76,7 @@ public abstract class BufferedTextPipe extends GlyphListPipe {
             (((gl.usePositions() ? 1 : 0)   << OFFSET_POSITIONS) |
              ((gl.isSubPixPos()  ? 1 : 0)   << OFFSET_SUBPIXPOS) |
              ((gl.isRGBOrder()   ? 1 : 0)   << OFFSET_RGBORDER ) |
-             (250 & 0xff) << OFFSET_CONTRAST );
-             //((getContrastForColor(sg2d.foregroundColor) & 0xff) << OFFSET_CONTRAST ));
+             ((getContrastForColor(sg2d.foregroundColor) & 0xff) << OFFSET_CONTRAST ));
     }
 
     protected final RenderQueue rq;
