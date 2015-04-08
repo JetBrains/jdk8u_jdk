@@ -211,8 +211,7 @@ JNF_COCOA_EXIT(env);
 JNIEXPORT jobject JNICALL Java_sun_lwawt_macosx_CInputMethod_getNativeLocale
 (JNIEnv *env, jobject this)
 {
-    //if (!inputMethodController) return NULL;
-    if (JNI_TRUE) return NULL;
+    if (!inputMethodController) return NULL;
     jobject returnValue = 0;
     __block NSString *isoAbbreviation;
 JNF_COCOA_ENTER(env);
@@ -288,8 +287,7 @@ JNIEXPORT void JNICALL Java_sun_lwawt_macosx_CInputMethodDescriptor_nativeInit
 JNIEXPORT jobject JNICALL Java_sun_lwawt_macosx_CInputMethodDescriptor_nativeGetAvailableLocales
 (JNIEnv *env, jclass klass)
 {
-    //if (!inputMethodController) return NULL;
-    if (JNI_TRUE) return NULL;
+    if (!inputMethodController) return NULL;
     jobject returnValue = 0;
 
     __block NSArray *selectableArray = nil;
