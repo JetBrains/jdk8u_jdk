@@ -258,7 +258,8 @@ public abstract class OGLSurfaceData extends SurfaceData
      * to keep the code a bit cleaner.
      */
     private void initSurfaceNow(int width, int height) {
-        boolean isOpaque = (getTransparency() == Transparency.OPAQUE);
+        //boolean isOpaque = (getTransparency() == Transparency.OPAQUE);
+        boolean isOpaque = false; 
         boolean success = false;
 
         switch (type) {
