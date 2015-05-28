@@ -28,6 +28,7 @@ package sun.java2d.opengl;
 import java.awt.AlphaComposite;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.Composite;
 import java.awt.Transparency;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
@@ -410,10 +411,23 @@ public abstract class OGLSurfaceData extends SurfaceData
      */
     public boolean canRenderLCDText(SunGraphics2D sg2d) {
         return
+          //  graphicsConfig.isCapPresent(CAPS_EXT_LCD_SHADER) &&
+          //  sg2d.compositeState <= SunGraphics2D.COMP_ISCOPY &&
+          //  sg2d.paintState <= SunGraphics2D.PAINT_OPAQUECOLOR &&
+          //  sg2d.surfaceData.getTransparency() == Transparency.OPAQUE;
             graphicsConfig.isCapPresent(CAPS_EXT_LCD_SHADER) &&
-            sg2d.compositeState <= SunGraphics2D.COMP_ISCOPY &&
             sg2d.paintState <= SunGraphics2D.PAINT_OPAQUECOLOR &&
-            sg2d.surfaceData.getTransparency() == Transparency.OPAQUE;
+            (sg2d.compositeState <= SunGraphics2D.COMP_ISCOPY ||
+            (sg2d.compositeState <= SunGraphics2D.COMP_ALPHA && canHandleComposite(sg2d.composite)));
+    }
+
+    private boolean canHandleComposite(Composite c) {
+        if (c instanceof AlphaComposite) {
+            AlphaComposite ac = (AlphaComposite)c;
+
+            return ac.getRule() == AlphaComposite.SRC_OVER && ac.getAlpha() >= 1f;
+        }
+        return false;
     }
 
     public void validatePipe(SunGraphics2D sg2d) {
