@@ -199,9 +199,15 @@ DUMP_GLYPHINFO(const GlyphInfo *info)
 static inline void
 CGGI_CopyARGBPixelToRGBPixel(const UInt32 p, UInt8 *dst)
 {
-    *(dst + 0) = 0xFF - (p >> 16 & 0xFF);  // red
-    *(dst + 1) = 0xFF - (p >>  8 & 0xFF);  // green
-    *(dst + 2) = 0xFF - (p & 0xFF);        // blue
+#if __LITTLE_ENDIAN__
+    *(dst + 2) = 0xFF - (p >> 24 & 0xFF);
+    *(dst + 1) = 0xFF - (p >> 16 & 0xFF);
+    *(dst) = 0xFF - (p >> 8 & 0xFF);
+#else
+    *(dst) = 0xFF - (p >> 16 & 0xFF);
+    *(dst + 1) = 0xFF - (p >> 8 & 0xFF);
+    *(dst + 2) = 0xFF - (p & 0xFF);
+#endif
 }
 
 static void
@@ -310,11 +316,13 @@ CGGI_GetRenderingMode(const AWTStrike *strike)
 {
     CGGI_RenderingMode mode;
     mode.cgFontMode = strike->fStyle;
-    NSException *e = nil;
 
     switch (strike->fAAStyle) {
+    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_DEFAULT:
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_OFF:
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_ON:
+    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_GASP:
+    default:
         mode.glyphDescriptor = &grey;
         break;
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_LCD_HRGB:
@@ -323,14 +331,6 @@ CGGI_GetRenderingMode(const AWTStrike *strike)
     case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_LCD_VBGR:
         mode.glyphDescriptor = &rgb;
         break;
-    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_GASP:
-    case sun_awt_SunHints_INTVAL_TEXT_ANTIALIAS_DEFAULT:
-    default:
-        e = [NSException
-                exceptionWithName:@"IllegalArgumentException"
-                reason:@"Invalid hint value"
-                userInfo:nil];
-        @throw e;
     }
 
     return mode;
@@ -345,8 +345,7 @@ CGGI_GetRenderingMode(const AWTStrike *strike)
  */
 static inline void
 CGGI_InitCanvas(CGGI_GlyphCanvas *canvas,
-                const vImagePixelCount width, const vImagePixelCount height,
-                const CGGI_RenderingMode* mode)
+                const vImagePixelCount width, const vImagePixelCount height)
 {
     // our canvas is *always* 4-byte ARGB
     size_t bytesPerRow = width * sizeof(UInt32);
@@ -363,16 +362,11 @@ CGGI_InitCanvas(CGGI_GlyphCanvas *canvas,
             reason:@"Failed to allocate memory for the buffer which backs the CGContext for glyph strikes." userInfo:nil] raise];
     }
 
-    uint32_t bmpInfo = kCGImageAlphaPremultipliedFirst;
-    if (mode->glyphDescriptor == &rgb) {
-        bmpInfo |= kCGBitmapByteOrder32Host;
-    }
-
     CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
     canvas->context = CGBitmapContextCreate(canvas->image->data,
                                             width, height, 8, bytesPerRow,
                                             colorSpace,
-                                            bmpInfo);
+                                            kCGImageAlphaPremultipliedFirst);
 
     CGContextSetRGBFillColor(canvas->context, 0.0f, 0.0f, 0.0f, 1.0f);
     CGContextSetFontSize(canvas->context, 1);
@@ -410,7 +404,7 @@ CGGI_FreeCanvas(CGGI_GlyphCanvas *canvas)
  * Quick and easy inline to check if this canvas is big enough.
  */
 static inline void
-CGGI_SizeCanvas(CGGI_GlyphCanvas *canvas, const vImagePixelCount width, const vImagePixelCount height, const CGGI_RenderingMode* mode)
+CGGI_SizeCanvas(CGGI_GlyphCanvas *canvas, const vImagePixelCount width, const vImagePixelCount height, const JRSFontRenderingStyle style)
 {
     if (canvas->image != NULL &&
         width  < canvas->image->width &&
@@ -424,9 +418,8 @@ CGGI_SizeCanvas(CGGI_GlyphCanvas *canvas, const vImagePixelCount width, const vI
     CGGI_FreeCanvas(canvas);
     CGGI_InitCanvas(canvas,
                     width * CGGI_GLYPH_CANVAS_SLACK,
-                    height * CGGI_GLYPH_CANVAS_SLACK,
-                    mode);
-    JRSFontSetRenderingStyleOnContext(canvas->context, mode->cgFontMode);
+                    height * CGGI_GLYPH_CANVAS_SLACK);
+    JRSFontSetRenderingStyleOnContext(canvas->context, style);
 }
 
 /*
@@ -584,7 +577,7 @@ CGGI_CreateImageForUnicode
     GlyphInfo *info = CGGI_CreateNewGlyphInfoFrom(advance, bbox, strike, mode);
 
     // fix the context size, just in case the substituted character is unexpectedly large
-    CGGI_SizeCanvas(canvas, info->width, info->height, mode);
+    CGGI_SizeCanvas(canvas, info->width, info->height, mode->cgFontMode);
 
     // align the transform for the real CoreText strike
     CGContextSetTextMatrix(canvas->context, strike->fAltTx);
@@ -660,11 +653,8 @@ CGGI_FillImagesForGlyphsWithSizedCanvas(CGGI_GlyphCanvas *canvas,
 #endif
 }
 
-static NSString *threadLocalAACanvasKey =
-    @"Java CoreGraphics Text Renderer Cached Canvas for AA";
-
-static NSString *threadLocalLCDCanvasKey =
-        @"Java CoreGraphics Text Renderer Cached Canvas for LCD";
+static NSString *threadLocalCanvasKey =
+    @"Java CoreGraphics Text Renderer Cached Canvas";
 
 /*
  * This is the maximum length and height times the above slack squared
@@ -688,7 +678,7 @@ CGGI_FillImagesForGlyphs(jlong *glyphInfos, const AWTStrike *strike,
         CGGI_GLYPH_CANVAS_MAX*CGGI_GLYPH_CANVAS_MAX*CGGI_GLYPH_CANVAS_SLACK*CGGI_GLYPH_CANVAS_SLACK)
     {
         CGGI_GlyphCanvas *tmpCanvas = [[CGGI_GlyphCanvas alloc] init];
-        CGGI_InitCanvas(tmpCanvas, maxWidth, maxHeight, mode);
+        CGGI_InitCanvas(tmpCanvas, maxWidth, maxHeight);
         CGGI_FillImagesForGlyphsWithSizedCanvas(tmpCanvas, strike,
                                                 mode, glyphInfos, uniChars,
                                                 glyphs, len);
@@ -700,22 +690,13 @@ CGGI_FillImagesForGlyphs(jlong *glyphInfos, const AWTStrike *strike,
 
     NSMutableDictionary *threadDict =
         [[NSThread currentThread] threadDictionary];
-
-    NSString* theKey;
-
-    if (mode->glyphDescriptor == &rgb) {
-        theKey = threadLocalLCDCanvasKey;
-    } else {
-        theKey = threadLocalAACanvasKey;
-    }
-
-    CGGI_GlyphCanvas *canvas = [threadDict objectForKey:theKey];
+    CGGI_GlyphCanvas *canvas = [threadDict objectForKey:threadLocalCanvasKey];
     if (canvas == nil) {
         canvas = [[CGGI_GlyphCanvas alloc] init];
-        [threadDict setObject:canvas forKey:theKey];
+        [threadDict setObject:canvas forKey:threadLocalCanvasKey];
     }
 
-    CGGI_SizeCanvas(canvas, maxWidth, maxHeight, mode);
+    CGGI_SizeCanvas(canvas, maxWidth, maxHeight, mode->cgFontMode);
     CGGI_FillImagesForGlyphsWithSizedCanvas(canvas, strike, mode,
                                             glyphInfos, uniChars, glyphs, len);
 }
