@@ -46,7 +46,7 @@ class OGLTextRenderer extends BufferedTextPipe {
     private static HashMap<Color, Integer>  contrastByColor = new HashMap<>();
 
     static int getContrastForColor (Color color) {
-        if (contrastByColor.containsKey(color)) {
+        /*if (contrastByColor.containsKey(color)) {
           return contrastByColor.get(color);
         }
 
@@ -55,6 +55,8 @@ class OGLTextRenderer extends BufferedTextPipe {
         int contrast = yiqValue * 150/255 + 100;
         contrastByColor.put(color, contrast);
         return contrast;
+	*/
+	return 160;
     }
 
     @Override
