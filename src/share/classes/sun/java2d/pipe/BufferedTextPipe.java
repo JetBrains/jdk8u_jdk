@@ -53,14 +53,15 @@ public abstract class BufferedTextPipe extends GlyphListPipe {
     private static HashMap<Color, Integer> contrastByColor = new HashMap<>();
 
     static int getContrastForColor (Color color) {
-        if (contrastByColor.containsKey(color)) {
+        /*if (contrastByColor.containsKey(color)) {
             return contrastByColor.get(color);
         }
 
         // YIQ
         int yiqValue = ((color.getRed() * 299) + (color.getGreen() * 587) + (color.getBlue() * 114)) / 1000;
         int contrast = yiqValue * 150/255 + 100;
-        contrastByColor.put(color, contrast);
+        contrastByColor.put(color, contrast);*/
+        int contrast = 160;
         return contrast;
     }
 
@@ -116,6 +117,7 @@ public abstract class BufferedTextPipe extends GlyphListPipe {
 
     private void enqueueGlyphList(final SunGraphics2D sg2d,
                                   final GlyphList gl)
+
     {
         // assert rq.lock.isHeldByCurrentThread();
         RenderBuffer buf = rq.getBuffer();
