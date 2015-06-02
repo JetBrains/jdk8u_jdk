@@ -46,8 +46,8 @@
  */
 #define OGLTR_CACHE_WIDTH       512
 #define OGLTR_CACHE_HEIGHT      512
-#define OGLTR_CACHE_CELL_WIDTH  32
-#define OGLTR_CACHE_CELL_HEIGHT 32
+#define OGLTR_CACHE_CELL_WIDTH  16 
+#define OGLTR_CACHE_CELL_HEIGHT 16 
 
 /**
  * The current "glyph mode" state.  This variable is used to track the
