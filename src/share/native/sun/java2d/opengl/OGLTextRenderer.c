@@ -648,12 +648,12 @@ OGLTR_UpdateCachedDestination(OGLSDOps *dstOps, GlyphInfo *ginfo,
             // copy destination into subregion of cached texture tile:
             //   dx1-cachedDestBounds.x1 == +xoffset from left side of texture
             //   cachedDestBounds.y2-dy2 == +yoffset from bottom of texture
-            j2d_glActiveTextureARB(GL_TEXTURE1_ARB);
+            /*j2d_glActiveTextureARB(GL_TEXTURE1_ARB);
             j2d_glCopyTexSubImage2D(GL_TEXTURE_2D, 0,
                                     dx1 - cachedDestBounds.x1,
                                     cachedDestBounds.y2 - dy2,
                                     dx1adj, dy1adj,
-                                    dx2-dx1, dy2-dy1);
+                                    dx2-dx1, dy2-dy1);*/
         }
     } else {
         jint remainingWidth;
