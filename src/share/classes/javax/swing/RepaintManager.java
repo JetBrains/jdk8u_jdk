@@ -27,9 +27,6 @@ package javax.swing;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.awt.image.VolatileImage;
 import java.security.AccessControlContext;
 import java.security.AccessController;
@@ -40,7 +37,6 @@ import java.applet.*;
 
 import sun.awt.AWTAccessor;
 import sun.awt.AppContext;
-import sun.awt.CGraphicsDevice;
 import sun.awt.DisplayChangedListener;
 import sun.awt.SunToolkit;
 import sun.java2d.SunGraphicsEnvironment;
@@ -203,7 +199,7 @@ public class RepaintManager
 
         volatileImageBufferEnabled = "true".equals(AccessController.
                 doPrivileged(new GetPropertyAction(
-                "swing.volatileImageBufferEnabled", "false")));
+                "swing.volatileImageBufferEnabled", "true")));
         boolean headless = GraphicsEnvironment.isHeadless();
         if (volatileImageBufferEnabled && headless) {
             volatileImageBufferEnabled = false;
@@ -1054,99 +1050,6 @@ public class RepaintManager
         return image;
     }
 
-    static class OffScreenImage extends Image {
-        Image buffer;
-        int width;
-        int height;
-
-        int scale;
-
-        public static OffScreenImage createImage(Component c, int w, int h) {
-            int scale = getScaleFactor(c);
-
-            Image buffer = c.createImage(w * scale, h * scale);
-
-            return new OffScreenImage(w, h, scale, buffer);
-        }
-
-        private static int getScaleFactor(Component c) {
-            int scale = 1;
-            final GraphicsDevice dev = c.getGraphicsConfiguration().getDevice();
-            if (dev instanceof CGraphicsDevice) {
-                CGraphicsDevice cgd = (CGraphicsDevice)dev;
-                scale = cgd.getScaleFactor();
-            }
-            return scale;
-        }
-
-        private OffScreenImage(int w, int h, int s, Image buf) {
-            width = w;
-            height = h;
-            scale = s;
-            buffer = buf;
-        }
-
-        public int getTransparency() {
-            if (buffer instanceof BufferedImage) {
-                return ((BufferedImage)buffer).getTransparency();
-            }
-
-            // TODO: how to handle this???
-            return Transparency.OPAQUE;
-        }
-
-        public boolean validate(Component c) {
-            return (scale == getScaleFactor(c));
-
-
-        }
-
-        public void renderTo(Graphics g, int x, int y, Component c) {
-            Graphics2D g2d = (Graphics2D)g.create();
-            double s = 1.0 / scale;
-            g2d.scale(s, s);
-            g2d.drawImage(buffer, scale * x, scale * y, c);
-            g2d.dispose();
-        }
-
-        @Override
-        public ImageProducer getSource() {
-            return null;
-        }
-
-        @Override
-        public int getHeight(ImageObserver observer) {
-            return height;
-        }
-
-        @Override
-        public int getWidth(ImageObserver observer) {
-            return width;
-        }
-
-        @Override
-        public Object getProperty(String name, ImageObserver observer) {
-            if (buffer != null) {
-                return buffer.getProperty(name, observer);
-            }
-            return null;
-        }
-
-        @Override
-        public Graphics getGraphics() {
-            if (buffer == null) {
-                return null;
-            }
-            Graphics g = buffer.getGraphics();
-            if (g instanceof Graphics2D) {
-                Graphics2D g2d = (Graphics2D)g;
-                g2d.scale(scale, scale);
-                return g2d;
-            }
-            throw new IllegalStateException("Unsupported buffer: " + buffer);
-        }
-    }
-
     private Image _getOffscreenBuffer(Component c, int proposedWidth, int proposedHeight) {
         Dimension maxSize = getDoubleBufferMaximumSize();
         DoubleBufferInfo doubleBuffer;
@@ -1171,11 +1074,6 @@ public class RepaintManager
         height = proposedHeight < 1? 1 :
                   (proposedHeight > maxSize.height? maxSize.height : proposedHeight);
 
-        // check whether the double buffer is compatible with current graphics device
-        if (doubleBuffer.image != null && !doubleBuffer.image.validate(c)) {
-            doubleBuffer.needsReset = true;
-        }
-
         if (doubleBuffer.needsReset || (doubleBuffer.image != null &&
                                         (doubleBuffer.size.width < width ||
                                          doubleBuffer.size.height < height))) {
@@ -1188,10 +1086,10 @@ public class RepaintManager
             height = Math.max(doubleBuffer.size.height, height);
         }
 
-        OffScreenImage result = doubleBuffer.image;
+        Image result = doubleBuffer.image;
 
         if (doubleBuffer.image == null) {
-            result = OffScreenImage.createImage(c, width, height);
+            result = c.createImage(width , height);
             doubleBuffer.size = new Dimension(width, height);
             if (c instanceof JComponent) {
                 ((JComponent)c).setCreatedDoubleBuffer(true);
@@ -1654,17 +1552,8 @@ public class RepaintManager
                             Graphics g, int clipX, int clipY,
                             int clipW, int clipH) {
             Graphics osg = image.getGraphics();
-
-            final boolean isVolatile = VolatileImage.class.isInstance(image);
-            final OffScreenImage offscreen = isVolatile ? null : (OffScreenImage)image;
-            final int bufferTransparency = isVolatile ? ((VolatileImage)image).getTransparency() :
-                    offscreen.getTransparency();
-
-            int iw = image.getWidth(null);
-            int ih = image.getHeight(null);
-
-            int bw = Math.min(clipW, iw);
-            int bh = Math.min(clipH, ih);
+            int bw = Math.min(clipW, image.getWidth(null));
+            int bh = Math.min(clipH, image.getHeight(null));
             int x,y,maxx,maxy;
 
             try {
@@ -1672,7 +1561,7 @@ public class RepaintManager
                     for(y=clipY, maxy = clipY + clipH; y < maxy ; y += bh) {
                         osg.translate(-x, -y);
                         osg.setClip(x,y,bw,bh);
-                        if (bufferTransparency != Transparency.OPAQUE
+                        if (volatileBufferType != Transparency.OPAQUE
                                 && osg instanceof Graphics2D) {
                             final Graphics2D g2d = (Graphics2D) osg;
                             final Color oldBg = g2d.getBackground();
@@ -1681,26 +1570,16 @@ public class RepaintManager
                             g2d.setBackground(oldBg);
                         }
                         c.paintToOffscreen(osg, x, y, bw, bh, maxx, maxy);
-
-                        // now render the buffer into the destination
                         g.setClip(x, y, bw, bh);
-                        if (bufferTransparency != Transparency.OPAQUE
+                        if (volatileBufferType != Transparency.OPAQUE
                                 && g instanceof Graphics2D) {
-                            final Graphics2D g2d = (Graphics2D) g.create();
+                            final Graphics2D g2d = (Graphics2D) g;
                             final Composite oldComposite = g2d.getComposite();
                             g2d.setComposite(AlphaComposite.Src);
-                            if (offscreen != null) {
-                                offscreen.renderTo(g2d, x, y, c);
-                            } else {
                             g2d.drawImage(image, x, y, c);
-                            }
                             g2d.setComposite(oldComposite);
                         } else {
-                            if (offscreen != null) {
-                                offscreen.renderTo(g, x, y, c);
-                            } else {
                             g.drawImage(image, x, y, c);
-                        }
                         }
                         osg.translate(x, y);
                     }
@@ -1756,7 +1635,7 @@ public class RepaintManager
 
 
     private class DoubleBufferInfo {
-        public OffScreenImage image;
+        public Image image;
         public Dimension size;
         public boolean needsReset = false;
     }
