@@ -315,6 +315,7 @@ static const char *lcdTextShaderSource =
     "    vec3 result = mix(dst_adj, src_adj, glyph_clr);"
          // gamma re-adjust the resulting color (alpha is always set to 1.0)
     "    gl_FragColor = vec4(pow(result.rgb, invgamma), 1.0);"
+    //"    gl_FragColor = vec4(dst_clr.rgb, 1.0);"
     "}";
 
 /**
@@ -426,7 +427,9 @@ OGLTR_UpdateLCDTextColor(jint contrast)
  * gamma lookup table textures.
  */
 static jboolean
-OGLTR_EnableLCDGlyphModeState(GLuint glyphTextureID, jint contrast)
+OGLTR_EnableLCDGlyphModeState(GLuint glyphTextureID,
+                              GLuint dstTextureID,
+                              jint contrast)
 {
     // bind the texture containing glyph data to texture unit 0
     j2d_glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -434,6 +437,9 @@ OGLTR_EnableLCDGlyphModeState(GLuint glyphTextureID, jint contrast)
 
     // bind the texture tile containing destination data to texture unit 1
     j2d_glActiveTextureARB(GL_TEXTURE1_ARB);
+    if (dstTextureID != 0) {
+        j2d_glBindTexture(GL_TEXTURE_2D, dstTextureID);
+    } else {
     if (cachedDestTextureID == 0) {
         cachedDestTextureID =
             OGLContext_CreateBlitTexture(GL_RGB8, GL_RGB,
@@ -444,6 +450,7 @@ OGLTR_EnableLCDGlyphModeState(GLuint glyphTextureID, jint contrast)
         }
     }
     j2d_glBindTexture(GL_TEXTURE_2D, cachedDestTextureID);
+    }
 
     // note that GL_TEXTURE_2D was already enabled for texture unit 0,
     // but we need to explicitly enable it for texture unit 1
@@ -472,14 +479,6 @@ OGLTR_EnableLCDGlyphModeState(GLuint glyphTextureID, jint contrast)
     if (!OGLTR_UpdateLCDTextColor(contrast)) {
         return JNI_FALSE;
     }
-
-    // bind the gamma LUT textures
-    j2d_glActiveTextureARB(GL_TEXTURE2_ARB);
-    j2d_glBindTexture(GL_TEXTURE_3D, invGammaLutTextureID);
-    j2d_glEnable(GL_TEXTURE_3D);
-    j2d_glActiveTextureARB(GL_TEXTURE3_ARB);
-    j2d_glBindTexture(GL_TEXTURE_3D, gammaLutTextureID);
-    j2d_glEnable(GL_TEXTURE_3D);
 
     return JNI_TRUE;
 }
@@ -540,10 +539,6 @@ OGLTR_DisableGlyphModeState()
         j2d_glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
         j2d_glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
         j2d_glUseProgramObjectARB(0);
-        j2d_glActiveTextureARB(GL_TEXTURE3_ARB);
-        j2d_glDisable(GL_TEXTURE_3D);
-        j2d_glActiveTextureARB(GL_TEXTURE2_ARB);
-        j2d_glDisable(GL_TEXTURE_3D);
         j2d_glActiveTextureARB(GL_TEXTURE1_ARB);
         j2d_glDisable(GL_TEXTURE_2D);
         j2d_glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -756,7 +751,9 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps,
             lastRGBOrder = rgbOrder;
         }
 
-        if (!OGLTR_EnableLCDGlyphModeState(glyphCache->cacheID, contrast)) {
+        if (!OGLTR_EnableLCDGlyphModeState(glyphCache->cacheID,
+                                           dstOps->textureID, contrast))
+        {
             return JNI_FALSE;
         }
 
@@ -884,7 +881,8 @@ OGLTR_DrawLCDGlyphNoCache(OGLContext *oglc, OGLSDOps *dstOps,
             }
         }
 
-        if (!OGLTR_EnableLCDGlyphModeState(oglc->blitTextureID, contrast)) {
+        if (!OGLTR_EnableLCDGlyphModeState(oglc->blitTextureID,
+                                           dstOps->textureID, contrast)) {
             return JNI_FALSE;
         }
 
@@ -932,6 +930,7 @@ OGLTR_DrawLCDGlyphNoCache(OGLContext *oglc, OGLSDOps *dstOps,
             dxadj = dstOps->xOffset + x;
             dyadj = dstOps->yOffset + dstOps->height - (y + sh);
 
+            if (dstOps->textureID == 0) {
             // copy destination into cached texture tile (the lower-left
             // corner of the destination region will be positioned at the
             // lower-left corner (0,0) of the texture)
@@ -940,10 +939,18 @@ OGLTR_DrawLCDGlyphNoCache(OGLContext *oglc, OGLSDOps *dstOps,
                                     0, 0,
                                     dxadj, dyadj,
                                     sw, sh);
-
             // update the remaining destination texture coordinates
             dtx2 = ((GLfloat)sw) / OGLTR_CACHED_DEST_WIDTH;
             dty1 = ((GLfloat)sh) / OGLTR_CACHED_DEST_HEIGHT;
+            } else {
+                // use the destination texture directly
+                // update the remaining destination texture coordinates
+                dtx1 =((GLfloat)dxadj) / ((GLfloat)dstOps->textureWidth);
+                dtx2 = ((GLfloat)dxadj + sw) / ((GLfloat)dstOps->textureWidth);
+                
+                dty2 = ((GLfloat)dyadj) / ((GLfloat)dstOps->textureHeight);
+                dty1 = ((GLfloat)dyadj + sh) / ((GLfloat)dstOps->textureHeight);
+            }
 
             // render composed texture to the destination surface
             j2d_glBegin(GL_QUADS);
@@ -1048,10 +1055,22 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
                 }
             }
 
+            /*
+             * NB: we probably can avoid reading the destination from the
+             *     frame buffer if the destination surface data has associated
+             *     texture. At the moment we just check whether the texture
+             *     is initialized, but we probably have to take the drawable
+             *     type int account.
+             *  
+             *   If texture is available, then we draw glyphs without cache.
+             */
+
             if (rowBytesOffset == 0 &&
                 cacheStatus != CACHE_GRAY &&
                 ginfo->width <= OGLTR_CACHE_CELL_WIDTH &&
-                ginfo->height <= OGLTR_CACHE_CELL_HEIGHT)
+                ginfo->height <= OGLTR_CACHE_CELL_HEIGHT &&
+                dstOps->textureID == 0) // TODO: check drawable type more carefully
+                
             {
                 ok = OGLTR_DrawLCDGlyphViaCache(oglc, dstOps,
                                                 ginfo, x, y,
