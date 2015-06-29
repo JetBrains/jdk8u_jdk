@@ -231,7 +231,7 @@ public class RepaintManager
         Toolkit tk = Toolkit.getDefaultToolkit();
         if ((tk instanceof SunToolkit)
                 && ((SunToolkit) tk).isSwingBackbufferTranslucencySupported()) {
-            volatileBufferType = Transparency.TRANSLUCENT;
+            volatileBufferType = Transparency.OPAQUE;
         } else {
             volatileBufferType = Transparency.OPAQUE;
         }
