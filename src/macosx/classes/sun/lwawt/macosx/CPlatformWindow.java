@@ -330,7 +330,7 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
             javax.swing.JRootPane rootpane = ((javax.swing.RootPaneContainer)target).getRootPane();
             Object prop = null;
 
-            prop = rootpane.getClientProperty(WINDOW_BRUSH_METAL_LOOK);
+            prop = (rootpane == null) ? null : rootpane.getClientProperty(WINDOW_BRUSH_METAL_LOOK);
             if (prop != null) {
                 styleBits = SET(styleBits, TEXTURED, Boolean.parseBoolean(prop.toString()));
             }
@@ -342,7 +342,7 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
                 }
             }
 
-            prop = rootpane.getClientProperty(WINDOW_STYLE);
+            prop = (rootpane == null) ? null : rootpane.getClientProperty(WINDOW_STYLE);
             if (prop != null) {
                 if ("small".equals(prop))  {
                     styleBits = SET(styleBits, UTILITY, true);
@@ -355,39 +355,41 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
                 if ("hud".equals(prop)) styleBits = SET(styleBits, HUD, true);
             }
 
-            prop = rootpane.getClientProperty(WINDOW_HIDES_ON_DEACTIVATE);
-            if (prop != null) {
-                styleBits = SET(styleBits, HIDES_ON_DEACTIVATE, Boolean.parseBoolean(prop.toString()));
-            }
+            if (rootpane != null) {
+                prop = rootpane.getClientProperty(WINDOW_HIDES_ON_DEACTIVATE);
+                if (prop != null) {
+                    styleBits = SET(styleBits, HIDES_ON_DEACTIVATE, Boolean.parseBoolean(prop.toString()));
+                }
 
-            prop = rootpane.getClientProperty(WINDOW_CLOSEABLE);
-            if (prop != null) {
-                styleBits = SET(styleBits, CLOSEABLE, Boolean.parseBoolean(prop.toString()));
-            }
+                prop = rootpane.getClientProperty(WINDOW_CLOSEABLE);
+                if (prop != null) {
+                    styleBits = SET(styleBits, CLOSEABLE, Boolean.parseBoolean(prop.toString()));
+                }
 
-            prop = rootpane.getClientProperty(WINDOW_MINIMIZABLE);
-            if (prop != null) {
-                styleBits = SET(styleBits, MINIMIZABLE, Boolean.parseBoolean(prop.toString()));
-            }
+                prop = rootpane.getClientProperty(WINDOW_MINIMIZABLE);
+                if (prop != null) {
+                    styleBits = SET(styleBits, MINIMIZABLE, Boolean.parseBoolean(prop.toString()));
+                }
 
-            prop = rootpane.getClientProperty(WINDOW_ZOOMABLE);
-            if (prop != null) {
-                styleBits = SET(styleBits, ZOOMABLE, Boolean.parseBoolean(prop.toString()));
-            }
+                prop = rootpane.getClientProperty(WINDOW_ZOOMABLE);
+                if (prop != null) {
+                    styleBits = SET(styleBits, ZOOMABLE, Boolean.parseBoolean(prop.toString()));
+                }
 
-            prop = rootpane.getClientProperty(WINDOW_FULLSCREENABLE);
-            if (prop != null) {
-                styleBits = SET(styleBits, FULLSCREENABLE, Boolean.parseBoolean(prop.toString()));
-            }
+                prop = rootpane.getClientProperty(WINDOW_FULLSCREENABLE);
+                if (prop != null) {
+                    styleBits = SET(styleBits, FULLSCREENABLE, Boolean.parseBoolean(prop.toString()));
+                }
 
-            prop = rootpane.getClientProperty(WINDOW_SHADOW);
-            if (prop != null) {
-                styleBits = SET(styleBits, HAS_SHADOW, Boolean.parseBoolean(prop.toString()));
-            }
+                prop = rootpane.getClientProperty(WINDOW_SHADOW);
+                if (prop != null) {
+                    styleBits = SET(styleBits, HAS_SHADOW, Boolean.parseBoolean(prop.toString()));
+                }
 
-            prop = rootpane.getClientProperty(WINDOW_DRAGGABLE_BACKGROUND);
-            if (prop != null) {
-                styleBits = SET(styleBits, DRAGGABLE_BACKGROUND, Boolean.parseBoolean(prop.toString()));
+                prop = rootpane.getClientProperty(WINDOW_DRAGGABLE_BACKGROUND);
+                if (prop != null) {
+                    styleBits = SET(styleBits, DRAGGABLE_BACKGROUND, Boolean.parseBoolean(prop.toString()));
+                }
             }
         }
 
