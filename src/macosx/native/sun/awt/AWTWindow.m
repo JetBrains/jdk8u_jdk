@@ -305,7 +305,6 @@ AWT_ASSERT_APPKIT_THREAD;
     }
 
     if (self.nsWindow == nil) return nil; // no hope either
-    [self.nsWindow release]; // the property retains the object already
 
     self.isEnabled = YES;
     self.javaPlatformWindow = platformWindow;
@@ -422,6 +421,7 @@ AWT_ASSERT_APPKIT_THREAD;
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
     [self.javaPlatformWindow setJObject:nil withEnv:env];
 
+    [self.nsWindow release];
     self.nsWindow = nil;
     self.ownerWindow = nil;
     [super dealloc];
