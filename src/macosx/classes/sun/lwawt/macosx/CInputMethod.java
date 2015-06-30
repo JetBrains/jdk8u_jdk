@@ -36,6 +36,7 @@ import java.lang.Character.Subset;
 import java.lang.reflect.InvocationTargetException;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.text.*;
+import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 
 import sun.awt.im.InputMethodAdapter;
@@ -505,6 +506,12 @@ public class CInputMethod extends InputMethodAdapter {
                     if (fAwtFocussedComponent instanceof TextComponent) {
                         ((TextComponent) fAwtFocussedComponent).select(offset - 1, offset);
                         return;
+                    }
+                    if (fAwtFocussedComponent instanceof JComponent) {
+                        Object property = ((JComponent) fAwtFocussedComponent).getClientProperty("sun.lwawt.macosx.CInputMethod.selectPreviousGlyph.callback");
+                        if (property instanceof Runnable) {
+                            ((Runnable) property).run();
+                        }
                     }
                     // TODO: Ideally we want to disable press-and-hold in this case
                 }
