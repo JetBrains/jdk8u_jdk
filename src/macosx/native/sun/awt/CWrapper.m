@@ -165,10 +165,13 @@ Java_sun_lwawt_macosx_CWrapper_00024NSWindow_orderOut
 JNF_COCOA_ENTER(env);
 
     NSWindow *window = (NSWindow *)jlong_to_ptr(windowPtr);
-    [ThreadUtilities performOnMainThread:@selector(orderOut:)
-                                      on:window
-                              withObject:window
-                           waitUntilDone:NO];
+    [ThreadUtilities performOnMainThreadWaiting:NO block:^(){
+        if ([window respondsToSelector:@selector(orderOut:)]) {
+            [window orderOut:window];
+        } else {
+            NSLog(@"NSWindow %@ does not responds to orderOut selector", window);
+        }
+    }];
 
 JNF_COCOA_EXIT(env);
 }
@@ -185,7 +188,11 @@ Java_sun_lwawt_macosx_CWrapper_00024NSWindow_close
 JNF_COCOA_ENTER(env);
     NSWindow *window = (NSWindow *)jlong_to_ptr(windowPtr);
     [ThreadUtilities performOnMainThreadWaiting:NO block:^(){
-        [window close];
+        if ([window respondsToSelector:@selector(close)]) {
+            [window close];
+        } else {
+            NSLog(@"NSWindow %@ does not responds to close selector", window);
+        }
     }];
 JNF_COCOA_EXIT(env);
 }
