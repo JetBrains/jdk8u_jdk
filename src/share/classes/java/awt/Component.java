@@ -1302,6 +1302,24 @@ public abstract class Component implements ImageObserver, MenuContainer,
     }
 
     /**
+     * Determines the bounds which will be displayed on the screen.
+     *
+     * @return the visible part of bounds in the coordinate space of this comp
+     */
+    private Rectangle getRecursivelyVisibleBounds() {
+        final Component container = getContainer();
+        final Rectangle bounds = getBounds();
+        if (container == null) {
+            // we are top level window or haven't a container, return our bounds
+            return bounds;
+        }
+        // translate the container's bounds to our coordinate space
+        final Rectangle parentsBounds = container.getRecursivelyVisibleBounds();
+        parentsBounds.setLocation(0, 0);
+        return parentsBounds.intersection(bounds);
+    }
+
+    /**
      * Translates absolute coordinates into coordinates in the coordinate
      * space of this component.
      */
@@ -1473,7 +1491,7 @@ public abstract class Component implements ImageObserver, MenuContainer,
                 ComponentPeer peer = this.peer;
                 if (peer != null) {
                     peer.setEnabled(true);
-                    if (visible) {
+                    if (visible && !getRecursivelyVisibleBounds().isEmpty()) {
                         updateCursorImmediately();
                     }
                 }
@@ -1522,7 +1540,7 @@ public abstract class Component implements ImageObserver, MenuContainer,
                 ComponentPeer peer = this.peer;
                 if (peer != null) {
                     peer.setEnabled(false);
-                    if (visible) {
+                    if (visible && !getRecursivelyVisibleBounds().isEmpty()) {
                         updateCursorImmediately();
                     }
                 }
