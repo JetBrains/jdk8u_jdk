@@ -69,6 +69,18 @@ final class CClipboard extends SunClipboard {
     }
 
     @Override
+    public synchronized Transferable getContents(Object requestor) {
+        checkPasteboardAndNotify();
+        return super.getContents(requestor);
+    }
+
+    @Override
+    protected synchronized Transferable getContextContents() {
+        checkPasteboardAndNotify();
+        return super.getContextContents();
+    }
+
+    @Override
     protected void setContentsNative(Transferable contents) {
         FlavorTable flavorMap = getDefaultFlavorTable();
         // Don't use delayed Clipboard rendering for the Transferable's data.
