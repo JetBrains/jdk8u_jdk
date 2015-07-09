@@ -328,7 +328,7 @@ JNIEXPORT jdouble JNICALL
 Java_sun_awt_CGraphicsDevice_nativeGetScaleFactor
 (JNIEnv *env, jclass class, jint displayID)
 {
-    __block jdouble ret = 1.0f;
+    __block jdouble ret = 2.0f;
 
 JNF_COCOA_ENTER(env);
 
