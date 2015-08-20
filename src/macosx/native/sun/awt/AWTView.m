@@ -306,7 +306,52 @@ AWT_ASSERT_APPKIT_THREAD;
 }
 
 - (void) flagsChanged: (NSEvent *)event {
-    [self deliverJavaKeyEventHelper: event];
+    if (/*([event keyCode] == 65535) && */[event modifierFlags] == 2148532232 || [event modifierFlags] == 2147483648
+	|| [event modifierFlags] == 2147614722 || [event modifierFlags] == 2147483648) {
+	return;
+    }
+
+    NSEvent* newEvent = event;
+
+    unsigned short newKeyCode = 0; 
+
+    if( NSAlphaShiftKeyMask & [NSEvent modifierFlags] ){
+	newKeyCode = 0x39;
+    }
+
+    if( NSShiftKeyMask & [NSEvent modifierFlags] ){
+	newKeyCode = 0x38;
+    }
+
+    if( NSControlKeyMask & [NSEvent modifierFlags] ){
+	newKeyCode = 0x3B; 
+    }
+
+   // if( NSAlternateKeyMask & [NSEvent modifierFlags] ){
+//
+  //  }
+
+
+    if( NSCommandKeyMask & [NSEvent modifierFlags] ){
+	newKeyCode = 0x37;
+    }
+//    if( NSNumericPadKeyMask & [NSEvent modifierFlags] ){
+//	newKeyCode = 
+//    }
+
+//    if( NSHelpKeyMask & [NSEvent modifierFlags] ){
+//	newKeyCode = 
+//    }
+
+//    if( NSFunctionKeyMask & [NSEvent modifierFlags] ){
+//	newKeyCode = 
+//    }
+
+    if (newKeyCode != 0) {
+      newEvent = [NSEvent keyEventWithType:NSFlagsChanged location:event.locationInWindow modifierFlags:event.modifierFlags timestamp:event.timestamp windowNumber:event.windowNumber context:event.context characters:@"" charactersIgnoringModifiers:@"" isARepeat:NO keyCode:newKeyCode];
+    }
+
+    [self deliverJavaKeyEventHelper: newEvent];
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent *) event {
@@ -437,6 +482,7 @@ AWT_ASSERT_APPKIT_THREAD;
         // The event is repeatedly delivered by keyDown: after performKeyEquivalent:
         return;
     }
+
     [sLastKeyEvent release];
     sLastKeyEvent = [event retain];
 
