@@ -25,13 +25,13 @@
 
 #include "jni.h"
 #include "jni_util.h"
-#include "jlong.h"
 #include "sunfontids.h"
 #include "sun_font_FreetypeFontScaler.h"
 
 #include<stdlib.h>
 #include <math.h>
 #include "ft2build.h"
+#include FT_LCD_FILTER_H
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_BBOX_H
@@ -46,6 +46,8 @@
 #define  FTFixedToFloat(x) ((x) / (float)(ftFixed1))
 #define  FT26Dot6ToFloat(x)  ((x) / ((float) (1<<6)))
 #define  ROUND(x) ((int) (x+0.5))
+#define  DEFAULT_DPI 72
+#define  ADJUST_FONT_SIZE(X, DPI) (((X)*DEFAULT_DPI + ((DPI)>>1))/(DPI))
 
 typedef struct {
     /* Important note:
@@ -93,12 +95,38 @@ void z_error(char *s) {}
 /**************** Error handling utilities *****************/
 
 static jmethodID invalidateScalerMID;
+static jmethodID getDefaultToolkitMID;
+static jclass tkClass;
+static jmethodID getScreenResolutionMID;
 
 JNIEXPORT void JNICALL
 Java_sun_font_FreetypeFontScaler_initIDs(
-        JNIEnv *env, jobject scaler, jclass FFSClass) {
+        JNIEnv *env, jobject scaler, jclass FFSClass, jclass TKClass) {
     invalidateScalerMID =
         (*env)->GetMethodID(env, FFSClass, "invalidateScaler", "()V");
+    getDefaultToolkitMID =
+        (*env)->GetStaticMethodID(env, TKClass, "getDefaultToolkit",
+                                  "()Ljava/awt/Toolkit;");
+    getScreenResolutionMID =
+        (*env)->GetMethodID(env, TKClass, "getScreenResolution", "()I");
+    tkClass = (*env)->NewGlobalRef(env, TKClass);
+}
+
+static int getScreenResolution(JNIEnv *env) {
+    jthrowable exc;
+    jclass tk = (*env)->CallStaticObjectMethod(
+        env, tkClass, getDefaultToolkitMID);
+    int dpi = (*env)->CallIntMethod(env, tk, getScreenResolutionMID);
+
+    /* Test if there is no exception here (can get java.awt.HeadlessException)
+     * Fallback to default DPI otherwise
+     */
+    exc = (*env)->ExceptionOccurred(env);
+    if (exc) {
+        (*env)->ExceptionClear(env);
+        return DEFAULT_DPI;
+    }
+    return dpi;
 }
 
 static void freeNativeResources(JNIEnv *env, FTScalerInfo* scalerInfo) {
@@ -382,8 +410,10 @@ static int setupFTContext(JNIEnv *env,
 
     if (context != NULL) {
         FT_Set_Transform(scalerInfo->face, &context->transform, NULL);
-
-        errCode = FT_Set_Char_Size(scalerInfo->face, 0, context->ptsz, 72, 72);
+        FT_UInt dpi = (FT_UInt) getScreenResolution(env);
+        errCode =
+            FT_Set_Char_Size(scalerInfo->face, 0,
+                             ADJUST_FONT_SIZE(context->ptsz, dpi), dpi, dpi);
 
         if (errCode == 0) {
             errCode = FT_Activate_Size(scalerInfo->face->size);
@@ -670,9 +700,9 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
     int error, imageSize;
     UInt16 width, height;
     GlyphInfo *glyphInfo;
-    int glyph_index;
     int renderFlags = FT_LOAD_RENDER, target;
     FT_GlyphSlot ftglyph;
+    FT_LcdFilter lcdFilter = FT_LCD_FILTER_NONE;
 
     FTScalerContext* context =
         (FTScalerContext*) jlong_to_ptr(pScalerContext);
@@ -703,16 +733,17 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
     if (context->aaType == TEXT_AA_OFF) {
         target = FT_LOAD_TARGET_MONO;
     } else if (context->aaType == TEXT_AA_ON) {
-        target = FT_LOAD_TARGET_NORMAL;
-    } else if (context->aaType == TEXT_AA_LCD_HRGB ||
-               context->aaType == TEXT_AA_LCD_HBGR) {
-        target = FT_LOAD_TARGET_LCD;
+        target = FT_LOAD_TARGET_LIGHT;
     } else {
-        target = FT_LOAD_TARGET_LCD_V;
+        lcdFilter = FT_LCD_FILTER_LIGHT;
+        if (context->aaType == TEXT_AA_LCD_HRGB ||
+            context->aaType == TEXT_AA_LCD_HBGR) {
+            target = FT_LOAD_TARGET_LCD;
+        } else {
+            target = FT_LOAD_TARGET_LCD_V;
+        }
     }
     renderFlags |= target;
-
-    glyph_index = FT_Get_Char_Index(scalerInfo->face, glyphCode);
 
     error = FT_Load_Glyph(scalerInfo->face, glyphCode, renderFlags);
     if (error) {
@@ -722,6 +753,8 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
     }
 
     ftglyph = scalerInfo->face->glyph;
+    FT_Library library = ftglyph->library;
+    FT_Library_SetLcdFilter (library, lcdFilter);
 
     /* apply styles */
     if (context->doBold) { /* if bold style */
