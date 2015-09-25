@@ -1062,8 +1062,6 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
             // Order the window to front of the stack of child windows
             final long nsWindowSelfPtr = getNSWindowPtr();
             final long nsWindowOwnerPtr = owner.getNSWindowPtr();
-            CWrapper.NSWindow.removeChildWindow(nsWindowOwnerPtr, nsWindowSelfPtr);
-            CWrapper.NSWindow.addChildWindow(nsWindowOwnerPtr, nsWindowSelfPtr, CWrapper.NSWindow.NSWindowAbove);
         }
 
         applyWindowLevel(target);
