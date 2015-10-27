@@ -329,7 +329,6 @@ static int getScreenResolution(JNIEnv *env) {
 }
 
 static void freeNativeResources(JNIEnv *env, FTScalerInfo* scalerInfo) {
-    void *stream;
 
     if (scalerInfo == NULL)
         return;
