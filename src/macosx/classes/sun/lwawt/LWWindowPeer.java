@@ -1161,9 +1161,9 @@ public class LWWindowPeer
             return false;
         }
 
-        if (platformWindow.rejectFocusRequest(cause)) {
-            return false;
-        }
+        //if (platformWindow.rejectFocusRequest(cause)) {
+        //    return false;
+        //}
 
         AppContext targetAppContext = AWTAccessor.getComponentAccessor().getAppContext(getTarget());
         KeyboardFocusManager kfm = AWTAccessor.getKeyboardFocusManagerAccessor()
@@ -1295,6 +1295,12 @@ public class LWWindowPeer
         }
 
         KeyboardFocusManagerPeer kfmPeer = LWKeyboardFocusManagerPeer.getInstance();
+
+        if (!becomesFocused && kfmPeer.getCurrentFocusedWindow() != getTarget()) {
+            // late window focus lost event - ingoring
+            return;
+        }
+
         kfmPeer.setCurrentFocusedWindow(becomesFocused ? getTarget() : null);
 
         int eventID = becomesFocused ? WindowEvent.WINDOW_GAINED_FOCUS : WindowEvent.WINDOW_LOST_FOCUS;

@@ -366,8 +366,7 @@ public final class LWCToolkit extends LWToolkit {
     protected void initializeDesktopProperties() {
         super.initializeDesktopProperties();
         Map <Object, Object> fontHints = new HashMap<>();
-        fontHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        fontHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        fontHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         desktopProperties.put(SunToolkit.DESKTOPFONTHINTS, fontHints);
         desktopProperties.put("awt.mouse.numButtons", BUTTONS);
 
@@ -792,7 +791,8 @@ public final class LWCToolkit extends LWToolkit {
     /*
      * Returns true if the application (one of its windows) owns keyboard focus.
      */
-    native boolean isApplicationActive();
+    //native boolean isApplicationActive();
+    boolean isApplicationActive () { return true; }
 
     /**
      * Returns true if AWT toolkit is embedded, false otherwise.
@@ -800,6 +800,11 @@ public final class LWCToolkit extends LWToolkit {
      * @return true if AWT toolkit is embedded, false otherwise
      */
     public static native boolean isEmbedded();
+
+    /*
+     * Activates application ignoring other apps.
+     */
+    public native void activateApplicationIgnoringOtherApps();
 
     /************************
      * Native methods section
@@ -828,7 +833,7 @@ public final class LWCToolkit extends LWToolkit {
     /**
      * Just spin a single empty block synchronously.
      */
-    private static native void flushNativeSelectors();
+    static native void flushNativeSelectors();
 
     @Override
     public Clipboard createPlatformClipboard() {

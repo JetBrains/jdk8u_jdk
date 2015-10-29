@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -48,9 +48,9 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String ACT[] = new String[] {"Fuso hor\u00e1rio do Acre", "ACT",
                                      "Fuso hor\u00e1rio de ver\u00e3o do Acre", "ACST",
                                      "Fuso hor\u00e1rio do Acre", "ACT"};
-        String ADELAIDE[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Central (Austr\u00E1lia do Sul)", "CST",
-                                          "Fuso Hor\u00E1rio de Ver\u00E3o Central (Austr\u00E1lia do Sul)", "CST",
-                                          "Hor\u00E1rio Central (Austr\u00E1lia do Sul)", "CT"};
+        String ADELAIDE[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Central (Austr\u00E1lia do Sul)", "ACST",
+                                          "Fuso Hor\u00E1rio de Ver\u00E3o Central (Austr\u00E1lia do Sul)", "ACDT",
+                                          "Hor\u00E1rio Central (Austr\u00E1lia do Sul)", "ACT"};
         String AGT[] = new String[] {"Fuso hor\u00e1rio da Argentina", "ART",
                                      "Fuso hor\u00e1rio de ver\u00e3o da Argentina", "ARST",
                                      "Hor\u00E1rio da Argentina", "ART"};
@@ -72,12 +72,12 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String BDT[] = new String[] {"Fuso hor\u00e1rio de Bangladesh", "BDT",
                                      "Fuso hor\u00e1rio de ver\u00e3o de Bangladesh", "BDST",
                                      "Hor\u00E1rio de Bangladesh", "BDT"};
-        String BRISBANE[] = new String[] {"Hor\u00E1rio-Padr\u00E3o do Leste (Queensland)", "EST",
-                                          "Fuso Hor\u00E1rio de Ver\u00E3o Oriental (Queensland)", "EST",
-                                          "Hor\u00E1rio do Leste (Queensland)", "ET"};
-        String BROKEN_HILL[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Central (Austr\u00E1lia do Sul/Nova Gales do Sul)", "CST",
-                                             "Fuso Hor\u00E1rio de Ver\u00E3o Central (Austr\u00E1lia do Sul/Nova Gales do Sul)", "CST",
-                                             "Hor\u00E1rio Central (Austr\u00E1lia do Sul/Nova Gales do Sul)", "CT"};
+        String BRISBANE[] = new String[] {"Hor\u00E1rio-Padr\u00E3o do Leste (Queensland)", "AEST",
+                                          "Fuso Hor\u00E1rio de Ver\u00E3o Oriental (Queensland)", "AEDT",
+                                          "Hor\u00E1rio do Leste (Queensland)", "AET"};
+        String BROKEN_HILL[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Central (Austr\u00E1lia do Sul/Nova Gales do Sul)", "ACST",
+                                             "Fuso Hor\u00E1rio de Ver\u00E3o Central (Austr\u00E1lia do Sul/Nova Gales do Sul)", "ACDT",
+                                             "Hor\u00E1rio Central (Austr\u00E1lia do Sul/Nova Gales do Sul)", "ACT"};
         String BRT[] = new String[] {"Fuso hor\u00e1rio de Bras\u00edlia", "BRT",
                                      "Fuso hor\u00e1rio de ver\u00e3o de Bras\u00edlia", "BRST",
                                      "Hor\u00E1rio de Bras\u00EDlia", "BRT"};
@@ -108,9 +108,9 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String CUBA[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o de Cuba", "CST",
                                       "Hor\u00e1rio de luz natural de Cuba", "CDT",
                                       "Hor\u00E1rio de Cuba", "CT"};
-        String DARWIN[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Central (Territ\u00F3rio do Norte)", "CST",
-                                        "Fuso Hor\u00E1rio de Ver\u00E3o Central (Territ\u00F3rio do Norte)", "CST",
-                                        "Hor\u00E1rio Central (Territ\u00F3rio do Norte)", "CT"};
+        String DARWIN[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Central (Territ\u00F3rio do Norte)", "ACST",
+                                        "Fuso Hor\u00E1rio de Ver\u00E3o Central (Territ\u00F3rio do Norte)", "ACDT",
+                                        "Hor\u00E1rio Central (Territ\u00F3rio do Norte)", "ACT"};
         String DUBLIN[] = new String[] {"Fuso hor\u00e1rio do meridiano de Greenwich", "GMT",
                                         "Fuso hor\u00e1rio de ver\u00e3o da Irlanda", "IST",
                                         "Hor\u00E1rio da Rep\u00FAblica da Irlanda", "IT"};
@@ -129,9 +129,9 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String EST[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o oriental", "EST",
                                      "Hor\u00e1rio de luz natural oriental", "EDT",
                                      "Hor\u00E1rio do Leste", "ET"};
-        String EST_NSW[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Oriental (Nova Gales do Sul)", "EST",
-                                         "Fuso Hor\u00E1rio de Ver\u00E3o Oriental (Nova Gales do Sul)", "EST",
-                                         "Hor\u00E1rio Oriental (Nova Gales do Sul)", "ET"};
+        String EST_NSW[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Oriental (Nova Gales do Sul)", "AEST",
+                                         "Fuso Hor\u00E1rio de Ver\u00E3o Oriental (Nova Gales do Sul)", "AEDT",
+                                         "Hor\u00E1rio Oriental (Nova Gales do Sul)", "AET"};
         String FET[] = new String[] {"Hor\u00E1rio do Extremo Leste Europeu (FET)", "FET",
                                      "Fuso Hor\u00E1rio de Ver\u00E3o do Extremo Leste Europeu", "FEST",
                                      "Hor\u00E1rio do Extremo Leste Europeu (FET)", "FET"};
@@ -150,9 +150,6 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String GST[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o do golfo", "GST",
                                      "Hor\u00e1rio de luz natural do golfo", "GDT",
                                      "Hor\u00E1rio do Golfo", "GT"};
-        String HAST[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o do Hava\u00ed-Aleutian", "HAST",
-                                      "Hor\u00e1rio de luz natural do Hava\u00ed-Aleutian", "HADT",
-                                      "Hor\u00E1rio do Hava\u00ED-Aleutas", "HAT"};
         String HKT[] =  new String[] {"Fuso hor\u00e1rio de Hong Kong", "HKT",
                                       "Fuso hor\u00e1rio de ver\u00e3o de Hong Kong", "HKST",
                                       "Hor\u00E1rio de Hong Kong", "HKT"};
@@ -162,6 +159,9 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String ICT[] = new String[] {"Fuso hor\u00e1rio da Indochina", "ICT",
                                      "Fuso hor\u00e1rio de ver\u00e3o da Indochina", "ICST",
                                      "Hor\u00E1rio da Indochina", "ICT"};
+        String IRKT[] = new String[] {"Fuso hor\u00e1rio de Irkutsk", "IRKT",
+                                      "Fuso hor\u00e1rio de ver\u00e3o de Irkutsk", "IRKST",
+                                      "Hor\u00E1rio de Irkutsk", "IRKT"};
         String IRT[] = new String[] {"Fuso hor\u00e1rio do Ir\u00e3", "IRST",
                                      "Hor\u00e1rio de luz natural do Ir\u00e3", "IRDT",
                                      "Hor\u00E1rio do Ir\u00E3", "IRT"};
@@ -174,11 +174,14 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String JST[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o do Jap\u00e3o", "JST",
                                      "Hor\u00e1rio de luz natural do Jap\u00e3o", "JDT",
                                      "Hor\u00E1rio do Jap\u00E3o", "JT"};
+        String KRAT[] = new String[] {"Fuso hor\u00e1rio de Krasnoyarsk", "KRAT",
+                                      "Fuso hor\u00e1rio de ver\u00e3o de Krasnoyarsk", "KRAST",
+                                      "Hor\u00E1rio de Krasnoyarsk", "KRAT"};
         String KST[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o da Coreia", "KST",
                                      "Hor\u00e1rio de luz natural da Coreia", "KDT",
                                      "Hor\u00E1rio da Coreia", "KT"};
         String LORD_HOWE[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o de Lord Howe", "LHST",
-                                           "Fuso hor\u00e1rio de ver\u00e3o de Lord Howe", "LHST",
+                                           "Fuso hor\u00e1rio de ver\u00e3o de Lord Howe", "LHDT",
                                            "Hor\u00E1rio de Lord Howe", "LHT"};
         String MHT[] = new String[] {"Fuso hor\u00e1rio das Ilhas Marshall", "MHT",
                                      "Fuso hor\u00e1rio de ver\u00e3o das Ilhas Marshall", "MHST",
@@ -228,12 +231,9 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String SGT[] = new String[] {"Fuso hor\u00e1rio de Cingapura", "SGT",
                                      "Fuso hor\u00e1rio de ver\u00e1 de Cingapura", "SGST",
                                      "Hor\u00E1rio de Cingapura", "SGT"};
-        String SLST[] = new String[] {"Fuso hor\u00e1rio do meridiano de Greenwich", "GMT",
-                                      "Fuso hor\u00e1rio de ver\u00e3o de Serra Leoa", "SLST",
-                                      "Hor\u00E1rio de Serra Leoa", "SLT"};
-        String TASMANIA[] = new String[] {"Hor\u00E1rio-Padr\u00E3o do Leste (Tasm\u00E2nia)", "EST",
-                                          "Fuso Hor\u00E1rio de Ver\u00E3o Oriental (Tasm\u00E2nia)", "EST",
-                                          "Hor\u00E1rio do Leste (Tasm\u00E2nia)", "ET"};
+        String TASMANIA[] = new String[] {"Hor\u00E1rio-Padr\u00E3o do Leste (Tasm\u00E2nia)", "AEST",
+                                          "Fuso Hor\u00E1rio de Ver\u00E3o Oriental (Tasm\u00E2nia)", "AEDT",
+                                          "Hor\u00E1rio do Leste (Tasm\u00E2nia)", "AET"};
         String TMT[] = new String[] {"Fuso hor\u00e1rio do Turcomenist\u00e3o", "TMT",
                                      "Fuso hor\u00e1rio de ver\u00e3o do Turcomenist\u00e3o", "TMST",
                                      "Hor\u00E1rio do Turcomenist\u00E3o", "TMT"};
@@ -252,29 +252,30 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
         String WIT[] = new String[] {"Fuso hor\u00e1rio da Indon\u00e9sia Ocidental", "WIB",
                                      "Fuso hor\u00e1rio de ver\u00e3o da Indon\u00e9sia Ocidental", "WIST",
                                      "Hor\u00E1rio da Indon\u00E9sia Ocidental", "WIB"};
-        String WST_AUS[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Ocidental (Austr\u00E1lia)", "WST",
-                                         "Fuso Hor\u00E1rio de Ver\u00E3o Ocidental (Austr\u00E1lia)", "WST",
-                                         "Hor\u00E1rio Ocidental (Austr\u00E1lia)", "WT"};
+        String WST_AUS[] = new String[] {"Hor\u00E1rio-Padr\u00E3o Ocidental (Austr\u00E1lia)", "AWST",
+                                         "Fuso Hor\u00E1rio de Ver\u00E3o Ocidental (Austr\u00E1lia)", "AWDT",
+                                         "Hor\u00E1rio Ocidental (Austr\u00E1lia)", "AWT"};
         String SAMOA[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o de Samoa", "SST",
                                        "Hor\u00e1rio de luz natural de Samoa", "SDT",
                                        "Hor\u00E1rio da Samoa", "ST"};
-        String WST_SAMOA[] = new String[] {"Fuso hor\u00e1rio de Samoa Ocidental", "WST",
+        String WST_SAMOA[] = new String[] {"Fuso hor\u00e1rio de Samoa Ocidental", "WSST",
                                            "Fuso hor\u00e1rio de ver\u00e3o de Samoa Ocidental", "WSDT",
                                            "Fuso Hor\u00E1rio de Samoa Ocidental", "WST"};
         String ChST[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o de Chamorro", "ChST",
                                       "Hor\u00e1rio de luz natural de Chamorro", "ChDT",
                                       "Hor\u00E1rio de Chamorro", "ChT"};
-        String VICTORIA[] = new String[] {"Hor\u00E1rio-Padr\u00E3o do Leste (Victoria)", "EST",
-                                          "Fuso Hor\u00E1rio de Ver\u00E3o Oriental (Victoria)", "EST",
-                                          "Hor\u00E1rio do Leste (Victoria)", "ET"};
+        String VICTORIA[] = new String[] {"Hor\u00E1rio-Padr\u00E3o do Leste (Victoria)", "AEST",
+                                          "Fuso Hor\u00E1rio de Ver\u00E3o Oriental (Victoria)", "AEDT",
+                                          "Hor\u00E1rio do Leste (Victoria)", "AET"};
         String UTC[] = new String[] {"Tempo universal coordenado", "UTC",
                                      "Tempo universal coordenado", "UTC",
                                      "Hor\u00E1rio Universal Coordenado", "UTC"};
         String UZT[] = new String[] {"Fuso hor\u00e1rio do Uzbequist\u00e3o", "UZT",
                                      "Fuso hor\u00e1rio de ver\u00e3o do Uzbequist\u00e3o", "UZST",
                                      "Hor\u00E1rio do Uzbequist\u00E3o", "UZT"};
-        String WART[] = new String[] {"Fuso hor\u00e1rio da Argentina Ocidental", "WART",
-                                      "Fuso hor\u00e1rio de ver\u00e3o da Argentina Ocidental", "WARST"};
+        String XJT[] = new String[] {"Fuso hor\u00e1rio padr\u00e3o da China", "XJT",
+                                     "Hor\u00e1rio de luz natural da China", "XJDT",
+                                     "Hor\u00E1rio da China", "XJT"};
 
         return new Object[][] {
             {"America/Los_Angeles", PST},
@@ -336,7 +337,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Africa/Djibouti", EAT},
             {"Africa/Douala", WAT},
             {"Africa/El_Aaiun", WET},
-            {"Africa/Freetown", SLST},
+            {"Africa/Freetown", GMT},
             {"Africa/Gaborone", CAT},
             {"Africa/Harare", CAT},
             {"Africa/Johannesburg", SAST},
@@ -368,7 +369,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Africa/Tripoli", EET},
             {"Africa/Tunis", CET},
             {"Africa/Windhoek", WAT},
-            {"America/Adak", HAST},
+            {"America/Adak", HST},
             {"America/Anguilla", AST},
             {"America/Antigua", AST},
             {"America/Araguaina", BRT},
@@ -390,7 +391,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
                                                "Fuso hor\u00e1rio de ver\u00e3o do Paraguai", "PYST",
                                                "Hor\u00E1rio do Paraguai", "PYT"}},
             {"America/Atikokan", EST},
-            {"America/Atka", HAST},
+            {"America/Atka", HST},
             {"America/Bahia", BRT},
             {"America/Bahia_Banderas", CST},
             {"America/Barbados", AST},
@@ -405,7 +406,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"America/Buenos_Aires", AGT},
             {"America/Cambridge_Bay", MST},
             {"America/Campo_Grande", AMT},
-            {"America/Cancun", CST},
+            {"America/Cancun", EST},
             {"America/Caracas", new String[] {"Fuso hor\u00e1rio da Venezuela", "VET",
                                               "Fuso hor\u00e1rio de ver\u00e3o da Venezuela", "VEST",
                                               "Hor\u00E1rio da Venezuela", "VET"}},
@@ -437,7 +438,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
                                               "Fuso hor\u00e1rio de ver\u00e3o da Groenl\u00e2ndia Ocidental", "WGST",
                                               "Hor\u00E1rio da Groenl\u00E2ndia Ocidental", "WGT"}},
             {"America/Goose_Bay", AST},
-            {"America/Grand_Turk", EST},
+            {"America/Grand_Turk", AST},
             {"America/Grenada", AST},
             {"America/Guadeloupe", AST},
             {"America/Guatemala", CST},
@@ -484,9 +485,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"America/Mendoza", AGT},
             {"America/Menominee", CST},
             {"America/Merida", CST},
-            {"America/Metlakatla", new String[] {"Hor\u00E1rio Padr\u00E3o de Metlakatla", "MeST",
-                                                 "Hor\u00E1rio de Luz Natural de Metlakatla", "MeDT",
-                                                 "Hor\u00E1rio de Metlakatla", "MeT"}},
+            {"America/Metlakatla", PST},
             {"America/Mexico_City", CST},
             {"America/Miquelon", new String[] {"Fuso hor\u00e1rio padr\u00e3o de S\u00e3o Pedro e Miquelon", "PMST",
                                                "Hor\u00e1rio de luz natural de S\u00e3o Pedro e Miquelon", "PMDT",
@@ -607,6 +606,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
                                           "Fuso hor\u00e1rio de ver\u00e3o de Brunei", "BNST",
                                           "Hor\u00E1rio de Brunei", "BNT"}},
             {"Asia/Calcutta", IST},
+            {"Asia/Chita", IRKT},
             {"Asia/Choibalsan", new String[] {"Fuso hor\u00e1rio de Choibalsan", "CHOT",
                                               "Fuso hor\u00e1rio de ver\u00e3o de Choibalsan", "CHOST",
                                               "Hor\u00E1rio de Choibalsan", "CHOT"}},
@@ -631,9 +631,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Asia/Hovd", new String[] {"Fuso hor\u00e1rio de Hovd", "HOVT",
                                         "Fuso hor\u00e1rio de ver\u00e3o de Hovd", "HOVST",
                                         "Hor\u00E1rio de Hovd", "HOVT"}},
-            {"Asia/Irkutsk", new String[] {"Fuso hor\u00e1rio de Irkutsk", "IRKT",
-                                           "Fuso hor\u00e1rio de ver\u00e3o de Irkutsk", "IRKST",
-                                           "Hor\u00E1rio de Irkutsk", "IRKT"}},
+            {"Asia/Irkutsk", IRKT},
             {"Asia/Istanbul", EET},
             {"Asia/Jakarta", WIT},
             {"Asia/Jayapura", new String[] {"Fuso hor\u00e1rio da Indon\u00e9sia Oriental", "WIT",
@@ -646,16 +644,14 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
                                              "Fuso hor\u00e1rio de ver\u00e3o de Petropavlovsk-Kamchatski", "PETST",
                                              "Hor\u00E1rio de Petropavlovsk-Kamchatski", "PETT"}},
             {"Asia/Karachi", PKT},
-            {"Asia/Kashgar", CTT},
+            {"Asia/Kashgar", XJT},
             {"Asia/Kathmandu", NPT},
             {"Asia/Katmandu", NPT},
             {"Asia/Khandyga", new String[] {"Hor\u00E1rio de Khandyga", "YAKT",
                                             "Hor\u00E1rio de Ver\u00E3o de Khandyga", "YAKST",
                                             "Hor\u00E1rio de Khandyga", "YAKT"}},
             {"Asia/Kolkata", IST},
-            {"Asia/Krasnoyarsk", new String[] {"Fuso hor\u00e1rio de Krasnoyarsk", "KRAT",
-                                               "Fuso hor\u00e1rio de ver\u00e3o de Krasnoyarsk", "KRAST",
-                                               "Hor\u00E1rio de Krasnoyarsk", "KRAT"}},
+            {"Asia/Krasnoyarsk", KRAT},
             {"Asia/Kuala_Lumpur", MYT},
             {"Asia/Kuching", MYT},
             {"Asia/Kuwait", ARAST},
@@ -670,7 +666,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
                                           "Hor\u00E1rio das Filipinas", "PHT"}},
             {"Asia/Muscat", GST},
             {"Asia/Nicosia", EET},
-            {"Asia/Novokuznetsk", NOVT},
+            {"Asia/Novokuznetsk", KRAT},
             {"Asia/Novosibirsk", NOVT},
             {"Asia/Oral", new String[] {"Fuso hor\u00e1rio de Uralsk", "ORAT",
                                         "Fuso hor\u00e1rio de ver\u00e3o de Uralsk", "ORAST",
@@ -696,6 +692,9 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Asia/Samarkand", UZT},
             {"Asia/Seoul", KST},
             {"Asia/Singapore", SGT},
+            {"Asia/Srednekolymsk", new String[] {"Srednekolymsk Time", "SRET",
+                                                 "Srednekolymsk Daylight Time", "SREDT",
+                                                 "Srednekolymsk Time", "SRET"}},
             {"Asia/Taipei", CTT},
             {"Asia/Tel_Aviv", ISRAEL},
             {"Asia/Tashkent", UZT},
@@ -708,7 +707,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Asia/Ujung_Pandang", CIT},
             {"Asia/Ulaanbaatar", ULAT},
             {"Asia/Ulan_Bator", ULAT},
-            {"Asia/Urumqi", CTT},
+            {"Asia/Urumqi", XJT},
             {"Asia/Ust-Nera", new String[] {"Hor\u00E1rio de Ust-Nera", "VLAT",
                                             "Hor\u00E1rio de Ver\u00E3o de Ust-Nera", "VLAST",
                                             "Hor\u00E1rio de Ust-Nera", "VLAT"}},
@@ -750,9 +749,9 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Australia/Canberra", EST_NSW},
             {"Australia/Currie", EST_NSW},
             {"Australia/Darwin", DARWIN},
-            {"Australia/Eucla", new String[] {"Fuso Hor\u00E1rio Ocidental Central (Austr\u00E1lia)", "CWST",
-                                              "Fuso Hor\u00E1rio de Ver\u00E3o Ocidental Central (Austr\u00E1lia)", "CWST",
-                                              "Hor\u00E1rio Ocidental Central (Austr\u00E1lia)", "CWT"}},
+            {"Australia/Eucla", new String[] {"Fuso Hor\u00E1rio Ocidental Central (Austr\u00E1lia)", "ACWST",
+                                              "Fuso Hor\u00E1rio de Ver\u00E3o Ocidental Central (Austr\u00E1lia)", "ACWDT",
+                                              "Hor\u00E1rio Ocidental Central (Austr\u00E1lia)", "ACWT"}},
             {"Australia/Hobart", TASMANIA},
             {"Australia/LHI", LORD_HOWE},
             {"Australia/Lindeman", BRISBANE},
@@ -818,7 +817,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Europe/Isle_of_Man", GMTBST},
             {"Europe/Istanbul", EET},
             {"Europe/Jersey", GMTBST},
-            {"Europe/Kaliningrad", FET},
+            {"Europe/Kaliningrad", EET},
             {"Europe/Kiev", EET},
             {"Europe/Lisbon", WET},
             {"Europe/Ljubljana", CET},
@@ -827,7 +826,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Europe/Madrid", CET},
             {"Europe/Malta", CET},
             {"Europe/Mariehamn", EET},
-            {"Europe/Minsk", FET},
+            {"Europe/Minsk", MSK},
             {"Europe/Monaco", CET},
             {"Europe/Moscow", MSK},
             {"Europe/Nicosia", EET},
@@ -853,9 +852,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"Europe/Vatican", CET},
             {"Europe/Vienna", CET},
             {"Europe/Vilnius", EET},
-            {"Europe/Volgograd", new String[] {"Fuso hor\u00e1rio de Volgogrado", "VOLT",
-                                               "Fuso hor\u00e1rio de ver\u00e3o de Volgogrado", "VOLST",
-                                               "Hor\u00E1rio de Volgogrado", "VOLT"}},
+            {"Europe/Volgograd", MSK},
             {"Europe/Warsaw", CET},
             {"Europe/Zagreb", CET},
             {"Europe/Zaporozhye", EET},
@@ -917,6 +914,9 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"PRT", AST},
             {"Pacific/Apia", WST_SAMOA},
             {"Pacific/Auckland", NZST},
+            {"Pacific/Bougainville", new String[] {"Bougainville Standard Time", "BST",
+                                                   "Bougainville Daylight Time", "BST",
+                                                   "Bougainville Time", "BT"}},
             {"Pacific/Chatham", CHAST},
             {"Pacific/Chuuk", TRUT},
             {"Pacific/Easter", EASTER},
@@ -1021,7 +1021,7 @@ public final class TimeZoneNames_pt_BR extends TimeZoneNamesBundle {
             {"UCT", UTC},
             {"Universal", UTC},
             {"US/Alaska", AKST},
-            {"US/Aleutian", HAST},
+            {"US/Aleutian", HST},
             {"US/Arizona", MST},
             {"US/Central", CST},
             {"US/Eastern", EST},

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -35,6 +35,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Common library for various test helper functions.
@@ -66,6 +68,12 @@ public final class Utils {
         String toFactor = System.getProperty("test.timeout.factor", "1.0");
        TIMEOUT_FACTOR = Double.parseDouble(toFactor);
     }
+
+    /**
+    * Returns the value of JTREG default test timeout in milliseconds
+    * converted to {@code long}.
+    */
+    public static final long DEFAULT_TEST_TIMEOUT = TimeUnit.SECONDS.toMillis(120);
 
     private Utils() {
         // Private constructor to prevent class instantiation
@@ -258,5 +266,49 @@ public final class Utils {
             System.out.println(String.format("Utils.findJvmPid(%s) failed: %s", key, t));
             throw t;
         }
+    }
+
+    /**
+     * Adjusts the provided timeout value for the TIMEOUT_FACTOR
+     * @param tOut the timeout value to be adjusted
+     * @return The timeout value adjusted for the value of "test.timeout.factor"
+     *         system property
+     */
+    public static long adjustTimeout(long tOut) {
+        return Math.round(tOut * Utils.TIMEOUT_FACTOR);
+    }
+
+    /**
+     * Interface same as java.lang.Runnable but with
+     * method {@code run()} able to throw any Throwable.
+     */
+    public static interface ThrowingRunnable {
+        void run() throws Throwable;
+    }
+
+    /**
+     * Filters out an exception that may be thrown by the given
+     * test according to the given filter.
+     *
+     * @param test - method that is invoked and checked for exception.
+     * @param filter - function that checks if the thrown exception matches
+     *                 criteria given in the filter's implementation.
+     * @return - exception that matches the filter if it has been thrown or
+     *           {@code null} otherwise.
+     * @throws Throwable - if test has thrown an exception that does not
+     *                     match the filter.
+     */
+    public static Throwable filterException(ThrowingRunnable test,
+            Function<Throwable, Boolean> filter) throws Throwable {
+        try {
+            test.run();
+        } catch (Throwable t) {
+            if (filter.apply(t)) {
+                return t;
+            } else {
+                throw t;
+            }
+        }
+        return null;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -31,22 +31,27 @@ package sun.awt.X11;
  * common logical ancestor
  */
 class XRootWindow extends XBaseWindow {
-    private static XRootWindow xawtRootWindow = null;
-    static XRootWindow getInstance() {
-        XToolkit.awtLock();
-        try {
-            if (xawtRootWindow == null) {
+    private static class LazyHolder {
+        private static final XRootWindow xawtRootWindow;
+
+        static {
+            XToolkit.awtLock();
+            try {
                 xawtRootWindow = new XRootWindow();
                 xawtRootWindow.init(xawtRootWindow.getDelayedParams().delete(DELAYED));
+            } finally {
+                XToolkit.awtUnlock();
             }
-            return xawtRootWindow;
-        } finally {
-            XToolkit.awtUnlock();
         }
+
+    }
+    static XRootWindow getInstance() {
+        return LazyHolder.xawtRootWindow;
     }
 
     private XRootWindow() {
-        super(new XCreateWindowParams(new Object[] {DELAYED, Boolean.TRUE}));
+        super(new XCreateWindowParams(new Object[] { DELAYED, Boolean.TRUE,
+                                                     EVENT_MASK, XConstants.StructureNotifyMask }));
     }
 
     public void postInit(XCreateWindowParams params){

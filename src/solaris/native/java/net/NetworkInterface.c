@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -253,6 +253,7 @@ JNIEXPORT jobject JNICALL Java_java_net_NetworkInterface_getByName0
     if (name_utf == NULL) {
        if (!(*env)->ExceptionCheck(env))
            JNU_ThrowOutOfMemoryError(env, NULL);
+       freeif(ifs);
        return NULL;
     }
     /*
@@ -527,9 +528,9 @@ JNIEXPORT jbyteArray JNICALL Java_java_net_NetworkInterface_getMacAddr0(JNIEnv *
            JNU_ThrowOutOfMemoryError(env, NULL);
        return NULL;
     }
-    if ((sock =openSocketWithFallback(env, name_utf)) < 0) {
+    if ((sock = openSocketWithFallback(env, name_utf)) < 0) {
        (*env)->ReleaseStringUTFChars(env, name, name_utf);
-       return JNI_FALSE;
+       return NULL;
     }
 
 
@@ -570,9 +571,14 @@ JNIEXPORT jint JNICALL Java_java_net_NetworkInterface_getMTU0(JNIEnv *env, jclas
     jboolean isCopy;
     int ret = -1;
     int sock;
-    const char* name_utf;
+    const char* name_utf = NULL;
 
-    name_utf = (*env)->GetStringUTFChars(env, name, &isCopy);
+    if (name != NULL) {
+        name_utf = (*env)->GetStringUTFChars(env, name, &isCopy);
+    } else {
+        JNU_ThrowNullPointerException(env, "network interface name is NULL");
+        return ret;
+    }
     if (name_utf == NULL) {
        if (!(*env)->ExceptionCheck(env))
            JNU_ThrowOutOfMemoryError(env, NULL);
@@ -600,7 +606,12 @@ static int getFlags0(JNIEnv *env, jstring name) {
     const char* name_utf;
     int flags = 0;
 
-    name_utf = (*env)->GetStringUTFChars(env, name, &isCopy);
+    if (name != NULL) {
+        name_utf = (*env)->GetStringUTFChars(env, name, &isCopy);
+    } else {
+        JNU_ThrowNullPointerException(env, "network interface name is NULL");
+        return -1;
+    }
     if (name_utf == NULL) {
        if (!(*env)->ExceptionCheck(env))
            JNU_ThrowOutOfMemoryError(env, NULL);
@@ -1474,7 +1485,12 @@ static int getMTU(JNIEnv *env, int sock,  const char *ifname) {
     struct ifreq if2;
 
     memset((char *) &if2, 0, sizeof(if2));
-    strcpy(if2.ifr_name, ifname);
+    if (ifname != NULL) {
+        strcpy(if2.ifr_name, ifname);
+    } else {
+        JNU_ThrowNullPointerException(env, "network interface name is NULL");
+        return -1;
+    }
 
     if (ioctl(sock, SIOCGIFMTU, (char *)&if2) < 0) {
         NET_ThrowByNameWithLastError(env, JNU_JAVANETPKG "SocketException", "IOCTL SIOCGIFMTU failed");

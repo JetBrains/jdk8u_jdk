@@ -102,11 +102,11 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
     static TreeMap winMap = new TreeMap();
     static HashMap specialPeerMap = new HashMap();
     static HashMap winToDispatcher = new HashMap();
-    private static long _display;
     static UIDefaults uidefaults;
-    static X11GraphicsEnvironment localEnv;
-    static X11GraphicsDevice device;
-    static final X11GraphicsConfig config;
+    static final X11GraphicsEnvironment localEnv;
+    private static final X11GraphicsDevice device;
+    private static final X11GraphicsConfig config;
+    private static final long display;
     static int awt_multiclick_time;
     static boolean securityWarningEnabled;
 
@@ -117,15 +117,16 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
     static {
         initSecurityWarning();
         if (GraphicsEnvironment.isHeadless()) {
+            localEnv = null;
+            device = null;
             config = null;
+            display = 0;
         } else {
             localEnv = (X11GraphicsEnvironment) GraphicsEnvironment
                 .getLocalGraphicsEnvironment();
             device = (X11GraphicsDevice) localEnv.getDefaultScreenDevice();
-            config = (X11GraphicsConfig) (device.getDefaultConfiguration());
-            if (device != null) {
-                _display = device.getDisplay();
-            }
+            config = (X11GraphicsConfig) device.getDefaultConfiguration();
+            display = device.getDisplay();
             setupModifierMap();
             initIDs();
             setBackingStoreType();
@@ -164,7 +165,7 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
     }
 
 
-    public native void nativeLoadSystemColors(int[] systemColors);
+    private native void nativeLoadSystemColors(int[] systemColors);
 
     static UIDefaults getUIDefaults() {
         if (uidefaults == null) {
@@ -196,10 +197,18 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
         }
     }
 
-    static Object displayLock = new Object();
-
+    /**
+     * Returns the X11 Display of the default screen device.
+     *
+     * @return X11 Display
+     * @throws AWTError thrown if local GraphicsEnvironment is null, which
+     *         means we are in the headless environment
+     */
     public static long getDisplay() {
-        return _display;
+        if (localEnv == null) {
+            throw new AWTError("Local GraphicsEnvironment must not be null");
+        }
+        return display;
     }
 
     public static long getDefaultRootWindow() {
@@ -589,14 +598,19 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
                         }
                     }
                 }
-                if( keyEventLog.isLoggable(PlatformLogger.Level.FINE) && (ev.get_type() == XConstants.KeyPress || ev.get_type() == XConstants.KeyRelease) ) {
-                    keyEventLog.fine("before XFilterEvent:"+ev);
+                if (keyEventLog.isLoggable(PlatformLogger.Level.FINE) && (
+                        ev.get_type() == XConstants.KeyPress
+                                || ev.get_type() == XConstants.KeyRelease)) {
+                    keyEventLog.fine("before XFilterEvent:" + ev);
                 }
                 if (XlibWrapper.XFilterEvent(ev.getPData(), w)) {
                     continue;
                 }
-                if( keyEventLog.isLoggable(PlatformLogger.Level.FINE) && (ev.get_type() == XConstants.KeyPress || ev.get_type() == XConstants.KeyRelease) ) {
-                    keyEventLog.fine("after XFilterEvent:"+ev); // IS THIS CORRECT?
+                if (keyEventLog.isLoggable(PlatformLogger.Level.FINE) && (
+                        ev.get_type() == XConstants.KeyPress
+                                || ev.get_type() == XConstants.KeyRelease)) {
+                    keyEventLog.fine(
+                            "after XFilterEvent:" + ev); // IS THIS CORRECT?
                 }
 
                 dispatchEvent(ev);
@@ -612,21 +626,28 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
         }
     }
 
+    /**
+     * Listener installed to detect display changes.
+     */
+    private static final DisplayChangedListener displayChangedHandler =
+            new DisplayChangedListener() {
+                @Override
+                public void displayChanged() {
+                    // 7045370: Reset the cached values
+                    XToolkit.screenWidth = -1;
+                    XToolkit.screenHeight = -1;
+                }
+
+                @Override
+                public void paletteChanged() {
+                }
+            };
+
     static {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         if (ge instanceof SunGraphicsEnvironment) {
-            ((SunGraphicsEnvironment)ge).addDisplayChangedListener(
-                new DisplayChangedListener() {
-                    @Override
-                    public void displayChanged() {
-                        // 7045370: Reset the cached values
-                        XToolkit.screenWidth = -1;
-                        XToolkit.screenHeight = -1;
-                    }
-
-                    @Override
-                    public void paletteChanged() {}
-            });
+            ((SunGraphicsEnvironment) ge).addDisplayChangedListener(
+                    displayChangedHandler);
         }
     }
 
@@ -636,7 +657,9 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
             try {
                 XWindowAttributes pattr = new XWindowAttributes();
                 try {
-                    XlibWrapper.XGetWindowAttributes(XToolkit.getDisplay(), XToolkit.getDefaultRootWindow(), pattr.pData);
+                    XlibWrapper.XGetWindowAttributes(XToolkit.getDisplay(),
+                                                     XToolkit.getDefaultRootWindow(),
+                                                     pattr.pData);
                     screenWidth  = (int) pattr.get_width();
                     screenHeight = (int) pattr.get_height();
                 } finally {
@@ -805,10 +828,32 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
                     // managers don't set this hint correctly, so we just get intersection with windowBounds
                     if (windowBounds != null && windowBounds.intersects(screenBounds))
                     {
-                        insets.left = Math.max((int)Native.getLong(native_ptr, 0), insets.left);
-                        insets.right = Math.max((int)Native.getLong(native_ptr, 1), insets.right);
-                        insets.top = Math.max((int)Native.getLong(native_ptr, 2), insets.top);
-                        insets.bottom = Math.max((int)Native.getLong(native_ptr, 3), insets.bottom);
+                        int left = (int)Native.getLong(native_ptr, 0);
+                        int right = (int)Native.getLong(native_ptr, 1);
+                        int top = (int)Native.getLong(native_ptr, 2);
+                        int bottom = (int)Native.getLong(native_ptr, 3);
+
+                        /*
+                         * struts could be relative to root window bounds, so
+                         * make them relative to the screen bounds in this case
+                         */
+                        left = rootBounds.x + left > screenBounds.x ?
+                                rootBounds.x + left - screenBounds.x : 0;
+                        right = rootBounds.x + rootBounds.width - right <
+                                screenBounds.x + screenBounds.width ?
+                                screenBounds.x + screenBounds.width -
+                                (rootBounds.x + rootBounds.width - right) : 0;
+                        top = rootBounds.y + top > screenBounds.y ?
+                                rootBounds.y + top - screenBounds.y : 0;
+                        bottom = rootBounds.y + rootBounds.height - bottom <
+                                screenBounds.y + screenBounds.height ?
+                                screenBounds.y + screenBounds.height -
+                                (rootBounds.y + rootBounds.height - bottom) : 0;
+
+                        insets.left = Math.max(left, insets.left);
+                        insets.right = Math.max(right, insets.right);
+                        insets.top = Math.max(top, insets.top);
+                        insets.bottom = Math.max(bottom, insets.bottom);
                     }
                 }
             }
@@ -2354,9 +2399,7 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
 
     private static XEventDispatcher oops_waiter;
     private static boolean oops_updated;
-    private static boolean oops_failed;
-    private XAtom oops;
-    private static final long WORKAROUND_SLEEP = 100;
+    private static int oops_position = 0;
 
     /**
      * @inheritDoc
@@ -2367,28 +2410,13 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
         if (oops_waiter == null) {
             oops_waiter = new XEventDispatcher() {
                     public void dispatchEvent(XEvent e) {
-                        if (e.get_type() == XConstants.SelectionNotify) {
-                            XSelectionEvent pe = e.get_xselection();
-                            if (pe.get_property() == oops.getAtom()) {
-                                oops_updated = true;
-                                awtLockNotifyAll();
-                            } else if (pe.get_selection() == XAtom.get("WM_S0").getAtom() &&
-                                       pe.get_target() == XAtom.get("VERSION").getAtom() &&
-                                       pe.get_property() == 0 &&
-                                       XlibWrapper.XGetSelectionOwner(getDisplay(), XAtom.get("WM_S0").getAtom()) == 0)
-                            {
-                                // WM forgot to acquire selection  or there is no WM
-                                oops_failed = true;
-                                awtLockNotifyAll();
-                            }
-
+                        if (e.get_type() == XConstants.ConfigureNotify) {
+                            // OOPS ConfigureNotify event catched
+                            oops_updated = true;
+                            awtLockNotifyAll();
                         }
                     }
                 };
-        }
-
-        if (oops == null) {
-            oops = XAtom.get("OOPS");
         }
 
         awtLock();
@@ -2396,23 +2424,22 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
             addEventDispatcher(win.getWindow(), oops_waiter);
 
             oops_updated = false;
-            oops_failed = false;
-            // Wait for selection notify for oops on win
             long event_number = getEventNumber();
-            XAtom atom = XAtom.get("WM_S0");
-            if (eventLog.isLoggable(PlatformLogger.Level.FINER)) {
-                eventLog.finer("WM_S0 selection owner {0}", XlibWrapper.XGetSelectionOwner(getDisplay(), atom.getAtom()));
+            // Generate OOPS ConfigureNotify event
+            XlibWrapper.XMoveWindow(getDisplay(), win.getWindow(), ++oops_position, 0);
+            // Change win position each time to avoid system optimization
+            if (oops_position > 50) {
+                oops_position = 0;
             }
-            XlibWrapper.XConvertSelection(getDisplay(), atom.getAtom(),
-                                          XAtom.get("VERSION").getAtom(), oops.getAtom(),
-                                          win.getWindow(), XConstants.CurrentTime);
+
             XSync();
 
-            eventLog.finer("Requested OOPS");
+            eventLog.finer("Generated OOPS ConfigureNotify event");
 
             long start = System.currentTimeMillis();
-            while (!oops_updated && !oops_failed) {
+            while (!oops_updated) {
                 try {
+                    // Wait for OOPS ConfigureNotify event
                     awtLockWait(timeout);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -2423,20 +2450,8 @@ public final class XToolkit extends UNIXToolkit implements Runnable {
                     throw new OperationTimedOut(Long.toString(System.currentTimeMillis() - start));
                 }
             }
-            if (oops_failed && getEventNumber() - event_number == 1) {
-                // If selection update failed we can simply wait some time
-                // hoping some events will arrive
-                awtUnlock();
-                eventLog.finest("Emergency sleep");
-                try {
-                    Thread.sleep(WORKAROUND_SLEEP);
-                } catch (InterruptedException ie) {
-                    throw new RuntimeException(ie);
-                } finally {
-                    awtLock();
-                }
-            }
-            return getEventNumber() - event_number > 2;
+            // Don't take into account OOPS ConfigureNotify event
+            return getEventNumber() - event_number > 1;
         } finally {
             removeEventDispatcher(win.getWindow(), oops_waiter);
             eventLog.finer("Exiting syncNativeQueue");

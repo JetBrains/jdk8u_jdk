@@ -748,7 +748,7 @@ OGLContext_IsLCDShaderSupportAvailable(JNIEnv *env,
     // finally, check to see if the hardware supports the required number
     // of texture units
     j2d_glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &maxTexUnits);
-    if (maxTexUnits < 4) {
+    if (maxTexUnits < 2) {
         J2dRlsTraceLn1(J2D_TRACE_INFO,
           "OGLContext_IsLCDShaderSupportAvailable: not enough tex units (%d)",
           maxTexUnits);
@@ -917,8 +917,8 @@ OGLContext_GetExtensionInfo(JNIEnv *env, jint *caps)
             vcap = OGLC_VENDOR_ATI;
         } else if (strncmp(vendor, "NVIDIA", 6) == 0) {
             vcap = OGLC_VENDOR_NVIDIA;
-        } else if (strncmp(vendor, "Sun", 3) == 0) {
-            vcap = OGLC_VENDOR_SUN;
+        } else if (strncmp(vendor, "Intel", 5) == 0) {
+            vcap = OGLC_VENDOR_INTEL;
         }
         // REMIND: new in 7 - check if needs fixing
         *caps |= ((vcap & OGLC_VCAP_MASK) << OGLC_VCAP_OFFSET);
