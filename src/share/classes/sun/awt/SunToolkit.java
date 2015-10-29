@@ -205,8 +205,6 @@ public abstract class SunToolkit extends Toolkit
 
     public abstract boolean isTraySupported();
 
-    public abstract DataTransferer getDataTransferer();
-
     @SuppressWarnings("deprecation")
     public abstract FontPeer getFontPeer(String name, int style);
 
@@ -388,7 +386,7 @@ public abstract class SunToolkit extends Toolkit
      * null or the target can't be found, a null with be returned.
      */
     public static AppContext targetToAppContext(Object target) {
-        if (target == null || GraphicsEnvironment.isHeadless()) {
+        if (target == null) {
             return null;
         }
         AppContext context = getAppContext(target);
@@ -462,12 +460,10 @@ public abstract class SunToolkit extends Toolkit
      * via targetToAppContext() above.
      */
     public static void insertTargetMapping(Object target, AppContext appContext) {
-        if (!GraphicsEnvironment.isHeadless()) {
-            if (!setAppContext(target, appContext)) {
-                // Target is not a Component/MenuComponent, use the private Map
-                // instead.
-                appContextMap.put(target, appContext);
-            }
+        if (!setAppContext(target, appContext)) {
+            // Target is not a Component/MenuComponent, use the private Map
+            // instead.
+            appContextMap.put(target, appContext);
         }
     }
 
@@ -719,16 +715,19 @@ public abstract class SunToolkit extends Toolkit
     }
 
 
-    static final SoftCache imgCache = new SoftCache();
+    static final SoftCache fileImgCache = new SoftCache();
+
+    static final SoftCache urlImgCache = new SoftCache();
 
     static Image getImageFromHash(Toolkit tk, URL url) {
         checkPermissions(url);
-        synchronized (imgCache) {
-            Image img = (Image)imgCache.get(url);
+        synchronized (urlImgCache) {
+            String key = url.toString();
+            Image img = (Image)urlImgCache.get(key);
             if (img == null) {
                 try {
                     img = tk.createImage(new URLImageSource(url));
-                    imgCache.put(url, img);
+                    urlImgCache.put(key, img);
                 } catch (Exception e) {
                 }
             }
@@ -739,12 +738,12 @@ public abstract class SunToolkit extends Toolkit
     static Image getImageFromHash(Toolkit tk,
                                                String filename) {
         checkPermissions(filename);
-        synchronized (imgCache) {
-            Image img = (Image)imgCache.get(filename);
+        synchronized (fileImgCache) {
+            Image img = (Image)fileImgCache.get(filename);
             if (img == null) {
                 try {
                     img = tk.createImage(new FileImageSource(filename));
-                    imgCache.put(filename, img);
+                    fileImgCache.put(filename, img);
                 } catch (Exception e) {
                 }
             }
@@ -762,28 +761,29 @@ public abstract class SunToolkit extends Toolkit
 
     protected Image getImageWithResolutionVariant(String fileName,
             String resolutionVariantName) {
-        synchronized (imgCache) {
+        synchronized (fileImgCache) {
             Image image = getImageFromHash(this, fileName);
             if (image instanceof MultiResolutionImage) {
                 return image;
             }
             Image resolutionVariant = getImageFromHash(this, resolutionVariantName);
             image = createImageWithResolutionVariant(image, resolutionVariant);
-            imgCache.put(fileName, image);
+            fileImgCache.put(fileName, image);
             return image;
         }
     }
 
     protected Image getImageWithResolutionVariant(URL url,
             URL resolutionVariantURL) {
-        synchronized (imgCache) {
+        synchronized (urlImgCache) {
             Image image = getImageFromHash(this, url);
             if (image instanceof MultiResolutionImage) {
                 return image;
             }
             Image resolutionVariant = getImageFromHash(this, resolutionVariantURL);
             image = createImageWithResolutionVariant(image, resolutionVariant);
-            imgCache.put(url, image);
+            String key = url.toString();
+            urlImgCache.put(key, image);
             return image;
         }
     }
@@ -888,19 +888,27 @@ public abstract class SunToolkit extends Toolkit
         return null;
     }
 
-    protected static boolean imageCached(Object key) {
-        return imgCache.containsKey(key);
+    protected static boolean imageCached(String fileName) {
+        return fileImgCache.containsKey(fileName);
+    }
+
+    protected static boolean imageCached(URL url) {
+        String key = url.toString();
+        return urlImgCache.containsKey(key);
     }
 
     protected static boolean imageExists(String filename) {
-        checkPermissions(filename);
-        return filename != null && new File(filename).exists();
+        if (filename != null) {
+            checkPermissions(filename);
+            return new File(filename).exists();
+        }
+        return false;
     }
 
     @SuppressWarnings("try")
     protected static boolean imageExists(URL url) {
-        checkPermissions(url);
         if (url != null) {
+            checkPermissions(url);
             try (InputStream is = url.openStream()) {
                 return true;
             }catch(IOException e){

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,7 +25,11 @@
 
 package javax.crypto;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 
 /**
  * A CipherInputStream is composed of an InputStream and a Cipher so
@@ -99,6 +103,11 @@ public class CipherInputStream extends FilterInputStream {
      * return (ofinish-ostart) (we have this many bytes for you)
      * return 0 (no data now, but could have more later)
      * return -1 (absolutely no more data)
+     *
+     * Note:  Exceptions are only thrown after the stream is completely read.
+     * For AEAD ciphers a read() of any length will internally cause the
+     * whole stream to be read fully and verify the authentication tag before
+     * returning decrypted data or exceptions.
      */
     private int getMoreData() throws IOException {
         if (done) return -1;
@@ -107,9 +116,10 @@ public class CipherInputStream extends FilterInputStream {
             done = true;
             try {
                 obuffer = cipher.doFinal();
+            } catch (IllegalBlockSizeException | BadPaddingException e) {
+                obuffer = null;
+                throw new IOException(e);
             }
-            catch (IllegalBlockSizeException e) {obuffer = null;}
-            catch (BadPaddingException e) {obuffer = null;}
             if (obuffer == null)
                 return -1;
             else {
@@ -120,7 +130,10 @@ public class CipherInputStream extends FilterInputStream {
         }
         try {
             obuffer = cipher.update(ibuffer, 0, readin);
-        } catch (IllegalStateException e) {obuffer = null;};
+        } catch (IllegalStateException e) {
+            obuffer = null;
+            throw e;
+        }
         ostart = 0;
         if (obuffer == null)
             ofinish = 0;
@@ -301,13 +314,17 @@ public class CipherInputStream extends FilterInputStream {
 
         closed = true;
         input.close();
-        try {
-            // throw away the unprocessed data
-            if (!done) {
+
+        // Throw away the unprocessed data and throw no crypto exceptions.
+        // AEAD ciphers are fully readed before closing.  Any authentication
+        // exceptions would occur while reading.
+        if (!done) {
+            try {
                 cipher.doFinal();
             }
-        }
-        catch (BadPaddingException | IllegalBlockSizeException ex) {
+            catch (BadPaddingException | IllegalBlockSizeException ex) {
+                // Catch exceptions as the rest of the stream is unused.
+            }
         }
         ostart = 0;
         ofinish = 0;

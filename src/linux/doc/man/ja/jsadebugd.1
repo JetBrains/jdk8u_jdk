@@ -1,6 +1,5 @@
 '\" t
 .\" Copyright (c) 2004, 2014, Oracle and/or its affiliates. All rights reserved.
-.\"
 .\" DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 .\"
 .\" This code is free software; you can redistribute it and/or modify it
@@ -9,7 +8,7 @@
 .\"
 .\" This code is distributed in the hope that it will be useful, but WITHOUT
 .\" ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-.\" FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+.\" FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 .\" version 2 for more details (a copy is included in the LICENSE file that
 .\" accompanied this code).
 .\"
@@ -27,7 +26,8 @@
 .\" SectDesc: ¥È¥é¥Ö¥ë¥·¥å¡¼¥Æ¥£¥ó¥°¡¦¥Ä¡¼¥ë
 .\" Software: JDK 8
 .\" Arch: ÈÆÍÑ
-.\" Part Number: E54734-01
+.\" Part Number: E58103-01
+.\" Doc ID: JSSON
 .\"
 .if n .pl 99999
 .TH "jsadebugd" "1" "2013Ç¯11·î21Æü" "JDK 8" "¥È¥é¥Ö¥ë¥·¥å¡¼¥Æ¥£¥ó¥°¡¦¥Ä¡¼¥ë"
@@ -95,7 +95,7 @@ jsadebugd \- Java¥×¥í¥»¥¹¤Þ¤¿¤Ï¥³¥¢¡¦¥Õ¥¡¥¤¥ë¤ËÀÜÂ³¤·¡¢¥Ç¥Ð¥Ã¥°¡¦¥µ¡¼¥Ð¡¼¤È¤·¤Æµ
 .RE
 .SH "ÀâÌÀ"
 .PP
-\fBjsadebugd\fR¥³¥Þ¥ó¥É¤Ï¡¢Java¥×¥í¥»¥¹¤Þ¤¿¤Ï¥³¥¢¡¦¥Õ¥¡¥¤¥ë¤ËÀÜÂ³¤·¡¢¥Ç¥Ð¥Ã¥°¡¦¥µ¡¼¥Ð¡¼¤È¤·¤Æµ¡Ç½¤·¤Þ¤¹¡£\fBjstack\fR¡¢\fBjmap\fR¤ª¤è¤Ó\fBjinfo\fR¤Ê¤É¤Î¥ê¥â¡¼¥È¡¦¥¯¥é¥¤¥¢¥ó¥È¤Ï¡¢Java Remote Method Invocation(RMI)¤ò»ÈÍÑ¤·¤Æ¤¤¤ë¥µ¡¼¥Ð¡¼¤ËÀÜÂ³¤Ç¤­¤Þ¤¹¡£\fBjsadebugd\fR¥³¥Þ¥ó¥É¤òµ¯Æ°¤¹¤ëÁ°¤Ë¡¢\fBrmiregistry\fR¥³¥Þ¥ó¥É¤ÇRMI¥ì¥¸¥¹¥È¥ê¤ò¼¡¤Î¤è¤¦¤Ëµ¯Æ°¤·¤Þ¤¹¡£\fI$JAVA_HOME\fR¤ÏJDK¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¦¥Ç¥£¥ì¥¯¥È¥ê¤Ç¤¹¡£
+\fBjsadebugd\fR¥³¥Þ¥ó¥É¤Ï¡¢Java¥×¥í¥»¥¹¤Þ¤¿¤Ï¥³¥¢¡¦¥Õ¥¡¥¤¥ë¤ËÀÜÂ³¤·¡¢¥Ç¥Ð¥Ã¥°¡¦¥µ¡¼¥Ð¡¼¤È¤·¤Æµ¡Ç½¤·¤Þ¤¹¡£\fBjstack\fR¡¢\fBjmap\fR¤ª¤è¤Ó\fBjinfo\fR¤Ê¤É¤Î¥ê¥â¡¼¥È¡¦¥¯¥é¥¤¥¢¥ó¥È¤Ï¡¢Java Remote Method Invocation (RMI)¤ò»ÈÍÑ¤·¤Æ¤¤¤ë¥µ¡¼¥Ð¡¼¤ËÀÜÂ³¤Ç¤­¤Þ¤¹¡£\fBjsadebugd\fR¥³¥Þ¥ó¥É¤òµ¯Æ°¤¹¤ëÁ°¤Ë¡¢\fBrmiregistry\fR¥³¥Þ¥ó¥É¤ÇRMI¥ì¥¸¥¹¥È¥ê¤ò¼¡¤Î¤è¤¦¤Ëµ¯Æ°¤·¤Þ¤¹¡£\fI$JAVA_HOME\fR¤ÏJDK¤Î¥¤¥ó¥¹¥È¡¼¥ë¡¦¥Ç¥£¥ì¥¯¥È¥ê¤Ç¤¹¡£
 .sp
 .if n \{\
 .RS 4

@@ -127,7 +127,7 @@ Java_sun_nio_ch_Net_canJoin6WithIPv4Group0(JNIEnv* env, jclass cl)
 
 JNIEXPORT jint JNICALL
 Java_sun_nio_ch_Net_socket0(JNIEnv *env, jclass cl, jboolean preferIPv6,
-                            jboolean stream, jboolean reuse)
+                            jboolean stream, jboolean reuse, jboolean fastLoopback)
 {
     SOCKET s;
     int domain = (preferIPv6) ? AF_INET6 : AF_INET;
@@ -150,6 +150,20 @@ Java_sun_nio_ch_Net_socket0(JNIEnv *env, jclass cl, jboolean preferIPv6,
 
     } else {
         NET_ThrowNew(env, WSAGetLastError(), "socket");
+    }
+
+    if (stream && fastLoopback) {
+        static int loopback_available = 1;
+        if (loopback_available) {
+            int rv = NET_EnableFastTcpLoopback((jint)s);
+            if (rv) {
+                if (rv == WSAEOPNOTSUPP) {
+                    loopback_available = 0;
+                } else {
+                    NET_ThrowNew(env, rv, "fastLoopback");
+                }
+            }
+        }
     }
 
     return (jint)s;
@@ -295,9 +309,9 @@ Java_sun_nio_ch_Net_getIntOption0(JNIEnv *env, jclass clazz, jobject fdo,
     /**
      * HACK: IP_TOS is deprecated on Windows and querying the option
      * returns a protocol error. NET_GetSockOpt handles this and uses
-     * a fallback mechanism.
+     * a fallback mechanism. Same applies to IPV6_TCLASS
      */
-    if (level == IPPROTO_IP && opt == IP_TOS) {
+    if ((level == IPPROTO_IP && opt == IP_TOS) || (level == IPPROTO_IPV6 && opt == IPV6_TCLASS)) {
         mayNeedConversion = JNI_TRUE;
     }
 
@@ -319,7 +333,7 @@ Java_sun_nio_ch_Net_getIntOption0(JNIEnv *env, jclass clazz, jobject fdo,
 
 JNIEXPORT void JNICALL
 Java_sun_nio_ch_Net_setIntOption0(JNIEnv *env, jclass clazz, jobject fdo,
-                                  jboolean mayNeedConversion, jint level, jint opt, jint arg)
+                                  jboolean mayNeedConversion, jint level, jint opt, jint arg, jboolean ipv6)
 {
     struct linger linger;
     char *parg;
@@ -338,6 +352,11 @@ Java_sun_nio_ch_Net_setIntOption0(JNIEnv *env, jclass clazz, jobject fdo,
     } else {
         parg = (char *)&arg;
         arglen = sizeof(arg);
+    }
+
+    if (level == IPPROTO_IPV6 && opt == IPV6_TCLASS) {
+        /* No op */
+        return;
     }
 
     if (mayNeedConversion) {

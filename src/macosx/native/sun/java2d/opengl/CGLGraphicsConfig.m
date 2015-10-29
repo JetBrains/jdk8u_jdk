@@ -72,7 +72,9 @@ OGLGC_DestroyOGLGraphicsConfig(jlong pConfigInfo)
             }
             [pool drain];
             free(ctxinfo);
+            oglc->ctxInfo = NULL;
         }
+        cglinfo->context = NULL;
     }
 
     free(cglinfo);
@@ -234,6 +236,7 @@ Java_sun_java2d_opengl_CGLGraphicsConfig_getCGLConfigInfo
         }
 
         NSOpenGLPixelFormatAttribute attrs[] = {
+            NSOpenGLPFAAllowOfflineRenderers,
             NSOpenGLPFAClosestPolicy,
             NSOpenGLPFAWindow,
             NSOpenGLPFAPixelBuffer,

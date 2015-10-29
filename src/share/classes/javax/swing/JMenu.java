@@ -76,11 +76,11 @@ import java.lang.ref.WeakReference;
  * configuring a menu.  Refer to <a href="Action.html#buttonActions">
  * Swing Components Supporting <code>Action</code></a> for more
  * details, and you can find more information in <a
- * href="http://docs.oracle.com/javase/tutorial/uiswing/misc/action.html">How
+ * href="https://docs.oracle.com/javase/tutorial/uiswing/misc/action.html">How
  * to Use Actions</a>, a section in <em>The Java Tutorial</em>.
  * <p>
  * For information and examples of using menus see
- * <a href="http://docs.oracle.com/javase/tutorial/uiswing/components/menu.html">How to Use Menus</a>,
+ * <a href="https://docs.oracle.com/javase/tutorial/uiswing/components/menu.html">How to Use Menus</a>,
  * a section in <em>The Java Tutorial.</em>
  * <p>
  * <strong>Warning:</strong> Swing is not thread safe. For more
@@ -475,7 +475,8 @@ public class JMenu extends JMenuItem implements Accessible,MenuElement
             }
             // Then the y:
             y = s.height + yOffset;    // Prefer dropping down
-            if (position.y + y + pmSize.height >= screenBounds.height &&
+            if (position.y + y + pmSize.height >= screenBounds.height
+                                                  + screenBounds.y &&
                 // popup doesn't fit - place it wherever there's more room
                 screenBounds.height - s.height < 2*(position.y
                                                   - screenBounds.y)) {

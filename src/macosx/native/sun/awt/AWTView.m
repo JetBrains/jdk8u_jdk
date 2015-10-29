@@ -306,11 +306,59 @@ AWT_ASSERT_APPKIT_THREAD;
 }
 
 - (void) flagsChanged: (NSEvent *)event {
-    [self deliverJavaKeyEventHelper: event];
+    if (/*([event keyCode] == 65535) && */[event modifierFlags] == 2148532232 || [event modifierFlags] == 2147483648
+	|| [event modifierFlags] == 2147614722 || [event modifierFlags] == 2147483648) {
+	return;
+    }
+
+    NSEvent* newEvent = event;
+
+    unsigned short newKeyCode = 0; 
+
+    if( NSAlphaShiftKeyMask & [NSEvent modifierFlags] ){
+	newKeyCode = 0x39;
+    }
+
+    if( NSShiftKeyMask & [NSEvent modifierFlags] ){
+	newKeyCode = 0x38;
+    }
+
+    if( NSControlKeyMask & [NSEvent modifierFlags] ){
+	newKeyCode = 0x3B; 
+    }
+
+   // if( NSAlternateKeyMask & [NSEvent modifierFlags] ){
+//
+  //  }
+
+
+    if( NSCommandKeyMask & [NSEvent modifierFlags] ){
+	newKeyCode = 0x37;
+    }
+//    if( NSNumericPadKeyMask & [NSEvent modifierFlags] ){
+//	newKeyCode = 
+//    }
+
+//    if( NSHelpKeyMask & [NSEvent modifierFlags] ){
+//	newKeyCode = 
+//    }
+
+//    if( NSFunctionKeyMask & [NSEvent modifierFlags] ){
+//	newKeyCode = 
+//    }
+
+    if (newKeyCode != 0) {
+      newEvent = [NSEvent keyEventWithType:NSFlagsChanged location:event.locationInWindow modifierFlags:event.modifierFlags timestamp:event.timestamp windowNumber:event.windowNumber context:event.context characters:@"" charactersIgnoringModifiers:@"" isARepeat:NO keyCode:newKeyCode];
+    }
+
+    [self deliverJavaKeyEventHelper: newEvent];
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent *) event {
-    [self deliverJavaKeyEventHelper: event];
+    // if IM is active key events should be ignored 
+    if (![self hasMarkedText] && !fInPressAndHold) {
+        [self deliverJavaKeyEventHelper: event];
+    }
 
     // Workaround for 8020209: special case for "Cmd =" and "Cmd ." 
     // because Cocoa calls performKeyEquivalent twice for these keystrokes  
@@ -434,6 +482,7 @@ AWT_ASSERT_APPKIT_THREAD;
         // The event is repeatedly delivered by keyDown: after performKeyEquivalent:
         return;
     }
+
     [sLastKeyEvent release];
     sLastKeyEvent = [event retain];
 
@@ -889,9 +938,9 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
     // text, or 'text in progress'.  We also need to send the event if we get an insert text out of the blue!
     // (i.e., when the user uses the Character palette or Inkwell), or when the string to insert is a complex
     // Unicode value.
-    NSUInteger utf8Length = [aString lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    NSUInteger utf16Length = [aString lengthOfBytesUsingEncoding:NSUTF16StringEncoding];
 
-    if ([self hasMarkedText] || !fProcessingKeystroke || (utf8Length > 1)) {
+    if ([self hasMarkedText] || !fProcessingKeystroke || (utf16Length > 2)) {
         JNIEnv *env = [ThreadUtilities getJNIEnv];
 
         static JNF_MEMBER_CACHE(jm_selectPreviousGlyph, jc_CInputMethod, "selectPreviousGlyph", "()V");

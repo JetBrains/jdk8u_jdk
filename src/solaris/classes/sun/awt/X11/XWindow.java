@@ -43,7 +43,7 @@ import sun.awt.image.PixelConverter;
 import sun.java2d.SunGraphics2D;
 import sun.java2d.SurfaceData;
 
-public class XWindow extends XBaseWindow implements X11ComponentPeer {
+class XWindow extends XBaseWindow implements X11ComponentPeer {
     private static PlatformLogger log = PlatformLogger.getLogger("sun.awt.X11.XWindow");
     private static PlatformLogger insLog = PlatformLogger.getLogger("sun.awt.X11.insets.XWindow");
     private static PlatformLogger eventLog = PlatformLogger.getLogger("sun.awt.X11.event.XWindow");
@@ -55,7 +55,6 @@ public class XWindow extends XBaseWindow implements X11ComponentPeer {
    */
     private final static int AWT_MULTICLICK_SMUDGE = 4;
     // ButtonXXX events stuff
-    static int rbutton = 0;
     static int lastX = 0, lastY = 0;
     static long lastTime = 0;
     static long lastButton = 0;
@@ -569,10 +568,6 @@ public class XWindow extends XBaseWindow implements X11ComponentPeer {
     }
 
     static int getModifiers(int state, int button, int keyCode) {
-        return getModifiers(state, button, keyCode, 0,  false);
-    }
-
-    static int getModifiers(int state, int button, int keyCode, int type, boolean wheel_mouse) {
         int modifiers = 0;
 
         if (((state & XConstants.ShiftMask) != 0) ^ (keyCode == KeyEvent.VK_SHIFT)) {
@@ -603,12 +598,17 @@ public class XWindow extends XBaseWindow implements X11ComponentPeer {
             // ONLY one of these conditions should be TRUE to add that modifier.
             if (((state & XlibUtil.getButtonMask(i + 1)) != 0) != (button == XConstants.buttons[i])){
                 //exclude wheel buttons from adding their numbers as modifiers
-                if (!wheel_mouse) {
+                if (!isWheel(XConstants.buttons[i])) {
                     modifiers |= InputEvent.getMaskForButton(i+1);
                 }
             }
         }
         return modifiers;
+    }
+
+    static boolean isWheel(int button) {
+        // 4 and 5 buttons are usually considered assigned to a first wheel
+        return button == XConstants.buttons[3] || button == XConstants.buttons[4];
     }
 
     static int getXModifiers(AWTKeyStroke stroke) {
@@ -632,23 +632,6 @@ public class XWindow extends XBaseWindow implements X11ComponentPeer {
         return res;
     }
 
-    /**
-     * Returns true if this event is disabled and shouldn't be passed to Java.
-     * Default implementation returns false for all events.
-     */
-    static int getRightButtonNumber() {
-        if (rbutton == 0) { // not initialized yet
-            XToolkit.awtLock();
-            try {
-                rbutton = XlibWrapper.XGetPointerMapping(XToolkit.getDisplay(), XlibWrapper.ibuffer, 3);
-            }
-            finally {
-                XToolkit.awtUnlock();
-            }
-        }
-        return rbutton;
-    }
-
     static int getMouseMovementSmudge() {
         //TODO: It's possible to read corresponding settings
         return AWT_MULTICLICK_SMUDGE;
@@ -667,7 +650,6 @@ public class XWindow extends XBaseWindow implements X11ComponentPeer {
         int modifiers;
         boolean popupTrigger = false;
         int button=0;
-        boolean wheel_mouse = false;
         int lbutton = xbe.get_button();
         /*
          * Ignore the buttons above 20 due to the bit limit for
@@ -716,19 +698,10 @@ public class XWindow extends XBaseWindow implements X11ComponentPeer {
             /*
                Check for popup trigger !!
             */
-            if (lbutton == getRightButtonNumber() || lbutton > 2) {
-                popupTrigger = true;
-            } else {
-                popupTrigger = false;
-            }
+            popupTrigger = (lbutton == 3);
         }
 
         button = XConstants.buttons[lbutton - 1];
-        // 4 and 5 buttons are usually considered assigned to a first wheel
-        if (lbutton == XConstants.buttons[3] ||
-            lbutton == XConstants.buttons[4]) {
-            wheel_mouse = true;
-        }
 
         // mapping extra buttons to numbers starting from 4.
         if ((button > XConstants.buttons[4]) && (!Toolkit.getDefaultToolkit().areExtraMouseButtonsEnabled())){
@@ -738,9 +711,9 @@ public class XWindow extends XBaseWindow implements X11ComponentPeer {
         if (button > XConstants.buttons[4]){
             button -= 2;
         }
-        modifiers = getModifiers(xbe.get_state(),button,0, type, wheel_mouse);
+        modifiers = getModifiers(xbe.get_state(),button,0);
 
-        if (!wheel_mouse) {
+        if (!isWheel(lbutton)) {
             MouseEvent me = new MouseEvent((Component)getEventSource(),
                                            type == XConstants.ButtonPress ? MouseEvent.MOUSE_PRESSED : MouseEvent.MOUSE_RELEASED,
                                            jWhen,modifiers, x, y,
@@ -858,8 +831,10 @@ public class XWindow extends XBaseWindow implements X11ComponentPeer {
 
 
     // REMIND: need to implement looking for disabled events
-    public native boolean x11inputMethodLookupString(long event, long [] keysymArray);
-    native boolean haveCurrentX11InputMethodInstance();
+    private native boolean x11inputMethodLookupString(long event,
+                                                      long[] keysymArray);
+
+    private native boolean haveCurrentX11InputMethodInstance();
 
     private boolean mouseAboveMe;
 

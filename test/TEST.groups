@@ -111,7 +111,6 @@ jdk_time = \
 
 jdk_rmi = \
     java/rmi \
-    javax/rmi/ssl \
     sun/rmi
 
 jdk_security1 = \
@@ -124,15 +123,27 @@ jdk_security2 = \
 
 jdk_security3 = \
     javax/security  \
+    -javax/security/auth/kerberos \
     com/sun/security \
+    -com/sun/security/jgss \
     com/sun/org/apache/xml/internal/security \
     sun/security \
+    -sun/security/krb5 \
+    -sun/security/jgss \
+    javax/net \
     lib/security
+
+jdk_security4 = \
+    com/sun/security/jgss \
+    javax/security/auth/kerberos \
+    sun/security/krb5 \
+    sun/security/jgss
 
 jdk_security = \
     :jdk_security1 \
     :jdk_security2 \
-    :jdk_security3
+    :jdk_security3 \
+    :jdk_security4
 
 jdk_text = \
     java/text \
@@ -183,6 +194,7 @@ jdk_tools = \
 jdk_other = \
     java/sql \
     javax/sql \
+    javax/rmi \
     javax/naming \
     javax/script \
     javax/smartcardio \
@@ -314,6 +326,7 @@ needs_jdk = \
   java/io/Serializable/serialver \
   java/lang/invoke/lambda/LambdaAccessControlDoPrivilegedTest.java \
   java/lang/invoke/lambda/LambdaAccessControlTest.java \
+  java/lang/invoke/lambda/LambdaAsm.java \
   java/lang/System/MacEncoding/TestFileEncoding.java \
   java/net/URLClassLoader/closetest/GetResourceAsStream.java \
   java/util/Collections/EmptyIterator.java \
@@ -370,6 +383,11 @@ needs_jre = \
   java/text/Bidi/Bug7051769.java \
   javax/crypto/Cipher/CipherStreamClose.java \
   javax/management/monitor/AttributeArbitraryDataTypeTest.java \
+  javax/management/mxbean/AmbiguousConstructorTest.java \
+  javax/management/mxbean/ExceptionDiagnosisTest.java \
+  javax/management/mxbean/LeakTest.java \
+  javax/management/mxbean/MXBeanTest.java \
+  javax/management/mxbean/PropertyNamesTest.java \
   jdk/lambda/vm/InterfaceAccessFlagsTest.java \
   sun/misc/URLClassPath/ClassnameCharTest.java
 
@@ -465,13 +483,21 @@ needs_compact3 = \
   sun/security/acl \
   sun/security/jgss \
   sun/security/krb5 \
+  java/lang/annotation/AnnotationType/AnnotationTypeDeadlockTest.java \
+  java/lang/invoke/lambda/LambdaStackTrace.java \
+  java/lang/invoke/LFCaching/LFGarbageCollectedTest.java \
+  java/lang/invoke/LFCaching/LFMultiThreadCachingTest.java \
+  java/lang/invoke/LFCaching/LFSingleThreadCachingTest.java \
   java/lang/System/MacEncoding/TestFileEncoding.java \
+  java/lang/Class/getDeclaredField/FieldSetAccessibleTest.java \
   java/nio/channels/AsynchronousSocketChannel/Leaky.java \
   java/security/PermissionCollection/Concurrent.java \
   java/security/Principal/Implies.java \
   java/security/cert/GetInstance.java \
   java/util/logging/DrainFindDeadlockTest.java \
   java/util/logging/LoggingMXBeanTest.java \
+  java/util/logging/TestLogConfigurationDeadLock.java \
+  java/util/logging/TestLoggerBundleSync.java \
   sun/net/www/http/KeepAliveCache/B5045306.java \
   sun/security/provider/PolicyFile/Alias.java \
   sun/security/provider/PolicyFile/Comparator.java \
@@ -523,6 +549,7 @@ needs_compact2 = \
   java/lang/PrimitiveSumMinMaxTest.java  \
   java/lang/String/StringJoinTest.java  \
   java/lang/Thread/StopThrowable.java  \
+  java/net/Authenticator/B4769350.java \
   java/net/Authenticator/Deadlock.java \
   java/net/CookieHandler/LocalHostCookie.java \
   java/net/CookieHandler/CookieManagerTest.java \
@@ -573,7 +600,6 @@ needs_compact2 = \
   java/util/zip/ZipFile/StreamZipEntriesTest.java \
   java/util/zip/ZipFile/DeleteTempJar.java \
   javax/crypto/Cipher/CipherStreamClose.java \
-  sun/misc/URLClassPath/ClassnameCharTest.java \
   sun/security/ssl/sun/net/www/protocol/https/HttpsURLConnection/HttpsCreateSockTest.java \
   sun/security/ssl/sun/net/www/protocol/https/HttpsURLConnection/HttpsSocketFacTest.java 
 
