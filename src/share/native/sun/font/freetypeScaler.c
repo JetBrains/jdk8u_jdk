@@ -25,11 +25,13 @@
 
 #include "jni.h"
 #include "jni_util.h"
+#include "jvm_md.h"
 #include "sunfontids.h"
 #include "sun_font_FreetypeFontScaler.h"
 
-#include<stdlib.h>
+#include <stdlib.h>
 #include <math.h>
+#include <dlfcn.h>
 #include "ft2build.h"
 #include FT_LCD_FILTER_H
 #include FT_FREETYPE_H
@@ -38,6 +40,10 @@
 #include FT_SIZES_H
 #include FT_OUTLINE_H
 #include FT_SYNTHESIS_H
+#include FT_LCD_FILTER_H
+
+/* Use bundled fontconfig.h for now */
+#include "fontconfig.h"
 
 #include "fontscaler.h"
 
@@ -48,6 +54,8 @@
 #define  ROUND(x) ((int) (x+0.5))
 #define  DEFAULT_DPI 72
 #define  ADJUST_FONT_SIZE(X, DPI) (((X)*DEFAULT_DPI + ((DPI)>>1))/(DPI))
+
+#define FONTCONFIG_DLL JNI_LIB_NAME("fontconfig")
 
 typedef struct {
     /* Important note:
@@ -79,7 +87,12 @@ typedef struct FTScalerContext {
     jint       fmType;        /* fractional metrics - on/off */
     jboolean   doBold;        /* perform algorithmic bolding? */
     jboolean   doItalize;     /* perform algorithmic italicizing? */
-    int        renderFlags;   /* configuration specific to particular engine */
+
+    /* Fontconfig info */
+    FT_Render_Mode  renderFlags;
+    FT_Int32        loadFlags;
+    FT_LcdFilter    lcdFilter;
+
     int        pathType;
     int        ptsz;          /* size in points */
 } FTScalerContext;
@@ -98,10 +111,52 @@ static jmethodID invalidateScalerMID;
 static jmethodID getDefaultToolkitMID;
 static jclass tkClass;
 static jmethodID getScreenResolutionMID;
+static jfieldID platNameFID;
+
+typedef FcBool (*FcPatternAddPtrType) (FcPattern *p, const char *object, FcValue value, FcBool append);
+typedef FcBool (*FcPatternAddBoolPtrType) (FcPattern *p, const char *object, FcBool b);
+typedef FcBool (*FcPatternAddDoublePtrType) (FcPattern *p, const char *object, double d);
+typedef FcBool (*FcConfigSubstitutePtrType) (FcConfig *config, FcPattern *p, FcMatchKind kind);
+typedef void (*FcDefaultSubstitutePtrType) (FcPattern *pattern);
+typedef FcPattern* (*FcPatternCreatePtrType) ();
+typedef FcPattern* (*FcFontMatchPtrType) (FcConfig *config, FcPattern *p, FcResult *result);
+typedef void (*FcPatternDestroyPtrType) (FcPattern *p);
+typedef FcResult (*FcPatternGetBoolPtrType) (const FcPattern *p, const char *object, int n, FcBool *b);
+typedef FcResult (*FcPatternGetIntegerPtrType) (const FcPattern *p, const char *object, int n, int *i);
+
+static void *libFontConfig = NULL;
+
+static FcPatternAddPtrType FcPatternAddPtr;
+static FcPatternAddBoolPtrType FcPatternAddBoolPtr;
+static FcPatternAddDoublePtrType FcPatternAddDoublePtr;
+static FcConfigSubstitutePtrType FcConfigSubstitutePtr;
+static FcDefaultSubstitutePtrType FcDefaultSubstitutePtr;
+static FcPatternCreatePtrType FcPatternCreatePtr;
+static FcFontMatchPtrType FcFontMatchPtr;
+static FcPatternDestroyPtrType FcPatternDestroyPtr;
+static FcPatternGetBoolPtrType FcPatternGetBoolPtr;
+static FcPatternGetIntegerPtrType FcPatternGetIntegerPtr;
+
+
+static void* openFontConfig() {
+    void* libfontconfig = NULL;
+
+    char *useFC = getenv("USE_FONTCONFIG_IN_FFS");
+    if (useFC != NULL && !strcmp(useFC, "no")) {
+        return NULL;
+    }
+
+    libfontconfig = dlopen(FONTCONFIG_DLL, RTLD_LOCAL | RTLD_LAZY);
+    if (libfontconfig == NULL) {
+        return NULL;
+    }
+
+    return libfontconfig;
+}
 
 JNIEXPORT void JNICALL
 Java_sun_font_FreetypeFontScaler_initIDs(
-        JNIEnv *env, jobject scaler, jclass FFSClass, jclass TKClass) {
+        JNIEnv *env, jobject scaler, jclass FFSClass, jclass TKClass, jclass PFClass) {
     invalidateScalerMID =
         (*env)->GetMethodID(env, FFSClass, "invalidateScaler", "()V");
     getDefaultToolkitMID =
@@ -110,6 +165,27 @@ Java_sun_font_FreetypeFontScaler_initIDs(
     getScreenResolutionMID =
         (*env)->GetMethodID(env, TKClass, "getScreenResolution", "()I");
     tkClass = (*env)->NewGlobalRef(env, TKClass);
+    platNameFID = (*env)->GetFieldID(env, PFClass, "platName", "Ljava/lang/String;");
+    libFontConfig = openFontConfig();
+    if (libFontConfig) {
+        FcPatternAddPtr = (FcPatternAddPtrType) dlsym(libFontConfig, "FcPatternAdd");
+        FcPatternAddBoolPtr = (FcPatternAddBoolPtrType) dlsym(libFontConfig, "FcPatternAddBool");
+        FcPatternAddDoublePtr = (FcPatternAddDoublePtrType) dlsym(libFontConfig, "FcPatternAddDouble");
+        FcConfigSubstitutePtr = (FcConfigSubstitutePtrType) dlsym(libFontConfig, "FcConfigSubstitute");
+        FcDefaultSubstitutePtr = (FcDefaultSubstitutePtrType)  dlsym(libFontConfig, "FcDefaultSubstitute");
+        FcPatternCreatePtr = (FcPatternCreatePtrType)  dlsym(libFontConfig, "FcPatternCreate");
+        FcFontMatchPtr = (FcFontMatchPtrType)  dlsym(libFontConfig, "FcFontMatch");
+        FcPatternDestroyPtr = (FcPatternDestroyPtrType)  dlsym(libFontConfig, "FcPatternDestroy");
+        FcPatternGetBoolPtr = (FcPatternGetBoolPtrType)  dlsym(libFontConfig, "FcPatternGetBool");
+        FcPatternGetIntegerPtr = (FcPatternGetIntegerPtrType)  dlsym(libFontConfig, "FcPatternGetInteger");
+    }
+}
+
+static char* getPhysFontName(JNIEnv *env, jobject font2d) {
+    jstring jstr;
+    jstr = (*env)->GetObjectField(env, font2d, platNameFID);
+    char* str = (*env)->GetStringUTFChars(env, jstr, NULL);
+    return str;
 }
 
 static int getScreenResolution(JNIEnv *env) {
@@ -399,28 +475,153 @@ Java_sun_font_FreetypeFontScaler_createScalerContextNative(
     return ptr_to_jlong(context);
 }
 
-static int setupFTContext(JNIEnv *env,
-                          jobject font2D,
-                          FTScalerInfo *scalerInfo,
-                          FTScalerContext *context) {
+static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo, FTScalerContext *context,
+                          FT_Bool configureFont) {
     int errCode = 0;
-
     scalerInfo->env = env;
     scalerInfo->font2D = font2D;
 
     if (context != NULL) {
         FT_Set_Transform(scalerInfo->face, &context->transform, NULL);
         FT_UInt dpi = (FT_UInt) getScreenResolution(env);
-        errCode =
-            FT_Set_Char_Size(scalerInfo->face, 0,
-                             ADJUST_FONT_SIZE(context->ptsz, dpi), dpi, dpi);
 
-        if (errCode == 0) {
-            errCode = FT_Activate_Size(scalerInfo->face->size);
+        errCode = FT_Set_Char_Size(scalerInfo->face, 0, ADJUST_FONT_SIZE(context->ptsz, dpi), dpi, dpi);
+        if (errCode) return errCode;
+
+        errCode = FT_Activate_Size(scalerInfo->face->size);
+        if (errCode) return errCode;
+        if (configureFont) {
+            context->renderFlags = FT_RENDER_MODE_NORMAL;
+            context->lcdFilter = FT_LCD_FILTER_NONE;
+            context->loadFlags = FT_LOAD_DEFAULT;
+
+            if (libFontConfig == NULL) {
+                if (context->aaType == TEXT_AA_OFF) {
+                    context->loadFlags = FT_LOAD_TARGET_MONO;
+                } else if (context->aaType == TEXT_AA_ON) {
+                    context->loadFlags = FT_LOAD_TARGET_LIGHT;
+                } else {
+                    context->lcdFilter = FT_LCD_FILTER_LIGHT;
+                    if (context->aaType == TEXT_AA_LCD_HRGB ||
+                        context->aaType == TEXT_AA_LCD_HBGR) {
+                        context->loadFlags = FT_LOAD_TARGET_LCD;
+                    } else {
+                        context->loadFlags = FT_LOAD_TARGET_LCD_V;
+                    }
+                }
+                context->renderFlags = FT_LOAD_TARGET_MODE(context->loadFlags);
+                return 0;
+            }
+            FcPattern *fcPattern = 0;
+            fcPattern = (*FcPatternCreatePtr)();
+            FcValue fcValue;
+            fcValue.type = FcTypeString;
+            char *fontName = getPhysFontName(env, font2D);
+            fcValue.u.s = fontName;
+            (*FcPatternAddPtr)(fcPattern, FC_FILE, fcValue, FcTrue);
+            (*FcPatternAddBoolPtr)(fcPattern, FC_SCALABLE, FcTrue);
+            (*FcPatternAddDoublePtr)(fcPattern, FC_SIZE, ADJUST_FONT_SIZE(context->ptsz, dpi));
+            (*FcConfigSubstitutePtr)(0, fcPattern, FcMatchPattern);
+            (*FcConfigSubstitutePtr)(0, fcPattern, FcMatchFont);
+            (*FcDefaultSubstitutePtr)(fcPattern);
+            FcResult matchResult = FcResultNoMatch;
+            FcPattern *resultPattern = 0;
+            resultPattern = (*FcFontMatchPtr)(0, fcPattern, &matchResult);
+            if (matchResult != FcResultMatch) {
+                (*FcPatternDestroyPtr)(fcPattern);
+                return 1;
+            }
+            (*FcPatternDestroyPtr)(fcPattern);
+            FcPattern *pattern = resultPattern;
+
+            FcBool fcHinting = FcFalse;
+            FcBool fcHintingSet = (*FcPatternGetBoolPtr)(pattern, FC_HINTING, 0, &fcHinting) == FcResultMatch;
+
+            int fcHintStyle = FC_HINT_NONE;
+            FcBool fcHintStyleSet = (*FcPatternGetIntegerPtr)(pattern, FC_HINT_STYLE, 0, &fcHintStyle) == FcResultMatch;
+
+            if (fcHintStyleSet && fcHintStyle == FC_HINT_NONE) {
+                fcHintingSet = FcTrue;
+                fcHinting = FcFalse;
+            }
+
+            FcBool fcAntialias = FcFalse;
+            FcBool fcAntialiasSet = (*FcPatternGetBoolPtr)(pattern, FC_ANTIALIAS, 0, &fcAntialias) == FcResultMatch;
+
+            if (context->aaType == TEXT_AA_ON) { // Greyscale AA
+                context->renderFlags = FT_RENDER_MODE_NORMAL;
+                if (fcHintingSet) {
+                    switch (fcHintStyle) {
+                        case FC_HINT_NONE:
+                            context->loadFlags = FT_LOAD_NO_HINTING;
+                            break;
+                        case FC_HINT_SLIGHT:
+                            context->loadFlags = FT_LOAD_TARGET_LIGHT;
+                            break;
+                        case FC_HINT_MEDIUM:
+                        case FC_HINT_FULL:
+                        default:
+                            break;
+                    }
+                }
+            }
+            else if (context->aaType == TEXT_AA_OFF) { // No AA
+                context->renderFlags = FT_RENDER_MODE_MONO;
+                context->loadFlags = (!fcHintingSet || fcHinting) ? FT_LOAD_TARGET_MONO : FT_LOAD_NO_HINTING;
+            } else if (fcAntialiasSet && fcAntialias) {
+                int fcRGBA = FC_RGBA_UNKNOWN;
+                if ((*FcPatternGetIntegerPtr)(pattern, FC_RGBA, 0, &fcRGBA) == FcResultMatch) {
+                    switch (fcRGBA) {
+                        case FC_RGBA_RGB:
+                        case FC_RGBA_BGR:
+                            context->loadFlags = FT_LOAD_TARGET_LCD;
+                            context->renderFlags = FT_RENDER_MODE_LCD;
+                            break;
+                        case FC_RGBA_VRGB:
+                        case FC_RGBA_VBGR:
+                            context->loadFlags = FT_LOAD_TARGET_LCD_V;
+                            context->renderFlags = FT_RENDER_MODE_LCD_V;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } else if (context->aaType == TEXT_AA_LCD_HRGB ||
+                       context->aaType == TEXT_AA_LCD_HBGR) {
+                context->loadFlags = FT_LOAD_TARGET_LCD;
+                context->renderFlags = FT_RENDER_MODE_LCD;
+            } else {
+                context->loadFlags = FT_LOAD_TARGET_LCD_V;
+                context->renderFlags = FT_RENDER_MODE_LCD_V;
+            }
+
+            FcBool fcAutohint;
+            if ((*FcPatternGetBoolPtr)(pattern, FC_AUTOHINT, 0, &fcAutohint) == FcResultMatch && fcAutohint) {
+                context->loadFlags |= FT_LOAD_FORCE_AUTOHINT;
+            }
+
+            int fcLCDFilter;
+            context->lcdFilter = FT_LCD_FILTER_DEFAULT;
+            if ((*FcPatternGetIntegerPtr)(pattern, FC_LCD_FILTER, 0, &fcLCDFilter) == FcResultMatch) {
+                switch (fcLCDFilter) {
+                    case FC_LCD_NONE:
+                        context->lcdFilter = FT_LCD_FILTER_NONE;
+                        break;
+                    case FC_LCD_LIGHT:
+                        context->lcdFilter = FT_LCD_FILTER_LIGHT;
+                        break;
+                    case FC_LCD_LEGACY:
+                        context->lcdFilter = FT_LCD_FILTER_LEGACY;
+                        break;
+                    case FC_LCD_DEFAULT:
+                    default:;
+                }
+            }
+            (*FcPatternDestroyPtr)(pattern);
         }
     }
 
-    return errCode;
+    return 0;
 }
 
 /* ftsynth.c uses (0x10000, 0x06000, 0x0, 0x10000) matrix to get oblique
@@ -455,7 +656,7 @@ Java_sun_font_FreetypeFontScaler_getFontMetricsNative(
                                  f0, f0, f0, f0, f0, f0, f0, f0, f0, f0);
     }
 
-    errCode = setupFTContext(env, font2D, scalerInfo, context);
+    errCode = setupFTContext(env, font2D, scalerInfo, context, FcFalse);
 
     if (errCode) {
         metrics = (*env)->NewObject(env,
@@ -713,7 +914,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
         return ptr_to_jlong(getNullGlyphImage());
     }
 
-    error = setupFTContext(env, font2D, scalerInfo, context);
+    error = setupFTContext(env, font2D, scalerInfo, context, FcTrue);
     if (error) {
         invalidateJavaScaler(env, scaler, scalerInfo);
         return ptr_to_jlong(getNullGlyphImage());
@@ -721,7 +922,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
 
     /* if algorithmic styling is required then we do not request bitmap */
     if (context->doBold || context->doItalize) {
-        renderFlags =  FT_LOAD_DEFAULT;
+        context->loadFlags =  FT_LOAD_DEFAULT;
     }
 
     /* NB: in case of non identity transform
@@ -729,24 +930,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
      and apply it explicitly after hinting is performed.
      Or we can disable hinting. */
 
-    /* select appropriate hinting mode */
-    if (context->aaType == TEXT_AA_OFF) {
-        target = FT_LOAD_TARGET_MONO;
-    } else if (context->aaType == TEXT_AA_ON) {
-        target = FT_LOAD_TARGET_LIGHT;
-    } else {
-        lcdFilter = FT_LCD_FILTER_LIGHT;
-        if (context->aaType == TEXT_AA_LCD_HRGB ||
-            context->aaType == TEXT_AA_LCD_HBGR) {
-            target = FT_LOAD_TARGET_LCD;
-        } else {
-            target = FT_LOAD_TARGET_LCD_V;
-        }
-    }
-    renderFlags |= target;
-
-    error = FT_Load_Glyph(scalerInfo->face, glyphCode, renderFlags);
-    if (error) {
+    if (FT_Load_Glyph(scalerInfo->face, glyphCode, context->loadFlags)) {
         //do not destroy scaler yet.
         //this can be problem of particular context (e.g. with bad transform)
         return ptr_to_jlong(getNullGlyphImage());
@@ -754,7 +938,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
 
     ftglyph = scalerInfo->face->glyph;
     FT_Library library = ftglyph->library;
-    FT_Library_SetLcdFilter (library, lcdFilter);
+    FT_Library_SetLcdFilter (library, context->lcdFilter);
 
     /* apply styles */
     if (context->doBold) { /* if bold style */
@@ -767,7 +951,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
     /* generate bitmap if it is not done yet
      e.g. if algorithmic styling is performed and style was added to outline */
     if (ftglyph->format == FT_GLYPH_FORMAT_OUTLINE) {
-        FT_Render_Glyph(ftglyph, FT_LOAD_TARGET_MODE(target));
+        FT_Render_Glyph(ftglyph, context->renderFlags);
     }
 
     width  = (UInt16) ftglyph->bitmap.width;
@@ -905,7 +1089,7 @@ Java_sun_font_FreetypeFontScaler_disposeNativeScaler(
     /* Freetype functions *may* cause callback to java
        that can use cached values. Make sure our cache is up to date.
        NB: scaler context is not important at this point, can use NULL. */
-    int errCode = setupFTContext(env, font2D, scalerInfo, NULL);
+    int errCode = setupFTContext(env, font2D, scalerInfo, NULL, FcFalse);
     if (errCode) {
         return;
     }
@@ -968,7 +1152,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphCodeNative(
     /* Freetype functions *may* cause callback to java
        that can use cached values. Make sure our cache is up to date.
        Scaler context is not important here, can use NULL. */
-    errCode = setupFTContext(env, font2D, scalerInfo, NULL);
+    errCode = setupFTContext(env, font2D, scalerInfo, NULL, FcFalse);
     if (errCode) {
         return 0;
     }
@@ -982,8 +1166,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphCodeNative(
 static FT_Outline* getFTOutline(JNIEnv* env, jobject font2D,
         FTScalerContext *context, FTScalerInfo* scalerInfo,
         jint glyphCode, jfloat xpos, jfloat ypos) {
-    int renderFlags;
-    int glyph_index;
+
     FT_Error error;
     FT_GlyphSlot ftglyph;
 
@@ -992,16 +1175,12 @@ static FT_Outline* getFTOutline(JNIEnv* env, jobject font2D,
         return NULL;
     }
 
-    error = setupFTContext(env, font2D, scalerInfo, context);
+    error = setupFTContext(env, font2D, scalerInfo, context, FcTrue);
     if (error) {
         return NULL;
     }
 
-    renderFlags = FT_LOAD_NO_HINTING | FT_LOAD_NO_BITMAP;
-
-    glyph_index = FT_Get_Char_Index(scalerInfo->face, glyphCode);
-
-    error = FT_Load_Glyph(scalerInfo->face, glyphCode, renderFlags);
+    error = FT_Load_Glyph(scalerInfo->face, glyphCode, context->loadFlags);
     if (error) {
         return NULL;
     }
@@ -1456,4 +1635,10 @@ Java_sun_font_FreetypeFontScaler_getGlyphPointNative(
 
     return (*env)->NewObject(env, sunFontIDs.pt2DFloatClass,
                              sunFontIDs.pt2DFloatCtr, x, y);
+}
+
+void JNI_OnUnload(JavaVM *vm, void *reserved) {
+    if (libFontConfig != NULL) {
+        dlclose(libFontConfig);
+    }
 }
