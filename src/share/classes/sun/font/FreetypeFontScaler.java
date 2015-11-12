@@ -48,10 +48,10 @@ class FreetypeFontScaler extends FontScaler {
         /* At the moment fontmanager library depends on freetype library
            and therefore no need to load it explicitly here */
         FontManagerNativeLibrary.load();
-        initIDs(FreetypeFontScaler.class, Toolkit.class);
+        initIDs(FreetypeFontScaler.class, Toolkit.class, PhysicalFont.class);
     }
 
-    private static native void initIDs(Class FFS, Class toolkitClass);
+    private static native void initIDs(Class FFS, Class toolkitClass, Class pfClass);
 
     private void invalidateScaler() throws FontScalerException {
         nativeScaler = 0;
