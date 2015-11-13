@@ -51,6 +51,7 @@
 #define  FloatToFTFixed(f) (FT_Fixed)((f) * (float)(ftFixed1))
 #define  FTFixedToFloat(x) ((x) / (float)(ftFixed1))
 #define  FT26Dot6ToFloat(x)  ((x) / ((float) (1<<6)))
+#define  FT26Dot6ToDouble(x)  ((x) / ((double) (1<<6)))
 #define  ROUND(x) ((int) (x+0.5))
 #define  DEFAULT_DPI 72
 #define  ADJUST_FONT_SIZE(X, DPI) (((X)*DEFAULT_DPI + ((DPI)>>1))/(DPI))
@@ -125,6 +126,7 @@ typedef FcResult (*FcPatternGetBoolPtrType) (const FcPattern *p, const char *obj
 typedef FcResult (*FcPatternGetIntegerPtrType) (const FcPattern *p, const char *object, int n, int *i);
 
 static void *libFontConfig = NULL;
+static jboolean logFC = JNI_FALSE;
 
 static FcPatternAddPtrType FcPatternAddPtr;
 static FcPatternAddBoolPtrType FcPatternAddBoolPtr;
@@ -141,16 +143,23 @@ static FcPatternGetIntegerPtrType FcPatternGetIntegerPtr;
 static void* openFontConfig() {
     void* libfontconfig = NULL;
 
-    char *useFC = getenv("USE_FONTCONFIG_IN_FFS");
+    char *fcLogEnabled = getenv("OPENJDK_FFS_LOG_FC");
+
+    if (fcLogEnabled != NULL && !strcmp(fcLogEnabled, "yes")) {
+        logFC = JNI_TRUE;
+    }
+
+    char *useFC = getenv("OPENJDK_FFS_USE_FC");
     if (useFC != NULL && !strcmp(useFC, "no")) {
+        if (logFC) fprintf(stderr, "FC_LOG: fontconfig disabled in freetypescaler\n");
         return NULL;
     }
 
     libfontconfig = dlopen(FONTCONFIG_DLL, RTLD_LOCAL | RTLD_LAZY);
     if (libfontconfig == NULL) {
+        if (logFC) fprintf(stderr, "FC_LOG: cannot open %s\n", FONTCONFIG_DLL);
         return NULL;
     }
-
     return libfontconfig;
 }
 
@@ -517,10 +526,17 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             FcValue fcValue;
             fcValue.type = FcTypeString;
             char *fontName = getPhysFontName(env, font2D);
+
+            if (logFC) fprintf(stderr, "FC_LOG: %s ", fontName);
+
             fcValue.u.s = fontName;
             (*FcPatternAddPtr)(fcPattern, FC_FILE, fcValue, FcTrue);
             (*FcPatternAddBoolPtr)(fcPattern, FC_SCALABLE, FcTrue);
-            (*FcPatternAddDoublePtr)(fcPattern, FC_SIZE, ADJUST_FONT_SIZE(context->ptsz, dpi));
+            double fcSize = FT26Dot6ToDouble(ADJUST_FONT_SIZE(context->ptsz, dpi));
+            (*FcPatternAddDoublePtr)(fcPattern, FC_SIZE, fcSize);
+
+            if (logFC) fprintf(stderr, " size=%f", fcSize);
+
             (*FcConfigSubstitutePtr)(0, fcPattern, FcMatchPattern);
             (*FcConfigSubstitutePtr)(0, fcPattern, FcMatchFont);
             (*FcDefaultSubstitutePtr)(fcPattern);
@@ -529,16 +545,45 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             resultPattern = (*FcFontMatchPtr)(0, fcPattern, &matchResult);
             if (matchResult != FcResultMatch) {
                 (*FcPatternDestroyPtr)(fcPattern);
+                if (logFC) fprintf(stderr, " - NOT FOUND\n");
                 return 1;
             }
+            if (logFC) fprintf(stderr, "\nFC_LOG:   ");
             (*FcPatternDestroyPtr)(fcPattern);
             FcPattern *pattern = resultPattern;
 
             FcBool fcHinting = FcFalse;
             FcBool fcHintingSet = (*FcPatternGetBoolPtr)(pattern, FC_HINTING, 0, &fcHinting) == FcResultMatch;
 
+            if (logFC && fcHintingSet) fprintf(stderr, "FC_HINTING(%d) ", fcHinting);
+
             int fcHintStyle = FC_HINT_NONE;
             FcBool fcHintStyleSet = (*FcPatternGetIntegerPtr)(pattern, FC_HINT_STYLE, 0, &fcHintStyle) == FcResultMatch;
+
+            if (logFC && fcHintStyleSet) {
+                switch (fcHintStyle) {
+                    case FC_HINT_NONE:
+                        fprintf(stderr, "FC_HINT_NONE ");
+                        break;
+                    case FC_HINT_SLIGHT:
+                        fprintf(stderr, "FC_HINT_SLIGHT ");
+                        break;
+                    case FC_HINT_MEDIUM:
+                        fprintf(stderr, "FC_HINT_MEDIUM ");
+                        break;
+                    case FC_HINT_FULL:
+                        fprintf(stderr, "FC_HINT_FULL ");
+                        break;
+                    default:
+                        fprintf(stderr, "FC_HINT_UNKNOWN ");
+                        break;
+                }
+            }
+
+            if (fcHintingSet && !fcHinting) {
+                fcHintStyleSet = FcTrue;
+                fcHintStyle = FC_HINT_NONE;
+            }
 
             if (fcHintStyleSet && fcHintStyle == FC_HINT_NONE) {
                 fcHintingSet = FcTrue;
@@ -547,6 +592,8 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
 
             FcBool fcAntialias = FcFalse;
             FcBool fcAntialiasSet = (*FcPatternGetBoolPtr)(pattern, FC_ANTIALIAS, 0, &fcAntialias) == FcResultMatch;
+
+            if (logFC && fcAntialiasSet) fprintf(stderr, "FC_ANTIALIAS(%d) ", fcAntialias);
 
             if (context->aaType == TEXT_AA_ON) { // Greyscale AA
                 context->renderFlags = FT_RENDER_MODE_NORMAL;
@@ -574,15 +621,18 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
                     switch (fcRGBA) {
                         case FC_RGBA_RGB:
                         case FC_RGBA_BGR:
+                            if (logFC) fprintf(stderr, fcRGBA == FC_RGBA_RGB ? "FC_RGBA_RGB " : "FC_RGBA_BGR ");
                             context->loadFlags = FT_LOAD_TARGET_LCD;
                             context->renderFlags = FT_RENDER_MODE_LCD;
                             break;
                         case FC_RGBA_VRGB:
                         case FC_RGBA_VBGR:
+                            if (logFC) fprintf(stderr, fcRGBA == FC_RGBA_VRGB ? "FC_RGBA_VRGB " : "FC_RGBA_VBGR ");
                             context->loadFlags = FT_LOAD_TARGET_LCD_V;
                             context->renderFlags = FT_RENDER_MODE_LCD_V;
                             break;
                         default:
+                            if (logFC) fprintf(stderr, "FC_RGBA_UNKNOWN ");
                             break;
                     }
                 }
@@ -595,29 +645,42 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
                 context->renderFlags = FT_RENDER_MODE_LCD_V;
             }
 
-            FcBool fcAutohint;
-            if ((*FcPatternGetBoolPtr)(pattern, FC_AUTOHINT, 0, &fcAutohint) == FcResultMatch && fcAutohint) {
+            FcBool fcAutohint = FcFalse;
+            FcBool fcAutohintSet = (*FcPatternGetBoolPtr)(pattern, FC_AUTOHINT, 0, &fcAutohint) == FcResultMatch;
+
+            if (logFC && fcAutohintSet) fprintf(stderr, "FC_AUTOHINT(%d) ", fcAutohint);
+
+            if (fcAutohintSet && fcAutohint) {
                 context->loadFlags |= FT_LOAD_FORCE_AUTOHINT;
             }
 
-            int fcLCDFilter;
+            FT_LcdFilter fcLCDFilter;
+            FcBool fcLCDFilterSet = (*FcPatternGetIntegerPtr)(pattern, FC_LCD_FILTER, 0, &fcLCDFilter) == FcResultMatch;
             context->lcdFilter = FT_LCD_FILTER_DEFAULT;
-            if ((*FcPatternGetIntegerPtr)(pattern, FC_LCD_FILTER, 0, &fcLCDFilter) == FcResultMatch) {
+            if (fcLCDFilterSet) {
                 switch (fcLCDFilter) {
                     case FC_LCD_NONE:
+                        if (logFC) fprintf(stderr, "FC_LCD_NONE");
                         context->lcdFilter = FT_LCD_FILTER_NONE;
                         break;
                     case FC_LCD_LIGHT:
+                        if (logFC) fprintf(stderr, "FC_LCD_LIGHT");
                         context->lcdFilter = FT_LCD_FILTER_LIGHT;
                         break;
                     case FC_LCD_LEGACY:
+                        if (logFC) fprintf(stderr, "FC_LCD_LEGACY");
                         context->lcdFilter = FT_LCD_FILTER_LEGACY;
                         break;
                     case FC_LCD_DEFAULT:
-                    default:;
+                        if (logFC) fprintf(stderr, "FC_LCD_DEFAULT");
+                        break;
+                    default:
+                        if (logFC) fprintf(stderr, "FC_LCD_UNKNOWN");
+                        ;
                 }
             }
             (*FcPatternDestroyPtr)(pattern);
+            if (logFC) fprintf(stderr, "\n");
         }
     }
 
