@@ -161,7 +161,7 @@ public class CEmbeddedFrame extends EmbeddedFrame {
         }
         // ignore focus "lost" native request as it may mistakenly
         // deactivate active window (see 8001161)
-        if (globalFocusedWindow == this) {
+        if (globalFocusedWindow == this && parentWindowActive) {
             responder.handleWindowFocusEvent(parentWindowActive, null);
         }
     }
