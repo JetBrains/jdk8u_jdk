@@ -57,6 +57,7 @@
 #define  ADJUST_FONT_SIZE(X, DPI) (((X)*DEFAULT_DPI + ((DPI)>>1))/(DPI))
 
 #define FONTCONFIG_DLL JNI_LIB_NAME("fontconfig")
+#define FONTCONFIG_DLL_VERSIONED VERSIONED_JNI_LIB_NAME("fontconfig", "1")
 
 typedef struct {
     /* Important note:
@@ -155,10 +156,13 @@ static void* openFontConfig() {
         return NULL;
     }
 
-    libfontconfig = dlopen(FONTCONFIG_DLL, RTLD_LOCAL | RTLD_LAZY);
+    libfontconfig = dlopen(FONTCONFIG_DLL_VERSIONED, RTLD_LOCAL | RTLD_LAZY);
     if (libfontconfig == NULL) {
-        if (logFC) fprintf(stderr, "FC_LOG: cannot open %s\n", FONTCONFIG_DLL);
-        return NULL;
+        libfontconfig = dlopen(FONTCONFIG_DLL, RTLD_LOCAL | RTLD_LAZY);
+        if (libfontconfig == NULL) {
+            if (logFC) fprintf(stderr, "FC_LOG: cannot open %s\n", FONTCONFIG_DLL);
+            return NULL;
+        }
     }
     return libfontconfig;
 }
