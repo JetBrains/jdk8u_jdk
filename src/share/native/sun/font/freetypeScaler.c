@@ -597,8 +597,27 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             FcBool fcAntialias = FcFalse;
             FcBool fcAntialiasSet = (*FcPatternGetBoolPtr)(pattern, FC_ANTIALIAS, 0, &fcAntialias) == FcResultMatch;
 
-            if (logFC && fcAntialiasSet) fprintf(stderr, "FC_ANTIALIAS(%d) ", fcAntialias);
-
+            if (logFC) {
+                switch(context->aaType) {
+                    case TEXT_AA_ON:
+                        fprintf(stderr, "JDK_AA_ON ");
+                        break;
+                    case TEXT_AA_OFF:
+                        fprintf(stderr, "JDK_AA_OFF ");
+                        break;
+                    case TEXT_AA_LCD_HRGB:
+                        fprintf(stderr, "JDK_AA_LCD_HRGB ");
+                        break;
+                    case TEXT_AA_LCD_HBGR:
+                        fprintf(stderr, "JDK_AA_LCD_HBGR ");
+                        break;
+                    default:
+                        fprintf(stderr, "JDK_AA_UNKNOWN ");
+                        break;
+                }
+                if (fcAntialiasSet) fprintf(stderr, "FC_ANTIALIAS(%d) ", fcAntialias);
+            }
+             
             if (context->aaType == TEXT_AA_ON) { // Greyscale AA
                 context->renderFlags = FT_RENDER_MODE_NORMAL;
                 if (fcHintingSet) {
@@ -619,35 +638,40 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             else if (context->aaType == TEXT_AA_OFF) { // No AA
                 context->renderFlags = FT_RENDER_MODE_MONO;
                 context->loadFlags = (!fcHintingSet || fcHinting) ? FT_LOAD_TARGET_MONO : FT_LOAD_NO_HINTING;
-            } else if (fcAntialiasSet && fcAntialias) {
+            } else {
                 int fcRGBA = FC_RGBA_UNKNOWN;
-                if ((*FcPatternGetIntegerPtr)(pattern, FC_RGBA, 0, &fcRGBA) == FcResultMatch) {
-                    switch (fcRGBA) {
-                        case FC_RGBA_RGB:
-                        case FC_RGBA_BGR:
-                            if (logFC) fprintf(stderr, fcRGBA == FC_RGBA_RGB ? "FC_RGBA_RGB " : "FC_RGBA_BGR ");
-                            context->loadFlags = FT_LOAD_TARGET_LCD;
-                            context->renderFlags = FT_RENDER_MODE_LCD;
-                            break;
-                        case FC_RGBA_VRGB:
-                        case FC_RGBA_VBGR:
-                            if (logFC) fprintf(stderr, fcRGBA == FC_RGBA_VRGB ? "FC_RGBA_VRGB " : "FC_RGBA_VBGR ");
-                            context->loadFlags = FT_LOAD_TARGET_LCD_V;
-                            context->renderFlags = FT_RENDER_MODE_LCD_V;
-                            break;
-                        default:
-                            if (logFC) fprintf(stderr, "FC_RGBA_UNKNOWN ");
-                            break;
+                if (fcAntialiasSet && fcAntialias) {
+                    if ((*FcPatternGetIntegerPtr)(pattern, FC_RGBA, 0, &fcRGBA) == FcResultMatch) {
+                        switch (fcRGBA) {
+                            case FC_RGBA_RGB:
+                            case FC_RGBA_BGR:
+                                if (logFC) fprintf(stderr, fcRGBA == FC_RGBA_RGB ? "FC_RGBA_RGB " : "FC_RGBA_BGR ");
+                                context->loadFlags = FT_LOAD_TARGET_LCD;
+                                context->renderFlags = FT_RENDER_MODE_LCD;
+                                break;
+                            case FC_RGBA_VRGB:
+                            case FC_RGBA_VBGR:
+                                if (logFC) fprintf(stderr, fcRGBA == FC_RGBA_VRGB ? "FC_RGBA_VRGB " : "FC_RGBA_VBGR ");
+                                context->loadFlags = FT_LOAD_TARGET_LCD_V;
+                                context->renderFlags = FT_RENDER_MODE_LCD_V;
+                                break;
+                            default:
+                                if (logFC) fprintf(stderr, "FC_RGBA_UNKNOWN ");
+                                break;
+                        }
                     }
                 }
-            } else if (context->aaType == TEXT_AA_LCD_HRGB ||
-                       context->aaType == TEXT_AA_LCD_HBGR) {
-                context->loadFlags = FT_LOAD_TARGET_LCD;
-                context->renderFlags = FT_RENDER_MODE_LCD;
-            } else {
-                context->loadFlags = FT_LOAD_TARGET_LCD_V;
-                context->renderFlags = FT_RENDER_MODE_LCD_V;
-            }
+                if (fcRGBA == FC_RGBA_UNKNOWN) {
+                    if (context->aaType == TEXT_AA_LCD_HRGB ||
+                        context->aaType == TEXT_AA_LCD_HBGR) {
+                        context->loadFlags = FT_LOAD_TARGET_LCD;
+                        context->renderFlags = FT_RENDER_MODE_LCD;
+                    } else {
+                        context->loadFlags = FT_LOAD_TARGET_LCD_V;
+                        context->renderFlags = FT_RENDER_MODE_LCD_V;
+                    }
+                }
+            } 
 
             FcBool fcAutohint = FcFalse;
             FcBool fcAutohintSet = (*FcPatternGetBoolPtr)(pattern, FC_AUTOHINT, 0, &fcAutohint) == FcResultMatch;
