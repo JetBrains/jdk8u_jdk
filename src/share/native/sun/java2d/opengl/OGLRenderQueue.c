@@ -477,7 +477,7 @@ Java_sun_java2d_opengl_OGLRenderQueue_flushBuffer
             {
                 jlong pConfigInfo = NEXT_LONG(b);
                 CONTINUE_IF_NULL(oglc);
-                RESET_PREVIOUS_OP();
+                //RESET_PREVIOUS_OP();
                 OGLGC_DestroyOGLGraphicsConfig(pConfigInfo);
 
                 // the previous method will call glX/wglMakeCurrent(None),
