@@ -85,7 +85,7 @@ public final class CGLGraphicsConfig extends CGraphicsConfig
                                                 int swapInterval);
     private static native int getOGLCapabilities(long configInfo);
 
-    private static HashMap<Long, Integer> pGCRefCounts = new HashMap<Long, Integer>();
+    private static final HashMap<Long, Integer> pGCRefCounts = new HashMap<>();
 
     /**
      * Returns GL_MAX_TEXTURE_SIZE from the shared opengl context. Must be
@@ -191,7 +191,10 @@ public final class CGLGraphicsConfig extends CGraphicsConfig
             if (count != null) {
                 count--;
                 pGCRefCounts.put(pConfigInfo, count);
-                if (count == 0) OGLRenderQueue.disposeGraphicsConfig(pConfigInfo);
+                if (count == 0) {
+                    OGLRenderQueue.disposeGraphicsConfig(pConfigInfo);
+                    pGCRefCounts.remove(pConfigInfo);
+                }
             }
         }
     }
