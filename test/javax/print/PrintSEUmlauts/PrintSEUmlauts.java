@@ -85,7 +85,7 @@ public class PrintSEUmlauts implements Printable {
 
     private static final boolean DEBUG = false;
     private static void testPrintAndExit() {
-        String expected = "<e4> 7.44 100.0 100.0 S";
+        String expected = "<e4>";
         String content = "";
 
         File file = new File("out.ps");
@@ -107,14 +107,14 @@ public class PrintSEUmlauts implements Printable {
                 System.err.println("printing content");
                 System.err.println(content);
             }
-            throw new RuntimeException("Expected <e4> to represent 'ä' but not found!");
+            throw new RuntimeException("Expected <e4> to represent '\u00e4' but not found!");
         }
         System.err.println("SUCCESS");
     }
 
     public int print(Graphics g, PageFormat pf, int pg) {
        if (pg > 0) return NO_SUCH_PAGE;
-       g.drawString("ä", 100, 100);
+       g.drawString("\u00e4", 100, 100);
        return PAGE_EXISTS;
    }
 }
