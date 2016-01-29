@@ -323,8 +323,9 @@ static NSObject *sAttributeNamesLOCK = nil;
 {
     jobject jcomponent = [(AWTView *)view awtComponent:env];
     jint index = JNFCallStaticIntMethod(env, sjm_getAccessibleIndexInParent, jaccessible, jcomponent);
-    NSString *javaRole = getJavaRole(env, jaccessible, jcomponent);
+    if (index < 0) return nil;
 
+    NSString *javaRole = getJavaRole(env, jaccessible, jcomponent);
     return [self createWithAccessible:jaccessible role:javaRole index:index withEnv:env withView:view];
 }
 
@@ -663,8 +664,8 @@ static NSObject *sAttributeNamesLOCK = nil;
     if (![[self accessibilityRoleAttribute] isEqualToString:NSAccessibilityListRole]) {
         return [super accessibilityIndexOfChild:child];
     }
-
-    return JNFCallStaticIntMethod([ThreadUtilities getJNIEnv], sjm_getAccessibleIndexInParent, ((JavaComponentAccessibility *)child)->fAccessible, ((JavaComponentAccessibility *)child)->fComponent);
+    jint index = JNFCallStaticIntMethod([ThreadUtilities getJNIEnv], sjm_getAccessibleIndexInParent, ((JavaComponentAccessibility *)child)->fAccessible, ((JavaComponentAccessibility *)child)->fComponent);
+    return index >= 0 ? index : 0;
 }
 
 // Without this optimization accessibilityChildrenAttribute is called in order to get the entire array of children.

@@ -31,7 +31,7 @@ import java.util.*;
 
 import sun.awt.SunHints;
 
-public final class CStrike extends PhysicalStrike {
+public final class CStrike extends FontStrike {
 
     // Creates the native strike
     private static native long createNativeStrikePtr(long nativeFontPtr,
