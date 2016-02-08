@@ -1215,7 +1215,7 @@ public class LWWindowPeer
             return true;
         }
 
-       focusLog.fine("iplatformWindow.requestWindowFocus()"); 
+       focusLog.fine("platformWindow.requestWindowFocus()"); 
         return platformWindow.requestWindowFocus();
     }
 
