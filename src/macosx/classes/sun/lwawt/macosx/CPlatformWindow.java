@@ -553,6 +553,36 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
 
         boolean wasMaximized = isMaximized();
 
+        // Actually show or hide the window
+        LWWindowPeer blocker = (peer == null)? null : peer.getBlocker();
+        if (blocker == null || !visible) {
+            // If it ain't blocked, or is being hidden, go regular way
+            if (visible) {
+                CWrapper.NSWindow.makeFirstResponder(nsWindowPtr, contentView.getAWTView());
+
+                boolean isPopup = (target.getType() == Window.Type.POPUP);
+                if (isPopup) {
+                    // Popups in applets don't activate applet's process
+                    CWrapper.NSWindow.orderFrontRegardless(nsWindowPtr);
+                } else {
+                    CWrapper.NSWindow.orderFront(nsWindowPtr);
+                }
+
+                boolean isKeyWindow = CWrapper.NSWindow.isKeyWindow(nsWindowPtr);
+                if (!isKeyWindow) {
+                    CWrapper.NSWindow.makeKeyWindow(nsWindowPtr);
+                }
+            } else {
+                // immediately hide the window
+                CWrapper.NSWindow.orderOut(nsWindowPtr);
+                // process the close
+                CWrapper.NSWindow.close(nsWindowPtr);
+            }
+        } else {
+            // otherwise, put it in a proper z-order
+            CWrapper.NSWindow.orderWindow(nsWindowPtr, CWrapper.NSWindow.NSWindowBelow,
+                    ((CPlatformWindow)blocker.getPlatformWindow()).getNSWindowPtr());
+        }
         this.visible = visible;
 
         // Manage the extended state when showing
@@ -698,14 +728,15 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
 
     @Override
     public boolean rejectFocusRequest(CausedFocusEvent.Cause cause) {
+        return true;
         // Cross-app activation requests are not allowed.
-        if (cause != CausedFocusEvent.Cause.MOUSE_EVENT &&
-            !((LWCToolkit)Toolkit.getDefaultToolkit()).isApplicationActive())
-        {
-            focusLogger.fine("the app is inactive, so the request is rejected");
-            return true;
-        }
-        return false;
+        //if (cause != CausedFocusEvent.Cause.MOUSE_EVENT &&
+        //    !((LWCToolkit)Toolkit.getDefaultToolkit()).isApplicationActive())
+        //{
+        //    focusLogger.fine("the app is inactive, so the request is rejected");
+        //    return true;
+        //}
+        //return false;
     }
 
     @Override
@@ -1053,8 +1084,6 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
             // Order the window to front of the stack of child windows
             final long nsWindowSelfPtr = getNSWindowPtr();
             final long nsWindowOwnerPtr = owner.getNSWindowPtr();
-            CWrapper.NSWindow.removeChildWindow(nsWindowOwnerPtr, nsWindowSelfPtr);
-            CWrapper.NSWindow.addChildWindow(nsWindowOwnerPtr, nsWindowSelfPtr, CWrapper.NSWindow.NSWindowAbove);
         }
 
         applyWindowLevel(target);

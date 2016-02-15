@@ -229,7 +229,7 @@ OGLTR_AddToGlyphCache(GlyphInfo *glyph, GLenum pixelFormat)
     } else {
         gcinfo = glyphCacheLCD;
     }
-    
+
     if ((gcinfo == NULL) || (glyph->image == NULL)) {
         return;
     }
@@ -421,16 +421,16 @@ OGLTR_EnableLCDGlyphModeState(GLuint glyphTextureID,
     if (dstTextureID != 0) {
         j2d_glBindTexture(GL_TEXTURE_2D, dstTextureID);
     } else {
-    if (cachedDestTextureID == 0) {
-        cachedDestTextureID =
-            OGLContext_CreateBlitTexture(GL_RGB8, GL_RGB,
-                                         OGLTR_CACHED_DEST_WIDTH,
-                                         OGLTR_CACHED_DEST_HEIGHT);
         if (cachedDestTextureID == 0) {
-            return JNI_FALSE;
+            cachedDestTextureID =
+                OGLContext_CreateBlitTexture(GL_RGB8, GL_RGB,
+                                             OGLTR_CACHED_DEST_WIDTH,
+                                             OGLTR_CACHED_DEST_HEIGHT);
+            if (cachedDestTextureID == 0) {
+                return JNI_FALSE;
+            }
         }
-    }
-    j2d_glBindTexture(GL_TEXTURE_2D, cachedDestTextureID);
+        j2d_glBindTexture(GL_TEXTURE_2D, cachedDestTextureID);
     }
 
     // note that GL_TEXTURE_2D was already enabled for texture unit 0,
@@ -773,16 +773,16 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps,
     dy2 = dy1 + ginfo->height;
 
     if (dstTextureID == 0) {
-    // copy destination into second cached texture, if necessary
-    OGLTR_UpdateCachedDestination(dstOps, ginfo,
-                                  dx1, dy1, dx2, dy2,
-                                  glyphIndex, totalGlyphs);
+        // copy destination into second cached texture, if necessary
+        OGLTR_UpdateCachedDestination(dstOps, ginfo,
+                                      dx1, dy1, dx2, dy2,
+                                      glyphIndex, totalGlyphs);
 
-    // texture coordinates of the destination tile
-    dtx1 = ((jfloat)(dx1 - cachedDestBounds.x1)) / OGLTR_CACHED_DEST_WIDTH;
-    dty1 = ((jfloat)(cachedDestBounds.y2 - dy1)) / OGLTR_CACHED_DEST_HEIGHT;
-    dtx2 = ((jfloat)(dx2 - cachedDestBounds.x1)) / OGLTR_CACHED_DEST_WIDTH;
-    dty2 = ((jfloat)(cachedDestBounds.y2 - dy2)) / OGLTR_CACHED_DEST_HEIGHT;
+        // texture coordinates of the destination tile
+        dtx1 = ((jfloat)(dx1 - cachedDestBounds.x1)) / OGLTR_CACHED_DEST_WIDTH;
+        dty1 = ((jfloat)(cachedDestBounds.y2 - dy1)) / OGLTR_CACHED_DEST_HEIGHT;
+        dtx2 = ((jfloat)(dx2 - cachedDestBounds.x1)) / OGLTR_CACHED_DEST_WIDTH;
+        dty2 = ((jfloat)(cachedDestBounds.y2 - dy2)) / OGLTR_CACHED_DEST_HEIGHT;
     } else {
         jint gw = ginfo->width;
         jint gh = ginfo->height;
@@ -934,25 +934,25 @@ OGLTR_DrawLCDGlyphNoCache(OGLContext *oglc, OGLSDOps *dstOps,
             dyadj = dstOps->yOffset + dstOps->height - (y + sh);
 
             if (dstTextureID == 0) {
-            // copy destination into cached texture tile (the lower-left
-            // corner of the destination region will be positioned at the
-            // lower-left corner (0,0) of the texture)
-            j2d_glActiveTextureARB(GL_TEXTURE1_ARB);
-            j2d_glCopyTexSubImage2D(GL_TEXTURE_2D, 0,
-                                    0, 0,
-                                    dxadj, dyadj,
-                                    sw, sh);
-            // update the remaining destination texture coordinates
-            dtx2 = ((GLfloat)sw) / OGLTR_CACHED_DEST_WIDTH;
-            dty1 = ((GLfloat)sh) / OGLTR_CACHED_DEST_HEIGHT;
+                // copy destination into cached texture tile (the lower-left
+                // corner of the destination region will be positioned at the
+                // lower-left corner (0,0) of the texture)
+                j2d_glActiveTextureARB(GL_TEXTURE1_ARB);
+                j2d_glCopyTexSubImage2D(GL_TEXTURE_2D, 0,
+                                        0, 0,
+                                        dxadj, dyadj,
+                                        sw, sh);
+                // update the remaining destination texture coordinates
+                dtx2 = ((GLfloat)sw) / OGLTR_CACHED_DEST_WIDTH;
+                dty1 = ((GLfloat)sh) / OGLTR_CACHED_DEST_HEIGHT;
             } else {
                 // use the destination texture directly
                 // update the remaining destination texture coordinates
-                dtx1 =((GLfloat)dxadj) / ((GLfloat)dstOps->textureWidth);
-                dtx2 = ((GLfloat)dxadj + sw) / ((GLfloat)dstOps->textureWidth);
+                dtx1 =((GLfloat)dxadj) / dstOps->textureWidth;
+                dtx2 = ((GLfloat)dxadj + sw) / dstOps->textureWidth;
 
-                dty1 = ((GLfloat)dyadj + sh) / ((GLfloat)dstOps->textureHeight);
-                dty2 = ((GLfloat)dyadj) / ((GLfloat)dstOps->textureHeight);
+                dty1 = ((GLfloat)dyadj + sh) / dstOps->textureHeight;
+                dty2 = ((GLfloat)dyadj) / dstOps->textureHeight;
 
                 j2d_glTextureBarrierNV();
             }
@@ -1004,11 +1004,28 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
     glyphMode = MODE_NOT_INITED;
     isCachedDestValid = JNI_FALSE;
 
+    // We have to obtain an information about destination content
+    // in order to render lcd glyphs. It could be done by copying
+    // a part of desitination buffer into an intermediate texture
+    // using glCopyTexSubImage2D(). However, on macosx this path is
+    // slow, and it dramatically reduces the overall speed of lcd
+    // text rendering.
+    //
+    // In some cases, we can use a texture from the destination
+    // surface data in oredr to avoid this slow reading routine.
+    // It requires:
+    //  * An appropriate textureTarget for the destination SD.
+    //    In particular, we need GL_TEXTURE_2D
+    //  * Means to prevent read-after-write problem.
+    //    At the moment, a GL_NV_texture_barrier extension is used
+    //    to achieve this.
+#ifdef MACOSX
     if (OGLC_IS_CAP_PRESENT(oglc, CAPS_EXT_TEXBARRIER) &&
         dstOps->textureTarget == GL_TEXTURE_2D)
     {
         dstTextureID = dstOps->textureID;
     }
+#endif
 
     for (glyphCounter = 0; glyphCounter < totalGlyphs; glyphCounter++) {
         jint x, y;
