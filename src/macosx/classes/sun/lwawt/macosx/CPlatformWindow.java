@@ -553,36 +553,6 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
 
         boolean wasMaximized = isMaximized();
 
-        // Actually show or hide the window
-        LWWindowPeer blocker = (peer == null)? null : peer.getBlocker();
-        if (blocker == null || !visible) {
-            // If it ain't blocked, or is being hidden, go regular way
-            if (visible) {
-                CWrapper.NSWindow.makeFirstResponder(nsWindowPtr, contentView.getAWTView());
-
-                boolean isPopup = (target.getType() == Window.Type.POPUP);
-                if (isPopup) {
-                    // Popups in applets don't activate applet's process
-                    CWrapper.NSWindow.orderFrontRegardless(nsWindowPtr);
-                } else {
-                    CWrapper.NSWindow.orderFront(nsWindowPtr);
-                }
-
-                boolean isKeyWindow = CWrapper.NSWindow.isKeyWindow(nsWindowPtr);
-                if (!isKeyWindow) {
-                    CWrapper.NSWindow.makeKeyWindow(nsWindowPtr);
-                }
-            } else {
-                // immediately hide the window
-                CWrapper.NSWindow.orderOut(nsWindowPtr);
-                // process the close
-                CWrapper.NSWindow.close(nsWindowPtr);
-            }
-        } else {
-            // otherwise, put it in a proper z-order
-            CWrapper.NSWindow.orderWindow(nsWindowPtr, CWrapper.NSWindow.NSWindowBelow,
-                    ((CPlatformWindow)blocker.getPlatformWindow()).getNSWindowPtr());
-        }
         this.visible = visible;
 
         // Manage the extended state when showing
