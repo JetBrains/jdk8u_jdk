@@ -859,6 +859,33 @@ endif
 
 ##########################################################################################
 
+#### Begin harfbuzz configuration
+
+HARFBUZZ_CFLAGS := -I$(JDK_TOPDIR)/src/share/native/sun/font/harfbuzz \
+    -I$(JDK_TOPDIR)/src/share/native/sun/font/harfbuzz/hb-ucdn \
+    -DHAVE_OT -DHAVE_FALLBACK -DHAVE_UCDN
+
+ifneq ($(OPENJDK_TARGET_OS), windows)
+  HARFBUZZ_CFLAGS += -DGETPAGESIZE -DHAVE_MPROTECT -DHAVE_PTHREAD \
+                      -DHAVE_SYSCONF -DHAVE_SYS_MMAN_H -DHAVE_UNISTD_H
+endif
+ifneq (, $(findstring $(OPENJDK_TARGET_OS), linux macosx))
+  HARFBUZZ_CFLAGS += -DHAVE_INTEL_ATOMIC_PRIMITIVES
+endif
+ifeq ($(OPENJDK_TARGET_OS), solaris)
+  HARFBUZZ_CFLAGS += -DHAVE_SOLARIS_ATOMIC_OPS
+endif
+ifeq ($(OPENJDK_TARGET_OS), macosx)
+  HARFBUZZ_CFLAGS += -DHAVE_CORETEXT
+endif
+ifneq ($(OPENJDK_TARGET_OS), macosx)
+  LIBFONTMANAGER_EXCLUDE_FILES += harfbuzz/hb-coretext.cpp
+endif
+# hb-ft.cc is not presently needed, and requires freetype 2.4.2 or later.
+LIBFONTMANAGER_EXCLUDE_FILES += harfbuzz/hb-ft.cpp
+
+#### End harfbuzz configuration
+
 ifndef OPENJDK
   FONT_HEADERS := -I$(JDK_TOPDIR)/src/closed/share/native/sun/font/t2k
   BUILD_LIBFONTMANAGER_MAPFILE := $(JDK_TOPDIR)/make/mapfiles/libfontmanager/mapfile-vers
@@ -897,7 +924,8 @@ BUILD_LIBFONTMANAGER_CFLAGS_COMMON := \
     -I$(JDK_TOPDIR)/src/share/native/sun/java2d/loops \
     -I$(JDK_TOPDIR)/src/share/native/sun/java2d/pipe \
     -I$(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/java2d \
-    -I$(JDK_TOPDIR)/src/share/native/sun/java2d
+    -I$(JDK_TOPDIR)/src/share/native/sun/java2d \
+    $(HARFBUZZ_CFLAGS)
 
 # Turn off aliasing with GCC for ExtensionSubtables.cpp
 ifeq ($(OPENJDK_TARGET_OS), linux)
