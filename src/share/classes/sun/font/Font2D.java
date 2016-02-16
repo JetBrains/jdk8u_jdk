@@ -465,6 +465,12 @@ public abstract class Font2D {
         return null;
     }
 
+    /* Used only on OS X.
+     */
+    protected long getPlatformNativeFontPtr() {
+        return 0L;
+    }
+
     /* for layout code */
     protected long getUnitsPerEm() {
         return 2048;
