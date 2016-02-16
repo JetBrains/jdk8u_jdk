@@ -195,10 +195,7 @@ JDKFontInfo*
                        jobject font2D,
                        jobject fontStrike,
                        jfloat ptSize,
-                       jlong pScaler,
-                       jlong pNativeFont,
-                       jfloatArray matrix,
-                       jboolean aat) {
+                       jfloatArray matrix) {
 
 
     JDKFontInfo *fi = (JDKFontInfo*)malloc(sizeof(JDKFontInfo));
@@ -208,8 +205,6 @@ JDKFontInfo*
     fi->env = env; // this is valid only for the life of this JNI call.
     fi->font2D = font2D;
     fi->fontStrike = fontStrike;
-    fi->nativeFont = pNativeFont;
-    fi->aat = aat;
     (*env)->GetFloatArrayRegion(env, matrix, 0, 4, fi->matrix);
     fi->ptSize = ptSize;
     fi->xPtSize = euclidianDistance(fi->matrix[0], fi->matrix[1]);
@@ -227,9 +222,7 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      jobject fontStrike,
      jfloat ptSize,
      jfloatArray matrix,
-     jlong pScaler,
-     jlong pNativeFont,
-     jboolean aat,
+     jlong pFace,
      jcharArray text,
      jobject gvdata,
      jint script,
@@ -241,6 +234,7 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      jint slot) {
 
      hb_buffer_t *buffer;
+     hb_face_t* hbface;
      hb_font_t* hbfont;
      jchar  *chars;
      jsize len;
@@ -255,8 +249,7 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      unsigned int buflen;
 
      JDKFontInfo *jdkFontInfo =
-         createJDKFontInfo(env, font2D, fontStrike, ptSize,
-                           pScaler, pNativeFont, matrix, aat);
+         createJDKFontInfo(env, font2D, fontStrike, ptSize, matrix);
      if (!jdkFontInfo) {
         return JNI_FALSE;
      }
@@ -264,7 +257,8 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      jdkFontInfo->font2D = font2D;
      jdkFontInfo->fontStrike = fontStrike;
 
-     hbfont = hb_jdk_font_create(jdkFontInfo, NULL);
+     hbface = (hb_face_t*) jlong_to_ptr(pFace);
+     hbfont = hb_jdk_font_create(hbface, jdkFontInfo, NULL);
 
      buffer = hb_buffer_create();
      hb_buffer_set_script(buffer, getHBScriptCode(script));
