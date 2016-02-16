@@ -38,12 +38,10 @@ typedef struct JDKFontInfo_Struct {
     JNIEnv* env;
     jobject font2D;
     jobject fontStrike;
-    long nativeFont;
     float matrix[4];
     float ptSize;
     float xPtSize;
     float yPtSize;
-    jboolean aat;
 } JDKFontInfo;
 
 
@@ -58,7 +56,8 @@ hb_face_t *
 hb_jdk_face_create(JDKFontInfo*   jdkFontInfo,
                    hb_destroy_func_t destroy);
 hb_font_t *
-hb_jdk_font_create(JDKFontInfo*   jdkFontInfo,
+hb_jdk_font_create(hb_face_t* hbface,
+                   JDKFontInfo*   jdkFontInfo,
                    hb_destroy_func_t destroy);
 
 

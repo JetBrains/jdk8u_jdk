@@ -184,6 +184,7 @@ public final class CFont extends PhysicalFont {
     }
 
     protected synchronized void finalize() {
+        super.finalize();
         if (nativeFontPtr != 0) {
             disposeNativeFont(nativeFontPtr);
         }

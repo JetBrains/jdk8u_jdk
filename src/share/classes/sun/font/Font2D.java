@@ -74,6 +74,8 @@ public abstract class Font2D {
     protected int style = Font.PLAIN;
     protected FontFamily family;
     protected int fontRank = DEFAULT_RANK;
+    
+    private long harfbuzzFaceNativePtr; 
 
     /*
      * A mapper can be independent of the strike.
@@ -470,6 +472,24 @@ public abstract class Font2D {
     protected long getPlatformNativeFontPtr() {
         return 0L;
     }
+    
+    synchronized long getHarfbuzzFacePtr() {
+        if (harfbuzzFaceNativePtr == 0) {
+            harfbuzzFaceNativePtr = createHarfbuzzFace();
+        }
+        return harfbuzzFaceNativePtr;
+    }
+
+    @Override
+    protected synchronized void finalize() {
+        if (harfbuzzFaceNativePtr != 0) {
+            disposeHarfbuzzFace(harfbuzzFaceNativePtr);
+            harfbuzzFaceNativePtr = 0;
+        }
+    }
+
+    private native long createHarfbuzzFace();
+    private native void disposeHarfbuzzFace(long harfbuzzFaceNativePtr);    
 
     /* for layout code */
     protected long getUnitsPerEm() {
