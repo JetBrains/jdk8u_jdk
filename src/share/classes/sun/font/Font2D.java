@@ -25,6 +25,9 @@
 
 package sun.font;
 
+import sun.java2d.Disposer;
+import sun.java2d.DisposerRecord;
+
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
@@ -75,7 +78,7 @@ public abstract class Font2D {
     protected FontFamily family;
     protected int fontRank = DEFAULT_RANK;
     
-    private long harfbuzzFaceNativePtr; 
+    private HarfbuzzFaceRef harfbuzzFaceRef; 
 
     /*
      * A mapper can be independent of the strike.
@@ -474,22 +477,17 @@ public abstract class Font2D {
     }
     
     synchronized long getHarfbuzzFacePtr() {
-        if (harfbuzzFaceNativePtr == 0) {
-            harfbuzzFaceNativePtr = createHarfbuzzFace();
+        if (harfbuzzFaceRef == null) {
+            long harfbuzzFaceNativePtr = createHarfbuzzFace();
+            if (harfbuzzFaceNativePtr == 0) return 0;
+            harfbuzzFaceRef = new HarfbuzzFaceRef(harfbuzzFaceNativePtr);
+            Disposer.addObjectRecord(this, harfbuzzFaceRef);
         }
-        return harfbuzzFaceNativePtr;
-    }
-
-    @Override
-    protected synchronized void finalize() {
-        if (harfbuzzFaceNativePtr != 0) {
-            disposeHarfbuzzFace(harfbuzzFaceNativePtr);
-            harfbuzzFaceNativePtr = 0;
-        }
+        return harfbuzzFaceRef.harfbuzzFaceNativePtr;
     }
 
     private native long createHarfbuzzFace();
-    private native void disposeHarfbuzzFace(long harfbuzzFaceNativePtr);    
+    private static native void disposeHarfbuzzFace(long harfbuzzFaceNativePtr);    
 
     /* for layout code */
     protected long getUnitsPerEm() {
@@ -572,4 +570,16 @@ public abstract class Font2D {
         }
     }
 
+    private static class HarfbuzzFaceRef implements DisposerRecord {
+        private final long harfbuzzFaceNativePtr;
+
+        private HarfbuzzFaceRef(long harfbuzzFaceNativePtr) {
+            this.harfbuzzFaceNativePtr = harfbuzzFaceNativePtr;
+        }
+
+        @Override
+        public void dispose() {
+            disposeHarfbuzzFace(harfbuzzFaceNativePtr);
+        }
+    }
 }
