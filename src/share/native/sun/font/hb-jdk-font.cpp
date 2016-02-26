@@ -348,7 +348,7 @@ JNIEXPORT jlong JNICALL Java_sun_font_Font2D_createHarfbuzzFace(JNIEnv *env, job
  * Method:    disposeHarfbuzzFace
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_sun_font_Font2D_disposeHarfbuzzFace(JNIEnv *env, jobject font2D, jlong ptr) {
+JNIEXPORT void JNICALL Java_sun_font_Font2D_disposeHarfbuzzFace(JNIEnv *env, jclass cls, jlong ptr) {
     hb_face_t* face = (hb_face_t*) jlong_to_ptr(ptr);
     hb_face_destroy(face);
 }
