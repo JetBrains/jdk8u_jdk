@@ -198,43 +198,11 @@ public final class CFont extends PhysicalFont implements FontSubstitution {
         return nativeFontPtr;
     }
 
-    static native void getCascadeList(long nativeFontPtr, ArrayList<String> listOfString);
-
-    private CompositeFont createCompositeFont() {
-        ArrayList<String> listOfString = new ArrayList<String>();
-        getCascadeList(nativeFontPtr, listOfString);
-
-        FontManager fm = FontManagerFactory.getInstance();
-        int numFonts = 1 + listOfString.size();
-        PhysicalFont[] fonts = new PhysicalFont[numFonts];
-        fonts[0] = this;
-        int idx = 1;
-        for (String s : listOfString) {
-            if (s.equals(".AppleSymbolsFB"))  {
-                // Don't know why we get the weird name above .. replace.
-                s = "AppleSymbols";
-            }
-            Font2D f2d = fm.findFont2D(s, Font.PLAIN, FontManager.NO_FALLBACK);
-            if (f2d == null || f2d == this) {
-                continue;
-            }
-            fonts[idx++] = (PhysicalFont)f2d;
-        }
-        if (idx < fonts.length) {
-            PhysicalFont[] orig = fonts;
-            fonts = new PhysicalFont[idx];
-            System.arraycopy(orig, 0, fonts, 0, idx);
-        }
-        CompositeFont compFont = new CompositeFont(fonts);
-        compFont.mapper = new CCompositeGlyphMapper(compFont);
-        return compFont;
-    }
-
     private CompositeFont compFont;
 
     public CompositeFont getCompositeFont2D() {
         if (compFont == null) {
-           compFont = createCompositeFont();
+           compFont = new CCompositeFont(this);
         }
         return compFont;
     }
