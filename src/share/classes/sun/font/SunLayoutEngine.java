@@ -172,8 +172,8 @@ public final class SunLayoutEngine implements LayoutEngine, LayoutEngineFactory 
              key.script(), key.lang(), typo_flags, pt, data,
              font.getUnitsPerEm(), layoutTables);
         } else {
-            long pFace = font.getHarfbuzzFacePtr();
-            shape(font, strike, ptSize, mat, pFace,
+            shape(font, strike, ptSize, mat, 
+                    font.getHarfbuzzFacePtr(), font.getPlatformNativeFontPtr(), font.isAAT(),
                     tr.text, data, key.script(),
                     tr.start, tr.limit, baseIndex, pt,
                     typo_flags, gmask);
@@ -191,7 +191,7 @@ public final class SunLayoutEngine implements LayoutEngine, LayoutEngineFactory 
     /* Native method to invoke harfbuzz layout engine */
     private static native boolean
     shape(Font2D font, FontStrike strike, float ptSize, float[] mat,
-          long pFace,
+          long pFace, long pNativeFont, boolean aat,
           char[] chars, GVData data,
           int script, int offset, int limit,
           int baseIndex, Point2D.Float pt, int typo_flags, int slot);
