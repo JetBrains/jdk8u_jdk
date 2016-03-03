@@ -26,7 +26,6 @@
 package sun.font;
 
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import static java.awt.RenderingHints.*;
@@ -36,7 +35,6 @@ import java.awt.font.GlyphMetrics;
 import java.awt.font.GlyphJustificationInfo;
 import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
-import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
@@ -1124,7 +1122,7 @@ public class StandardGlyphVector extends GlyphVector {
 
     private void initFontData() {
         font2D = FontUtilities.getFont2D(font);
-        if (font2D instanceof FontSubstitution) {
+        if (Font2D.fontSubstitutionEnabled && font2D instanceof FontSubstitution) {
            font2D = ((FontSubstitution)font2D).getCompositeFont2D();
         }
         float s = font.getSize2D();
@@ -1747,7 +1745,7 @@ public class StandardGlyphVector extends GlyphVector {
             // if we've invalidated the font but its an extra precaution.
         // do we want the CompFont from CFont here ?
         Font2D f2d = sgv.font2D;
-        if (f2d instanceof FontSubstitution) {
+        if (Font2D.fontSubstitutionEnabled && f2d instanceof FontSubstitution) {
            f2d = ((FontSubstitution)f2d).getCompositeFont2D();
         }
             FontStrike strike = f2d.handle.font2D.getStrike(desc);  // !!! getStrike(desc, false)
