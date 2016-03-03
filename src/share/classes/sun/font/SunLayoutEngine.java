@@ -110,7 +110,7 @@ public final class SunLayoutEngine implements LayoutEngine, LayoutEngineFactory 
         String le = java.security.AccessController.doPrivileged(
                 new sun.security.action.
                         GetPropertyAction("sun.font.layoutengine", ""));
-        useICU = !le.equals("harfbuzz");
+        useICU = le.equals("icu");
         String verbose = java.security.AccessController.doPrivileged(
                 new sun.security.action.
                         GetPropertyAction("sun.font.layoutengine.verbose", ""));
