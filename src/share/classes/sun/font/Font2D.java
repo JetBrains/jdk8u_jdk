@@ -483,9 +483,13 @@ public abstract class Font2D {
         return 0L;
     }
     
+    protected boolean isAAT() {
+        return false;
+    }
+    
     synchronized long getHarfbuzzFacePtr() {
         if (harfbuzzFaceRef == null) {
-            long harfbuzzFaceNativePtr = createHarfbuzzFace();
+            long harfbuzzFaceNativePtr = createHarfbuzzFace(isAAT(), getPlatformNativeFontPtr());
             if (harfbuzzFaceNativePtr == 0) return 0;
             harfbuzzFaceRef = new HarfbuzzFaceRef(harfbuzzFaceNativePtr);
             Disposer.addObjectRecord(this, harfbuzzFaceRef);
@@ -493,7 +497,7 @@ public abstract class Font2D {
         return harfbuzzFaceRef.harfbuzzFaceNativePtr;
     }
 
-    private native long createHarfbuzzFace();
+    private native long createHarfbuzzFace(boolean aat, long platformNativeFontPtr);
     private static native void disposeHarfbuzzFace(long harfbuzzFaceNativePtr);    
 
     /* for layout code */

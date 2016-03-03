@@ -197,7 +197,9 @@ JDKFontInfo*
                        jobject font2D,
                        jobject fontStrike,
                        jfloat ptSize,
-                       jfloatArray matrix) {
+                       jlong pNativeFont,
+                       jfloatArray matrix,
+                       jboolean aat) {
 
 
     JDKFontInfo *fi = (JDKFontInfo*)malloc(sizeof(JDKFontInfo));
@@ -207,6 +209,8 @@ JDKFontInfo*
     fi->env = env; // this is valid only for the life of this JNI call.
     fi->font2D = font2D;
     fi->fontStrike = fontStrike;
+    fi->nativeFont = pNativeFont;
+    fi->aat = aat;
     (*env)->GetFloatArrayRegion(env, matrix, 0, 4, fi->matrix);
     fi->ptSize = ptSize;
     fi->xPtSize = euclidianDistance(fi->matrix[0], fi->matrix[1]);
@@ -225,6 +229,8 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      jfloat ptSize,
      jfloatArray matrix,
      jlong pFace,
+     jlong pNativeFont,
+     jboolean aat,
      jcharArray text,
      jobject gvdata,
      jint script,
@@ -251,7 +257,8 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      unsigned int buflen;
 
      JDKFontInfo *jdkFontInfo =
-         createJDKFontInfo(env, font2D, fontStrike, ptSize, matrix);
+         createJDKFontInfo(env, font2D, fontStrike, ptSize, 
+                           pNativeFont, matrix, aat);
      if (!jdkFontInfo) {
         return JNI_FALSE;
      }
