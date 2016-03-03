@@ -31,7 +31,9 @@
 
 #include <stdlib.h>
 #include <math.h>
+#ifndef _WIN32
 #include <dlfcn.h>
+#endif
 #include "ft2build.h"
 #include FT_LCD_FILTER_H
 #include FT_FREETYPE_H
@@ -42,8 +44,10 @@
 #include FT_SYNTHESIS_H
 #include FT_LCD_FILTER_H
 
+#ifndef _WIN32
 /* Use bundled fontconfig.h for now */
 #include "fontconfig.h"
+#endif
 
 #include "fontscaler.h"
 
@@ -56,8 +60,10 @@
 #define  DEFAULT_DPI 72
 #define  ADJUST_FONT_SIZE(X, DPI) (((X)*DEFAULT_DPI + ((DPI)>>1))/(DPI))
 
+#ifndef _WIN32
 #define FONTCONFIG_DLL JNI_LIB_NAME("fontconfig")
 #define FONTCONFIG_DLL_VERSIONED VERSIONED_JNI_LIB_NAME("fontconfig", "1")
+#endif
 
 typedef struct {
     /* Important note:
@@ -115,6 +121,7 @@ static jclass tkClass;
 static jmethodID getScreenResolutionMID;
 static jfieldID platNameFID;
 
+#ifndef _WIN32
 typedef FcBool (*FcPatternAddPtrType) (FcPattern *p, const char *object, FcValue value, FcBool append);
 typedef FcBool (*FcPatternAddBoolPtrType) (FcPattern *p, const char *object, FcBool b);
 typedef FcBool (*FcPatternAddDoublePtrType) (FcPattern *p, const char *object, double d);
@@ -125,10 +132,12 @@ typedef FcPattern* (*FcFontMatchPtrType) (FcConfig *config, FcPattern *p, FcResu
 typedef void (*FcPatternDestroyPtrType) (FcPattern *p);
 typedef FcResult (*FcPatternGetBoolPtrType) (const FcPattern *p, const char *object, int n, FcBool *b);
 typedef FcResult (*FcPatternGetIntegerPtrType) (const FcPattern *p, const char *object, int n, int *i);
+#endif
 
 static void *libFontConfig = NULL;
 static jboolean logFC = JNI_FALSE;
 
+#ifndef _WIN32
 static FcPatternAddPtrType FcPatternAddPtr;
 static FcPatternAddBoolPtrType FcPatternAddBoolPtr;
 static FcPatternAddDoublePtrType FcPatternAddDoublePtr;
@@ -139,11 +148,11 @@ static FcFontMatchPtrType FcFontMatchPtr;
 static FcPatternDestroyPtrType FcPatternDestroyPtr;
 static FcPatternGetBoolPtrType FcPatternGetBoolPtr;
 static FcPatternGetIntegerPtrType FcPatternGetIntegerPtr;
-
+#endif
 
 static void* openFontConfig() {
     void* libfontconfig = NULL;
-
+#ifndef _WIN32
     char *fcLogEnabled = getenv("OPENJDK_FFS_LOG_FC");
 
     if (fcLogEnabled != NULL && !strcmp(fcLogEnabled, "yes")) {
@@ -164,6 +173,7 @@ static void* openFontConfig() {
             return NULL;
         }
     }
+#endif
     return libfontconfig;
 }
 
@@ -180,6 +190,7 @@ Java_sun_font_FreetypeFontScaler_initIDs(
     tkClass = (*env)->NewGlobalRef(env, TKClass);
     platNameFID = (*env)->GetFieldID(env, PFClass, "platName", "Ljava/lang/String;");
     libFontConfig = openFontConfig();
+#ifndef _WIN32
     if (libFontConfig) {
         FcPatternAddPtr = (FcPatternAddPtrType) dlsym(libFontConfig, "FcPatternAdd");
         FcPatternAddBoolPtr = (FcPatternAddBoolPtrType) dlsym(libFontConfig, "FcPatternAddBool");
@@ -192,13 +203,13 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         FcPatternGetBoolPtr = (FcPatternGetBoolPtrType)  dlsym(libFontConfig, "FcPatternGetBool");
         FcPatternGetIntegerPtr = (FcPatternGetIntegerPtrType)  dlsym(libFontConfig, "FcPatternGetInteger");
     }
+#endif
 }
 
 static char* getPhysFontName(JNIEnv *env, jobject font2d) {
     jstring jstr;
     jstr = (*env)->GetObjectField(env, font2d, platNameFID);
-    char* str = (*env)->GetStringUTFChars(env, jstr, NULL);
-    return str;
+    return (char*)(*env)->GetStringUTFChars(env, jstr, NULL);
 }
 
 static int getScreenResolution(JNIEnv *env) {
@@ -512,8 +523,8 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
     scalerInfo->font2D = font2D;
 
     if (context != NULL) {
-        FT_Set_Transform(scalerInfo->face, &context->transform, NULL);
         FT_UInt dpi = (FT_UInt) getScreenResolution(env);
+        FT_Set_Transform(scalerInfo->face, &context->transform, NULL);
 
         errCode = FT_Set_Char_Size(scalerInfo->face, 0, ADJUST_FONT_SIZE(context->ptsz, dpi), dpi, dpi);
         if (errCode) return errCode;
@@ -529,6 +540,7 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
                 setDefaultScalerSettings(context);
                 return 0;
             }
+#ifndef _WIN32
             FcPattern *fcPattern = 0;
             fcPattern = (*FcPatternCreatePtr)();
             FcValue fcValue;
@@ -714,6 +726,7 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             }
             (*FcPatternDestroyPtr)(pattern);
             if (logFC) fprintf(stderr, "\n");
+#endif
         }
     }
 
@@ -752,7 +765,7 @@ Java_sun_font_FreetypeFontScaler_getFontMetricsNative(
                                  f0, f0, f0, f0, f0, f0, f0, f0, f0, f0);
     }
 
-    errCode = setupFTContext(env, font2D, scalerInfo, context, FcFalse);
+    errCode = setupFTContext(env, font2D, scalerInfo, context, FALSE);
 
     if (errCode) {
         metrics = (*env)->NewObject(env,
@@ -1000,6 +1013,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
     int renderFlags = FT_LOAD_RENDER, target;
     FT_GlyphSlot ftglyph;
     FT_LcdFilter lcdFilter = FT_LCD_FILTER_NONE;
+    FT_Library library;
 
     FTScalerContext* context =
         (FTScalerContext*) jlong_to_ptr(pScalerContext);
@@ -1010,7 +1024,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
         return ptr_to_jlong(getNullGlyphImage());
     }
 
-    error = setupFTContext(env, font2D, scalerInfo, context, FcTrue);
+    error = setupFTContext(env, font2D, scalerInfo, context, TRUE);
     if (error) {
         invalidateJavaScaler(env, scaler, scalerInfo);
         return ptr_to_jlong(getNullGlyphImage());
@@ -1033,7 +1047,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
     }
 
     ftglyph = scalerInfo->face->glyph;
-    FT_Library library = ftglyph->library;
+    library = ftglyph->library;
     FT_Library_SetLcdFilter (library, context->lcdFilter);
 
     /* apply styles */
@@ -1185,7 +1199,7 @@ Java_sun_font_FreetypeFontScaler_disposeNativeScaler(
     /* Freetype functions *may* cause callback to java
        that can use cached values. Make sure our cache is up to date.
        NB: scaler context is not important at this point, can use NULL. */
-    int errCode = setupFTContext(env, font2D, scalerInfo, NULL, FcFalse);
+    int errCode = setupFTContext(env, font2D, scalerInfo, NULL, FALSE);
     if (errCode) {
         return;
     }
@@ -1248,7 +1262,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphCodeNative(
     /* Freetype functions *may* cause callback to java
        that can use cached values. Make sure our cache is up to date.
        Scaler context is not important here, can use NULL. */
-    errCode = setupFTContext(env, font2D, scalerInfo, NULL, FcFalse);
+    errCode = setupFTContext(env, font2D, scalerInfo, NULL, FALSE);
     if (errCode) {
         return 0;
     }
@@ -1271,7 +1285,7 @@ static FT_Outline* getFTOutline(JNIEnv* env, jobject font2D,
         return NULL;
     }
 
-    error = setupFTContext(env, font2D, scalerInfo, context, FcTrue);
+    error = setupFTContext(env, font2D, scalerInfo, context, TRUE);
     if (error) {
         return NULL;
     }
@@ -1735,6 +1749,8 @@ Java_sun_font_FreetypeFontScaler_getGlyphPointNative(
 
 void JNI_OnUnload(JavaVM *vm, void *reserved) {
     if (libFontConfig != NULL) {
+#ifndef _WIN32
         dlclose(libFontConfig);
+#endif
     }
 }
