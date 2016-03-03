@@ -71,6 +71,8 @@ public abstract class Font2D {
     private static final FontRenderContext DEFAULT_FRC =
         new FontRenderContext(null, false, false);
 
+    static final boolean fontSubstitutionEnabled = !Boolean.getBoolean("disable.font.substitution");
+
     public Font2DHandle handle;
     protected String familyName;           /* Family font name (english) */
     protected String fullName;             /* Full font name (english)   */
