@@ -65,6 +65,13 @@
 #define FONTCONFIG_DLL_VERSIONED VERSIONED_JNI_LIB_NAME("fontconfig", "1")
 #endif
 
+#ifndef FALSE
+#define FALSE 0
+#endif
+#ifndef TRUE
+#define TRUE  1
+#endif
+
 typedef struct {
     /* Important note:
          JNI forbids sharing same env between different threads.
