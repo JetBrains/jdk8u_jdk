@@ -26,8 +26,13 @@ public final class CCompositeFont extends CompositeFont {
     }
 
     @Override
-    synchronized FontStrike createStrike(FontStrikeDesc desc) {
-        return super.createStrike(desc);
+    synchronized FontStrike getStrike(FontStrikeDesc desc, boolean copy) {
+        return super.getStrike(desc, copy);
+    }
+
+    @Override
+    synchronized void removeFromCache(FontStrikeDesc desc) {
+        super.removeFromCache(desc);
     }
 
     @Override
