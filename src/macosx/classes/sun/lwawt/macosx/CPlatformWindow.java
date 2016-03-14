@@ -698,15 +698,14 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
 
     @Override
     public boolean rejectFocusRequest(CausedFocusEvent.Cause cause) {
-        return true;
         // Cross-app activation requests are not allowed.
-        //if (cause != CausedFocusEvent.Cause.MOUSE_EVENT &&
-        //    !((LWCToolkit)Toolkit.getDefaultToolkit()).isApplicationActive())
-        //{
-        //    focusLogger.fine("the app is inactive, so the request is rejected");
-        //    return true;
-        //}
-        //return false;
+        if (cause != CausedFocusEvent.Cause.MOUSE_EVENT &&
+            !((LWCToolkit)Toolkit.getDefaultToolkit()).isApplicationActive())
+        {
+            focusLogger.fine("the app is inactive, so the request is rejected");
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -1054,6 +1053,8 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
             // Order the window to front of the stack of child windows
             final long nsWindowSelfPtr = getNSWindowPtr();
             final long nsWindowOwnerPtr = owner.getNSWindowPtr();
+            CWrapper.NSWindow.removeChildWindow(nsWindowOwnerPtr, nsWindowSelfPtr);
+            CWrapper.NSWindow.addChildWindow(nsWindowOwnerPtr, nsWindowSelfPtr, CWrapper.NSWindow.NSWindowAbove);
         }
 
         applyWindowLevel(target);
