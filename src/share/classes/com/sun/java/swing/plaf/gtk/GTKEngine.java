@@ -93,7 +93,8 @@ class GTKEngine {
      */
     static enum Settings {
         GTK_FONT_NAME,
-        GTK_ICON_SIZES
+        GTK_ICON_SIZES,
+        GTK_XFT_DPI
     }
 
     /* Custom regions are needed for representing regions that don't exist
