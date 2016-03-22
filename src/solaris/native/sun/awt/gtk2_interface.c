@@ -2507,14 +2507,14 @@ jobject get_string_property(JNIEnv *env, GtkSettings* settings, const gchar* key
 
     return result;
 }
-/*
+
 jobject get_integer_property(JNIEnv *env, GtkSettings* settings, const gchar* key)
 {
     gint    intval = NULL;
 
     (*fp_g_object_get)(settings, key, &intval, NULL);
     return create_Integer(env, intval);
-}*/
+}
 
 jobject gtk2_get_setting(JNIEnv *env, Setting property)
 {
@@ -2526,6 +2526,8 @@ jobject gtk2_get_setting(JNIEnv *env, Setting property)
             return get_string_property(env, settings, "gtk-font-name");
         case GTK_ICON_SIZES:
             return get_string_property(env, settings, "gtk-icon-sizes");
+        case GTK_XFT_DPI:
+            return get_integer_property(env, settings, "gtk-xft-dpi");
     }
 
     return NULL;
