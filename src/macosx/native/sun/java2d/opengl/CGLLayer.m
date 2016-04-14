@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ extern NSOpenGLContext *sharedContext;
 @synthesize jrsRemoteLayer;
 #endif
 
-- (id) initWithJavaLayer:(JNFJObjectWrapper *)layer;
+- (id) initWithJavaLayer:(JNFWeakJObjectWrapper *)layer;
 {
 AWT_ASSERT_APPKIT_THREAD;
     // Initialize ourselves
@@ -147,6 +147,9 @@ AWT_ASSERT_APPKIT_THREAD;
     static JNF_MEMBER_CACHE(jm_drawInCGLContext, jc_JavaLayer, "drawInCGLContext", "()V");
 
     jobject javaLayerLocalRef = [self.javaLayer jObjectWithEnv:env];
+    if ((*env)->IsSameObject(env, javaLayerLocalRef, NULL)) {
+        return;
+    }
     JNFCallVoidMethod(env, javaLayerLocalRef, jm_drawInCGLContext);
     (*env)->DeleteLocalRef(env, javaLayerLocalRef);
 
@@ -171,7 +174,7 @@ Java_sun_java2d_opengl_CGLLayer_nativeCreateLayer
 
 JNF_COCOA_ENTER(env);
 
-    JNFJObjectWrapper *javaLayer = [JNFJObjectWrapper wrapperWithJObject:obj withEnv:env];
+    JNFWeakJObjectWrapper *javaLayer = [JNFWeakJObjectWrapper wrapperWithJObject:obj withEnv:env];
 
     [ThreadUtilities performOnMainThreadWaiting:YES block:^(){
             AWT_ASSERT_APPKIT_THREAD;

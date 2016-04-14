@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -137,8 +137,11 @@ static NSObject *sAttributeNamesLOCK = nil;
         fView = [view retain];
         fJavaRole = [javaRole retain];
 
-        fAccessible = JNFNewGlobalRef(env, accessible);
-        fComponent = JNFNewGlobalRef(env, [(AWTView *)fView awtComponent:env]);
+        fAccessible = (*env)->NewWeakGlobalRef(env, accessible);
+        
+        jobject jcomponent = [(AWTView *)fView awtComponent:env];
+        fComponent = (*env)->NewWeakGlobalRef(env, jcomponent);
+        (*env)->DeleteLocalRef(env, jcomponent);
 
         fIndex = index;
 
@@ -166,10 +169,10 @@ static NSObject *sAttributeNamesLOCK = nil;
 
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
 
-    JNFDeleteGlobalRef(env, fAccessible);
+    (*env)->DeleteWeakGlobalRef(env, fAccessible);
     fAccessible = NULL;
 
-    JNFDeleteGlobalRef(env, fComponent);
+    (*env)->DeleteWeakGlobalRef(env, fComponent);
     fComponent = NULL;
 
     [fParent release];
@@ -198,10 +201,10 @@ static NSObject *sAttributeNamesLOCK = nil;
 
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
 
-    JNFDeleteGlobalRef(env, fAccessible);
+    (*env)->DeleteWeakGlobalRef(env, fAccessible);
     fAccessible = NULL;
 
-    JNFDeleteGlobalRef(env, fComponent);
+    (*env)->DeleteWeakGlobalRef(env, fComponent);
     fComponent = NULL;
 
     [super finalize];
@@ -308,14 +311,21 @@ static NSObject *sAttributeNamesLOCK = nil;
 
         NSString *childJavaRole = nil;
         if (jchildJavaRole != NULL) {
-            childJavaRole = JNFJavaToNSString(env, JNFGetObjectField(env, jchildJavaRole, sjf_key));
+            jobject jkey = JNFGetObjectField(env, jchildJavaRole, sjf_key);
+            childJavaRole = JNFJavaToNSString(env, jkey);
+            (*env)->DeleteLocalRef(env, jkey);
         }
 
         JavaComponentAccessibility *child = [self createWithParent:parent accessible:jchild role:childJavaRole index:childIndex withEnv:env withView:parent->fView];
+        
+        (*env)->DeleteLocalRef(env, jchild);
+        (*env)->DeleteLocalRef(env, jchildJavaRole);
+        
         [children addObject:child];
         childIndex++;
     }
-
+    (*env)->DeleteLocalRef(env, jchildrenAndRoles);
+    
     return children;
 }
 
@@ -324,7 +334,7 @@ static NSObject *sAttributeNamesLOCK = nil;
     jobject jcomponent = [(AWTView *)view awtComponent:env];
     jint index = JNFCallStaticIntMethod(env, sjm_getAccessibleIndexInParent, jaccessible, jcomponent);
     if (index < 0) return nil;
-
+    (*env)->DeleteLocalRef(env, jcomponent);
     NSString *javaRole = getJavaRole(env, jaccessible, jcomponent);
     return [self createWithAccessible:jaccessible role:javaRole index:index withEnv:env withView:view];
 }
@@ -340,7 +350,10 @@ static NSObject *sAttributeNamesLOCK = nil;
     jobject jCAX = [JavaComponentAccessibility getCAccessible:jaccessible withEnv:env];
     if (jCAX == NULL) return nil;
     JavaComponentAccessibility *value = (JavaComponentAccessibility *) jlong_to_ptr(JNFGetLongField(env, jCAX, jf_ptr));
-    if (value != nil) return [[value retain] autorelease];
+    if (value != nil) {
+        (*env)->DeleteLocalRef(env, jCAX);
+        return [[value retain] autorelease];
+    }
 
     // otherwise, create a new instance
     JavaComponentAccessibility *newChild = nil;
@@ -363,6 +376,7 @@ static NSObject *sAttributeNamesLOCK = nil;
     // must hard CFRetain() pointer poked into Java object
     CFRetain(newChild);
     JNFSetLongField(env, jCAX, jf_ptr, ptr_to_jlong(newChild));
+    (*env)->DeleteLocalRef(env, jCAX);
 
     // return autoreleased instance
     return [newChild autorelease];
@@ -490,6 +504,7 @@ static NSObject *sAttributeNamesLOCK = nil;
         JavaAxAction *action = [[JavaAxAction alloc] initWithEnv:env withAccessibleAction:axAction withIndex:0 withComponent:fComponent];
         [fActions setObject:action forKey:[self isMenu] ? NSAccessibilityPickAction : NSAccessibilityPressAction];
         [action release];
+        (*env)->DeleteLocalRef(env, axAction);
     }
 }
 
@@ -500,7 +515,9 @@ static NSObject *sAttributeNamesLOCK = nil;
 
 - (id)parent
 {
+    static JNF_CLASS_CACHE(sjc_Window, "java/awt/Window");
     static JNF_STATIC_MEMBER_CACHE(sjm_getAccessibleParent, sjc_CAccessibility, "getAccessibleParent", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;)Ljavax/accessibility/Accessible;");
+    static JNF_STATIC_MEMBER_CACHE(sjm_getSwingAccessible, sjc_CAccessible, "getSwingAccessible", "(Ljavax/accessibility/Accessible;)Ljavax/accessibility/Accessible;");
 
     if(fParent == nil) {
         JNIEnv* env = [ThreadUtilities getJNIEnv];
@@ -510,10 +527,21 @@ static NSObject *sAttributeNamesLOCK = nil;
         if (jparent == NULL) {
             fParent = fView;
         } else {
-            fParent = [JavaComponentAccessibility createWithAccessible:jparent withEnv:env withView:fView];
+            AWTView *view = fView;
+            jobject jax = JNFCallStaticObjectMethod(env, sjm_getSwingAccessible, fAccessible);
+
+            if (JNFIsInstanceOf(env, jax, &sjc_Window)) {
+                // In this case jparent is an owner toplevel and we should retrieve its own view
+                view = [AWTView awtView:env ofAccessible:jparent];
+            }
+            if (view != nil) {
+                fParent = [JavaComponentAccessibility createWithAccessible:jparent withEnv:env withView:view];
+            }
             if (fParent == nil) {
                 fParent = fView;
             }
+            (*env)->DeleteLocalRef(env, jparent);
+            (*env)->DeleteLocalRef(env, jax );
         }
         [fParent retain];
     }
@@ -561,7 +589,10 @@ static NSObject *sAttributeNamesLOCK = nil;
         return NO;
     }
 
-    return isShowing(env, [self axContextWithEnv:env], fComponent);
+    jobject axContext = [self axContextWithEnv:env];
+    BOOL showing = isShowing(env, axContext, fComponent);
+    (*env)->DeleteLocalRef(env, axContext);
+    return showing;
 }
 
 // the array of names for each role is cached in the sAttributeNamesForRoleCache
@@ -738,6 +769,9 @@ static NSObject *sAttributeNamesLOCK = nil;
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
     jobject val = JNFCallStaticObjectMethod(env, sjm_getAccessibleDescription, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    if ((*env)->IsSameObject(env, val, NULL)) {
+        return @"unknown";
+    }
     return JNFJavaToNSString(env, val);
 }
 
@@ -754,6 +788,9 @@ static NSObject *sAttributeNamesLOCK = nil;
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
     jobject axValue = JNFCallStaticObjectMethod(env, jm_getMaximumAccessibleValue, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    if ((*env)->IsSameObject(env, axValue, NULL)) {
+        return [NSNumber numberWithInt:0];
+    }
     return JNFJavaToNSNumber(env, axValue);
 }
 
@@ -770,6 +807,9 @@ static NSObject *sAttributeNamesLOCK = nil;
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
     jobject axValue = JNFCallStaticObjectMethod(env, jm_getMinimumAccessibleValue, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    if ((*env)->IsSameObject(env, axValue, NULL)) {
+        return [NSNumber numberWithInt:0];
+    }
     return JNFJavaToNSNumber(env, axValue);
 }
 
@@ -785,13 +825,16 @@ static NSObject *sAttributeNamesLOCK = nil;
 
     // cmcnote - should batch these two calls into one that returns an array of two bools, one for vertical and one for horiz
     if (isVertical(env, axContext, fComponent)) {
+        (*env)->DeleteLocalRef(env, axContext);
         return NSAccessibilityVerticalOrientationValue;
     }
 
     if (isHorizontal(env, axContext, fComponent)) {
+        (*env)->DeleteLocalRef(env, axContext);
         return NSAccessibilityHorizontalOrientationValue;
     }
 
+    (*env)->DeleteLocalRef(env, axContext);
     return nil;
 }
 
@@ -823,6 +866,7 @@ static NSObject *sAttributeNamesLOCK = nil;
     // Get the java screen coords, and make a NSPoint of the bottom left of the AxComponent.
     NSSize size = getAxComponentSize(env, axComponent, fComponent);
     NSPoint point = getAxComponentLocationOnScreen(env, axComponent, fComponent);
+    (*env)->DeleteLocalRef(env, axComponent);
 
     point.y += size.height;
 
@@ -908,7 +952,9 @@ static NSObject *sAttributeNamesLOCK = nil;
 - (NSValue *)accessibilitySizeAttribute {
     JNIEnv* env = [ThreadUtilities getJNIEnv];
     jobject axComponent = JNFCallStaticObjectMethod(env, sjm_getAccessibleComponent, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
-    return [NSValue valueWithSize:getAxComponentSize(env, axComponent, fComponent)];
+    NSValue* size = [NSValue valueWithSize:getAxComponentSize(env, axComponent, fComponent)];
+    (*env)->DeleteLocalRef(env, axComponent);
+    return size;
 }
 
 - (BOOL)accessibilityIsSizeAttributeSettable
@@ -967,6 +1013,9 @@ static NSObject *sAttributeNamesLOCK = nil;
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
     jobject val = JNFCallStaticObjectMethod(env, sjm_getAccessibleName, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    if ((*env)->IsSameObject(env, val, NULL)) {
+        return @"unknown";
+    }
     return JNFJavaToNSString(env, val);
 }
 
@@ -1000,7 +1049,12 @@ static NSObject *sAttributeNamesLOCK = nil;
 
     // cmcnote should coalesce these calls into one java call
     jobject axValue = JNFCallStaticObjectMethod(env, sjm_getAccessibleValue, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
-    return JNFJavaToNSNumber(env, JNFCallStaticObjectMethod(env, jm_getCurrentAccessibleValue, axValue, fComponent)); // AWT_THREADING Safe (AWTRunLoop)
+    NSNumber* num = JNFJavaToNSNumber(env, JNFCallStaticObjectMethod(env, jm_getCurrentAccessibleValue, axValue, fComponent)); // AWT_THREADING Safe (AWTRunLoop)
+    if (num == nil) {
+        num = [NSNumber numberWithInt:0];
+    }
+    (*env)->DeleteLocalRef(env, axValue);
+    return num;
 }
 
 - (BOOL)accessibilityIsValueAttributeSettable
@@ -1100,6 +1154,7 @@ static NSObject *sAttributeNamesLOCK = nil;
     if (JNFIsInstanceOf(env, jparent, &jc_Container)) {
         jobject jaccessible = JNFCallStaticObjectMethod(env, jm_accessibilityHitTest, jparent, (jfloat)point.x, (jfloat)point.y); // AWT_THREADING Safe (AWTRunLoop)
         value = [JavaComponentAccessibility createWithAccessible:jaccessible withEnv:env withView:fView];
+        (*env)->DeleteLocalRef(env, jaccessible);
     }
 
     if (value == nil) {
@@ -1131,6 +1186,7 @@ static NSObject *sAttributeNamesLOCK = nil;
         if (JNFIsInstanceOf(env, focused, &sjc_Accessible)) {
             value = [JavaComponentAccessibility createWithAccessible:focused withEnv:env withView:fView];
         }
+        (*env)->DeleteLocalRef(env, focused);
     }
 
     if (value == nil) {
@@ -1237,10 +1293,11 @@ JNF_COCOA_EXIT(env);
     for (i = 0; i < _numTabs; i++) {
         aTab = (JavaComponentAccessibility *)[tabs objectAtIndex:i];
         if ([aTab isAccessibleWithEnv:env forAccessible:selAccessible]) {
+            (*env)->DeleteLocalRef(env, selAccessible);
             return aTab;
         }
     }
-
+    (*env)->DeleteLocalRef(env, selAccessible);
     return nil;
 }
 
@@ -1250,25 +1307,32 @@ JNF_COCOA_EXIT(env);
     if(jtabsAndRoles == NULL) return nil;
 
     jsize arrayLen = (*env)->GetArrayLength(env, jtabsAndRoles);
-    if (arrayLen == 0) return nil;
-
+    if (arrayLen == 0) {
+        (*env)->DeleteLocalRef(env, jtabsAndRoles);
+        return nil;
+    }
     NSMutableArray *tabs = [NSMutableArray arrayWithCapacity:(arrayLen/2)];
 
     // all of the tabs have the same role, so we can just find out what that is here and use it for all the tabs
     jobject jtabJavaRole = (*env)->GetObjectArrayElement(env, jtabsAndRoles, 1); // the array entries alternate between tab/role, starting with tab. so the first role is entry 1.
-    if (jtabJavaRole == NULL) return nil;
-
-    NSString *tabJavaRole = JNFJavaToNSString(env, JNFGetObjectField(env, jtabJavaRole, sjf_key));
+    if (jtabJavaRole == NULL) {
+        (*env)->DeleteLocalRef(env, jtabsAndRoles);
+        return nil;
+    }
+    jobject jkey = JNFGetObjectField(env, jtabJavaRole, sjf_key);
+    NSString *tabJavaRole = JNFJavaToNSString(env, jkey);
+    (*env)->DeleteLocalRef(env, jkey);
 
     NSInteger i;
     NSUInteger tabIndex = (whichTabs >= 0) ? whichTabs : 0; // if we're getting one particular child, make sure to set its index correctly
     for(i = 0; i < arrayLen; i+=2) {
         jobject jtab = (*env)->GetObjectArrayElement(env, jtabsAndRoles, i);
         JavaComponentAccessibility *tab = [[[TabGroupControlAccessibility alloc] initWithParent:self withEnv:env withAccessible:jtab withIndex:tabIndex withTabGroup:axContext withView:[self view] withJavaRole:tabJavaRole] autorelease];
+        (*env)->DeleteLocalRef(env, jtab);
         [tabs addObject:tab];
         tabIndex++;
     }
-
+    (*env)->DeleteLocalRef(env, jtabsAndRoles);
     return tabs;
 }
 
@@ -1287,7 +1351,9 @@ JNF_COCOA_EXIT(env);
 {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     jobject axContext = [self axContextWithEnv:env];
-    return [self tabControlsWithEnv:env withTabGroupAxContext:axContext withTabCode:JAVA_AX_ALL_CHILDREN allowIgnored:NO];
+    id tabs = [self tabControlsWithEnv:env withTabGroupAxContext:axContext withTabCode:JAVA_AX_ALL_CHILDREN allowIgnored:NO];
+    (*env)->DeleteLocalRef(env, axContext);
+    return tabs;
 }
 
 - (BOOL)accessibilityIsTabsAttributeSettable
@@ -1307,7 +1373,9 @@ JNF_COCOA_EXIT(env);
 {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     jobject axContext = [self axContextWithEnv:env];
-    return [self contentsWithEnv:env withTabGroupAxContext:axContext withTabCode:JAVA_AX_ALL_CHILDREN allowIgnored:NO];
+    NSArray* cont = [self contentsWithEnv:env withTabGroupAxContext:axContext withTabCode:JAVA_AX_ALL_CHILDREN allowIgnored:NO];
+    (*env)->DeleteLocalRef(env, axContext);
+    return cont;
 }
 
 - (BOOL)accessibilityIsContentsAttributeSettable
@@ -1320,7 +1388,9 @@ JNF_COCOA_EXIT(env);
 {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     jobject axContext = [self axContextWithEnv:env];
-    return [self currentTabWithEnv:env withAxContext:axContext];
+    id val = [self currentTabWithEnv:env withAxContext:axContext];
+    (*env)->DeleteLocalRef(env, axContext);
+    return val;
 }
 
 - (BOOL)accessibilityIsValueAttributeSettable
@@ -1337,6 +1407,7 @@ JNF_COCOA_EXIT(env);
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     jobject axContext = [self axContextWithEnv:env];
     setAxContextSelection(env, axContext, fIndex, fComponent);
+    (*env)->DeleteLocalRef(env, axContext);
 }
 
 - (NSArray *)accessibilityChildrenAttribute
@@ -1372,6 +1443,7 @@ JNF_COCOA_EXIT(env);
                 result = children;
             }
         }
+        (*env)->DeleteLocalRef(env, axContext);
     } else {
         result = [super accessibilityArrayAttributeValues:attribute index:index maxCount:maxCount];
     }
@@ -1390,7 +1462,7 @@ static BOOL ObjectEquals(JNIEnv *env, jobject a, jobject b, jobject component);
     self = [super initWithParent:parent withEnv:env withAccessible:accessible withIndex:index withView:view withJavaRole:javaRole];
     if (self) {
         if (tabGroup != NULL) {
-            fTabGroupAxContext = JNFNewGlobalRef(env, tabGroup);
+            fTabGroupAxContext = JNFNewWeakGlobalRef(env, tabGroup);
         } else {
             fTabGroupAxContext = NULL;
         }
@@ -1403,7 +1475,7 @@ static BOOL ObjectEquals(JNIEnv *env, jobject a, jobject b, jobject component);
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
 
     if (fTabGroupAxContext != NULL) {
-        JNFDeleteGlobalRef(env, fTabGroupAxContext);
+        JNFDeleteWeakGlobalRef(env, fTabGroupAxContext);
         fTabGroupAxContext = NULL;
     }
 
@@ -1415,7 +1487,7 @@ static BOOL ObjectEquals(JNIEnv *env, jobject a, jobject b, jobject component);
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
 
     if (fTabGroupAxContext != NULL) {
-        JNFDeleteGlobalRef(env, fTabGroupAxContext);
+        JNFDeleteWeakGlobalRef(env, fTabGroupAxContext);
         fTabGroupAxContext = NULL;
     }
 
@@ -1426,9 +1498,14 @@ static BOOL ObjectEquals(JNIEnv *env, jobject a, jobject b, jobject component);
 {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     jobject axContext = [self axContextWithEnv:env];
+    jobject selAccessible = getAxContextSelection(env, [self tabGroup], fIndex, fComponent);
 
     // Returns the current selection of the page tab list
-    return [NSNumber numberWithBool:ObjectEquals(env, axContext, getAxContextSelection(env, [self tabGroup], fIndex, fComponent), fComponent)];
+    id val = [NSNumber numberWithBool:ObjectEquals(env, axContext, selAccessible, fComponent)];
+
+    (*env)->DeleteLocalRef(env, selAccessible);
+    (*env)->DeleteLocalRef(env, axContext);
+    return val;
 }
 
 - (void)getActionsWithEnv:(JNIEnv *)env
@@ -1443,7 +1520,8 @@ static BOOL ObjectEquals(JNIEnv *env, jobject a, jobject b, jobject component);
     if (fTabGroupAxContext == NULL) {
         JNIEnv* env = [ThreadUtilities getJNIEnv];
         jobject tabGroupAxContext = [(JavaComponentAccessibility *)[self parent] axContextWithEnv:env];
-        fTabGroupAxContext = JNFNewGlobalRef(env, tabGroupAxContext);
+        fTabGroupAxContext = JNFNewWeakGlobalRef(env, tabGroupAxContext);
+        (*env)->DeleteLocalRef(env, tabGroupAxContext);
     }
     return fTabGroupAxContext;
 }
@@ -1478,8 +1556,10 @@ static BOOL ObjectEquals(JNIEnv *env, jobject a, jobject b, jobject component);
         if ([[aElement accessibilityRoleAttribute] isEqualToString:NSAccessibilityScrollBarRole]) {
             jobject elementAxContext = [aElement axContextWithEnv:env];
             if (isHorizontal(env, elementAxContext, fComponent)) {
+                (*env)->DeleteLocalRef(env, elementAxContext);
                 return aElement;
             }
+            (*env)->DeleteLocalRef(env, elementAxContext);
         }
     }
 
@@ -1505,8 +1585,10 @@ static BOOL ObjectEquals(JNIEnv *env, jobject a, jobject b, jobject component);
         if ([[aElement accessibilityRoleAttribute] isEqualToString:NSAccessibilityScrollBarRole]) {
             jobject elementAxContext = [aElement axContextWithEnv:env];
             if (isVertical(env, elementAxContext, fComponent)) {
+                (*env)->DeleteLocalRef(env, elementAxContext);
                 return aElement;
             }
+            (*env)->DeleteLocalRef(env, elementAxContext);
         }
     }
 
