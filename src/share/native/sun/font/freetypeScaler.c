@@ -139,6 +139,7 @@ typedef FcPattern* (*FcFontMatchPtrType) (FcConfig *config, FcPattern *p, FcResu
 typedef void (*FcPatternDestroyPtrType) (FcPattern *p);
 typedef FcResult (*FcPatternGetBoolPtrType) (const FcPattern *p, const char *object, int n, FcBool *b);
 typedef FcResult (*FcPatternGetIntegerPtrType) (const FcPattern *p, const char *object, int n, int *i);
+typedef FT_Error (*FtLibrarySetLcdFilterPtrType) (FT_Library library, FT_LcdFilter  filter);
 #endif
 
 static void *libFontConfig = NULL;
@@ -211,6 +212,18 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         FcPatternGetIntegerPtr = (FcPatternGetIntegerPtrType)  dlsym(libFontConfig, "FcPatternGetInteger");
     }
 #endif
+}
+
+static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  filter) {
+    static FtLibrarySetLcdFilterPtrType FtLibrarySetLcdFilterPtr = NULL;
+    if (!FtLibrarySetLcdFilterPtr) {
+        void *thisProcess = dlopen(NULL, RTLD_LAZY);
+        FtLibrarySetLcdFilterPtr = thisProcess ?
+                                   (FtLibrarySetLcdFilterPtrType) dlsym(thisProcess, "FT_Library_SetLcdFilter") :
+                                   NULL;
+        dlclose(thisProcess);
+    }
+    if (FtLibrarySetLcdFilterPtr) (*FtLibrarySetLcdFilterPtr)(library, filter);
 }
 
 static char* getPhysFontName(JNIEnv *env, jobject font2d) {
@@ -1058,7 +1071,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
 
     ftglyph = scalerInfo->face->glyph;
     library = ftglyph->library;
-    FT_Library_SetLcdFilter (library, context->lcdFilter);
+    FT_Library_SetLcdFilter_Proxy(library, context->lcdFilter);
 
     /* apply styles */
     if (context->doBold) { /* if bold style */
