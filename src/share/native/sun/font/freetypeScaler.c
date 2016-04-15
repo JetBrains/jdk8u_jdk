@@ -215,6 +215,7 @@ Java_sun_font_FreetypeFontScaler_initIDs(
 }
 
 static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  filter) {
+#ifndef _WIN32
     static FtLibrarySetLcdFilterPtrType FtLibrarySetLcdFilterPtr = NULL;
     if (!FtLibrarySetLcdFilterPtr) {
         void *thisProcess = dlopen(NULL, RTLD_LAZY);
@@ -223,7 +224,16 @@ static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  
                                    NULL;
         dlclose(thisProcess);
     }
-    if (FtLibrarySetLcdFilterPtr) (*FtLibrarySetLcdFilterPtr)(library, filter);
+    if (FtLibrarySetLcdFilterPtr) {
+        return (*FtLibrarySetLcdFilterPtr)(library, filter);
+    } else {
+        if (logFC) fprintf(stderr, "FC_LOG: Skipping FT_Library_SetLcdFilter\n");
+    }
+
+    return 0;
+#else
+    return FT_Library_SetLcdFilter(library, filter);
+#endif
 }
 
 static char* getPhysFontName(JNIEnv *env, jobject font2d) {
