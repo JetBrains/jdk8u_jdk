@@ -133,15 +133,6 @@ AWT_ASSERT_APPKIT_THREAD;
 {
     AWT_ASSERT_APPKIT_THREAD;
 
-    // Set the current context to the one given to us.
-    CGLSetCurrentContext(glContext);
-
-    // Should clear the whole CALayer, because it can be larger than our texture.
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glViewport(0, 0, textureWidth, textureHeight);
-    
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_CLASS_CACHE(jc_JavaLayer, "sun/java2d/opengl/CGLLayer");
     static JNF_MEMBER_CACHE(jm_drawInCGLContext, jc_JavaLayer, "drawInCGLContext", "()V");
@@ -150,6 +141,16 @@ AWT_ASSERT_APPKIT_THREAD;
     if ((*env)->IsSameObject(env, javaLayerLocalRef, NULL)) {
         return;
     }
+
+    // Set the current context to the one given to us.
+    CGLSetCurrentContext(glContext);
+
+    // Should clear the whole CALayer, because it can be larger than our texture.
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glViewport(0, 0, textureWidth, textureHeight);
+
     JNFCallVoidMethod(env, javaLayerLocalRef, jm_drawInCGLContext);
     (*env)->DeleteLocalRef(env, javaLayerLocalRef);
 

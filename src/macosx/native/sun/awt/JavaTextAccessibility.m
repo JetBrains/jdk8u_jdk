@@ -112,7 +112,9 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
         // if it's static text, the AppKit AXValue is the java accessibleName
         jobject axName = JNFCallStaticObjectMethod(env, sjm_getAccessibleName, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
         if (axName != NULL) {
-            return JNFJavaToNSString(env, axName);
+            NSString* str = JNFJavaToNSString(env, axName);
+            (*env)->DeleteLocalRef(env, axName);
+            return str;
         }
         // value is still nil if no accessibleName for static text. Below, try to get the accessibleText.
     }
@@ -164,7 +166,9 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
     static JNF_STATIC_MEMBER_CACHE(jm_getSelectedText, sjc_CAccessibleText, "getSelectedText", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;)Ljava/lang/String;");
     jobject axText = JNFCallStaticObjectMethod(env, jm_getSelectedText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (axText == NULL) return @"";
-    return JNFJavaToNSString(env, axText);
+    NSString* str = JNFJavaToNSString(env, axText);
+    (*env)->DeleteLocalRef(env, axText);
+    return str;
 }
 
 - (BOOL)accessibilityIsSelectedTextAttributeSettable
@@ -362,7 +366,9 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
     jstring jstringForRange = JNFCallStaticObjectMethod(env, jm_getStringForRange, fAccessible, fComponent, range.location, range.length); // AWT_THREADING Safe (AWTRunLoop)
 
     if (jstringForRange == NULL) return @"";
-    return JNFJavaToNSString(env, jstringForRange);
+    NSString* str = JNFJavaToNSString(env, jstringForRange);
+    (*env)->DeleteLocalRef(env, jstringForRange);
+    return str;
 }
 
 //

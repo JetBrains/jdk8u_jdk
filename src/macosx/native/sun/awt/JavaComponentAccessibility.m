@@ -769,10 +769,12 @@ static NSObject *sAttributeNamesLOCK = nil;
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
     jobject val = JNFCallStaticObjectMethod(env, sjm_getAccessibleDescription, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
-    if ((*env)->IsSameObject(env, val, NULL)) {
+    if (val == NULL) {
         return @"unknown";
     }
-    return JNFJavaToNSString(env, val);
+    NSString* str = JNFJavaToNSString(env, val);
+    (*env)->DeleteLocalRef(env, val);
+    return str;
 }
 
 - (BOOL)accessibilityIsHelpAttributeSettable
@@ -788,10 +790,12 @@ static NSObject *sAttributeNamesLOCK = nil;
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
     jobject axValue = JNFCallStaticObjectMethod(env, jm_getMaximumAccessibleValue, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
-    if ((*env)->IsSameObject(env, axValue, NULL)) {
+    if (axValue == NULL) {
         return [NSNumber numberWithInt:0];
     }
-    return JNFJavaToNSNumber(env, axValue);
+    NSNumber* num = JNFJavaToNSNumber(env, axValue);
+    (*env)->DeleteLocalRef(env, axValue);
+    return num;
 }
 
 - (BOOL)accessibilityIsMaxValueAttributeSettable
@@ -807,10 +811,12 @@ static NSObject *sAttributeNamesLOCK = nil;
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
     jobject axValue = JNFCallStaticObjectMethod(env, jm_getMinimumAccessibleValue, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
-    if ((*env)->IsSameObject(env, axValue, NULL)) {
+    if (axValue == NULL) {
         return [NSNumber numberWithInt:0];
     }
-    return JNFJavaToNSNumber(env, axValue);
+    NSNumber* num = JNFJavaToNSNumber(env, axValue);
+    (*env)->DeleteLocalRef(env, axValue);
+    return num;
 }
 
 - (BOOL)accessibilityIsMinValueAttributeSettable
@@ -916,8 +922,9 @@ static NSObject *sAttributeNamesLOCK = nil;
         JNIEnv* env = [ThreadUtilities getJNIEnv];
 
         jobject axRole = JNFCallStaticObjectMethod(env, jm_getAccessibleRoleDisplayString, fAccessible, fComponent);
-        if(axRole != NULL) {
+        if (axRole != NULL) {
             value = JNFJavaToNSString(env, axRole);
+            (*env)->DeleteLocalRef(env, axRole);
         } else {
             value = @"unknown";
         }
@@ -1013,10 +1020,12 @@ static NSObject *sAttributeNamesLOCK = nil;
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
     jobject val = JNFCallStaticObjectMethod(env, sjm_getAccessibleName, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
-    if ((*env)->IsSameObject(env, val, NULL)) {
+    if (val == NULL) {
         return @"unknown";
     }
-    return JNFJavaToNSString(env, val);
+    NSString* str = JNFJavaToNSString(env, val);
+    (*env)->DeleteLocalRef(env, val);
+    return str;
 }
 
 - (BOOL)accessibilityIsTitleAttributeSettable
