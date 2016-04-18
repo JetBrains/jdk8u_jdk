@@ -77,7 +77,9 @@ NSString *getJavaRole(JNIEnv *env, jobject axComponent, jobject component)
     jobject axRole = JNFCallStaticObjectMethod(env, sjm_getAccessibleRole, axComponent, component); // AWT_THREADING Safe (AWTRunLoopMode)
     if (axRole == NULL) return @"unknown";
 
-    return JNFJavaToNSString(env, axRole);
+    NSString* str = JNFJavaToNSString(env, axRole);
+    (*env)->DeleteLocalRef(env, axRole);
+    return str;
 }
 
 jobject getAxSelection(JNIEnv *env, jobject axContext, jobject component)
