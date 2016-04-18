@@ -218,11 +218,7 @@ static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  
 #ifndef _WIN32
     static FtLibrarySetLcdFilterPtrType FtLibrarySetLcdFilterPtr = NULL;
     if (!FtLibrarySetLcdFilterPtr) {
-        void *thisProcess = dlopen(NULL, RTLD_LAZY);
-        FtLibrarySetLcdFilterPtr = thisProcess ?
-                                   (FtLibrarySetLcdFilterPtrType) dlsym(thisProcess, "FT_Library_SetLcdFilter") :
-                                   NULL;
-        dlclose(thisProcess);
+        FtLibrarySetLcdFilterPtr = (FtLibrarySetLcdFilterPtrType) dlsym(RTLD_DEFAULT, "FT_Library_SetLcdFilter");
     }
     if (FtLibrarySetLcdFilterPtr) {
         return (*FtLibrarySetLcdFilterPtr)(library, filter);
