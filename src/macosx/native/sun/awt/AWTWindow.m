@@ -184,6 +184,7 @@ AWT_NS_WINDOW_IMPLEMENTATION
 @synthesize isEnabled;
 @synthesize ownerWindow;
 @synthesize preFullScreenLevel;
+@synthesize isMinimizing;
 
 - (void) updateMinMaxSize:(BOOL)resizable {
     if (resizable) {
@@ -308,6 +309,7 @@ AWT_ASSERT_APPKIT_THREAD;
     [self.nsWindow release]; // the property retains the object already
 
     self.isEnabled = YES;
+    self.isMinimizing = NO;
     self.javaPlatformWindow = platformWindow;
     self.styleBits = bits;
     self.ownerWindow = owner;
@@ -427,6 +429,62 @@ AWT_ASSERT_APPKIT_THREAD;
     [super dealloc];
 }
 
+// Tests wheather the corresponding Java paltform window is visible or not
++ (BOOL) isJavaPlatformWindowVisible:(NSWindow *)window {
+    BOOL isVisible = NO;
+    
+    if ([AWTWindow isAWTWindow:window] && [window delegate] != nil) {
+        AWTWindow *awtWindow = (AWTWindow *)[window delegate];
+        [AWTToolkit eventCountPlusPlus];
+        
+        JNIEnv *env = [ThreadUtilities getJNIEnv];
+        jobject platformWindow = [awtWindow.javaPlatformWindow jObjectWithEnv:env];
+        if (platformWindow != NULL) {
+            static JNF_MEMBER_CACHE(jm_isVisible, jc_CPlatformWindow, "isVisible", "()Z");
+            isVisible = JNFCallBooleanMethod(env, platformWindow, jm_isVisible) == JNI_TRUE ? YES : NO;
+            (*env)->DeleteLocalRef(env, platformWindow);
+            
+        }
+    }
+    return isVisible;
+}
+
+// Orders window's childs based on the current focus state
+- (void) orderChilds:(BOOL)focus {
+AWT_ASSERT_APPKIT_THREAD;
+
+    if (self.isMinimizing) {
+        // Do not perform any ordering, if iconify is in progress
+        return;
+    }
+
+    NSEnumerator *windowEnumerator = [[NSApp windows]objectEnumerator];
+    NSWindow *window;
+    while ((window = [windowEnumerator nextObject]) != nil) {
+        if ([AWTWindow isJavaPlatformWindowVisible:window]) {
+            AWTWindow *awtWindow = (AWTWindow *)[window delegate];
+            if (IS(awtWindow.styleBits, ALWAYS_ON_TOP)) {
+                // Do not order 'always on top' windows
+                continue;
+            }
+            while (awtWindow.ownerWindow != nil) {
+                if (awtWindow.ownerWindow == self) {
+                    if (focus) {
+                        // Place the child above the owner
+                        [window setLevel:NSFloatingWindowLevel];
+                    } else {
+                        // Place the child to the owner's level and adjust ordering
+                        [window setLevel:NSNormalWindowLevel];
+                        [window orderWindow:NSWindowAbove relativeTo:[self.nsWindow windowNumber]];
+                    }
+                    break;
+                }
+                awtWindow = awtWindow.ownerWindow;
+            }
+        }
+    }
+}
+
 // NSWindow overrides
 - (BOOL) canBecomeKeyWindow {
 AWT_ASSERT_APPKIT_THREAD;
@@ -509,6 +567,30 @@ AWT_ASSERT_APPKIT_THREAD;
     // window exposing in _setVisible:(BOOL)
 }
 
+// Hides/shows window's childs during iconify/de-iconify operation
+- (void) iconifyChilds:(BOOL)iconify {
+AWT_ASSERT_APPKIT_THREAD;
+
+    NSEnumerator *windowEnumerator = [[NSApp windows]objectEnumerator];
+    NSWindow *window;
+    while ((window = [windowEnumerator nextObject]) != nil) {
+        if ([AWTWindow isJavaPlatformWindowVisible:window]) {
+            AWTWindow *awtWindow = (AWTWindow *)[window delegate];
+            while (awtWindow.ownerWindow != nil) {
+                if (awtWindow.ownerWindow == self) {
+                    if (iconify) {
+                        [window orderOut:window];
+                    } else {
+                        [window orderFront:window];
+                    }
+                    break;
+                }
+                awtWindow = awtWindow.ownerWindow;
+            }
+        }
+    }
+}
+
 - (void) _deliverIconify:(BOOL)iconify {
 AWT_ASSERT_APPKIT_THREAD;
 
@@ -522,16 +604,28 @@ AWT_ASSERT_APPKIT_THREAD;
     }
 }
 
+- (void)windowWillMiniaturize:(NSNotification *)notification {
+AWT_ASSERT_APPKIT_THREAD;
+
+    self.isMinimizing = YES;
+    // Excplicitly make myself a key window to avoid possible
+    // negative visual effects during iconify operation
+    [self.nsWindow makeKeyAndOrderFront:self.nsWindow];
+    [self iconifyChilds:YES];
+}
+
 - (void)windowDidMiniaturize:(NSNotification *)notification {
 AWT_ASSERT_APPKIT_THREAD;
 
     [self _deliverIconify:JNI_TRUE];
+    self.isMinimizing = NO;
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification {
 AWT_ASSERT_APPKIT_THREAD;
 
     [self _deliverIconify:JNI_FALSE];
+    [self iconifyChilds:NO];
 }
 
 - (void) _deliverWindowFocusEvent:(BOOL)focused oppositeWindow:(AWTWindow *)opposite {
@@ -577,6 +671,7 @@ AWT_ASSERT_APPKIT_THREAD;
     [AWTWindow setLastKeyWindow:nil];
 
     [self _deliverWindowFocusEvent:YES oppositeWindow: opposite];
+    [self orderChilds:YES];
 }
 
 - (void) windowDidResignKey: (NSNotification *) notification {
@@ -604,6 +699,7 @@ AWT_ASSERT_APPKIT_THREAD;
     }
 
     [self _deliverWindowFocusEvent:NO oppositeWindow: opposite];
+    [self orderChilds:NO];
 }
 
 - (void) windowDidBecomeMain: (NSNotification *) notification {
