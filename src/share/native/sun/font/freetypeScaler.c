@@ -217,8 +217,12 @@ Java_sun_font_FreetypeFontScaler_initIDs(
 static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  filter) {
 #ifndef _WIN32
     static FtLibrarySetLcdFilterPtrType FtLibrarySetLcdFilterPtr = NULL;
-    if (!FtLibrarySetLcdFilterPtr) {
+    static int ftLibrarySetLcdFilterNotChecked = 1;
+    if (ftLibrarySetLcdFilterNotChecked) {
+        if (logFC) fprintf(stderr, "FC_LOG: Lookup FT_Library_SetLcdFilter: ");
         FtLibrarySetLcdFilterPtr = (FtLibrarySetLcdFilterPtrType) dlsym(RTLD_DEFAULT, "FT_Library_SetLcdFilter");
+        if (logFC) fprintf(stderr, (FtLibrarySetLcdFilterPtr)? "found\n" : "not found\n");
+        ftLibrarySetLcdFilterNotChecked = 0;
     }
     if (FtLibrarySetLcdFilterPtr) {
         return (*FtLibrarySetLcdFilterPtr)(library, filter);
