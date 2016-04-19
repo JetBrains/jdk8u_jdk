@@ -79,9 +79,14 @@
     if ((*env)->IsSameObject(env, fCompLocal, NULL)) {
         return @"unknown";
     }
-    NSString* str = JNFJavaToNSString(env, JNFCallStaticObjectMethod(env, jm_getAccessibleActionDescription, fAccessibleAction, fIndex, fCompLocal)); // AWT_THREADING Safe (AWTRunLoopMode)
+    NSString *str = nil;
+    jobject jstr = CallStaticObjectMethodWeakly_LIL(env, jm_getAccessibleActionDescription, fAccessibleAction, fIndex, fCompLocal);
+    if (jstr != NULL) {
+        NSString *str = JNFJavaToNSString(env, jstr); // AWT_THREADING Safe (AWTRunLoopMode)
+        (*env)->DeleteLocalRef(env, jstr);
+    }
     (*env)->DeleteLocalRef(env, fCompLocal);
-    return str;
+    return str == nil ? @"unknown" : str;
 }
 
 - (void)perform
@@ -90,7 +95,7 @@
 
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
-    JNFCallStaticVoidMethod(env, jm_doAccessibleAction, fAccessibleAction, fIndex, fComponent); // AWT_THREADING Safe (AWTRunLoopMode)
+    CallStaticVoidMethodWeakly_LIL(env, jm_doAccessibleAction, fAccessibleAction, fIndex, fComponent); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 @end

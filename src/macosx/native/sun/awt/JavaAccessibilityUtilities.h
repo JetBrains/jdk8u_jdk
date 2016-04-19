@@ -67,3 +67,32 @@ void JavaAccessibilitySetAttributeValue(id element, NSString *attribute, id valu
 void JavaAccessibilityRaiseSetAttributeToIllegalTypeException(const char *functionName, id element, NSString *attribute, id value);
 void JavaAccessibilityRaiseUnimplementedAttributeException(const char *functionName, id element, NSString *attribute);
 void JavaAccessibilityRaiseIllegalParameterTypeException(const char *functionName, id element, NSString *attribute, id parameter);
+
+//****************************************************
+// Helper methods to deal with global weak refs nicely
+//****************************************************
+
+jobject CallStaticObjectMethodWeakly_LL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2);
+jobject CallStaticObjectMethodWeakly_L(JNIEnv *env, JNFMemberInfo *method, jobject weak);
+jobject CallStaticObjectMethodWeakly_LLIZ(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i, jboolean b);
+jobject CallStaticObjectMethodWeakly_LFF(JNIEnv *env, JNFMemberInfo *method, jobject weak, jfloat f1, jfloat f2);
+jobject CallStaticObjectMethodWeakly_LIIL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jint i1, jint i2, jobject weak2);
+jobject CallStaticObjectMethodWeakly_LLII(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i1, jint i2);
+jobject CallStaticObjectMethodWeakly_LLI(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i);
+jobject CallStaticObjectMethodWeakly_LIL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jint i, jobject weak2);
+
+jboolean CallStaticBooleanMethodWeakly_LIL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jint i, jobject weak2);
+jboolean CallStaticBooleanMethodWeakly_LLL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jobject weak3);
+jboolean CallStaticBooleanMethodWeakly_LL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2);
+
+jint CallStaticIntMethodWeakly_LL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2);
+jint CallStaticIntMethodWeakly_LLI(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i);
+jint CallStaticIntMethodWeakly_LLII(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i1, jint i2);
+
+jlong CallStaticLongMethodWeakly_L(JNIEnv *env, JNFMemberInfo *method, jobject weak);
+
+void CallStaticVoidMethodWeakly_LIL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jint i, jobject weak2);
+void CallStaticVoidMethodWeakly_LL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2);
+void CallStaticVoidMethodWeakly_LLL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jobject weak3);
+void CallStaticVoidMethodWeakly_LLL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jobject weak3);
+void CallStaticVoidMethodWeakly_LLII(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i1, jint i2);

@@ -315,7 +315,7 @@ AWT_ASSERT_APPKIT_THREAD;
 
     NSEvent* newEvent = event;
 
-    unsigned short newKeyCode = 0; 
+    unsigned short newKeyCode = 0;
 
     if( NSAlphaShiftKeyMask & [NSEvent modifierFlags] ){
 	newKeyCode = 0x39;
@@ -326,7 +326,7 @@ AWT_ASSERT_APPKIT_THREAD;
     }
 
     if( NSControlKeyMask & [NSEvent modifierFlags] ){
-	newKeyCode = 0x3B; 
+	newKeyCode = 0x3B;
     }
 
    // if( NSAlternateKeyMask & [NSEvent modifierFlags] ){
@@ -338,15 +338,15 @@ AWT_ASSERT_APPKIT_THREAD;
 	newKeyCode = 0x37;
     }
 //    if( NSNumericPadKeyMask & [NSEvent modifierFlags] ){
-//	newKeyCode = 
+//	newKeyCode =
 //    }
 
 //    if( NSHelpKeyMask & [NSEvent modifierFlags] ){
-//	newKeyCode = 
+//	newKeyCode =
 //    }
 
 //    if( NSFunctionKeyMask & [NSEvent modifierFlags] ){
-//	newKeyCode = 
+//	newKeyCode =
 //    }
 
     if (newKeyCode != 0) {
@@ -625,7 +625,7 @@ AWT_ASSERT_APPKIT_THREAD;
 {
     static JNF_STATIC_MEMBER_CACHE(jm_getAWTView, sjc_CAccessibility, "getAWTView", "(Ljavax/accessibility/Accessible;)J");
 
-    jlong jptr = JNFCallStaticLongMethod(env, jm_getAWTView, jaccessible);
+    jlong jptr = CallStaticLongMethodWeakly_L(env, jm_getAWTView, jaccessible);
     if (jptr == 0) return nil;
 
     return (AWTView *)jlong_to_ptr(jptr);
