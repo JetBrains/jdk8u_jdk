@@ -65,7 +65,7 @@ NSSize getAxComponentSize(JNIEnv *env, jobject axComponent, jobject component)
     static JNF_MEMBER_CACHE(jf_height, jc_Dimension, "height", "I");
     static JNF_STATIC_MEMBER_CACHE(jm_getSize, sjc_CAccessibility, "getSize", "(Ljavax/accessibility/AccessibleComponent;Ljava/awt/Component;)Ljava/awt/Dimension;");
 
-    jobject dimension = CallStaticObjectMethodWeakly_LL(env, jm_getSize, axComponent, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    jobject dimension = JNFCallStaticObjectMethod(env, jm_getSize, axComponent, component); // AWT_THREADING Safe (AWTRunLoopMode)
 
     if (dimension == NULL) return NSZeroSize;
     return NSMakeSize(JNFGetIntField(env, dimension, jf_width), JNFGetIntField(env, dimension, jf_height));
@@ -74,7 +74,7 @@ NSSize getAxComponentSize(JNIEnv *env, jobject axComponent, jobject component)
 NSString *getJavaRole(JNIEnv *env, jobject axComponent, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(sjm_getAccessibleRole, sjc_CAccessibility, "getAccessibleRole", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;)Ljava/lang/String;");
-    jobject axRole = CallStaticObjectMethodWeakly_LL(env, sjm_getAccessibleRole, axComponent, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    jobject axRole = JNFCallStaticObjectMethod(env, sjm_getAccessibleRole, axComponent, component); // AWT_THREADING Safe (AWTRunLoopMode)
     if (axRole == NULL) return @"unknown";
 
     NSString* str = JNFJavaToNSString(env, axRole);
@@ -85,43 +85,43 @@ NSString *getJavaRole(JNIEnv *env, jobject axComponent, jobject component)
 jobject getAxSelection(JNIEnv *env, jobject axContext, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_getAccessibleSelection, sjc_CAccessibility, "getAccessibleSelection", "(Ljavax/accessibility/AccessibleContext;Ljava/awt/Component;)Ljavax/accessibility/AccessibleSelection;");
-    return CallStaticObjectMethodWeakly_LL(env, jm_getAccessibleSelection, axContext, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    return JNFCallStaticObjectMethod(env, jm_getAccessibleSelection, axContext, component); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 jobject getAxContextSelection(JNIEnv *env, jobject axContext, jint index, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_ax_getAccessibleSelection, sjc_CAccessibility, "ax_getAccessibleSelection", "(Ljavax/accessibility/AccessibleContext;ILjava/awt/Component;)Ljavax/accessibility/Accessible;");
-    return CallStaticObjectMethodWeakly_LIL(env, jm_ax_getAccessibleSelection, axContext, index, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    return JNFCallStaticObjectMethod(env, jm_ax_getAccessibleSelection, axContext, index, component); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 void setAxContextSelection(JNIEnv *env, jobject axContext, jint index, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_addAccessibleSelection, sjc_CAccessibility, "addAccessibleSelection", "(Ljavax/accessibility/AccessibleContext;ILjava/awt/Component;)V");
-    CallStaticVoidMethodWeakly_LIL(env, jm_addAccessibleSelection, axContext, index, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    JNFCallStaticVoidMethod(env, jm_addAccessibleSelection, axContext, index, component); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 jobject getAxContext(JNIEnv *env, jobject accessible, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_getAccessibleContext, sjc_CAccessibility, "getAccessibleContext", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;)Ljavax/accessibility/AccessibleContext;");
-    return CallStaticObjectMethodWeakly_LL(env, jm_getAccessibleContext, accessible, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    return JNFCallStaticObjectMethod(env, jm_getAccessibleContext, accessible, component); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 BOOL isChildSelected(JNIEnv *env, jobject accessible, jint index, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_isAccessibleChildSelected, sjc_CAccessibility, "isAccessibleChildSelected", "(Ljavax/accessibility/Accessible;ILjava/awt/Component;)Z");
-    return CallStaticBooleanMethodWeakly_LIL(env, jm_isAccessibleChildSelected, accessible, index, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    return JNFCallStaticBooleanMethod(env, jm_isAccessibleChildSelected, accessible, index, component); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 jobject getAxStateSet(JNIEnv *env, jobject axContext, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_getAccessibleStateSet, sjc_CAccessibility, "getAccessibleStateSet", "(Ljavax/accessibility/AccessibleContext;Ljava/awt/Component;)Ljavax/accessibility/AccessibleStateSet;");
-    return CallStaticObjectMethodWeakly_LL(env, jm_getAccessibleStateSet, axContext, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    return JNFCallStaticObjectMethod(env, jm_getAccessibleStateSet, axContext, component); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 BOOL containsAxState(JNIEnv *env, jobject axContext, jobject axState, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_contains, sjc_CAccessibility, "contains", "(Ljavax/accessibility/AccessibleContext;Ljavax/accessibility/AccessibleState;Ljava/awt/Component;)Z");
-    return CallStaticBooleanMethodWeakly_LLL(env, jm_contains, axContext, axState, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    return JNFCallStaticBooleanMethod(env, jm_contains, axContext, axState, component); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 BOOL isVertical(JNIEnv *env, jobject axContext, jobject component)
@@ -154,7 +154,7 @@ BOOL isShowing(JNIEnv *env, jobject axContext, jobject component)
 NSPoint getAxComponentLocationOnScreen(JNIEnv *env, jobject axComponent, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_getLocationOnScreen, sjc_CAccessibility, "getLocationOnScreen", "(Ljavax/accessibility/AccessibleComponent;Ljava/awt/Component;)Ljava/awt/Point;");
-    jobject jpoint = CallStaticObjectMethodWeakly_LL(env, jm_getLocationOnScreen, axComponent, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    jobject jpoint = JNFCallStaticObjectMethod(env, jm_getLocationOnScreen, axComponent, component); // AWT_THREADING Safe (AWTRunLoopMode)
     if (jpoint == NULL) return NSZeroPoint;
     return NSMakePoint(JNFGetIntField(env, jpoint, sjf_X), JNFGetIntField(env, jpoint, sjf_Y));
 }
@@ -162,7 +162,7 @@ NSPoint getAxComponentLocationOnScreen(JNIEnv *env, jobject axComponent, jobject
 jint getAxTextCharCount(JNIEnv *env, jobject axText, jobject component)
 {
     static JNF_STATIC_MEMBER_CACHE(jm_getCharCount, sjc_CAccessibility, "getCharCount", "(Ljavax/accessibility/AccessibleText;Ljava/awt/Component;)I");
-    return CallStaticIntMethodWeakly_LL(env, jm_getCharCount, axText, component); // AWT_THREADING Safe (AWTRunLoopMode)
+    return JNFCallStaticIntMethod(env, jm_getCharCount, axText, component); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 // The following JavaAccessibility methods are copied from the corresponding
@@ -366,245 +366,4 @@ void initializeRoles()
     [sRoles setObject:NSAccessibilityUnknownRole forKey:@"unknown"];
     [sRoles setObject:JavaAccessibilityIgnore forKey:@"viewport"];
     [sRoles setObject:JavaAccessibilityIgnore forKey:@"window"];
-}
-
-//****************************************************
-// Helper methods to deal with global weak refs nicely
-//****************************************************
-
-jobject CallStaticObjectMethodWeakly_LL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jobject res = NULL;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticObjectMethod(env, method, j1, j2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jobject CallStaticObjectMethodWeakly_L(JNIEnv *env, JNFMemberInfo *method, jobject weak)
-{
-    jobject j = (*env)->NewLocalRef(env, weak);
-    jobject res = NULL;
-    if (!(*env)->IsSameObject(env, j, NULL)) {
-        res = JNFCallStaticObjectMethod(env, method, j);
-    }
-    (*env)->DeleteLocalRef(env, j);
-    return res;
-}
-
-jobject CallStaticObjectMethodWeakly_LLIZ(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i, jboolean b)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jobject res = NULL;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticObjectMethod(env, method, j1, j2, i, b);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jobject CallStaticObjectMethodWeakly_LFF(JNIEnv *env, JNFMemberInfo *method, jobject weak, jfloat f1, jfloat f2)
-{
-    jobject j = (*env)->NewLocalRef(env, weak);
-    jobject res = NULL;
-    if (!(*env)->IsSameObject(env, j, NULL)) {
-        res = JNFCallStaticObjectMethod(env, method, j, f1, f2);
-    }
-    (*env)->DeleteLocalRef(env, j);
-    return res;
-}
-
-jobject CallStaticObjectMethodWeakly_LIIL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jint i1, jint i2, jobject weak2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jobject res = NULL;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticObjectMethod(env, method, j1, i1, i2, j2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jobject CallStaticObjectMethodWeakly_LLII(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i1, jint i2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jobject res = NULL;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticObjectMethod(env, method, j1, j2, i1, i2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jobject CallStaticObjectMethodWeakly_LLI(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jobject res = NULL;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticObjectMethod(env, method, j1, j2, i);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jobject CallStaticObjectMethodWeakly_LIL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jint i, jobject weak2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jobject res = NULL;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticObjectMethod(env, method, j1, i, j2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jboolean CallStaticBooleanMethodWeakly_LIL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jint i, jobject weak2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jboolean res = 0;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticBooleanMethod(env, method, j1, i, j2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jboolean CallStaticBooleanMethodWeakly_LLL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jobject weak3)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jobject j3 = (*env)->NewLocalRef(env, weak3);
-    jboolean res = 0;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL) && !(*env)->IsSameObject(env, j3, NULL)) {
-        res = JNFCallStaticBooleanMethod(env, method, j1, j2, j3);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    (*env)->DeleteLocalRef(env, j3);
-    return res;
-}
-
-jboolean CallStaticBooleanMethodWeakly_LL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jboolean res = 0;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticBooleanMethod(env, method, j1, j2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jint CallStaticIntMethodWeakly_LL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jint res = 0;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticIntMethod(env, method, j1, j2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jint CallStaticIntMethodWeakly_LLI(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jint res = 0;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticIntMethod(env, method, j1, j2, i);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jint CallStaticIntMethodWeakly_LLII(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i1, jint i2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jint res = 0;
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        res = JNFCallStaticIntMethod(env, method, j1, j2, i1, i2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    return res;
-}
-
-jlong CallStaticLongMethodWeakly_L(JNIEnv *env, JNFMemberInfo *method, jobject weak)
-{
-    jobject j = (*env)->NewLocalRef(env, weak);
-    jlong res = 0;
-    if (!(*env)->IsSameObject(env, j, NULL)) {
-        res = JNFCallStaticLongMethod(env, method, j);
-    }
-    (*env)->DeleteLocalRef(env, j);
-    return res;
-}
-
-void CallStaticVoidMethodWeakly_LIL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jint i, jobject weak2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        JNFCallStaticVoidMethod(env, method, j1, i, j2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-}
-
-void CallStaticVoidMethodWeakly_LL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        JNFCallStaticVoidMethod(env, method, j1, j2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-}
-
-void CallStaticVoidMethodWeakly_LLL(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jobject weak3)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    jobject j3 = (*env)->NewLocalRef(env, weak3);
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL) && !(*env)->IsSameObject(env, j3, NULL)) {
-        JNFCallStaticVoidMethod(env, method, j1, j2, j3);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
-    (*env)->DeleteLocalRef(env, j3);
-}
-
-void CallStaticVoidMethodWeakly_LLII(JNIEnv *env, JNFMemberInfo *method, jobject weak1, jobject weak2, jint i1, jint i2)
-{
-    jobject j1 = (*env)->NewLocalRef(env, weak1);
-    jobject j2 = (*env)->NewLocalRef(env, weak2);
-    if (!(*env)->IsSameObject(env, j1, NULL) && !(*env)->IsSameObject(env, j2, NULL)) {
-        JNFCallStaticVoidMethod(env, method, j1, j2, i1, i2);
-    }
-    (*env)->DeleteLocalRef(env, j1);
-    (*env)->DeleteLocalRef(env, j2);
 }

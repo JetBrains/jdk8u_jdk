@@ -625,7 +625,7 @@ AWT_ASSERT_APPKIT_THREAD;
 {
     static JNF_STATIC_MEMBER_CACHE(jm_getAWTView, sjc_CAccessibility, "getAWTView", "(Ljavax/accessibility/Accessible;)J");
 
-    jlong jptr = CallStaticLongMethodWeakly_L(env, jm_getAWTView, jaccessible);
+    jlong jptr = JNFCallStaticLongMethod(env, jm_getAWTView, jaccessible);
     if (jptr == 0) return nil;
 
     return (AWTView *)jlong_to_ptr(jptr);
