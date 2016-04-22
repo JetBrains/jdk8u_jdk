@@ -110,7 +110,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     if ([[self accessibilityRoleAttribute] isEqualToString:NSAccessibilityStaticTextRole]) {
         // if it's static text, the AppKit AXValue is the java accessibleName
-        jobject axName = CallStaticObjectMethodWeakly_LL(env, sjm_getAccessibleName, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+        jobject axName = JNFCallStaticObjectMethod(env, sjm_getAccessibleName, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
         if (axName != NULL) {
             NSString* str = JNFJavaToNSString(env, axName);
             (*env)->DeleteLocalRef(env, axName);
@@ -120,15 +120,15 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
     }
 
     // cmcnote: inefficient to make three distinct JNI calls. Coalesce. radr://3951923
-    jobject axText = CallStaticObjectMethodWeakly_LL(env, sjm_getAccessibleText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jobject axText = JNFCallStaticObjectMethod(env, sjm_getAccessibleText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (axText == NULL) return nil;
     (*env)->DeleteLocalRef(env, axText);
     
-    jobject axEditableText = CallStaticObjectMethodWeakly_LL(env, sjm_getAccessibleEditableText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jobject axEditableText = JNFCallStaticObjectMethod(env, sjm_getAccessibleEditableText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (axEditableText == NULL) return nil;
 
     static JNF_STATIC_MEMBER_CACHE(jm_getTextRange, sjc_CAccessibleText, "getTextRange", "(Ljavax/accessibility/AccessibleEditableText;IILjava/awt/Component;)Ljava/lang/String;");
-    jobject jrange = CallStaticObjectMethodWeakly_LIIL(env, jm_getTextRange, axEditableText, 0, getAxTextCharCount(env, axEditableText, fComponent), fComponent);
+    jobject jrange = JNFCallStaticObjectMethod(env, jm_getTextRange, axEditableText, 0, getAxTextCharCount(env, axEditableText, fComponent), fComponent);
     NSString *string = JNFJavaToNSString(env, jrange); // AWT_THREADING Safe (AWTRunLoop)
 
     (*env)->DeleteLocalRef(env, jrange);
@@ -145,7 +145,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
     if (!isEnabled) return NO;
 
     JNIEnv* env = [ThreadUtilities getJNIEnv];
-    jobject axEditableText = CallStaticObjectMethodWeakly_LL(env, sjm_getAccessibleEditableText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jobject axEditableText = JNFCallStaticObjectMethod(env, sjm_getAccessibleEditableText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (axEditableText == NULL) return NO;
     (*env)->DeleteLocalRef(env, axEditableText);
     return YES;
@@ -164,7 +164,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 {
     JNIEnv* env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getSelectedText, sjc_CAccessibleText, "getSelectedText", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;)Ljava/lang/String;");
-    jobject axText = CallStaticObjectMethodWeakly_LL(env, jm_getSelectedText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jobject axText = JNFCallStaticObjectMethod(env, jm_getSelectedText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (axText == NULL) return @"";
     NSString* str = JNFJavaToNSString(env, axText);
     (*env)->DeleteLocalRef(env, axText);
@@ -188,7 +188,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     jstring jstringValue = JNFNSToJavaString(env, (NSString *)value);
     static JNF_STATIC_MEMBER_CACHE(jm_setSelectedText, sjc_CAccessibleText, "setSelectedText", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;Ljava/lang/String;)V");
-    CallStaticVoidMethodWeakly_LLL(env, jm_setSelectedText, fAccessible, fComponent, jstringValue); // AWT_THREADING Safe (AWTRunLoop)
+    JNFCallStaticVoidMethod(env, jm_setSelectedText, fAccessible, fComponent, jstringValue); // AWT_THREADING Safe (AWTRunLoop)
 }
 
 // Range of selected text (NSValue)
@@ -196,7 +196,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getSelectedTextRange, sjc_CAccessibleText, "getSelectedTextRange", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;)[I");
-    jintArray axTextRange = CallStaticObjectMethodWeakly_LL(env, jm_getSelectedTextRange, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jintArray axTextRange = JNFCallStaticObjectMethod(env, jm_getSelectedTextRange, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (axTextRange == NULL) return nil;
 
     return javaIntArrayToNSRangeValue(env, axTextRange);
@@ -222,7 +222,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_setSelectedTextRange, sjc_CAccessibleText, "setSelectedTextRange", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;II)V");
-    CallStaticVoidMethodWeakly_LLII(env, jm_setSelectedTextRange, fAccessible, fComponent, startIndex, endIndex); // AWT_THREADING Safe (AWTRunLoop)
+    JNFCallStaticVoidMethod(env, jm_setSelectedTextRange, fAccessible, fComponent, startIndex, endIndex); // AWT_THREADING Safe (AWTRunLoop)
 }
 
 - (NSNumber *)accessibilityNumberOfCharactersAttribute
@@ -230,7 +230,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
     // cmcnote: should coalesce these two calls - radr://3951923
     // also, static text doesn't always have accessibleText. if axText is null, should get the charcount of the accessibleName instead
     JNIEnv *env = [ThreadUtilities getJNIEnv];
-    jobject axText = CallStaticObjectMethodWeakly_LL(env, sjm_getAccessibleText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jobject axText = JNFCallStaticObjectMethod(env, sjm_getAccessibleText, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     NSNumber* num = [NSNumber numberWithInt:getAxTextCharCount(env, axText, fComponent)];
     (*env)->DeleteLocalRef(env, axText);
     return num;
@@ -245,7 +245,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getVisibleCharacterRange, sjc_CAccessibleText, "getVisibleCharacterRange", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;)[I");
-    jintArray axTextRange = CallStaticObjectMethodWeakly_LL(env, jm_getVisibleCharacterRange, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jintArray axTextRange = JNFCallStaticObjectMethod(env, jm_getVisibleCharacterRange, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (axTextRange == NULL) return nil;
 
     return javaIntArrayToNSRangeValue(env, axTextRange);
@@ -263,7 +263,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 {
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getLineNumberForInsertionPoint, sjc_CAccessibleText, "getLineNumberForInsertionPoint", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;)I");
-    jint row = CallStaticIntMethodWeakly_LL(env, jm_getLineNumberForInsertionPoint, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jint row = JNFCallStaticIntMethod(env, jm_getLineNumberForInsertionPoint, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (row < 0) return nil;
     return [NSNumber numberWithInt:row];
 }
@@ -298,7 +298,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getBoundsForRange, sjc_CAccessibleText, "getBoundsForRange", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;II)[D");
-    jdoubleArray axBounds = (jdoubleArray)CallStaticObjectMethodWeakly_LLII(env, jm_getBoundsForRange, fAccessible, fComponent, range.location, range.length); // AWT_THREADING Safe (AWTRunLoop)
+    jdoubleArray axBounds = JNFCallStaticObjectMethod(env, jm_getBoundsForRange, fAccessible, fComponent, range.location, range.length); // AWT_THREADING Safe (AWTRunLoop)
     if (axBounds == NULL) return nil;
 
     // We cheat because we know that the array is 4 elements long (x, y, width, height)
@@ -325,7 +325,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getLineNumberForIndex, sjc_CAccessibleText, "getLineNumberForIndex", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;I)I");
-    jint row = CallStaticIntMethodWeakly_LLI(env, jm_getLineNumberForIndex, fAccessible, fComponent, [line intValue]); // AWT_THREADING Safe (AWTRunLoop)
+    jint row = JNFCallStaticIntMethod(env, jm_getLineNumberForIndex, fAccessible, fComponent, [line intValue]); // AWT_THREADING Safe (AWTRunLoop)
     if (row < 0) return nil;
     return [NSNumber numberWithInt:row];
 }
@@ -337,7 +337,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getRangeForLine, sjc_CAccessibleText, "getRangeForLine", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;I)[I");
-    jintArray axTextRange = (jintArray)CallStaticObjectMethodWeakly_LLI(env, jm_getRangeForLine, fAccessible, fComponent, [line intValue]); // AWT_THREADING Safe (AWTRunLoop)
+    jintArray axTextRange = JNFCallStaticObjectMethod(env, jm_getRangeForLine, fAccessible, fComponent, [line intValue]); // AWT_THREADING Safe (AWTRunLoop)
     if (axTextRange == NULL) return nil;
 
     return javaIntArrayToNSRangeValue(env,axTextRange);
@@ -363,7 +363,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getStringForRange, sjc_CAccessibleText, "getStringForRange", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;II)Ljava/lang/String;");
-    jstring jstringForRange = (jstring)CallStaticObjectMethodWeakly_LLII(env, jm_getStringForRange, fAccessible, fComponent, range.location, range.length); // AWT_THREADING Safe (AWTRunLoop)
+    jstring jstringForRange = JNFCallStaticObjectMethod(env, jm_getStringForRange, fAccessible, fComponent, range.location, range.length); // AWT_THREADING Safe (AWTRunLoop)
 
     if (jstringForRange == NULL) return @"";
     NSString* str = JNFJavaToNSString(env, jstringForRange);
@@ -392,7 +392,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getCharacterIndexAtPosition, sjc_CAccessibleText, "getCharacterIndexAtPosition", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;II)I");
-    jint charIndex = CallStaticIntMethodWeakly_LLII(env, jm_getCharacterIndexAtPosition, fAccessible, fComponent, point.x, point.y); // AWT_THREADING Safe (AWTRunLoop)
+    jint charIndex = JNFCallStaticIntMethod(env, jm_getCharacterIndexAtPosition, fAccessible, fComponent, point.x, point.y); // AWT_THREADING Safe (AWTRunLoop)
     if (charIndex == -1) return nil;
 
     // AccessibleText.getIndexAtPoint returns -1 for an invalid point
@@ -421,7 +421,7 @@ NSValue *javaIntArrayToNSRangeValue(JNIEnv* env, jintArray array) {
 
     JNIEnv *env = [ThreadUtilities getJNIEnv];
     static JNF_STATIC_MEMBER_CACHE(jm_getRangeForIndex, sjc_CAccessibleText, "getRangeForIndex", "(Ljavax/accessibility/Accessible;Ljava/awt/Component;I)[I");
-    jintArray axTextRange = (jintArray)CallStaticObjectMethodWeakly_LLI(env, jm_getRangeForIndex, fAccessible, fComponent, index); // AWT_THREADING Safe (AWTRunLoop)
+    jintArray axTextRange = JNFCallStaticObjectMethod(env, jm_getRangeForIndex, fAccessible, fComponent, index); // AWT_THREADING Safe (AWTRunLoop)
     if (axTextRange == NULL) return nil;
 
     return javaIntArrayToNSRangeValue(env, axTextRange);

@@ -80,7 +80,7 @@
         return @"unknown";
     }
     NSString *str = nil;
-    jobject jstr = CallStaticObjectMethodWeakly_LIL(env, jm_getAccessibleActionDescription, fAccessibleAction, fIndex, fCompLocal);
+    jobject jstr = JNFCallStaticObjectMethod(env, jm_getAccessibleActionDescription, fAccessibleAction, fIndex, fCompLocal);
     if (jstr != NULL) {
         NSString *str = JNFJavaToNSString(env, jstr); // AWT_THREADING Safe (AWTRunLoopMode)
         (*env)->DeleteLocalRef(env, jstr);
@@ -95,7 +95,7 @@
 
     JNIEnv* env = [ThreadUtilities getJNIEnv];
 
-    CallStaticVoidMethodWeakly_LIL(env, jm_doAccessibleAction, fAccessibleAction, fIndex, fComponent); // AWT_THREADING Safe (AWTRunLoopMode)
+    JNFCallStaticVoidMethod(env, jm_doAccessibleAction, fAccessibleAction, fIndex, fComponent); // AWT_THREADING Safe (AWTRunLoopMode)
 }
 
 @end
