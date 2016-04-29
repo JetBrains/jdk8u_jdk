@@ -116,6 +116,8 @@ public class CGLLayer extends CFRetainedResource {
 
     @Override
     public void dispose() {
+        surfaceData = null;
+        peer = null;
         // break the connection between the layer and the buffer
         validate(null);
         super.dispose();
