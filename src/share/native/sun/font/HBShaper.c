@@ -274,6 +274,7 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      len = (*env)->GetArrayLength(env, text);
 
      hb_buffer_add_utf16(buffer, chars, len, offset, limit-offset);
+     (*env)->ReleaseCharArrayElements(env, text, chars, JNI_ABORT);
 
      hb_shape_full(hbfont, buffer, features, featureCount, 0);
      glyphCount = hb_buffer_get_length(buffer);
