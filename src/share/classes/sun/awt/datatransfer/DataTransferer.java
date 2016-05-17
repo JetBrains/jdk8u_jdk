@@ -25,95 +25,36 @@
 
 package sun.awt.datatransfer;
 
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
+import sun.awt.AppContext;
+import sun.awt.ComponentFactory;
+import sun.awt.SunToolkit;
+import sun.awt.image.ImageRepresentation;
+import sun.awt.image.ToolkitImage;
+import sun.util.logging.PlatformLogger;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.FlavorMap;
-import java.awt.datatransfer.FlavorTable;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Reader;
-import java.io.SequenceInputStream;
-import java.io.StringReader;
-
+import javax.imageio.*;
+import javax.imageio.spi.ImageWriterSpi;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.image.*;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.security.ProtectionDomain;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.security.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import sun.awt.ComponentFactory;
-import sun.util.logging.PlatformLogger;
-
-import sun.awt.AppContext;
-import sun.awt.SunToolkit;
-
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.awt.image.RenderedImage;
-import java.awt.image.WritableRaster;
-import java.awt.image.ColorModel;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.ImageTypeSpecifier;
-
-import javax.imageio.spi.ImageWriterSpi;
-
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.ImageOutputStream;
-
-import sun.awt.image.ImageRepresentation;
-import sun.awt.image.ToolkitImage;
-
-import java.io.FilePermission;
 
 
 /**
@@ -2898,19 +2839,20 @@ search:
                     return comp;
                 }
             } else {
-                // First, prefer application types.
-                comp = compareIndices(primaryTypes, primaryType1, primaryType2,
-                                      UNKNOWN_OBJECT_LOSES);
-                if (comp != 0) {
-                    return comp;
-                }
-
+                // First, prefer text types
                 if (flavor1.isFlavorTextType()) {
                     return 1;
                 }
 
                 if (flavor2.isFlavorTextType()) {
                     return -1;
+                }
+
+                // Next, prefer application types.
+                comp = compareIndices(primaryTypes, primaryType1, primaryType2,
+                        UNKNOWN_OBJECT_LOSES);
+                if (comp != 0) {
+                    return comp;
                 }
 
                 // Next, look for application/x-java-* types. Prefer unknown
