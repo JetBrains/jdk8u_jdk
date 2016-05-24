@@ -81,7 +81,7 @@ public class CGLLayer extends CFRetainedResource {
     }
 
     public SurfaceData replaceSurfaceData() {
-        if (getBounds().isEmpty()) {
+        if (peer == null || getBounds().isEmpty()) {
             surfaceData = NullSurfaceData.theInstance;
             return surfaceData;
         }
