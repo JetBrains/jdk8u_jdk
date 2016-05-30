@@ -10,7 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/../../../src/share/classes/sun/dc" />
       <excludeFolder url="file://$MODULE_DIR$/../../../src/share/classes/sun/management" />
     </content>
-    <orderEntry type="jdk" jdkName="JBRE" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="jdk" jdkName="JBRE" jdkType="JavaSDK" />
   </component>
 </module>
