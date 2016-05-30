@@ -81,7 +81,7 @@ public class CGLLayer extends CFRetainedResource {
     }
 
     public SurfaceData replaceSurfaceData() {
-        if (peer == null || getBounds().isEmpty()) {
+        if (getBounds().isEmpty()) {
             surfaceData = NullSurfaceData.theInstance;
             return surfaceData;
         }
@@ -116,8 +116,6 @@ public class CGLLayer extends CFRetainedResource {
 
     @Override
     public void dispose() {
-        surfaceData = null;
-        peer = null;
         // break the connection between the layer and the buffer
         validate(null);
         super.dispose();
