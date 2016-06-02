@@ -96,8 +96,10 @@ public final class ClassCastExceptionForInvalidSurface {
                 vi.createGraphics().draw(new Rectangle(0, 0, 10, 10));
                 vi.createGraphics().fillOval(0, 0, 10, 10);
                 final Graphics2D graphics = vi.createGraphics();
-                graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                graphics.fillPolygon(new int[] {0, 10, 10, 0}, new int [] {0, 0, 10, 10}, 4);
+                graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                          RenderingHints.VALUE_ANTIALIAS_ON);
+                graphics.fillPolygon(new int[] {0, 10, 10, 0},
+                                     new int [] {0, 0, 10, 10}, 4);
             }
         });
         t1.start();
