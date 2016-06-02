@@ -52,12 +52,15 @@ public final class CCompositeGlyphMapper extends CompositeGlyphMapper {
         if (slot < 0) {
             Font2D fallbackFont = FontManagerFactory.getInstance().findFont2D(fallbackFontName,
                     Font.PLAIN, FontManager.NO_FALLBACK);
-            if (!(fallbackFont instanceof CFont) || !fallbackFontName.equals(fallbackFont.getPostscriptName())) {
+            if (!(fallbackFont instanceof CFont) ||
+                    !fallbackFontName.equals(((CFont) fallbackFont).getNativeFontName())) {
                 // Native font fallback mechanism can return "hidden" fonts - their names start with dot,
                 // and they are not returned in a list of fonts available in system, but they can still be used
                 // if requested explicitly.
                 fallbackFont = new CFont(fallbackFontName, fallbackFontFamilyName);
             }
+
+            if (mainFont.isFakeItalic()) fallbackFont = ((CFont)fallbackFont).createItalicVariant();
 
             slot = compositeFont.addSlot((CFont) fallbackFont);
         }
