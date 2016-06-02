@@ -41,8 +41,8 @@ public final class CCompositeFont extends CompositeFont {
     }
 
     @Override
-    public PhysicalFont getSlotFont(int slot) {
-        if (slot == 0) return super.getSlotFont(0);
+    public CFont getSlotFont(int slot) {
+        if (slot == 0) return (CFont) super.getSlotFont(0);
         synchronized (this) {
             return fallbackFonts.get(slot - 1);
         }
@@ -75,8 +75,8 @@ public final class CCompositeFont extends CompositeFont {
 
     public synchronized int findSlot(String fontName) {
         for (int slot = 0; slot < numSlots; slot++) {
-            PhysicalFont slotFont = getSlotFont(slot);
-            if (fontName.equals(slotFont.getPostscriptName())) {
+            CFont slotFont = getSlotFont(slot);
+            if (fontName.equals(slotFont.getNativeFontName())) {
                 return slot;
             }
         }
@@ -84,7 +84,7 @@ public final class CCompositeFont extends CompositeFont {
     }
 
     public synchronized int addSlot(CFont font) {
-        int slot = findSlot(font.getPostscriptName());
+        int slot = findSlot(font.getNativeFontName());
         if (slot >= 0) return slot;
         fallbackFonts.add(font);
         lastFontStrike = new SoftReference<>(null);

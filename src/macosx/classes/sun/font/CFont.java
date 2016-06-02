@@ -25,13 +25,14 @@
 
 package sun.font;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
+
+;
 
 // Right now this class is final to avoid a problem with native code.
 // For some reason the JNI IsInstanceOf was not working correctly
@@ -234,6 +235,14 @@ public final class CFont extends PhysicalFont implements FontSubstitution {
             desc.glyphTx.concatenate(AffineTransform.getShearInstance(-0.2, 0));
         }
         return new CStrike(this, desc);
+    }
+
+    boolean isFakeItalic() {
+        return isFakeItalic;
+    }
+
+    String getNativeFontName() {
+        return nativeFontName;
     }
 
     // <rdar://problem/5321707> sun.font.Font2D caches the last used strike,
