@@ -25,23 +25,17 @@
 
 package sun.font;
 
+import sun.awt.FontConfiguration;
+import sun.awt.HeadlessToolkit;
+import sun.lwawt.macosx.LWCToolkit;
+import sun.misc.ThreadGroupUtils;
+
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.TreeMap;
-import java.util.Vector;
-
-import javax.swing.plaf.FontUIResource;
-
-import sun.awt.FontConfiguration;
-import sun.awt.HeadlessToolkit;
-import sun.misc.ThreadGroupUtils;
-import sun.lwawt.macosx.*;
+import java.util.*;
 
 public final class CFontManager extends SunFontManager {
     private FontConfigManager fcManager = null;
@@ -277,10 +271,10 @@ public final class CFontManager extends SunFontManager {
             if (plain == null && bold == null) continue;
             if (italic != null && boldItalic != null) continue;
             if (plain != null && italic == null) {
-               registerGenericFont(plain.createItalicVariant(), true);
+               registerGenericFont(plain.createItalicVariant(true), true);
             }
             if (bold != null && boldItalic == null) {
-               registerGenericFont(bold.createItalicVariant(), true);
+               registerGenericFont(bold.createItalicVariant(true), true);
             }
         }
     }

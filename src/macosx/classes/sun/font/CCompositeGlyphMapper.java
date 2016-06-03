@@ -60,7 +60,7 @@ public final class CCompositeGlyphMapper extends CompositeGlyphMapper {
                 fallbackFont = new CFont(fallbackFontName, fallbackFontFamilyName);
             }
 
-            if (mainFont.isFakeItalic()) fallbackFont = ((CFont)fallbackFont).createItalicVariant();
+            if (mainFont.isFakeItalic()) fallbackFont = ((CFont)fallbackFont).createItalicVariant(false);
 
             slot = compositeFont.addSlot((CFont) fallbackFont);
         }
