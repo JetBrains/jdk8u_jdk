@@ -182,12 +182,14 @@ public final class CFont extends PhysicalFont implements FontSubstitution {
         isFakeItalic = other.isFakeItalic;
     }
 
-    public CFont createItalicVariant() {
+    public CFont createItalicVariant(boolean updateStyle) {
         CFont font = new CFont(this, familyName);
         font.nativeFontName = fullName;
         font.fullName =
             fullName + (style == Font.BOLD ? "" : "-") + "Italic-Derived";
-        font.style |= Font.ITALIC;
+        if (updateStyle) {
+            font.style |= Font.ITALIC;
+        }
         font.isFakeItalic = true;
         return font;
     }
