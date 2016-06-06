@@ -13,7 +13,7 @@
     </content>
     <orderEntry type="module" module-name="osx" />
     <orderEntry type="module" module-name="share" />
-    <orderEntry type="jdk" jdkName="JBRE" jdkType="JavaSDK" />
+    <orderEntry type="jdk" jdkName="JBSDK" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
