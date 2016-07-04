@@ -4,9 +4,6 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/classes" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/classes/com/sun/jmx/snmp" />
-      <excludeFolder url="file://$MODULE_DIR$/classes/sun/dc" />
-      <excludeFolder url="file://$MODULE_DIR$/classes/sun/management/snmp" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
