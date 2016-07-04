@@ -2,11 +2,14 @@
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="true">
     <exclude-output />
+    <content url="file://$MODULE_DIR$/../idea/java/tests/src">
+      <sourceFolder url="file://$MODULE_DIR$/../idea/java/tests/src" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/sun/java2d">
       <sourceFolder url="file://$MODULE_DIR$/sun/java2d" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="macosx" />
-    <orderEntry type="jdk" jdkName="JBRE" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
   </component>
 </module>
