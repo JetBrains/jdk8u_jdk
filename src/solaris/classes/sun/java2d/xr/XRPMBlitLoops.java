@@ -145,6 +145,11 @@ public class XRPMBlitLoops {
         }
 
         Blit swToSurfaceBlit = Blit.getFromCache(src.getSurfaceType(), CompositeType.SrcNoEa, vImgSurfaceType);
+
+        if (!(vImg.getDestSurface() instanceof XRSurfaceData)) {
+            throw new InvalidPipeException("wrong surface data type: " + vImg.getDestSurface());
+        }
+
         XRSurfaceData vImgSurface = (XRSurfaceData) vImg.getDestSurface();
         swToSurfaceBlit.Blit(src, vImgSurface, AlphaComposite.Src, null,
                              sx, sy, 0, 0, w, h);
