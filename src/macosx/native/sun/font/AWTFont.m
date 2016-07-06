@@ -228,7 +228,7 @@ GetFilteredFonts()
             }
         }
         if (isElCapitanOrGreater()) {
-            const NSArray *sanFranciscoFonts = @[ @".SFNSDisplay-Regular",
+            const NSArray *sanFranciscoFonts = [NSArray arrayWithObjects: @".SFNSDisplay-Regular",
                                              @".SFNSDisplay-Black",
                                              @".SFNSDisplay-Bold",
                                              @".SFNSDisplay-Heavy",
@@ -260,7 +260,8 @@ GetFilteredFonts()
                                              @".SFNSText-RegularItalicG2",
                                              @".SFNSText-RegularItalicG3",
                                              @".SFNSText-Semibold",
-                                             @".SFNSText-SemiboldItalic"];
+                                             @".SFNSText-SemiboldItalic",
+                                             nil];
 
             for (NSString *item in sanFranciscoFonts) {
                 NSFont* font = [NSFont fontWithName:item size:1.0];
