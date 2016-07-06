@@ -31,6 +31,7 @@
 #import "sun_font_CFont.h"
 #import "sun_font_CFontManager.h"
 
+#import "OSVersion.h"
 #import "AWTFont.h"
 #import "AWTStrike.h"
 #import "CoreTextSupport.h"
@@ -226,7 +227,50 @@ GetFilteredFonts()
                 }
             }
         }
+        if (isElCapitanOrGreater()) {
+            const NSArray *sanFranciscoFonts = @[ @".SFNSDisplay-Regular",
+                                             @".SFNSDisplay-Black",
+                                             @".SFNSDisplay-Bold",
+                                             @".SFNSDisplay-Heavy",
+                                             @".SFNSDisplay-Light",
+                                             @".SFNSDisplay-Medium",
+                                             @".SFNSDisplay-Semibold",
+                                             @".SFNSDisplay-Thin",
+                                             @".SFNSDisplay-Ultralight",
+                                             @".SFNSText-Regular",
+                                             @".SFNSText-Bold",
+                                             @".SFNSText-BoldG1",
+                                             @".SFNSText-BoldG2",
+                                             @".SFNSText-BoldG3",
+                                             @".SFNSText-BoldItalic",
+                                             @".SFNSText-BoldItalicG1",
+                                             @".SFNSText-BoldItalicG2",
+                                             @".SFNSText-BoldItalicG3",
+                                             @".SFNSText-Heavy",
+                                             @".SFNSText-HeavyItalic",
+                                             @".SFNSText-Light",
+                                             @".SFNSText-LightItalic",
+                                             @".SFNSText-Medium",
+                                             @".SFNSText-MediumItalic",
+                                             @".SFNSText-RegularG1",
+                                             @".SFNSText-RegularG2",
+                                             @".SFNSText-RegularG3",
+                                             @".SFNSText-RegularItalic",
+                                             @".SFNSText-RegularItalicG1",
+                                             @".SFNSText-RegularItalicG2",
+                                             @".SFNSText-RegularItalicG3",
+                                             @".SFNSText-Semibold",
+                                             @".SFNSText-SemiboldItalic"];
 
+            for (NSString *item in sanFranciscoFonts) {
+                NSFont* font = [NSFont fontWithName:item size:1.0];
+                if(font && font.familyName) {
+                    [allFonts addObject:item];
+                    [fontFamilyTable setObject:font.familyName forKey:item];
+                }
+            }
+        }
+        
         sFilteredFonts = allFonts;
         sFontFamilyTable = fontFamilyTable;
     }
