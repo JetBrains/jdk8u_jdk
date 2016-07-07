@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../../../test/java/awt/Focus">
-      <sourceFolder url="file://$MODULE_DIR$/../../../test/java/awt/Focus" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/../../../test/java/awt/Graphics2D">
       <sourceFolder url="file://$MODULE_DIR$/../../../test/java/awt/Graphics2D" isTestSource="false" />
@@ -14,9 +11,7 @@
     <content url="file://$MODULE_DIR$/../../../test/sun/java2d">
       <sourceFolder url="file://$MODULE_DIR$/../../../test/sun/java2d" isTestSource="false" />
     </content>
-    <orderEntry type="module" module-name="osx" />
-    <orderEntry type="module" module-name="share" />
-    <orderEntry type="jdk" jdkName="JBSDK" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="jdk" jdkName="JBSDK" jdkType="JavaSDK" />
   </component>
 </module>

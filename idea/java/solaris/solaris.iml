@@ -4,6 +4,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../src/solaris/classes">
       <sourceFolder url="file://$MODULE_DIR$/../../../src/solaris/classes" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../src/solaris/classes/sun/nio" />
     </content>
     <orderEntry type="module" module-name="share" />
     <orderEntry type="sourceFolder" forTests="false" />
