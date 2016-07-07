@@ -1022,6 +1022,25 @@ JNIEXPORT jboolean JNICALL Java_sun_awt_X11_XlibWrapper_XQueryBestCursor
     status  =  XQueryBestCursor((Display *) jlong_to_ptr(display), (Drawable) drawable, width,height,
                                 (unsigned int *) jlong_to_ptr(width_return), (unsigned int *) jlong_to_ptr(height_return));
 
+    static int xQueryBestCursorLogEnabled = JNI_FALSE;
+    static int xQueryBestCursorLogNotChecked = JNI_TRUE;
+
+    if (xQueryBestCursorLogNotChecked) {
+        xQueryBestCursorLogNotChecked = JNI_FALSE;
+        char *logSetting = getenv("OPENJDK_LOG_XQUERYBESTCURSOR");
+
+        if (logSetting != NULL && !strcmp(logSetting, "yes")) {
+             xQueryBestCursorLogEnabled = JNI_TRUE;
+        }
+    }
+
+    if (xQueryBestCursorLogEnabled) {
+        fprintf(stderr, "LOG_XQueryBestCursor(%p, %lu, %d %d) : "
+                        "w=%ld h=%ld s=%d \n", display, drawable, width, height,
+                        *((unsigned int *) jlong_to_ptr(width_return)), 
+                        *((unsigned int *) jlong_to_ptr(height_return)), status);
+    } 
+
     if (status == 0) return JNI_FALSE;
     else return JNI_TRUE;
 }
