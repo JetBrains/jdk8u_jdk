@@ -27,7 +27,7 @@ package sun.java2d.marlin;
 
 import static sun.java2d.marlin.MarlinConst.LOG_UNSAFE_MALLOC;
 
-import sun.awt.util.ThreadGroupUtils;
+import sun.misc.ThreadGroupUtils;
 import sun.misc.Unsafe;
 
 import java.lang.ref.PhantomReference;

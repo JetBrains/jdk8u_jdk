@@ -34,7 +34,7 @@ import static sun.java2d.marlin.MarlinUtils.logInfo;
 import sun.java2d.marlin.stats.Histogram;
 import sun.java2d.marlin.stats.Monitor;
 import sun.java2d.marlin.stats.StatLong;
-import sun.awt.util.ThreadGroupUtils;
+import sun.misc.ThreadGroupUtils;
 
 /**
  * This class gathers global rendering statistics for debugging purposes only
