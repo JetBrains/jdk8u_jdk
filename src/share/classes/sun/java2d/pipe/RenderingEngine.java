@@ -123,13 +123,11 @@ public abstract class RenderingEngine {
                     final String ductusREClass = "sun.dc.DuctusRenderingEngine";
                     String reClass =
                         System.getProperty("sun.java2d.renderer", ductusREClass);
-                    if (reClass.equals(ductusREClass)) {
-                        try {
-                            Class<?> cls = Class.forName(ductusREClass);
-                            return (RenderingEngine) cls.newInstance();
-                        } catch (ReflectiveOperationException ignored) {
-                            // not found
-                        }
+                    try {
+                        Class<?> cls = Class.forName(reClass);
+                        return (RenderingEngine) cls.newInstance();
+                    } catch (ReflectiveOperationException ignored) {
+                        // not found
                     }
 
                     ServiceLoader<RenderingEngine> reLoader =
