@@ -12,6 +12,6 @@
       <excludeFolder url="file://$MODULE_DIR$/../../../src/share/classes/sun/tools/jconsole" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="JBSDK" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
   </component>
 </module>

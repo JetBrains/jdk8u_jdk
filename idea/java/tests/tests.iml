@@ -12,6 +12,6 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../test/sun/java2d" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="JBSDK" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
   </component>
 </module>
