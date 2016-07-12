@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,10 +24,9 @@
 import com.sun.net.httpserver.*;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -38,9 +37,15 @@ import java.security.Signature;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+import sun.misc.IOUtils;
 import sun.security.pkcs.ContentInfo;
 import sun.security.pkcs.PKCS7;
+import sun.security.pkcs.PKCS9Attribute;
 import sun.security.pkcs.SignerInfo;
+import sun.security.timestamp.TimestampToken;
 import sun.security.util.DerOutputStream;
 import sun.security.util.DerValue;
 import sun.security.util.ObjectIdentifier;
@@ -51,7 +56,14 @@ public class TimestampCheck {
     static final String TSKS = "tsks";
     static final String JAR = "old.jar";
 
-    static class Handler implements HttpHandler {
+    static final String defaultPolicyId = "2.3.4.5";
+
+    static class Handler implements HttpHandler, AutoCloseable {
+
+        private final HttpServer httpServer;
+        private final String keystore;
+
+        @Override
         public void handle(HttpExchange t) throws IOException {
             int len = 0;
             for (String h: t.getRequestHeaders().keySet()) {
@@ -94,6 +106,11 @@ public class TimestampCheck {
          * 6: extension is missing
          * 7: extension is non-critical
          * 8: extension does not have timestamping
+         * 9: no cert in response
+         * 10: normal
+         * 11: always return default policy id
+         * 12: normal
+         * otherwise: normal
          * @returns the signed
          */
         byte[] sign(byte[] input, int path) throws Exception {
@@ -106,6 +123,7 @@ public class TimestampCheck {
                     messageImprint.data.getDerValue());
             System.err.println("AlgorithmId: " + aid);
 
+            ObjectIdentifier policyId = new ObjectIdentifier(defaultPolicyId);
             BigInteger nonce = null;
             while (value.data.available() > 0) {
                 DerValue v = value.data.getDerValue();
@@ -114,18 +132,27 @@ public class TimestampCheck {
                     System.err.println("nonce: " + nonce);
                 } else if (v.tag == DerValue.tag_Boolean) {
                     System.err.println("certReq: " + v.getBoolean());
+                } else if (v.tag == DerValue.tag_ObjectId) {
+                    policyId = v.getOID();
+                    System.err.println("PolicyID: " + policyId);
                 }
             }
 
             // Write TSResponse
             System.err.println("\nResponse\n===================");
             KeyStore ks = KeyStore.getInstance("JKS");
-            ks.load(new FileInputStream(TSKS), "changeit".toCharArray());
+            try (FileInputStream fis = new FileInputStream(keystore)) {
+                ks.load(fis, "changeit".toCharArray());
+            }
 
             String alias = "ts";
             if (path == 6) alias = "tsbad1";
             if (path == 7) alias = "tsbad2";
             if (path == 8) alias = "tsbad3";
+
+            if (path == 11) {
+                policyId = new ObjectIdentifier(defaultPolicyId);
+            }
 
             DerOutputStream statusInfo = new DerOutputStream();
             statusInfo.putInteger(0);
@@ -150,7 +177,7 @@ public class TimestampCheck {
             DerOutputStream tst = new DerOutputStream();
 
             tst.putInteger(1);
-            tst.putOID(new ObjectIdentifier("1.2.3.4"));    // policy
+            tst.putOID(policyId);
 
             if (path != 3 && path != 4) {
                 tst.putDerValue(messageImprint);
@@ -220,35 +247,72 @@ public class TimestampCheck {
 
             return out.toByteArray();
         }
-    }
 
-    public static void main(String[] args) throws Exception {
-
-        Handler h = new Handler();
-        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
-        int port = server.getAddress().getPort();
-        HttpContext ctx = server.createContext("/", h);
-        server.start();
-
-        String cmd = null;
-        // Use -J-Djava.security.egd=file:/dev/./urandom to speed up
-        // nonce generation in timestamping request. Not avaibale on
-        // Windows and defaults to thread seed generator, not too bad.
-        if (System.getProperty("java.home").endsWith("jre")) {
-            cmd = System.getProperty("java.home") + "/../bin/jarsigner" +
-                " -J-Djava.security.egd=file:/dev/./urandom" +
-                " -debug -keystore " + TSKS + " -storepass changeit" +
-                " -tsa http://localhost:" + port + "/%d" +
-                " -signedjar new_%d.jar " + JAR + " old";
-        } else {
-            cmd = System.getProperty("java.home") + "/bin/jarsigner" +
-                " -J-Djava.security.egd=file:/dev/./urandom" +
-                " -debug -keystore " + TSKS + " -storepass changeit" +
-                " -tsa http://localhost:" + port + "/%d" +
-                " -signedjar new_%d.jar " + JAR + " old";
+        private Handler(HttpServer httpServer, String keystore) {
+            this.httpServer = httpServer;
+            this.keystore = keystore;
         }
 
-        try {
+        /**
+         * Initialize TSA instance.
+         *
+         * Extended Key Info extension of certificate that is used for
+         * signing TSA responses should contain timeStamping value.
+         */
+        static Handler init(int port, String keystore) throws IOException {
+            HttpServer httpServer = HttpServer.create(
+                    new InetSocketAddress(port), 0);
+            Handler tsa = new Handler(httpServer, keystore);
+            httpServer.createContext("/", tsa);
+            return tsa;
+        }
+
+        /**
+         * Start TSA service.
+         */
+        void start() {
+            httpServer.start();
+        }
+
+        /**
+         * Stop TSA service.
+         */
+        void stop() {
+            httpServer.stop(0);
+        }
+
+        /**
+         * Return server port number.
+         */
+        int getPort() {
+            return httpServer.getAddress().getPort();
+        }
+
+        @Override
+        public void close() throws Exception {
+            stop();
+        }
+    }
+    public static void main(String[] args) throws Exception {
+        try (Handler tsa = Handler.init(0, TSKS);) {
+            tsa.start();
+            int port = tsa.getPort();
+
+            String cmd;
+            // Use -J-Djava.security.egd=file:/dev/./urandom to speed up
+            // nonce generation in timestamping request. Not avaibale on
+            // Windows and defaults to thread seed generator, not too bad.
+            if (System.getProperty("java.home").endsWith("jre")) {
+                cmd = System.getProperty("java.home") + "/../bin/jarsigner";
+            } else {
+                cmd = System.getProperty("java.home") + "/bin/jarsigner";
+            }
+
+            cmd += " -J-Djava.security.egd=file:/dev/./urandom"
+                    + " -debug -keystore " + TSKS + " -storepass changeit"
+                    + " -tsa http://localhost:" + port + "/%d"
+                    + " -signedjar new_%d.jar " + JAR + " old";
+
             if (args.length == 0) {         // Run this test
                 jarsigner(cmd, 0, true);    // Success, normal call
                 jarsigner(cmd, 1, false);   // These 4 should fail
@@ -260,15 +324,41 @@ public class TimestampCheck {
                 jarsigner(cmd, 7, false);   // tsbad2
                 jarsigner(cmd, 8, false);   // tsbad3
                 jarsigner(cmd, 9, false);   // no cert in timestamp
-                jarsigner(cmd + " -tsapolicyid 1.2.3.4", 0, true);
-                jarsigner(cmd + " -tsapolicyid 1.2.3.5", 0, false);
+                jarsigner(cmd + " -tsapolicyid 1.2.3.4", 10, true);
+                checkTimestamp("new_10.jar", "1.2.3.4", "SHA-256");
+                jarsigner(cmd + " -tsapolicyid 1.2.3.5", 11, false);
+                jarsigner(cmd + " -tsadigestalg SHA", 12, true);
+                checkTimestamp("new_12.jar", defaultPolicyId, "SHA-1");
             } else {                        // Run as a standalone server
                 System.err.println("Press Enter to quit server");
                 System.in.read();
             }
-        } finally {
-            server.stop(0);
-            new File("x.jar").delete();
+        }
+    }
+
+    static void checkTimestamp(String file, String policyId, String digestAlg)
+            throws Exception {
+        try (JarFile jf = new JarFile(file)) {
+            JarEntry je = jf.getJarEntry("META-INF/OLD.RSA");
+            try (InputStream is = jf.getInputStream(je)) {
+                byte[] content = IOUtils.readFully(is, -1, true);
+                PKCS7 p7 = new PKCS7(content);
+                SignerInfo[] si = p7.getSignerInfos();
+                if (si == null || si.length == 0) {
+                    throw new Exception("Not signed");
+                }
+                PKCS9Attribute p9 = si[0].getUnauthenticatedAttributes()
+                        .getAttribute(PKCS9Attribute.SIGNATURE_TIMESTAMP_TOKEN_OID);
+                PKCS7 tsToken = new PKCS7((byte[]) p9.getValue());
+                TimestampToken tt =
+                        new TimestampToken(tsToken.getContentInfo().getData());
+                if (!tt.getHashAlgorithm().toString().equals(digestAlg)) {
+                    throw new Exception("Digest alg different");
+                }
+                if (!tt.getPolicyID().equals(policyId)) {
+                    throw new Exception("policyId different");
+                }
+            }
         }
     }
 
