@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -870,7 +870,8 @@ public class BasicScrollPaneUI
                 int orientation = SwingConstants.VERTICAL;
 
                 // find which scrollbar to scroll, or return if none
-                if (toScroll == null || !toScroll.isVisible()) {
+                if (toScroll == null || !toScroll.isVisible()
+                        || e.isShiftDown()) {
                     toScroll = scrollpane.getHorizontalScrollBar();
                     if (toScroll == null || !toScroll.isVisible()) {
                         return;

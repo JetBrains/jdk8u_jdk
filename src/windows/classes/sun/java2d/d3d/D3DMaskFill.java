@@ -26,7 +26,6 @@
 package sun.java2d.d3d;
 
 import java.awt.Composite;
-
 import sun.java2d.InvalidPipeException;
 import sun.java2d.SunGraphics2D;
 import sun.java2d.loops.GraphicsPrimitive;
@@ -73,7 +72,8 @@ class D3DMaskFill extends BufferedMaskFill {
         try {
             dstData = (D3DSurfaceData) sg2d.surfaceData;
         } catch (ClassCastException e) {
-            throw new InvalidPipeException("wrong surface data type: " + sg2d.surfaceData);
+            throw new InvalidPipeException("wrong surface data type: " +
+                                           sg2d.surfaceData);
         }
         D3DContext.validateContext(dstData, dstData,
                                    sg2d.getCompClip(), comp,
