@@ -31,8 +31,10 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import sun.awt.SunToolkit;
+import sun.awt.Win32GraphicsDevice;
 import sun.awt.windows.WComponentPeer;
 import sun.java2d.SurfaceData;
 
@@ -40,6 +42,8 @@ public abstract class WGLSurfaceData extends OGLSurfaceData {
 
     protected WComponentPeer peer;
     private WGLGraphicsConfig graphicsConfig;
+    protected double scaleX = 1;
+    protected double scaleY = 1;
 
     private native void initOps(long pConfigInfo, WComponentPeer peer,
                                 long hwnd);
@@ -53,11 +57,24 @@ public abstract class WGLSurfaceData extends OGLSurfaceData {
         super(gc, cm, type);
         this.peer = peer;
         this.graphicsConfig = gc;
+        Win32GraphicsDevice device = gc.getDevice();
+        this.scaleX = type == TEXTURE ? 1 : device.getDefaultScaleX();
+        this.scaleY = type == TEXTURE ? 1 : device.getDefaultScaleY();
 
         long pConfigInfo = gc.getNativeConfigInfo();
         long hwnd = peer != null ? peer.getHWnd() : 0L;
 
         initOps(pConfigInfo, peer, hwnd);
+    }
+
+    @Override
+    public double getDefaultScaleX() {
+        return scaleX;
+    }
+
+    @Override
+    public double getDefaultScaleY() {
+        return scaleY;
     }
 
     public GraphicsConfiguration getDeviceConfiguration() {
@@ -151,6 +168,8 @@ public abstract class WGLSurfaceData extends OGLSurfaceData {
         public Rectangle getBounds() {
             Rectangle r = peer.getBounds();
             r.x = r.y = 0;
+            r.width = (int) Math.ceil(r.width * scaleX);
+            r.height = (int) Math.ceil(r.height * scaleY);
             return r;
         }
 
@@ -211,11 +230,11 @@ public abstract class WGLSurfaceData extends OGLSurfaceData {
         {
             super(peer, gc, cm, type);
 
-            this.width = width;
-            this.height = height;
+            this.width = (int) Math.ceil(width * scaleX);
+            this.height = (int) Math.ceil(height * scaleY);
             offscreenImage = image;
 
-            initSurface(width, height);
+            initSurface(this.width, this.height);
         }
 
         public SurfaceData getReplacement() {
@@ -225,6 +244,8 @@ public abstract class WGLSurfaceData extends OGLSurfaceData {
         public Rectangle getBounds() {
             if (type == FLIP_BACKBUFFER) {
                 Rectangle r = peer.getBounds();
+                r.width = (int) Math.ceil(r.width * scaleX);
+                r.height = (int) Math.ceil(r.height * scaleY);
                 r.x = r.y = 0;
                 return r;
             } else {
