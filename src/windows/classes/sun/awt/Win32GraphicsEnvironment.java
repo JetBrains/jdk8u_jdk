@@ -57,9 +57,11 @@ import sun.java2d.windows.WindowsFlags;
  * @see GraphicsConfiguration
  */
 
-public class Win32GraphicsEnvironment
-    extends SunGraphicsEnvironment
-{
+public class Win32GraphicsEnvironment extends SunGraphicsEnvironment {
+
+    static final float debugScaleX;
+    static final float debugScaleY;
+
     static {
         // Ensure awt is loaded already.  Also, this forces static init
         // of WToolkit and Toolkit, which we depend upon
@@ -70,6 +72,21 @@ public class Win32GraphicsEnvironment
 
         // Install correct surface manager factory.
         SurfaceManagerFactory.setInstance(new WindowsSurfaceManagerFactory());
+
+        double sx = -1;
+        double sy = -1;
+        if (isUIScaleEnabled()) {
+            sx = getScaleFactor("sun.java2d.win.uiScaleX");
+            sy = getScaleFactor("sun.java2d.win.uiScaleY");
+            if (sx <= 0 || sy <= 0) {
+                double s = getDebugScale();
+                sx = s;
+                sy = s;
+            }
+        }
+
+        debugScaleX = (float) sx;
+        debugScaleY = (float) sy;
     }
 
     /**
