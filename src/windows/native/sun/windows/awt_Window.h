@@ -188,6 +188,8 @@ public:
     virtual MsgRouting HandleEvent(MSG *msg, BOOL synthetic);
     virtual void WindowResized();
 
+    MsgRouting WmDPIChanged(UINT xDPI, UINT yDPI, RECT* bounds);
+
     static jboolean _RequestWindowFocus(void *param);
 
     virtual BOOL AwtSetActiveWindow(BOOL isMouseEventCause = FALSE, UINT hittest = HTCLIENT);
