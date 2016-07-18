@@ -34,6 +34,8 @@ import java.security.spec.ECParameterSpec;
 
 public abstract class PKCS11Test {
 
+    static final String PKCS11 = "PKCS11";
+
     // directory of the test source
     static final String BASE = System.getProperty("test.src", ".");
 
@@ -568,6 +570,14 @@ public abstract class PKCS11Test {
         }
     }
 
+    static byte[] generateData(int length) {
+        byte data[] = new byte[length];
+        for (int i=0; i<data.length; i++) {
+            data[i] = (byte) (i % 256);
+        }
+        return data;
+    }
+
     <T> T[] concat(T[] a, T[] b) {
         if ((b == null) || (b.length == 0)) {
             return a;
@@ -576,6 +586,23 @@ public abstract class PKCS11Test {
         System.arraycopy(a, 0, r, 0, a.length);
         System.arraycopy(b, 0, r, a.length, b.length);
         return r;
+    }
+
+    /**
+     * Returns supported algorithms of specified type.
+     */
+    static List<String> getSupportedAlgorithms(String type, String alg,
+            Provider p) {
+        // prepare a list of supported algorithms
+        List<String> algorithms = new ArrayList<>();
+        Set<Provider.Service> services = p.getServices();
+        for (Provider.Service service : services) {
+            if (service.getType().equals(type)
+                    && service.getAlgorithm().startsWith(alg)) {
+                algorithms.add(service.getAlgorithm());
+            }
+        }
+        return algorithms;
     }
 
 }
