@@ -75,7 +75,6 @@ static jobject sAccessibilityClass = NULL;
 static NSMutableDictionary *sAttributeNamesForRoleCache = nil;
 static NSObject *sAttributeNamesLOCK = nil;
 
-
 @interface TabGroupAccessibility : JavaComponentAccessibility {
     NSInteger _numTabs;
 }
@@ -296,7 +295,7 @@ static NSObject *sAttributeNamesLOCK = nil;
 
 + (NSArray *)childrenOfParent:(JavaComponentAccessibility *)parent withEnv:(JNIEnv *)env withChildrenCode:(NSInteger)whichChildren allowIgnored:(BOOL)allowIgnored
 {
-    jobjectArray jchildrenAndRoles = JNFCallStaticObjectMethod(env, jm_getChildrenAndRoles, parent->fAccessible, parent->fComponent, whichChildren, allowIgnored); // AWT_THREADING Safe (AWTRunLoop)
+    jobjectArray jchildrenAndRoles = (jobjectArray)JNFCallStaticObjectMethod(env, jm_getChildrenAndRoles, parent->fAccessible, parent->fComponent, whichChildren, allowIgnored); // AWT_THREADING Safe (AWTRunLoop)
     if (jchildrenAndRoles == NULL) return nil;
 
     jsize arrayLen = (*env)->GetArrayLength(env, jchildrenAndRoles);
@@ -412,7 +411,7 @@ static NSObject *sAttributeNamesLOCK = nil;
 
     // Get all the other accessibility attributes states we need in one swell foop.
     // javaRole isn't pulled in because we need protected access to AccessibleRole.key
-    jbooleanArray attributeStates = JNFCallStaticObjectMethod(env, jm_getInitialAttributeStates, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
+    jbooleanArray attributeStates = (jbooleanArray)JNFCallStaticObjectMethod(env, jm_getInitialAttributeStates, fAccessible, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     if (attributeStates == NULL) return nil;
     jboolean *attributeStatesArray = (*env)->GetBooleanArrayElements(env, attributeStates, 0);
     if (attributeStatesArray == NULL) {
@@ -1324,7 +1323,7 @@ JNF_COCOA_EXIT(env);
 
 - (NSArray *)tabControlsWithEnv:(JNIEnv *)env withTabGroupAxContext:(jobject)axContext withTabCode:(NSInteger)whichTabs allowIgnored:(BOOL)allowIgnored
 {
-    jobjectArray jtabsAndRoles = JNFCallStaticObjectMethod(env, jm_getChildrenAndRoles, fAccessible, fComponent, whichTabs, allowIgnored); // AWT_THREADING Safe (AWTRunLoop)
+    jobjectArray jtabsAndRoles = (jobjectArray)JNFCallStaticObjectMethod(env, jm_getChildrenAndRoles, fAccessible, fComponent, whichTabs, allowIgnored); // AWT_THREADING Safe (AWTRunLoop)
     if(jtabsAndRoles == NULL) return nil;
 
     jsize arrayLen = (*env)->GetArrayLength(env, jtabsAndRoles);

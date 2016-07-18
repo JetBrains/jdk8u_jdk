@@ -265,7 +265,7 @@ class CAccessibleText {
 
                 final Point componentLocation = ac.getAccessibleComponent().getLocationOnScreen();
                 if (componentLocation == null) return ret;
-                
+
                 final double screenX = componentLocation.getX() + localX;
                 final double screenY = componentLocation.getY() + localY;
 

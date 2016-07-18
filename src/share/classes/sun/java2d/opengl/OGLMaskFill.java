@@ -26,7 +26,6 @@
 package sun.java2d.opengl;
 
 import java.awt.Composite;
-
 import sun.java2d.InvalidPipeException;
 import sun.java2d.SunGraphics2D;
 import sun.java2d.loops.GraphicsPrimitive;
@@ -73,7 +72,8 @@ class OGLMaskFill extends BufferedMaskFill {
         try {
             dstData = (OGLSurfaceData) sg2d.surfaceData;
         } catch (ClassCastException e) {
-            throw new InvalidPipeException("wrong surface data type: " + sg2d.surfaceData);
+            throw new InvalidPipeException("wrong surface data type: " +
+                                           sg2d.surfaceData);
         }
 
         OGLContext.validateContext(dstData, dstData,
