@@ -44,6 +44,9 @@
 
 extern COLORREF DesktopColor2RGB(int colorIndex);
 
+// val >= 0 todo [tav] until switch to VS'12
+#define round(val) floor(val + 0.5)
+
 class AwtObject;
 typedef AwtObject* PDATA;
 
