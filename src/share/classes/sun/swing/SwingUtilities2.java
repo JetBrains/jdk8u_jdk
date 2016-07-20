@@ -159,7 +159,7 @@ public class SwingUtilities2 {
 
         Object aaHint;
         Integer lcdContrastHint;
-        FontRenderContext frc;
+        Map<Object, FontRenderContext> cache = new HashMap<>();
 
         /* These are rarely constructed objects, and only when a complete
          * UI is being updated, so the cost of the tests here is minimal
@@ -176,8 +176,49 @@ public class SwingUtilities2 {
             }
             this.aaHint = aaHint;
             this.lcdContrastHint = lcdContrastHint;
-            this.frc = new FontRenderContext(null, aaHint,
-                                             VALUE_FRACTIONALMETRICS_DEFAULT);
+        }
+
+        private static class KeyPair {
+
+            private final Object key1;
+            private final Object key2;
+
+            public KeyPair(Object key1, Object key2) {
+                this.key1 = key1;
+                this.key2 = key2;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (!(obj instanceof KeyPair)) {
+                    return false;
+                }
+                KeyPair that = (KeyPair) obj;
+                return this.key1.equals(that.key1) && this.key2.equals(that.key2);
+            }
+
+            @Override
+            public int hashCode() {
+                return key1.hashCode() + 37 * key2.hashCode();
+            }
+        }
+
+        // [tav] see JDK-8142966
+        FontRenderContext getFRC(AffineTransform tx) {
+            if (tx == null && aaHint == null) {
+                return null;
+            }
+            Object key = (tx == null)
+                ? aaHint
+                : (aaHint == null ? tx : new KeyPair(tx, aaHint));
+
+            FontRenderContext frc = cache.get(key);
+            if (frc == null) {
+                aaHint = (aaHint == null) ? VALUE_ANTIALIAS_OFF : aaHint;
+                frc = new FontRenderContext(tx, aaHint, VALUE_FRACTIONALMETRICS_DEFAULT);
+                cache.put(key, frc);
+            }
+            return frc;
         }
     }
 
@@ -1119,10 +1160,11 @@ public class SwingUtilities2 {
      */
     private static FontRenderContext getFRCProperty(JComponent c) {
         if (c != null) {
-            AATextInfo info =
-                (AATextInfo)c.getClientProperty(AA_TEXT_PROPERTY_KEY);
+            GraphicsConfiguration gc = c.getGraphicsConfiguration();
+            AffineTransform tx = (gc == null) ? null : gc.getDefaultTransform();
+            AATextInfo info = (AATextInfo)c.getClientProperty(AA_TEXT_PROPERTY_KEY);
             if (info != null) {
-                return info.frc;
+                return info.getFRC(tx);
             }
         }
         return null;
