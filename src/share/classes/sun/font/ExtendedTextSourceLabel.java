@@ -45,6 +45,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import java.util.Map;
+import java.util.Arrays;
 
 /**
  * Default implementation of ExtendedTextLabel.
@@ -616,14 +617,10 @@ class ExtendedTextSourceLabel extends ExtendedTextLabel implements Decoration.La
 *    The optimized cases in (4) correspond to values 0, 1, 3, and 7 returned by getDescriptionFlags().
 */
   protected float[] createCharinfo() {
+    Pair<float[], int[]> pair = maybeSplitGlyphs();
+
     StandardGlyphVector gv = getGV();
-    float[] glyphinfo = null;
-    try {
-        glyphinfo = gv.getGlyphInfo();
-    }
-    catch (Exception e) {
-        System.out.println(source);
-    }
+    float[] glyphinfo = pair.first;
 
     /*
     if ((gv.getDescriptionFlags() & 0x7) == 0) {
@@ -631,11 +628,11 @@ class ExtendedTextSourceLabel extends ExtendedTextLabel implements Decoration.La
     }
     */
 
-    int numGlyphs = gv.getNumGlyphs();
+    int numGlyphs = glyphinfo.length / numvals; // == indicies.length
     if (numGlyphs == 0) {
         return glyphinfo;
     }
-    int[] indices = gv.getGlyphCharIndices(0, numGlyphs, null);
+    int[] indices = pair.second;
 
     boolean DEBUG = false;
     if (DEBUG) {
@@ -868,6 +865,112 @@ class ExtendedTextSourceLabel extends ExtendedTextLabel implements Decoration.La
     }
 
     return glyphinfo;
+  }
+
+  private static class Pair<A, B> {
+      public A first;
+      public B second;
+
+      public Pair(A first, B second) {
+          this.first = first;
+          this.second = second;
+      }
+  }
+
+  /**
+   * The method splits ligatures into appropriate number of "sub-glyphs".
+   * Corresponding metrics are calculated in assumption of equal spread of x-advances in a ligature glyph.
+   * The rest glyphs (with one-to-one & many-to-one mapping) are left unchanged for further processing.
+   *
+   * @return A pair of: an array of glyphs including splitted ones, an array of corresponding indices.
+   */
+  private Pair<float[], int[]> maybeSplitGlyphs() {
+      StandardGlyphVector gv = getGV();
+      float[] glyphinfo = null;
+      try {
+          glyphinfo = gv.getGlyphInfo();
+      }
+      catch (Exception e) {
+          System.out.println(source);
+      }
+      int numGlyphs = gv.getNumGlyphs();
+      if (numGlyphs == 0) {
+          return new Pair(new float[]{}, new int[]{});
+      }
+      int[] indices = gv.getGlyphCharIndices(0, numGlyphs, null);
+
+      int glyphinfoExLength = (numGlyphs + source.getLength()) * numvals; // reserve enough space
+      float[] glyphinfoEx = new float[glyphinfoExLength];
+      int[] indicesEx = new int[glyphinfoExLength];
+
+      int curIndex = 0;
+      int cp = 0;                 // character/glyph position in the constructed array
+      int ix = 0;                 // index position in the constructed array
+      int gp = 0;                 // glyph position
+      int gx = 0;                 // glyph index (visual)
+      int gxlimit = numGlyphs;    // limit of gx, when we reach this we're done
+      int pdelta = numvals;       // delta for incrementing positions
+      int xdelta = 1;             // delta for incrementing indices
+
+      boolean ltr = (source.getLayoutFlags() & 0x1) == 0;
+      if (!ltr) {
+          curIndex = indices[numGlyphs - 1];
+          cp = glyphinfoExLength - numvals;
+          gp = glyphinfo.length - numvals;
+          ix = glyphinfoExLength - 1;
+          gx = numGlyphs - 1;
+          gxlimit = -1;
+          pdelta = -numvals;
+          xdelta = -1;
+      }
+
+      while (gx != gxlimit) {
+          curIndex = indices[gx];
+          gx += xdelta;
+
+          float _posx = glyphinfo[gp + posx];
+          float _posy = glyphinfo[gp + posy];
+          float _advx = glyphinfo[gp + advx];
+          float _advy = glyphinfo[gp + advy];
+          float _visx = glyphinfo[gp + visx];
+          float _visy = glyphinfo[gp + visy];
+          float _visw = glyphinfo[gp + visw];
+          float _vish = glyphinfo[gp + vish];
+
+          int numLigChars = (gx >= 0 && gx < indices.length) ? indices[gx] /*next*/ - curIndex : 1;
+          if (numLigChars <= 0) numLigChars = 1; // when zero, we have multi glyphs per char
+
+          _advx /= numLigChars;
+          _visw /= numLigChars;
+
+          for (int i=0; i<numLigChars; i++) {
+              if (i > 0) {
+                  cp += pdelta;
+                  ix += xdelta;
+              }
+              // match an index to the glyph (or sub-glyph)
+              indicesEx[ix] = curIndex + i;
+
+              glyphinfoEx[cp + posx] = _posx;
+              glyphinfoEx[cp + posy] = _posy;
+              glyphinfoEx[cp + advx] = _advx;
+              glyphinfoEx[cp + advy] = _advy;
+              glyphinfoEx[cp + visx] = _visx;
+              glyphinfoEx[cp + visy] = _visy;
+              glyphinfoEx[cp + visw] = _visw;
+              glyphinfoEx[cp + vish] = _vish;
+
+              _posx += _advx;
+              _visx += _advx;
+          }
+
+          gp += pdelta;
+          cp += pdelta;
+          ix += xdelta;
+      }
+
+      return new Pair(ltr ? Arrays.copyOfRange(glyphinfoEx, 0, cp) : Arrays.copyOfRange(glyphinfoEx, cp - pdelta, glyphinfoEx.length),
+                      ltr ? Arrays.copyOfRange(indicesEx, 0, ix) : Arrays.copyOfRange(indicesEx, ix - xdelta, indicesEx.length));
   }
 
   /**
