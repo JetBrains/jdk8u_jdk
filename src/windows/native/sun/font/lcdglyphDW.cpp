@@ -109,7 +109,7 @@ Java_sun_font_FileFontStrike__1getGlyphImageFromWindowsUsingDirectWrite
     env->GetStringRegion(fontFamily, 0, nameLen, lf.lfFaceName);
     lf.lfFaceName[nameLen] = '\0';
 
-    HRESULT hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_ISOLATED,
+    HRESULT hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,
                                      __uuidof(IDWriteFactory),
                                      reinterpret_cast<IUnknown**>(&factory));
     if (FAILED(hr)) {
