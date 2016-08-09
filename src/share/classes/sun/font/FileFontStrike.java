@@ -121,7 +121,7 @@ public class FileFontStrike extends PhysicalStrike {
     private static boolean isXPorLater = false;
 
     private static boolean useDirectWrite;
-    private static int dwMeasuringMode = 0; // 'natural' mode
+    private static int dwMeasuringMode = 1; // 'GDI classic' mode
     private static int dwRenderingMode = -1;
     private static float dwClearTypeLevel = -1;
     private static float dwEnhancedContrast = -1;
