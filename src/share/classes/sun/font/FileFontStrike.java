@@ -388,6 +388,7 @@ public class FileFontStrike extends PhysicalStrike {
                                                                   int style,
                                                                   int size,
                                                                   int glyphCode,
+                                                                  int rotation,
                                                                   int measuringMode,
                                                                   int renderingMode,
                                                                   float clearTypeLevel,
@@ -401,12 +402,12 @@ public class FileFontStrike extends PhysicalStrike {
             | fileFont.getStyle();
         int size = intPtSize;
         long ptr = 0;
-        if (useDirectWrite && rotation == 0) {
-            ptr = _getGlyphImageFromWindowsUsingDirectWrite(family, style, size, glyphCode,
+        if (useDirectWrite) {
+            ptr = _getGlyphImageFromWindowsUsingDirectWrite(family, style, size, glyphCode, rotation,
                     dwMeasuringMode, dwRenderingMode, dwClearTypeLevel, dwEnhancedContrast, dwGamma, dwPixelGeometry);
             if (ptr == 0 && FontUtilities.isLogging()) {
                 FontUtilities.getLogger().warning("Failed to render glyph via DirectWrite: code=" + glyphCode
-                        + ", fontFamily=" + family + ", style=" + style + ", size=" + size);
+                        + ", fontFamily=" + family + ", style=" + style + ", size=" + size + ", rotation=" + rotation);
             }
         }
         if (ptr == 0) {

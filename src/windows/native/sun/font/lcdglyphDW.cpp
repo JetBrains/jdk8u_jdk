@@ -86,7 +86,7 @@ Java_sun_font_FileFontStrike_isDirectWriteAvailable(JNIEnv *env, jclass unused) 
 
 JNIEXPORT jlong JNICALL
 Java_sun_font_FileFontStrike__1getGlyphImageFromWindowsUsingDirectWrite
-(JNIEnv *env, jobject unused, jstring fontFamily, jint style, jint size, jint glyphCode,
+(JNIEnv *env, jobject unused, jstring fontFamily, jint style, jint size, jint glyphCode, jint rotation,
     jint measuringMode, jint renderingMode, jfloat clearTypeLevel, jfloat enhancedContrast, jfloat gamma, jint pixelGeometry) {
     // variables cleared by FREE macro
     IDWriteFactory* factory = NULL;
@@ -171,10 +171,30 @@ Java_sun_font_FileFontStrike__1getGlyphImageFromWindowsUsingDirectWrite
     int height = (int)((metrics[0].advanceHeight - metrics[0].topSideBearing - metrics[0].bottomSideBearing) * pxPerDU) + 10;
     int x = (int)(-metrics[0].leftSideBearing * pxPerDU) + 5;
     int y = (int)((metrics[0].verticalOriginY - metrics[0].topSideBearing) * pxPerDU) + 5;
+    float advance = (float)((int)(metrics[0].advanceWidth * pxPerDU + 0.5));
     RECT bbRect;
+
+    DWRITE_MATRIX mx;
+    switch (rotation) {
+        case 0: mx.m11 = mx.m22 = 1; mx.m12 = mx.m21 = mx.dx = mx.dy = 0; break;
+        case 1: mx.m11 = mx.m22 = 0; mx.m12 = -1; mx.m21 = 1; mx.dx = 0; mx.dy = (float)width; break;
+        case 2: mx.m11 = mx.m22 = -1; mx.m12 = mx.m21 = 0; mx.dx = (float)width; mx.dy = (float)height; break;
+        case 3: mx.m11 = mx.m22 = 0; mx.m12 = 1; mx.m21 = -1; mx.dx = (float)height; mx.dy = 0;
+    }
+    if (rotation == 1 || rotation == 3) {
+        int tmp = width;
+        width = height;
+        height = tmp;
+    }
+    float xTransformed = mx.m11 * x - mx.m12 * y + mx.dx;
+    float yTransformed = -mx.m21 * x + mx.m22 * y + mx.dy;
 
     for (int attempt = 0; attempt < 2 && target == NULL; attempt++) {
         hr = interop->CreateBitmapRenderTarget(NULL, width, height, &target);
+        if (FAILED(hr)) {
+            FREE_AND_RETURN
+        }
+        hr = target->SetCurrentTransform(&mx);
         if (FAILED(hr)) {
             FREE_AND_RETURN
         }
@@ -196,11 +216,21 @@ Java_sun_font_FileFontStrike__1getGlyphImageFromWindowsUsingDirectWrite
             if (bbRect.bottom > height) height = bbRect.bottom;
             if (bbRect.left < 0) {
                 width -= bbRect.left;
-                x -= bbRect.left;
+                switch (rotation) {
+                    case 0: x -= bbRect.left; break;
+                    case 1: y -= bbRect.left; break;
+                    case 2: x += bbRect.left; break;
+                    case 3: y += bbRect.left;
+                }
             }
             if (bbRect.top < 0) {
                 height -= bbRect.top;
-                y -= bbRect.top;
+                switch (rotation) {
+                    case 0: y -= bbRect.top; break;
+                    case 1: x += bbRect.top; break;
+                    case 2: y += bbRect.top; break;
+                    case 3: x -= bbRect.top;
+                }
             }
         }
     }
@@ -228,10 +258,10 @@ Java_sun_font_FileFontStrike__1getGlyphImageFromWindowsUsingDirectWrite
     glyphInfo->rowBytes = glyphBytesWidth;
     glyphInfo->width = glyphWidth;
     glyphInfo->height = glyphHeight;
-    glyphInfo->advanceX = (float)((int)(metrics[0].advanceWidth * pxPerDU + 0.5));
-    glyphInfo->advanceY = 0;
-    glyphInfo->topLeftX = (float)(bbRect.left - x);
-    glyphInfo->topLeftY = (float)(bbRect.top - y);
+    glyphInfo->advanceX = rotation == 0 ? advance : rotation == 2 ? -advance : 0;
+    glyphInfo->advanceY = rotation == 3 ? advance : rotation == 1 ? -advance : 0;
+    glyphInfo->topLeftX = bbRect.left - xTransformed;
+    glyphInfo->topLeftY = bbRect.top - yTransformed;
 
     int srcRowBytes = width * 4;
     unsigned char* srcPtr = (unsigned char*) dibSection.dsBm.bmBits + srcRowBytes * bbRect.top;
