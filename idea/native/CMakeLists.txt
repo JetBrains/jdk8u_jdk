@@ -1,9 +1,25 @@
 cmake_minimum_required(VERSION 3.4)
 project(jdk)
 
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-include_directories(../../src/share/javavm/export ../../src/share/native/common ../../src/solaris/javavm/export ../../../build/linux-x86_64-normal-server-release/jdk/gensrc_headers/)
+include_directories(
+        ../../src/share/javavm/export
+        ../../src/share/native/common
+        ../../src/share/native/sun/font
+        ../../src/share/native/sun/java2d)
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    include_directories(
+            ../../src/solaris/native/common
+            ../../src/solaris/javavm/export
+            ../../../build/macosx-x86_64-normal-server-release/jdk/gensrc_headers)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    include_directories(
+            ../../src/solaris/native/common
+            ../../src/solaris/javavm/export
+            ../../../build/linux-x86_64-normal-server-release/jdk/gensrc_headers)
+endif()
+
 find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 
