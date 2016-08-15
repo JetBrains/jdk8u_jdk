@@ -797,8 +797,6 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps,
 
         dty1 = ((GLfloat)dyadj + gh) / dstOps->textureHeight;
         dty2 = ((GLfloat)dyadj) / dstOps->textureHeight;
-
-        j2d_glTextureBarrierNV();
     }
 
     // render composed texture to the destination surface
@@ -953,8 +951,6 @@ OGLTR_DrawLCDGlyphNoCache(OGLContext *oglc, OGLSDOps *dstOps,
 
                 dty1 = ((GLfloat)dyadj + sh) / dstOps->textureHeight;
                 dty2 = ((GLfloat)dyadj) / dstOps->textureHeight;
-
-                j2d_glTextureBarrierNV();
             }
 
             // render composed texture to the destination surface
@@ -991,6 +987,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
 {
     int glyphCounter;
     GLuint dstTextureID = 0;
+    jboolean hasLCDGlyphs = JNI_FALSE;
 
     J2dTraceLn(J2D_TRACE_INFO, "OGLTR_DrawGlyphList");
 
@@ -1073,6 +1070,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
             }
         } else {
             // LCD-optimized glyph data
+            hasLCDGlyphs = JNI_TRUE;
             jint rowBytesOffset = 0;
 
             if (subPixPos) {
@@ -1104,6 +1102,10 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         if (!ok) {
             break;
         }
+    }
+
+    if (dstTextureID != 0 && hasLCDGlyphs) {
+        j2d_glTextureBarrierNV();
     }
 
     OGLTR_DisableGlyphModeState();
