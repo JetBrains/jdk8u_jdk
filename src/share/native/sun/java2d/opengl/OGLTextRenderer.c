@@ -1070,8 +1070,8 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
             }
         } else {
             // LCD-optimized glyph data
-            hasLCDGlyphs = JNI_TRUE;
             jint rowBytesOffset = 0;
+            hasLCDGlyphs = JNI_TRUE;
 
             if (subPixPos) {
                 jint frac = (jint)((glyphx - x) * 3);
