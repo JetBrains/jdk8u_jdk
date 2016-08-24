@@ -1074,7 +1074,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
             if (!hasLCDGlyphs) {
                 // Flush GPU buffers before processing first LCD glyph
                 hasLCDGlyphs = JNI_TRUE;
-                if (dstTextureID != 0 && hasLCDGlyphs) {
+                if (dstTextureID != 0) {
                     j2d_glTextureBarrierNV();
                 }
             }
