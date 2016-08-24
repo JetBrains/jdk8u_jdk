@@ -1071,7 +1071,13 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         } else {
             // LCD-optimized glyph data
             jint rowBytesOffset = 0;
-            hasLCDGlyphs = JNI_TRUE;
+            if (!hasLCDGlyphs) {
+                // Flush GPU buffers before processing first LCD glyph
+                hasLCDGlyphs = JNI_TRUE;
+                if (dstTextureID != 0 && hasLCDGlyphs) {
+                    j2d_glTextureBarrierNV();
+                }
+            }
 
             if (subPixPos) {
                 jint frac = (jint)((glyphx - x) * 3);
@@ -1102,10 +1108,6 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         if (!ok) {
             break;
         }
-    }
-
-    if (dstTextureID != 0 && hasLCDGlyphs) {
-        j2d_glTextureBarrierNV();
     }
 
     OGLTR_DisableGlyphModeState();
