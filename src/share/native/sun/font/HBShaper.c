@@ -72,12 +72,12 @@ static int init_JNI_IDs(JNIEnv *env) {
 int storeGVData(JNIEnv* env,
                jobject gvdata, jint slot, jint baseIndex, jint offset, jobject startPt,
                int glyphCount, hb_glyph_info_t *glyphInfo,
-               hb_glyph_position_t *glyphPos) {
+               hb_glyph_position_t *glyphPos, float devScale) {
 
     int i;
     float x=0, y=0;
     float startX, startY;
-    float scale = 1.0f/64.0f;
+    float scale = 1.0f/64.0f/devScale;
     unsigned int* glyphs;
     float* positions;
     int initialCount, glyphArrayLen, posArrayLen, maxGlyphs, storeadv;
@@ -207,7 +207,11 @@ JDKFontInfo*
     fi->ptSize = ptSize;
     fi->xPtSize = euclidianDistance(fi->matrix[0], fi->matrix[1]);
     fi->yPtSize = euclidianDistance(fi->matrix[2], fi->matrix[3]);
-
+    if (!aat && (getenv("HB_NODEVTX") != NULL)) {
+        fi->devScale = fi->xPtSize / fi->ptSize;
+    } else {
+        fi->devScale = 1.0f;
+    }
     return fi;
 }
 
@@ -302,7 +306,7 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      // by calling code.
 
      storeGVData(env, gvdata, slot, baseIndex, offset, startPt,
-                 glyphCount, glyphInfo, glyphPos);
+                 glyphCount, glyphInfo, glyphPos, jdkFontInfo->devScale);
 
      hb_buffer_destroy (buffer);
      hb_font_destroy(hbfont);
