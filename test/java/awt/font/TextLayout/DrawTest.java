@@ -1,3 +1,10 @@
+/**
+ * @test 1.0 2016/08/25
+ * @bug 8139176
+ * @run main DrawTest
+ * @summary java.awt.TextLayout does not handle correctly the bolded logical fonts (Serif)
+ */
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -7,19 +14,12 @@ import java.awt.Graphics2D;
 import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
 
-/**
- * @test 1.0 2016/08/25
- * @bug 8139176
- * @run main DrawTest
- * @summary java.awt.TextLayout does not handle correctly the bolded logical fonts (Serif)
- */
-
 // The test against java.awt.font.TextLayout, it draws the text "Gerbera" twise
 // via the methods Graphics.drawString and TextLayout.draw and then it checks
 // that both output have the same width.
 // The test does this checking for two styles of the font Serif - PLAIN and
 // BOLD in course one by one.
-    
+
 public class DrawTest {
     static final Font plain = new Font("Serif", Font.PLAIN, 32);
     static final Font bold = new Font("Serif", Font.BOLD, 32);
@@ -27,11 +27,9 @@ public class DrawTest {
     static final String txt = "Gerbera";
     static boolean isPassed = true;
     static String errMsg = "";
+    static String testCaseName;
 
     public static void main(String[] args) {
-
-        // This happens with jre1.8.0_60-x64
-        System.out.println(System.getProperty("java.home"));
 
         final JFrame frame = new JFrame();
         frame.setSize(116, 97);
@@ -68,54 +66,43 @@ public class DrawTest {
                 if (testCaseNo == 1) {
                     // Ok.
                     // For the PLAIN font, the text painted by g.drawString and the text layout are the same.
+                    testCaseName="PLAIN";
+                    errMsg = "plained";
                     drawString(g, plain);
                     drawTextLayout(g, plain);
                 } else {
                     // Not Ok.
                     // For the BOLD font, the text painted by g.drawString and the text layout are NOT the same.
+                    testCaseName="BOLD";
+                    errMsg = "bolded";
                     drawString(g, bold);
                     drawTextLayout(g, bold);
                 }
             }
         };
-
         frame.getContentPane().add(panel);
         frame.setVisible(true);
 
-        BufferedImage paintImage = getScreenShot(panel);
-        int width = paintImage.getWidth();
-        int height = paintImage.getHeight();
-        int rgb;
-        int r, g, b;
-
-        int width1 = charWidth(paintImage, 0, 10, 116, 32);
-        int width2 = charWidth(paintImage, 0, 43, 116, 32);
-        if (width1 != width2) {
-            System.out.println("test case FAILED");
-            errMsg = "plained";
-            isPassed = false;
-        } else
-            System.out.println("test case PASSED");
-
-        testCaseNo = 2;
-        panel.revalidate();
-        panel.repaint();
-        paintImage = getScreenShot(panel);
-
-        width1 = charWidth(paintImage, 0, 10, 116, 32);
-        width2 = charWidth(paintImage, 0, 43, 116, 32);
-        if (width1 != width2) {
-            System.out.println("test case FAILED");
-            errMsg = "bolded";
-            isPassed = false;
-        } else
-            System.out.println("test case PASSED");
+        for (testCaseNo = 1; testCaseNo <=2; testCaseNo++) {
+            BufferedImage paintImage = getScreenShot(panel);
+            if (testCaseNo==2) {
+                panel.revalidate();
+                panel.repaint();
+            }
+            paintImage = getScreenShot(panel);
+            int width1 = charWidth(paintImage, 0, 10, 116, 32);
+            int width2 = charWidth(paintImage, 0, 43, 116, 32);
+            if (width1 != width2) {
+                System.out.println(testCaseName + " test case FAILED");
+                isPassed = false;
+            } else
+                System.out.println(testCaseName + " test case PASSED");
+        }
 
         frame.dispose();
         if (!isPassed) {
             throw new RuntimeException(errMsg + " logical fonts (Serif) was not correctly handled");
         }
-
     }
 
     static private BufferedImage getScreenShot(JPanel panel) {
