@@ -121,11 +121,26 @@ public class FileFontStrike extends PhysicalStrike {
     private static boolean isXPorLater = false;
 
     private static boolean useDirectWrite;
-    private static int dwMeasuringMode = 1; // 'GDI classic' mode
-    private static int dwRenderingMode = -1;
-    private static float dwClearTypeLevel = -1;
-    private static float dwEnhancedContrast = -1;
-    private static float dwGamma = 1; // gamma correction will be applied when glyph image is blitted onto target surface, so disabling correction here by default
+
+    // DirectWrite rendering options' values can be found in MSDN documentation
+    // for IDWriteBitmapRenderTarget::DrawGlyphRun method and its parameters
+    // (https://msdn.microsoft.com/en-us/library/windows/desktop/dd368167(v=vs.85).aspx)
+
+    // Measuring mode doesn't seem to impact glyph rendering directly,
+    // but values other that 0 ('natural' measuring mode) seem to limit possible other options' values.
+    private static int dwMeasuringMode = 0;
+    // Only 'natural' and 'natural symmetric' rendering modes seem to use requested gamma value,
+    // so only they can be used to produce valid glyph images.
+    // 'Natural' mode is said to look better for smaller font sizes.
+    private static int dwRenderingMode = 4;
+    // 'Full' ClearType
+    private static float dwClearTypeLevel = 1;
+    // Disabling enhanced contrast - it doesn't seem to be doing anything for white-on-black glyphs being generated.
+    private static float dwEnhancedContrast = 0;
+    // gamma correction will be applied when glyph image is blitted onto target surface, so for a cached glyph image
+    // we don't need any gamma correction
+    private static float dwGamma = 1;
+    // use monitor-default pixel geometry
     private static int dwPixelGeometry = -1;
 
     static {
