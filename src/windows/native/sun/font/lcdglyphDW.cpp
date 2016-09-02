@@ -33,6 +33,7 @@
 #include <jni.h>
 #include <jni_util.h>
 #include <jlong_md.h>
+#include <jdk_util.h>
 #include <sizecalc.h>
 #include <sun_font_FileFontStrike.h>
 
@@ -67,21 +68,21 @@ extern "C" {
     FREE\
     return (jlong)0;
 
+typedef HRESULT (WINAPI *DWriteCreateFactoryType)(DWRITE_FACTORY_TYPE, REFIID, IUnknown**);
+
+static BOOL checkedForDirectWriteAvailability = FALSE;
+static DWriteCreateFactoryType fDWriteCreateFactory = NULL;
+
 JNIEXPORT jboolean JNICALL
 Java_sun_font_FileFontStrike_isDirectWriteAvailable(JNIEnv *env, jclass unused) {
-    // This is an equivalent of IsWindows7OrGreater defined in VersionHelpers.h
-
-    OSVERSIONINFOEXW osvi;
-    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
-    osvi.dwMajorVersion = 6;
-    osvi.dwMinorVersion = 1;
-
-    DWORDLONG conditionMask = VerSetConditionMask(VerSetConditionMask(0,
-        VER_MAJORVERSION, VER_GREATER_EQUAL),
-        VER_MINORVERSION, VER_GREATER_EQUAL);
-
-    BOOL result = VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION, conditionMask);
-    return result ? JNI_TRUE : JNI_FALSE;
+    if (!checkedForDirectWriteAvailability) {
+        checkedForDirectWriteAvailability = TRUE;
+        HMODULE hDwrite = JDK_LoadSystemLibrary("Dwrite.dll");
+        if (hDwrite) {
+            fDWriteCreateFactory = (DWriteCreateFactoryType)GetProcAddress(hDwrite, "DWriteCreateFactory");
+        }
+    }
+    return fDWriteCreateFactory != NULL ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jlong JNICALL
@@ -109,9 +110,12 @@ Java_sun_font_FileFontStrike__1getGlyphImageFromWindowsUsingDirectWrite
     env->GetStringRegion(fontFamily, 0, nameLen, lf.lfFaceName);
     lf.lfFaceName[nameLen] = '\0';
 
-    HRESULT hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,
-                                     __uuidof(IDWriteFactory),
-                                     reinterpret_cast<IUnknown**>(&factory));
+    if (fDWriteCreateFactory == NULL) {
+        FREE_AND_RETURN
+    }
+    HRESULT hr = (*fDWriteCreateFactory)(DWRITE_FACTORY_TYPE_SHARED,
+                                         __uuidof(IDWriteFactory),
+                                         reinterpret_cast<IUnknown**>(&factory));
     if (FAILED(hr)) {
         FREE_AND_RETURN
     }
