@@ -540,6 +540,10 @@ OGLBlitLoops_IsoBlit(JNIEnv *env,
                     viaTexture = (oglc->extraAlpha != 1.0f);
                     break;
 
+                case OGLC_VENDOR_INTEL:
+                    viaTexture = JNI_TRUE;
+                    break;
+
                 default:
                     // just use the glCopyPixels() codepath
                     viaTexture = JNI_FALSE;
