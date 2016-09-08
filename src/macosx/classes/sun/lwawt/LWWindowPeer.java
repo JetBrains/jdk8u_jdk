@@ -121,8 +121,6 @@ public class LWWindowPeer
         this.platformWindow = platformWindow;
         this.peerType = peerType;
 
-        targetFocusable = target.isFocusableWindow();
-
         Window owner = target.getOwner();
         LWWindowPeer ownerPeer = owner == null ? null :
              (LWWindowPeer) AWTAccessor.getComponentAccessor().getPeer(owner);
@@ -185,6 +183,7 @@ public class LWWindowPeer
 
         updateAlwaysOnTopState();
         updateMinimumSize();
+        updateFocusableWindowState();
 
         final Shape shape = getTarget().getShape();
         if (shape != null) {
