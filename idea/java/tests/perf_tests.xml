@@ -25,7 +25,6 @@
         <junit printsummary="on" haltonfailure="no" showoutput="on" fork="yes" jvm="${test_jvm}">
             <classpath>
                 <pathelement location="${lib}/junit-4.12.jar" />
-                <pathelement location="${lib}/ant-junit4.jar" />
                 <pathelement location="${lib}/hamcrest-core-1.3.jar" />
                 <pathelement location="${build}"/>
             </classpath>
