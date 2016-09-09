@@ -6,6 +6,7 @@
     <property name="lib" location="lib"/>
     <property name="build" location="build"/>
     <property name="test_jvm" location="../../../jbsdk/jdk/Contents/Home/bin/java"/>
+    <property name="test_jvm_path" location="${test_jvm}"/>
 
     <target name="init">
         <tstamp/>
@@ -22,7 +23,7 @@
     </target>
 
     <target name="run"  depends="compile">
-        <junit printsummary="on" haltonfailure="no" showoutput="on" fork="yes" jvm="${test_jvm}">
+        <junit printsummary="on" haltonfailure="no" showoutput="on" fork="yes" jvm="${test_jvm_path}">
             <classpath>
                 <pathelement location="${lib}/junit-4.12.jar" />
                 <pathelement location="${lib}/hamcrest-core-1.3.jar" />
