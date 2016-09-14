@@ -89,22 +89,104 @@
 
 # jdk_awt
 
+# https://bugs.openjdk.java.net/browse/JDK-6990210
+java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java.HandleExceptionOnEDT generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-4931413
-java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html  linux-all
+java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html      linux-all
+
+# similar to
+# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6848406
+java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusToFrontTest.java generic-all
+
+# similar to
+# https://bugs.openjdk.java.net/browse/JDK-7191928
+java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7156130 (open)
+java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                    windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8001214                   generic-all
+java/awt/Frame/MaximizedToIconified/MaximizedToIconified.java
 
 # https://bugs.openjdk.java.net/browse/JDK-8129775
-java/awt/Mouse/MouseDragEvent/MouseDraggedTest.java              linux-all
+java/awt/Mouse/MouseDragEvent/MouseDraggedTest.java                  linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8148041
-java/awt/Mouse/TitleBarDoubleClick/TitleBarDoubleClick.html      linux-all
+java/awt/Mouse/TitleBarDoubleClick/TitleBarDoubleClick.html          linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-6829267
+java/awt/Toolkit/ToolkitPropertyTest/ToolkitPropertyTest_Enable.java linux-all
+
+# http://bugs.java.com/view_bug.do?bug_id=8039081
+java/awt/TrayIcon/PopupMenuLeakTest/PopupMenuLeakTest.java           generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7107528
+java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java  generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8080982
+java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java    linux-all windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8039082
+java/awt/dnd/BadSerializaionTest/BadSerializationTest.java           generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7098447
+java/awt/dnd/ImageTransferTest/ImageTransferTest.java                generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8030121
+java/awt/dnd/MissingDragExitEventTest/MissingDragExitEventTest.java  linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8056077
+java/awt/image/DrawImage/IncorrectAlphaSurface2SW.java               linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8130400
+java/awt/image/DrawImage/IncorrectClipXorModeSW2Surface.java         linux-all
+java/awt/image/DrawImage/IncorrectClipXorModeSurface2Surface.java    linux-all
+
+############################################################################
+
+# jdk_sound
+
+## https://bugs.openjdk.java.net/browse/JDK-8134632 (fixed in jdk9)
+javax/sound/midi/Devices/InitializationHang.java                     linux-all
 
 ############################################################################
 
 # jdk_beans
 
+# https://bugs.openjdk.java.net/browse/JDK-8030123
+java/beans/Introspector/Test8027648.java                             linux-all
+
+############################################################################
+
+# jdk_io
+
+# Test ignored: This test has huge memory requirements
+java/io/ByteArrayOutputStream/MaxCapacity.java                       generic-all
+
+# Test ignored: until 6492634 and 6501010 is fixed
+# http://bugs.java.com/view_bug.do?bug_id=6492634
+# http://bugs.java.com/view_bug.do?bug_id=6501010
+java/io/File/GetXSpace.java                                          generic-all
+
+# Test ignored: Test truncates system files when run as root, see 7042603
+# http://bugs.java.com/view_bug.do?bug_id=7042603
+java/io/IOException/LastErrorString.java                             generic-all
+
+# Test ignored: This test requires console (/dev/tty) input, which is not supported by the current harness
+java/io/SystemInAvailable.java                                       generic-all
+
 ############################################################################
 
 # jdk_lang
+
+# Test ignored: until bug 6835233 dealt with
+# http://bugs.java.com/view_bug.do?bug_id=6835233
+java/lang/instrument/ParallelTransformerLoader.sh                    generic-all
+
+# Test ignored: 8078602
+# http://bugs.java.com/view_bug.do?bug_id=8078602
+java/lang/invoke/LFCaching/LFGarbageCollectedTest.java               generic-all
 
 ############################################################################
 
@@ -138,6 +220,14 @@ demo/jvmti/hprof/MonitorTest.java                               generic-all
 
 # 8027973
 javax/xml/jaxp/transform/jdk8004476/XSLTExFuncTest.java		windows-all
+
+# no printer found
+javax/print/CheckDupFlavor.java                                      generic-all
+javax/print/PrintServiceLookup/CountPrintServices.java               generic-all
+javax/print/attribute/AttributeTest.java                             generic-all
+javax/print/attribute/GetCopiesSupported.java                        generic-all
+javax/print/attribute/SidesPageRangesTest.java                       generic-all
+javax/print/attribute/SupportedPrintableAreas.java                   generic-all
 
 ############################################################################
 
@@ -201,6 +291,19 @@ sun/rmi/transport/proxy/EagerHttpFallback.java                  generic-all
 
 # jdk_security
 
+# Test ignored: Must set up KDC and setup Kerberos configuration file
+javax/security/auth/kerberos/KerberosHashEqualsTest.java             generic-all
+javax/security/auth/kerberos/KerberosTixDateTest.java                generic-all
+
+# Test ignored: run these by hand
+com/sun/security/auth/callback/TextCallbackHandler/Password.java     generic-all
+com/sun/security/auth/callback/TextCallbackHandler/Default.java      generic-all
+
+# Test ignored: see runwjaas.csh for instructions for how to run this test
+com/sun/security/sasl/gsskerb/NoSecurityLayer.java              generic-all
+com/sun/security/sasl/gsskerb/ConfSecurityLayer.java            generic-all
+com/sun/security/sasl/gsskerb/AuthOnly.java                     generic-all
+
 # 7157786
 sun/security/pkcs11/ec/TestKeyFactory.java                      generic-all
 
@@ -228,11 +331,16 @@ sun/security/krb5/auto/tools/KinitConfPlusProps.java                       windo
 
 ############################################################################
 
-# jdk_sound
-
-############################################################################
-
 # jdk_swing
+
+# https://bugs.openjdk.java.net/browse/JDK-6962725
+javax/swing/JFileChooser/6738668/bug6738668.java                     generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8016746
+javax/swing/JTable/7068740/bug7068740.java                           generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-4847025
+javax/swing/JTextArea/4697612/bug4697612.java                        linux-all
 
 ############################################################################
 
@@ -263,6 +371,21 @@ tools/launcher/FXLauncherTest.java                              linux-all
 
 # Filed 6772009
 java/util/concurrent/locks/ReentrantLock/CancelledLockLoops.java generic-all
+
+# Test ignored: Bug fix temporarily removed as it uncovered other bugs (4992226)
+java/util/AbstractList/CheckForComodification.java                   generic-all
+
+# Test ignored: until 6842022 is resolved
+java/util/ResourceBundle/RestrictedBundleTest.java                   generic-all
+
+#Test ignored: 6876961
+java/util/ResourceBundle/Test4300693.java                            generic-all
+
+Test ignored: until 6842353 is resolved
+java/util/WeakHashMap/GCDuringIteration.java                         generic-all
+
+# Test ignored: runs for hours and eats up 7 Gigabytes of disk space
+java/util/zip/3GBZipFiles.sh                                         generic-all
 
 ############################################################################
 
