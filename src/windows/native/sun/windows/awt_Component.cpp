@@ -980,10 +980,20 @@ void AwtComponent::Reshape(int x, int y, int w, int h)
     DTRACE_PRINTLN4("AwtComponent::Reshape from %d, %d, %d, %d", rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top);
 #endif
 
-    x = ScaleUpX(x);
-    y = ScaleUpY(y);
+    int userW = w;
+    int userH = h;
+
+    // new location may fall into another device and therefor should be scaled in its coordinate space
+    AwtWin32GraphicsDevice* device = AwtWin32GraphicsDevice::getDeviceByPoint(x, y);
+    x = device != NULL ? device->ScaleUpX(x) : ScaleUpX(x);
+    y = device != NULL ? device->ScaleUpX(y) : ScaleUpX(y);
+
+    // until the window is moved we don't know its new scale, so leave the size in its current scale
     w = ScaleUpX(w);
     h = ScaleUpY(h);
+
+    int sysW = w;
+    int sysH = h;
 
     AwtWindow* container = GetContainer();
     AwtComponent* parent = GetParent();
@@ -1019,6 +1029,13 @@ void AwtComponent::Reshape(int x, int y, int w, int h)
          * We should use SetWindowPlacement instead.
          */
         SetWindowPos(GetHWnd(), 0, x, y, w, h, flags);
+
+        // now recalculate size with the new window scale
+        w = ScaleUpX(userW);
+        h = ScaleUpY(userH);
+        if (w != sysW || h != sysH) {
+            SetWindowPos(GetHWnd(), 0, x, y, w, h, flags);
+        }
     }
 }
 
