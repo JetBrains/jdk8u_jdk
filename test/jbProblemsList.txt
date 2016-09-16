@@ -89,25 +89,53 @@
 
 # jdk_awt
 
+# https://bugs.openjdk.java.net/browse/JDK-8075487
+java/awt/Choice/ChoiceKeyEventReaction/ChoiceKeyEventReaction.html   macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-6990210
-java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java.HandleExceptionOnEDT generic-all
+java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-4931413
 java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html      linux-all
 
+# https://bugs.openjdk.java.net/browse/JDK-6862004
+java/awt/Focus/AppletInitialFocusTest/AppletInitialFocusTest.html    windows-all linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-6849367
+java/awt/Focus/AppletInitialFocusTest/AppletInitialFocusTest1.html       generic-all
+
 # similar to
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6848406
-java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusToFrontTest.java generic-all
+java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusToFrontTest.java     generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-6829264
+java/awt/Focus/ActualFocusedWindowTest/ActualFocusedWindowRetaining.java generic-all
 
 # similar to
 # https://bugs.openjdk.java.net/browse/JDK-7191928
 java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7156130 (open)
-java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                    windows-all
+java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                    generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8001214                   generic-all
-java/awt/Frame/MaximizedToIconified/MaximizedToIconified.java
+# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6848810
+# https://bugs.openjdk.java.net/browse/JDK-7035459
+java/awt/Focus/TranserFocusToWindow/TranserFocusToWindow.java        generic-all
+
+#http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8076151
+java/awt/FontClass/CreateFont/fileaccess/FontFile.java               generic-all
+
+# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8080953
+java/awt/FontClass/DebugFonts.java                                   generic-all
+
+#https://bugs.openjdk.java.net/browse/JDK-8047218
+java/awt/FullScreen/AltTabCrashTest/AltTabCrashTest.java             generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8001214
+java/awt/Frame/MaximizedToIconified/MaximizedToIconified.java        generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8144042
+java/awt/Mouse/EnterExitEvents/ResizingFrameTest.java                generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8129775
 java/awt/Mouse/MouseDragEvent/MouseDraggedTest.java                  linux-all
@@ -142,6 +170,11 @@ java/awt/image/DrawImage/IncorrectAlphaSurface2SW.java               linux-all
 # https://bugs.openjdk.java.net/browse/JDK-8130400
 java/awt/image/DrawImage/IncorrectClipXorModeSW2Surface.java         linux-all
 java/awt/image/DrawImage/IncorrectClipXorModeSurface2Surface.java    linux-all
+
+# no printer found
+java/awt/print/PrinterJob/ExceptionTest.java                         generic-all
+java/awt/print/PrinterJob/ImagePrinting/NullClipARGB.java            generic-all
+java/awt/print/PrinterJob/PrtException.java                          generic-all
 
 ############################################################################
 
@@ -264,6 +297,9 @@ java/nio/channels/Selector/Wakeup.java                          windows-all
 # 7141822
 java/nio/channels/DatagramChannel/ChangingAddress.java          macosx-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8137230
+java/nio/channels/FileChannel/LoopingTruncate.java              generic-all
+
 # 7132677
 java/nio/channels/Selector/OutOfBand.java                       macosx-all
 
@@ -332,6 +368,42 @@ sun/security/krb5/auto/tools/KinitConfPlusProps.java                       windo
 ############################################################################
 
 # jdk_swing
+
+# https://bugs.openjdk.java.net/browse/JDK-8040797
+javax/swing/JComboBox/8032878/bug8032878.java                        generic-all
+
+# http://bugs.java.com/view_bug.do?bug_id=8067986
+javax/swing/JComboBox/ConsumedKeyTest/ConsumedKeyTest.java           linux-all, windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-6848852
+javax/swing/JComponent/6683775/bug6683775.java                       linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8064715
+javax/swing/JFileChooser/8062561/bug8062561.java                     generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8032568
+javax/swing/JInternalFrame/8020708/bug8020708.java                   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8130430
+javax/swing/JRadioButton/8075609/bug8075609.java                     generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8051591
+javax/swing/JTabbedPane/8007563/Test8007563.java                     linux-all, macosx-all
+
+# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8011259
+javax/swing/JTree/8003400/Test8003400.java                           generic-all
+
+# http://bugs.java.com/view_bug.do?bug_id=8008119
+javax/swing/RepaintManager/IconifyTest/IconifyTest.java              generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8159454
+javax/swing/ToolTipManager/7123767/bug7123767.java                   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8081764
+javax/swing/plaf/aqua/CustomComboBoxFocusTest.java                   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8012469
+javax/swing/text/DefaultEditorKit/4278839/bug4278839.java            generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6962725
 javax/swing/JFileChooser/6738668/bug6738668.java                     generic-all
