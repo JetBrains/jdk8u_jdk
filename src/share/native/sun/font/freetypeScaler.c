@@ -271,7 +271,13 @@ static int getScreenResolution(JNIEnv *env) {
 
     /* Some configurations report invalid dpi settings */
     if (dpi > MAX_DPI) {
+        if (logFFS) {
+            fprintf(stderr, "FFS_LOG: Invalid dpi reported (%d) replaced with default (%d)\n", dpi, DEFAULT_DPI);
+        }
         return DEFAULT_DPI;
+    }
+    if (logFFS) {
+        fprintf(stderr, "FFS_LOG: Screen Resolution (%d) dpi\n", dpi);
     }
     return dpi;
 }
