@@ -181,6 +181,9 @@ java/awt/Mouse/EnterExitEvents/DragWindowTest.java                   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-7087869
 java/awt/Mouse/ExtraMouseClick/ExtraMouseClick.html                  macosx-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8051455
+java/awt/Mouse/EnterExitEvents/FullscreenEnterEventTest.java         macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8144042
 java/awt/Mouse/EnterExitEvents/ResizingFrameTest.java                generic-all
 
@@ -234,6 +237,9 @@ java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6848409
 java/awt/Window/GrabSequence/GrabSequence.java                       generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-6619458
+java/awt/appletviewer/IOExceptionIfEncodedURLTest/IOExceptionIfEncodedURLTest.sh generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080982
 java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java    linux-all windows-all
