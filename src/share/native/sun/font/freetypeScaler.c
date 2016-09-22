@@ -196,6 +196,12 @@ static void* openFontConfig() {
 JNIEXPORT void JNICALL
 Java_sun_font_FreetypeFontScaler_initIDs(
         JNIEnv *env, jobject scaler, jclass FFSClass, jclass TKClass, jclass PFClass) {
+    char *fssLogEnabled = getenv("OPENJDK_LOG_FFS");
+
+    if (fssLogEnabled != NULL && !strcmp(fssLogEnabled, "yes")) {
+        logFFS = JNI_TRUE;
+    }
+
     invalidateScalerMID =
         (*env)->GetMethodID(env, FFSClass, "invalidateScaler", "()V");
     getDefaultToolkitMID =
@@ -220,10 +226,6 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         FcPatternGetIntegerPtr = (FcPatternGetIntegerPtrType)  dlsym(libFontConfig, "FcPatternGetInteger");
     }
 #endif
-    char *fssLogEnabled = getenv("OPENJDK_LOG_FFS");
-    if (fssLogEnabled != NULL && !strcmp(fssLogEnabled, "yes")) {
-        logFFS = JNI_TRUE;
-    }
 }
 
 static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  filter) {
