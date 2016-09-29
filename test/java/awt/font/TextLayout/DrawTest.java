@@ -5,14 +5,16 @@
  * @summary java.awt.TextLayout does not handle correctly the bolded logical fonts (Serif)
  */
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 // The test against java.awt.font.TextLayout, it draws the text "Gerbera" twise
 // via the methods Graphics.drawString and TextLayout.draw and then it checks
@@ -30,17 +32,17 @@ public class DrawTest {
     static String testCaseName;
 
     public static void main(String[] args) {
-
         final JFrame frame = new JFrame();
-        frame.setSize(116, 97);
-
+        frame.getContentPane().setPreferredSize(new Dimension(116, 75));
+        frame.pack();
+        frame.setVisible(true);
+        Insets insets = frame.getInsets();
+        System.out.println(insets);
         final JPanel panel = new JPanel() {
 
             private void drawString(Graphics g, Font font) {
                 g.setFont(font);
                 g.drawString(txt, 0, 32);
-                int width = g.getFontMetrics(font).stringWidth(txt);
-                g.drawRect(0, 32, width, 0);
             }
 
             private void drawTextLayout(Graphics g, Font font) {
@@ -48,8 +50,6 @@ public class DrawTest {
                         font,
                         g.getFontMetrics(font).getFontRenderContext());
                 tl.draw((Graphics2D) g, 0, 65);
-                int width = (int) tl.getAdvance();
-                g.drawRect(0, 65, width, 0);
             }
 
             /**
@@ -66,14 +66,14 @@ public class DrawTest {
                 if (testCaseNo == 1) {
                     // Ok.
                     // For the PLAIN font, the text painted by g.drawString and the text layout are the same.
-                    testCaseName="PLAIN";
+                    testCaseName = "PLAIN";
                     errMsg = "plained";
                     drawString(g, plain);
                     drawTextLayout(g, plain);
                 } else {
                     // Not Ok.
                     // For the BOLD font, the text painted by g.drawString and the text layout are NOT the same.
-                    testCaseName="BOLD";
+                    testCaseName = "BOLD";
                     errMsg = "bolded";
                     drawString(g, bold);
                     drawTextLayout(g, bold);
@@ -83,15 +83,16 @@ public class DrawTest {
         frame.getContentPane().add(panel);
         frame.setVisible(true);
 
-        for (testCaseNo = 1; testCaseNo <=2; testCaseNo++) {
+        for (testCaseNo = 1; testCaseNo <= 2; testCaseNo++) {
             BufferedImage paintImage = getScreenShot(panel);
-            if (testCaseNo==2) {
+            if (testCaseNo == 2) {
                 panel.revalidate();
                 panel.repaint();
             }
             paintImage = getScreenShot(panel);
-            int width1 = charWidth(paintImage, 0, 10, 116, 32);
-            int width2 = charWidth(paintImage, 0, 43, 116, 32);
+            int width1 = charWidth(paintImage, 0, 9, 116, 23);
+            int width2 = charWidth(paintImage, 0, 42, 116, 23);
+
             if (width1 != width2) {
                 System.out.println(testCaseName + " test case FAILED");
                 isPassed = false;
