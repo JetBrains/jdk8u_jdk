@@ -48,8 +48,6 @@ final class CPlatformResponder {
     private final boolean isNpapiCallback;
     private int lastKeyPressCode = KeyEvent.VK_UNDEFINED;
 
-    private volatile double preciseWheelRotation; // accumulate scroll events
-
     CPlatformResponder(final PlatformEventNotifier eventNotifier,
                        final boolean isNpapiCallback) {
         this.eventNotifier = eventNotifier;
@@ -113,19 +111,19 @@ final class CPlatformResponder {
         }
     }
 
-    private void dispatchScrollEvent(int x, int y, int modifiers, double delta) {
-
-        delta += preciseWheelRotation; // append stored rotation
-        int wheelRotation = (int) delta; // extract integer part
-        preciseWheelRotation = delta - wheelRotation; // store fractional part
-        if (wheelRotation == 0) return; // skip very precise scrolling
-
+    private void dispatchScrollEvent(final int x, final int y,
+                                     final int modifiers, final double delta) {
         final long when = System.currentTimeMillis();
         final int scrollType = MouseWheelEvent.WHEEL_UNIT_SCROLL;
         final int scrollAmount = 1;
+        int wheelRotation = (int) delta;
+        int signum = (int) Math.signum(delta);
+        if (signum * delta < 1) {
+            wheelRotation = signum;
+        }
         // invert the wheelRotation for the peer
         eventNotifier.notifyMouseWheelEvent(when, x, y, modifiers, scrollType,
-                scrollAmount, -wheelRotation, -wheelRotation, null);
+                scrollAmount, -wheelRotation, -delta, null);
     }
 
     /**
