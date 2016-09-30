@@ -680,11 +680,14 @@ javax/swing/JComboBox/8032878/bug8032878.java                        generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8033069
 javax/swing/JComboBox/8033069/bug8033069NoScrollBar.java             generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8163367
+javax/swing/JComboBox/8033069/bug8033069ScrollBar.java               generic-all
+
 # http://bugs.java.com/view_bug.do?bug_id=8067986
 javax/swing/JComboBox/ConsumedKeyTest/ConsumedKeyTest.java           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6848852
-javax/swing/JComponent/6683775/bug6683775.java                       linux-all
+javax/swing/JComponent/6683775/bug6683775.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7190978
 javax/swing/JComponent/7154030/bug7154030.java                       macosx-all
@@ -702,7 +705,10 @@ javax/swing/JFileChooser/8062561/bug8062561.java                     generic-all
 javax/swing/JInternalFrame/8020708/bug8020708.java                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8160880
-javax/swing/JInternalFrame/Test6325652.java                          linux-all, macosx-all
+javax/swing/JInternalFrame/Test6325652.java                          generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8012466
+javax/swing/JInternalFrame/Test6505027.java                          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8003972
 javax/swing/JList/6462008/bug6462008.java                            linux-all
@@ -730,6 +736,9 @@ javax/swing/JScrollBar/4708809/bug4708809.java                       linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8024407
 javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7107585
+javax/swing/JSlider/6348946/bug6348946.java                          macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8071997
 javax/swing/JTable/4220171/bug4220171.java                           linux-all, macosx-all
@@ -779,6 +788,9 @@ javax/swing/system/6799345/TestShutdown.java                         linux-all
 # https://bugs.openjdk.java.net/browse/JDK-8012469
 javax/swing/text/DefaultEditorKit/4278839/bug4278839.java            generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-7147408
+javax/swing/text/StyledEditorKit/4506788/bug4506788.java             generic-all
+
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8076178
 javax/swing/text/html/HTMLEditorKit/5043626/bug5043626.java          generic-all
 
@@ -826,6 +838,10 @@ java/util/concurrent/locks/ReentrantLock/CancelledLockLoops.java generic-all
 
 # Test ignored: Bug fix temporarily removed as it uncovered other bugs (4992226)
 java/util/AbstractList/CheckForComodification.java                   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8060093
+java/util/Currency/CurrencyTest.java                                 generic-all
+java/util/Currency/ValidateISO4217.java                              generic-all
 
 # Test ignored: until 6842022 is resolved
 java/util/ResourceBundle/RestrictedBundleTest.java                   generic-all
