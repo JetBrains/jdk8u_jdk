@@ -872,7 +872,9 @@ AWT_ASSERT_APPKIT_THREAD;
     }
 
     if (IS(self.styleBits, RESIZABLE)) {
-        [self updateMinMaxSize:flag];
+        if (!IS(self.styleBits, FULLSCREENABLE)) {
+            [self updateMinMaxSize:flag];
+        }
         [self.nsWindow setShowsResizeIndicator:flag];
     }
 }
