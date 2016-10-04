@@ -189,6 +189,10 @@ java/awt/FontClass/CreateFont/fileaccess/FontFile.java               generic-all
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8080953
 java/awt/FontClass/DebugFonts.java                                   generic-all
 
+# excluded from regular runs since the test was not run
+# see http://download.java.net/openjdk/testresults/8/
+java/awt/Frame/UnfocusableMaximizedFrameResizablity/UnfocusableMaximizedFrameResizablity.java generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8047218
 java/awt/FullScreen/AltTabCrashTest/AltTabCrashTest.java             generic-all
 
@@ -203,6 +207,9 @@ java/awt/Graphics/LineClipTest.java                                  linux-all, 
 
 # https://bugs.openjdk.java.net/browse/JDK-7043153
 java/awt/Graphics2D/DrawString/RotTransText.java                     generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8145808
+java/awt/Graphics2D/MTGraphicsAccessTest/MTGraphicsAccessTest.java   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8158380
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html generic-all
@@ -293,8 +300,17 @@ java/awt/Paint/ComponentIsNotDrawnAfterRemoveAddTest/ComponentIsNotDrawnAfterRem
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
 
+# excluded from regular runs since the test was not run
+# see http://download.java.net/openjdk/testresults/8/
+java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java  generic-all
+java/awt/ScrollPane/bug8077409Test.java                              generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8140329
 java/awt/SplashScreen/FullscreenAfterSplash/FullScreenAfterSplash.java generic-all
+
+# excluded from regular runs since the test was not run
+# see http://download.java.net/openjdk/testresults/8/
+java/awt/TextArea/Mixing/TextAreaMixing.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6734341
 java/awt/TextArea/UsingWithMouse/SelectionAutoscrollTest.html        generic-all
@@ -555,6 +571,14 @@ javax/print/attribute/GetCopiesSupported.java                        generic-all
 javax/print/attribute/SidesPageRangesTest.java                       generic-all
 javax/print/attribute/SupportedPrintableAreas.java                   generic-all
 
+# it looks like the tests spend a lot of time on Windows
+javax/print/attribute/Chroma.java                                    generic-all
+javax/print/attribute/ChromaticityValues.java                        generic-all
+javax/print/attribute/CollateAttr.java                               generic-all
+javax/print/attribute/MediaMappingsTest.java                         generic-all
+javax/print/attribute/PSCopiesFlavorTest.java                        generic-all
+javax/print/attribute/autosense/PrintAutoSenseData.java              generic-all
+
 ############################################################################
 
 # jdk_net
@@ -719,6 +743,10 @@ javax/swing/JMenuItem/6209975/bug6209975.java                        generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8064915
 javax/swing/JPopupMenu/4966112/bug4966112.java                       macosx-all
 
+# excluded from regular runs since the test was not run
+# see http://download.java.net/openjdk/testresults/8/
+javax/swing/JPopupMenu/6800513/bug6800513.java                       generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8156460
 javax/swing/JPopupMenu/6827786/bug6827786.java                       macosx-all
 
@@ -738,7 +766,7 @@ javax/swing/JScrollBar/4708809/bug4708809.java                       linux-all
 javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7107585
-javax/swing/JSlider/6348946/bug6348946.java                          macosx-all
+javax/swing/JSlider/6348946/bug6348946.java                          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8071997
 javax/swing/JTable/4220171/bug4220171.java                           linux-all, macosx-all
