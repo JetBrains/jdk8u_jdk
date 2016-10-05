@@ -484,6 +484,40 @@ ifndef OPENJDK
     COPY_FILES += $(OBL_FONTS_DST) $(OBL_FONTS_DST_DIR)/fonts.dir
 
   endif # linux
+else #OPENJDK
+  SHARED_FONTS_SRC_DIR := $(JDK_TOPDIR)/src/share/lib/fonts
+  SHARED_FONTS_DST_DIR := $(JDK_OUTPUTDIR)/lib/fonts
+
+  SHARED_FONTS_FILES := \
+      DroidSans-Bold.ttf \
+      DroidSerif-Regular.ttf \
+      DroidSans.ttf \
+      DroidSerif-Bold.ttf \
+      DroidSansMono.ttf \
+      DroidSerif-BoldItalic.ttf \
+      DroidSerif-Italic.ttf \
+
+
+  SHARED_FONTS_SRC := $(foreach F, $(SHARED_FONTS_FILES), $(SHARED_FONTS_SRC_DIR)/$(F))
+  SHARED_FONTS_DST := $(foreach F, $(SHARED_FONTS_FILES), $(SHARED_FONTS_DST_DIR)/$(F))
+
+  $(SHARED_FONTS_DST_DIR)/%.ttf: $(SHARED_FONTS_SRC_DIR)/%.ttf
+	$(call install-file)
+
+  $(SHARED_FONTS_DST_DIR)/fonts.dir: $(JDK_TOPDIR)/src/share/lib/fonts/fonts.dir
+	$(call install-file)
+
+  $(SHARED_FONTS_DST_DIR)/LICENSE.txt: $(JDK_TOPDIR)/src/share/lib/fonts/LICENSE.txt
+	$(call install-file)
+
+  COPY_FILES += $(SHARED_FONTS_DST)
+
+  ifneq ($(OPENJDK_TARGET_OS), windows)
+    COPY_FILES += $(SHARED_FONTS_DST_DIR)/fonts.dir
+  endif
+
+  COPY_FILES += $(SHARED_FONTS_DST_DIR)/LICENSE.txt
+
 endif # OPENJDK
 
 ##########################################################################################
