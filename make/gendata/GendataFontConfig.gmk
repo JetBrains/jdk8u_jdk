@@ -38,7 +38,8 @@ ifeq ($(OPENJDK_TARGET_OS), linux)
         $(JDK_TOPDIR)/src/solaris/classes/sun/awt/fontconfigs
     # This is placeholder for possible fonconfig files which may
     # useful for some highly specialized Linux distributions
-    GENDATA_FONT_CONFIG_SRC_FILES :=
+    GENDATA_FONT_CONFIG_SRC_FILES := fontconfig.properties
+    GENDATA_FONT_CONFIG_SRC_PREFIX := linux.
   else
     GENDATA_FONT_CONFIG_SRC_DIR := \
         $(JDK_TOPDIR)/src/closed/solaris/classes/sun/awt/fontconfigs
