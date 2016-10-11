@@ -654,7 +654,7 @@ int AwtWin32GraphicsDevice::ScaleDownY(int y)
     return (int)ceil(y / scaleY);
 }
 
-void AwtWin32GraphicsDevice::InitDesktopScales()
+void AwtWin32GraphicsDevice::InitDesktopScales(bool fractionalScaleEnabled)
 {
     unsigned x = 0;
     unsigned y = 0;
@@ -708,8 +708,11 @@ void AwtWin32GraphicsDevice::InitDesktopScales()
         }
     }
 
-    if (dpiX > 0 && dpiY > 0) {
-        SetScale(dpiX / 96, dpiY / 96);
+    float scaleX = dpiX / 96;
+    float scaleY = dpiY / 96;
+    bool isFractScale = (scaleX != (int)scaleX || scaleY != (int)scaleY);
+    if (scaleX > 0 && scaleY > 0 && (fractionalScaleEnabled || !isFractScale)) {
+        SetScale(scaleX, scaleY);
     }
 }
 
@@ -1492,12 +1495,12 @@ JNIEXPORT jfloat JNICALL
 */
 JNIEXPORT void JNICALL
 Java_sun_awt_Win32GraphicsDevice_initNativeScale
-(JNIEnv *env, jobject thisPtr, jint screen)
+(JNIEnv *env, jobject thisPtr, jint screen, jboolean fractionalScaleEnabled)
 {
     Devices::InstanceAccess devices;
     AwtWin32GraphicsDevice *device = devices->GetDevice(screen);
 
     if (device != NULL) {
-        device->InitDesktopScales();
+        device->InitDesktopScales((bool)fractionalScaleEnabled);
     }
 }
