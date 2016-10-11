@@ -870,13 +870,6 @@ AWT_ASSERT_APPKIT_THREAD;
     if (IS(self.styleBits, ZOOMABLE)) {
         [[self.nsWindow standardWindowButton:NSWindowZoomButton] setEnabled: flag];
     }
-
-    if (IS(self.styleBits, RESIZABLE)) {
-        if (!IS(self.styleBits, FULLSCREENABLE)) {
-            [self updateMinMaxSize:flag];
-        }
-        [self.nsWindow setShowsResizeIndicator:flag];
-    }
 }
 
 + (void) setLastKeyWindow:(AWTWindow *)window {
