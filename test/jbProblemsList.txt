@@ -743,8 +743,7 @@ javax/swing/JMenuItem/6209975/bug6209975.java                        generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8064915
 javax/swing/JPopupMenu/4966112/bug4966112.java                       macosx-all
 
-# excluded from regular runs since the test was not run
-# see http://download.java.net/openjdk/testresults/8/
+# https://bugs. openjdk.java.net/browse/JDK-7184956
 javax/swing/JPopupMenu/6800513/bug6800513.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8156460
