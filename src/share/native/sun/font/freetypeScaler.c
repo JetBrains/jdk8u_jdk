@@ -576,13 +576,25 @@ static void setupLoadRenderFlags(FTScalerContext *context, int fcHintStyle, FcBo
                           FT_Int32 fcLoadFlags, FT_Render_Mode fcRenderFlags)
 {
     if (!fcAutohintSet || fcAutohint) {
-        context->loadFlags = fcHintStyle == FC_HINT_SLIGHT ? FT_LOAD_TARGET_LIGHT :
-                             fcLoadFlags;
+        switch (fcHintStyle) {
+            case FC_HINT_NONE:
+                context->loadFlags = FT_LOAD_NO_HINTING;
+                break;
+            case FC_HINT_SLIGHT:
+                context->loadFlags = (fcRenderFlags != FT_RENDER_MODE_MONO) ? FT_LOAD_TARGET_LIGHT : FT_LOAD_NO_HINTING;
+                break;
+            default:
+                context->loadFlags = fcLoadFlags;
+        }
     } else {
         context->loadFlags = fcLoadFlags;
     }
 
     context->renderFlags = fcRenderFlags;
+
+    if (fcAutohintSet && fcAutohint) {
+        context->loadFlags |= FT_LOAD_FORCE_AUTOHINT;
+    }
 }
 #endif
 
@@ -676,7 +688,6 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             }
 
             if (fcHintStyleSet && fcHintStyle == FC_HINT_NONE) {
-                fcHintingSet = FcTrue;
                 fcHinting = FcFalse;
             }
 
@@ -710,27 +721,10 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             if (logFC && fcAutohintSet) fprintf(stderr, "FC_AUTOHINT(%d) ", fcAutohint);
 
             if (context->aaType == TEXT_AA_ON) { // Greyscale AA
-                context->renderFlags = FT_RENDER_MODE_NORMAL;
-                if (fcHintingSet) {
-                    switch (fcHintStyle) {
-                        case FC_HINT_NONE:
-                            context->loadFlags = FT_LOAD_NO_HINTING;
-                            break;
-                        case FC_HINT_SLIGHT:
-                            if (!fcAutohintSet || fcAutohint) {
-                                context->loadFlags = FT_LOAD_TARGET_LIGHT;
-                            }
-                            break;
-                        case FC_HINT_MEDIUM:
-                        case FC_HINT_FULL:
-                        default:
-                            break;
-                    }
-                }
+                setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet, FT_LOAD_DEFAULT, FT_RENDER_MODE_NORMAL);
             }
             else if (context->aaType == TEXT_AA_OFF) { // No AA
-                context->renderFlags = FT_RENDER_MODE_MONO;
-                context->loadFlags = (!fcHintingSet || fcHinting) ? FT_LOAD_TARGET_MONO : FT_LOAD_NO_HINTING;
+                setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet, FT_LOAD_TARGET_MONO, FT_RENDER_MODE_MONO);
             } else {
                 int fcRGBA = FC_RGBA_UNKNOWN;
                 if (fcAntialiasSet && fcAntialias) {
@@ -769,11 +763,7 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
                     }
                 }
             }
-
-            if (fcAutohintSet && fcAutohint) {
-                context->loadFlags |= FT_LOAD_FORCE_AUTOHINT;
-            }
-
+            
             FT_LcdFilter fcLCDFilter;
             FcBool fcLCDFilterSet = (*FcPatternGetIntegerPtr)(pattern, FC_LCD_FILTER, 0, &fcLCDFilter) == FcResultMatch;
             context->lcdFilter = FT_LCD_FILTER_DEFAULT;
