@@ -101,6 +101,9 @@ java/awt/Choice/RemoveAllShrinkTest/RemoveAllShrinkTest.java             generic
 # https://bugs.openjdk.java.net/browse/JDK-8165863
 java/awt/Component/SetEnabledPerformance/SetEnabledPerformance.java      macosx-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8017456
+java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html         generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-6990210
 java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java generic-all
 
@@ -202,6 +205,12 @@ java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java           windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8001214
 java/awt/Frame/MaximizedToIconified/MaximizedToIconified.java        generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8144030
+java/awt/Frame/ShapeNotSetSometimes/ShapeNotSetSometimes.java        generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7019055
+java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java           generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-7179526
 java/awt/Graphics/LineClipTest.java                                  linux-all, macosx-all
 
@@ -243,7 +252,7 @@ java/awt/Mixing/ValidBounds.java                                     generic-all
 java/awt/Mixing/Validating.java                                      generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8029024
-java/awt/Modal/ModalDialogOrderingTest/ModalDialogOrderingTest.java  macosx-all, windows-all
+java/awt/Modal/ModalDialogOrderingTest/ModalDialogOrderingTest.java  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8159599
 java/awt/Modal/ModalInternalFrameTest/ModalInternalFrameTest.java    generic-all
@@ -286,7 +295,7 @@ java/awt/Mouse/MouseModifiersUnitTest/MouseModifiersUnitTest_Standard.java macos
 java/awt/Mouse/RemovedComponentMouseListener/RemovedComponentMouseListener.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8148041
-java/awt/Mouse/TitleBarDoubleClick/TitleBarDoubleClick.html          linux-all
+java/awt/Mouse/TitleBarDoubleClick/TitleBarDoubleClick.html          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8012577
 java/awt/MouseAdapter/MouseAdapterUnitTest/MouseAdapterUnitTest.java generic-all
@@ -294,11 +303,17 @@ java/awt/MouseAdapter/MouseAdapterUnitTest/MouseAdapterUnitTest.java generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8028484
 java/awt/MouseInfo/JContainerMousePositionTest.java                  generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-7124230
+java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8139581
 java/awt/Paint/ComponentIsNotDrawnAfterRemoveAddTest/ComponentIsNotDrawnAfterRemoveAddTest.java linux-all, macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8031422
+java/awt/Paint/bug8024864.java                                       generic-all
 
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
@@ -329,6 +344,9 @@ java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8142536
 java/awt/Window/BackgroundIsNotUpdated/BackgroundIsNotUpdated.java   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8047703
+java/awt/Window/Grab/GrabTest.java                                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6848409
 java/awt/Window/GrabSequence/GrabSequence.java                       generic-all
@@ -403,14 +421,20 @@ java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html               generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8060176
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion.java   generic-all
-java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_1.java
-java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_2.html
+java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_1.java generic-all
+java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_2.html generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-6956646
+java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_4.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6956646
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_3.html generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7043170
 java/awt/font/TextLayout/CombiningPerf.java                          generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7162125
+java/awt/font/TextLayout/OSXLigatureTest.java                        macosx-all
 
 # Test ignored: Requires a special font installed
 java/awt/font/TextLayout/TestOldHangul.java                          generic-all
@@ -725,6 +749,9 @@ javax/swing/JFileChooser/8002077/bug8002077.java                     generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8064715
 javax/swing/JFileChooser/8062561/bug8062561.java                     generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8007719
+javax/swing/JInternalFrame/5066752/bug5066752.java                   generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8032568
 javax/swing/JInternalFrame/8020708/bug8020708.java                   generic-all
 
@@ -736,6 +763,9 @@ javax/swing/JInternalFrame/Test6505027.java                          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8003972
 javax/swing/JList/6462008/bug6462008.java                            linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-6624200
+javax/swing/JMenuItem/4654927/bug4654927.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8025083
 javax/swing/JMenuItem/6209975/bug6209975.java                        generic-all
@@ -766,6 +796,9 @@ javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7107585
 javax/swing/JSlider/6348946/bug6348946.java                          generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8004294
+javax/swing/JSpinner/4973721/bug4973721.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8071997
 javax/swing/JTable/4220171/bug4220171.java                           linux-all, macosx-all
@@ -806,8 +839,14 @@ javax/swing/ToolTipManager/7123767/bug7123767.java                   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8081764
 javax/swing/plaf/aqua/CustomComboBoxFocusTest.java                   generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8079450
+javax/swing/plaf/nimbus/8041642/bug8041642.java                      generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8160438
 javax/swing/plaf/nimbus/8057791/bug8057791.java                      macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8081478
+javax/swing/plaf/synth/SynthButtonUI/6276188/bug6276188.java         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8130895
 javax/swing/system/6799345/TestShutdown.java                         linux-all
@@ -817,6 +856,9 @@ javax/swing/text/DefaultEditorKit/4278839/bug4278839.java            generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7147408
 javax/swing/text/StyledEditorKit/4506788/bug4506788.java             generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7033533
+javax/swing/text/html/CSS/4530474/bug4530474.java                    generic-all
 
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8076178
 javax/swing/text/html/HTMLEditorKit/5043626/bug5043626.java          generic-all
