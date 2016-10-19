@@ -63,20 +63,17 @@ static long eventCount;
 
 + (jint) scrollStateWithEvent: (NSEvent*) event {
 
-    if ([event type] != NSScrollWheel) {
-        return 0;
-    }
+    if ([event type] != NSScrollWheel) return 0;
 
     NSEventPhase phase = [event phase];
-    NSEventPhase momentumPhase = [event momentumPhase];
-
-    if (!phase && !momentumPhase) return SCROLL_PHASE_UNSUPPORTED;
+    if (!phase) phase = [event momentumPhase];
+    if (!phase) return SCROLL_PHASE_UNSUPPORTED;
     switch (phase) {
         case NSEventPhaseBegan: return SCROLL_PHASE_BEGAN;
         case NSEventPhaseCancelled: return SCROLL_PHASE_CANCELLED;
         case NSEventPhaseEnded: return SCROLL_PHASE_ENDED;
+        default: return SCROLL_PHASE_CONTINUED;
     }
-    return SCROLL_PHASE_CONTINUED;
 }
 @end
 
