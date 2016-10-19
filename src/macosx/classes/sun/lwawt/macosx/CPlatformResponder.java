@@ -284,6 +284,7 @@ final class CPlatformResponder {
         static final double MIN_THRESHOLD = 0.1;
         static final double MAX_THRESHOLD = 0.5;
         double accumulatedDelta;
+        boolean accumulate;
 
         int getRoundedDelta(double delta, int scrollPhase) {
 
@@ -294,25 +295,31 @@ final class CPlatformResponder {
                     roundDelta = delta > 0 ? 1 : -1;
                 }
             } else { // trackpad
-                boolean begin = scrollPhase == NSEvent.SCROLL_PHASE_BEGAN;
-                boolean end = scrollPhase == NSEvent.SCROLL_MASK_PHASE_ENDED
-                        || scrollPhase == NSEvent.SCROLL_MASK_PHASE_CANCELLED;
-
-                if (begin) {
+                if (scrollPhase == NSEvent.SCROLL_PHASE_BEGAN) {
                     accumulatedDelta = 0;
+                    accumulate = true;
                 }
+                if (accumulate) {
 
-                accumulatedDelta += delta;
+                    accumulatedDelta += delta;
 
-                double absAccumulatedDelta = Math.abs(accumulatedDelta);
-                if (absAccumulatedDelta > MAX_THRESHOLD) {
-                    roundDelta = (int) Math.round(accumulatedDelta);
+                    if (accumulatedDelta > MAX_THRESHOLD) {
+                        roundDelta = (int) (0.5 + accumulatedDelta);
+                    } else if (accumulatedDelta < -MAX_THRESHOLD) {
+                        roundDelta = -(int) (0.5 - accumulatedDelta);
+                    }
+
                     accumulatedDelta -= roundDelta;
-                }
 
-                if (end) {
-                    if (roundDelta == 0 && absAccumulatedDelta > MIN_THRESHOLD) {
-                        roundDelta = accumulatedDelta > 0 ? 1 : -1;
+                    if (scrollPhase == NSEvent.SCROLL_PHASE_ENDED || scrollPhase == NSEvent.SCROLL_PHASE_CANCELLED) {
+                        accumulate = false;
+                        if (roundDelta == 0) {
+                            if (accumulatedDelta > MIN_THRESHOLD) {
+                                roundDelta = 1;
+                            } else if (accumulatedDelta < -MIN_THRESHOLD) {
+                                roundDelta = -1;
+                            }
+                        }
                     }
                 }
             }
