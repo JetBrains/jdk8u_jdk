@@ -560,11 +560,15 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
     }
 
     public void postPaintEvent(Component target, int x, int y, int w, int h) {
-        PaintEvent event = PaintEventDispatcher.getPaintEventDispatcher().
-            createPaintEvent(target, x, y, w, h);
-        if (event != null) {
-            postEventToEventQueue(event);
-        }
+        postEventToEventQueue(new InvocationEvent(target, new Runnable() {
+            public void run() {
+                PaintEvent event = PaintEventDispatcher.getPaintEventDispatcher().
+                        createPaintEvent(target, x, y, w, h);
+                if (event != null) {
+                    postEventToEventQueue(event);
+                }
+            }
+        }));
     }
 
     static int getModifiers(int state, int button, int keyCode) {
