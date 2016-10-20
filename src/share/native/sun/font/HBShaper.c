@@ -70,9 +70,9 @@ static int init_JNI_IDs(JNIEnv *env) {
 // gmask is the composite font slot mask
 // baseindex is to be added to the character (code point) index.
 int storeGVData(JNIEnv* env,
-               jobject gvdata, jint slot, jint baseIndex, jint offset, jobject startPt,
+               jobject gvdata, jint slot, jint baseIndex, jobject startPt,
                int glyphCount, hb_glyph_info_t *glyphInfo,
-               hb_glyph_position_t *glyphPos, float devScale) {
+               hb_glyph_position_t *glyphPos, hb_direction_t direction, float devScale) {
 
     int i;
     float x=0, y=0;
@@ -147,7 +147,15 @@ int storeGVData(JNIEnv* env,
         (unsigned int*)(*env)->GetPrimitiveArrayCritical(env, inxArray, NULL);
     for (i = 0; i < glyphCount; i++) {
         int cluster = glyphInfo[i].cluster;
-        indices[i+initialCount] = baseIndex + cluster - offset;
+        if (direction == HB_DIRECTION_LTR) {
+            // I need to understand what hb does when processing a substring
+            // I expected the cluster index to be from the start of the text
+            // to process.
+            // Instead it appears to be from the start of the whole thing.
+            indices[i+initialCount] = cluster;
+        } else {
+            indices[i+initialCount] = baseIndex + glyphCount -1 -i;
+        }
     }
     (*env)->ReleasePrimitiveArrayCritical(env, inxArray, indices, 0);
     (*env)->SetIntField(env, gvdata, gvdCountFID, initialCount+glyphCount);
@@ -305,8 +313,8 @@ JNIEXPORT jboolean JNICALL Java_sun_font_SunLayoutEngine_shape
      // So the following code tries to build the reverse map as expected
      // by calling code.
 
-     storeGVData(env, gvdata, slot, baseIndex, offset, startPt,
-                 glyphCount, glyphInfo, glyphPos, jdkFontInfo->devScale);
+     storeGVData(env, gvdata, slot, baseIndex, startPt,
+                 glyphCount, glyphInfo, glyphPos, direction, jdkFontInfo->devScale);
 
      hb_buffer_destroy (buffer);
      hb_font_destroy(hbfont);
