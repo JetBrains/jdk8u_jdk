@@ -77,7 +77,7 @@ int storeGVData(JNIEnv* env,
     int i;
     float x=0, y=0;
     float startX, startY;
-    float scale = 1.0f/64.0f/devScale;
+    float scale = 1.0f / HBFloatToFixedScale / devScale;
     unsigned int* glyphs;
     float* positions;
     int initialCount, glyphArrayLen, posArrayLen, maxGlyphs, storeadv;
