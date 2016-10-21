@@ -110,6 +110,9 @@ java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java gene
 # https://bugs.openjdk.java.net/browse/JDK-4931413
 java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html          generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8168390
+java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java windows-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8029675
 java/awt/Focus/6981400/Test1.java                                        windows-all
 
@@ -166,6 +169,12 @@ java/awt/Focus/KeyEventForBadFocusOwnerTest/KeyEventForBadFocusOwnerTest.java ge
 
 # https://bugs.openjdk.java.net/browse/JDK-7152980
 java/awt/Focus/NoAutotransferToDisabledCompTest/NoAutotransferToDisabledCompTest.java generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8168296
+java/awt/Focus/NonFocusableWindowTest/NonfocusableOwnerTest.java         generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8168294
+java/awt/Focus/ResetMostRecentFocusOwnerTest/ResetMostRecentFocusOwnerTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8023165
 java/awt/Focus/ShowFrameCheckForegroundTest/ShowFrameCheckForegroundTest.java windows-all
@@ -273,6 +282,9 @@ java/awt/Mouse/EnterExitEvents/FullscreenEnterEventTest.java         macosx-all
 # https://bugs.openjdk.java.net/browse/JDK-8144042
 java/awt/Mouse/EnterExitEvents/ResizingFrameTest.java                generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8168388
+java/awt/Mouse/GetMousePositionTest/GetMousePositionWithOverlay.java windows-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8027154
 java/awt/Mouse/GetMousePositionTest/GetMousePositionWithPopup.java   generic-all
 
@@ -307,7 +319,7 @@ java/awt/MouseInfo/JContainerMousePositionTest.java                  generic-all
 java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8139581
-java/awt/Paint/ComponentIsNotDrawnAfterRemoveAddTest/ComponentIsNotDrawnAfterRemoveAddTest.java linux-all, macosx-all
+java/awt/Paint/ComponentIsNotDrawnAfterRemoveAddTest/ComponentIsNotDrawnAfterRemoveAddTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
@@ -412,6 +424,9 @@ java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                      generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7124391
 java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8168389
+java/awt/event/MouseEvent/MouseClickTest/MouseClickTest.html         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6854300
 java/awt/event/MouseEvent/SpuriousExitEnter/SpuriousExitEnter_3.java generic-all
