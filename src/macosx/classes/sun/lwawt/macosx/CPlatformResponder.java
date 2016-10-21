@@ -281,8 +281,6 @@ final class CPlatformResponder {
 
     static class DeltaAccumulator {
 
-        static final double MIN_THRESHOLD = 0.1;
-        static final double MAX_THRESHOLD = 0.5;
         double accumulatedDelta;
         boolean accumulate;
 
@@ -299,27 +297,19 @@ final class CPlatformResponder {
                     accumulatedDelta = 0;
                     accumulate = true;
                 }
+                else if (scrollPhase == NSEvent.SCROLL_PHASE_MOMENTUM_BEGAN) {
+                    accumulate = true;
+                }
                 if (accumulate) {
 
                     accumulatedDelta += delta;
 
-                    if (accumulatedDelta > MAX_THRESHOLD) {
-                        roundDelta = (int) (0.5 + accumulatedDelta);
-                    } else if (accumulatedDelta < -MAX_THRESHOLD) {
-                        roundDelta = -(int) (0.5 - accumulatedDelta);
-                    }
+                    roundDelta = (int) Math.round(accumulatedDelta);
 
                     accumulatedDelta -= roundDelta;
 
-                    if (scrollPhase == NSEvent.SCROLL_PHASE_ENDED || scrollPhase == NSEvent.SCROLL_PHASE_CANCELLED) {
+                    if (scrollPhase == NSEvent.SCROLL_PHASE_ENDED) {
                         accumulate = false;
-                        if (roundDelta == 0) {
-                            if (accumulatedDelta > MIN_THRESHOLD) {
-                                roundDelta = 1;
-                            } else if (accumulatedDelta < -MIN_THRESHOLD) {
-                                roundDelta = -1;
-                            }
-                        }
                     }
                 }
             }
