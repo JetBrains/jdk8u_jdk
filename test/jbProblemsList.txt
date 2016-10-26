@@ -104,6 +104,9 @@ java/awt/Component/SetEnabledPerformance/SetEnabledPerformance.java      macosx-
 # https://bugs.openjdk.java.net/browse/JDK-8017456
 java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html         generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8081469
+java/awt/Dialog/MakeWindowAlwaysOnTop/MakeWindowAlwaysOnTop.java         generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-6990210
 java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java generic-all
 
@@ -283,7 +286,7 @@ java/awt/Mouse/EnterExitEvents/FullscreenEnterEventTest.java         macosx-all
 java/awt/Mouse/EnterExitEvents/ResizingFrameTest.java                generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8168388
-java/awt/Mouse/GetMousePositionTest/GetMousePositionWithOverlay.java windows-all
+java/awt/Mouse/GetMousePositionTest/GetMousePositionWithOverlay.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8027154
 java/awt/Mouse/GetMousePositionTest/GetMousePositionWithPopup.java   generic-all
@@ -375,6 +378,10 @@ java/awt/datatransfer/DragUnicodeBetweenJVMTest/DragUnicodeBetweenJVMTest.html w
 # https://bugs.openjdk.java.net/browse/JDK-8039082
 java/awt/dnd/BadSerializaionTest/BadSerializationTest.java           generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8144056
+# https://bugs.openjdk.java.net/browse/JDK-8168658
+java/awt/dnd/Button2DragTest/Button2DragTest.html                    generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8066096
 java/awt/dnd/DragInterceptorAppletTest/DragInterceptorAppletTest.html generic-all
 
@@ -407,7 +414,10 @@ java/awt/dnd/InterJVMGetDropSuccessTest/InterJVMGetDropSuccessTest.html generic-
 java/awt/dnd/URIListToFileListBetweenJVMsTest/URIListToFileListBetweenJVMsTest.html generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6618538
-java/awt/event/HierarchyEvent/AncestorResized/AncestorResized.java  generic-all
+java/awt/event/HierarchyEvent/AncestorResized/AncestorResized.java   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8168646
+java/awt/event/InputEvent/EventWhenTest/EventWhenTest.java           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8158362
 java/awt/event/KeyEvent/AltCharAcceleratorTest/AltCharAcceleratorTest.java generic-all
