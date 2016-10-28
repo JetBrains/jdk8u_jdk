@@ -796,7 +796,8 @@ javax/swing/JMenuItem/4654927/bug4654927.java                        generic-all
 javax/swing/JMenuItem/6209975/bug6209975.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8064915
-javax/swing/JPopupMenu/4966112/bug4966112.java                       macosx-all
+# https://bugs.openjdk.java.net/browse/JDK-8074385
+javax/swing/JPopupMenu/4966112/bug4966112.java                       generic-all
 
 # https://bugs. openjdk.java.net/browse/JDK-7184956
 javax/swing/JPopupMenu/6800513/bug6800513.java                       generic-all
@@ -878,6 +879,9 @@ javax/swing/system/6799345/TestShutdown.java                         linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8012469
 javax/swing/text/DefaultEditorKit/4278839/bug4278839.java            generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8050988
+javax/swing/text/GlyphPainter2/6427244/bug6427244.java               generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7147408
 javax/swing/text/StyledEditorKit/4506788/bug4506788.java             generic-all
