@@ -430,9 +430,16 @@ AWT_ASSERT_APPKIT_THREAD;
         clickCount = [event clickCount];
     }
 
+    AWTWindow *awtWindow = (AWTWindow*)[event window];
+
+    if (![AWTWindow isAWTWindow: awtWindow]) {
+        NSLog(@"Window: AWTView: Not an AWTWindow : %@", awtWindow);
+    }
+
     static JNF_CLASS_CACHE(jc_NSEvent, "sun/lwawt/macosx/NSEvent");
     static JNF_CTOR_CACHE(jctor_NSEvent, jc_NSEvent, "(IIIIIIIIDDI)V");
     jobject jEvent = JNFNewObject(env, jctor_NSEvent,
+                                  [((AWTWindow*)[awtWindow delegate]).javaPlatformWindow jObjectWithEnv:[ThreadUtilities getJNIEnv]],
                                   [event type],
                                   [event modifierFlags],
                                   clickCount,
@@ -443,7 +450,7 @@ AWT_ASSERT_APPKIT_THREAD;
                                   [event deltaX],
                                   [AWTToolkit scrollStateWithEvent: event]);
     if (jEvent == nil) {
-        // Unable to create event by some reason.
+        NSLog(@"AWTView: Unable to create event by some reason");
         return;
     }
 

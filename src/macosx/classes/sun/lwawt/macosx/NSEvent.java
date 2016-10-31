@@ -25,6 +25,8 @@
 
 package sun.lwawt.macosx;
 
+import sun.lwawt.PlatformWindow;
+
 import java.awt.event.*;
 
 /**
@@ -52,6 +54,7 @@ final class NSEvent {
     private int scrollPhase;
     private int absX;
     private int absY;
+    private final PlatformWindow platformWindow;
 
     // Key event information
     private short keyCode;
@@ -59,16 +62,17 @@ final class NSEvent {
     private String charactersIgnoringModifiers;
 
     // Called from native
-    NSEvent(int type, int modifierFlags, short keyCode, String characters, String charactersIgnoringModifiers) {
+    NSEvent(PlatformWindow platformWindow, int type, int modifierFlags, short keyCode, String characters, String charactersIgnoringModifiers) {
         this.type = type;
         this.modifierFlags = modifierFlags;
         this.keyCode = keyCode;
         this.characters = characters;
         this.charactersIgnoringModifiers = charactersIgnoringModifiers;
+        this.platformWindow = platformWindow;
     }
 
     // Called from native
-    NSEvent(int type, int modifierFlags, int clickCount, int buttonNumber,
+    NSEvent(PlatformWindow platformWindow, int type, int modifierFlags, int clickCount, int buttonNumber,
                    int x, int y, int absX, int absY,
                    double scrollDeltaY, double scrollDeltaX, int scrollPhase) {
         this.type = type;
@@ -82,6 +86,11 @@ final class NSEvent {
         this.scrollDeltaY = scrollDeltaY;
         this.scrollDeltaX = scrollDeltaX;
         this.scrollPhase = scrollPhase;
+        this.platformWindow = platformWindow;
+    }
+
+    PlatformWindow getPlatformWindow() {
+        return platformWindow;
     }
 
     int getType() {
