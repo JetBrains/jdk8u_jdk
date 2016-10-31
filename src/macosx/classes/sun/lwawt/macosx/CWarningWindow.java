@@ -33,6 +33,7 @@ import sun.java2d.SurfaceData;
 import sun.java2d.opengl.CGLLayer;
 import sun.lwawt.LWWindowPeer;
 import sun.lwawt.PlatformEventNotifier;
+import sun.lwawt.PlatformWindow;
 import sun.lwawt.SecurityWarningWindow;
 
 import java.awt.*;
@@ -187,7 +188,7 @@ public final class CWarningWindow extends CPlatformWindow
     }
 
     @Override
-    public void notifyMouseEvent(int id, long when, int button, int x, int y,
+    public void notifyMouseEvent(PlatformWindow platformWindow, int id, long when, int button, int x, int y,
                                  int screenX, int screenY, int modifiers,
                                  int clickCount, boolean popupTrigger,
                                  byte[] bdata) {
