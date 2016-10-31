@@ -321,15 +321,16 @@ public class TargetVM implements Runnable {
         try {
             connection.close();
         } catch (IOException ioe) { }
+        if (eventController != null) {
+            eventController.release();
+        }
     }
 
-    static private class EventController extends Thread {
-        VirtualMachineImpl vm;
+    private class EventController extends Thread {
         int controlRequest = 0;
 
         EventController(VirtualMachineImpl vm) {
             super(vm.threadGroupForJDI(), "JDI Event Control Thread");
-            this.vm = vm;
             setDaemon(true);
             setPriority((MAX_PRIORITY + NORM_PRIORITY)/2);
             super.start();
@@ -351,6 +352,7 @@ public class TargetVM implements Runnable {
                 synchronized(this) {
                     while (controlRequest == 0) {
                         try {wait();} catch (InterruptedException e) {}
+                        if (!shouldListen) return;
                     }
                     currentRequest = controlRequest;
                     controlRequest = 0;
