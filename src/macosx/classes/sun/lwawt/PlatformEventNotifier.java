@@ -48,8 +48,7 @@ public interface PlatformEventNotifier {
      * coordinates are relative to non-client window are, i.e. the top-left
      * point of the client area is (insets.top, insets.left).
      */
-    void notifyMouseEvent(PlatformWindow eventPlatformWindow,
-                          int id, long when, int button,
+    void notifyMouseEvent(int id, long when, int button,
                           int x, int y, int screenX, int screenY,
                           int modifiers, int clickCount, boolean popupTrigger,
                           byte[] bdata);
