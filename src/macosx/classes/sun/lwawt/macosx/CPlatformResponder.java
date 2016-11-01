@@ -28,7 +28,6 @@ package sun.lwawt.macosx;
 import sun.awt.SunToolkit;
 import sun.lwawt.LWWindowPeer;
 import sun.lwawt.PlatformEventNotifier;
-import sun.lwawt.PlatformWindow;
 import sun.util.logging.PlatformLogger;
 
 import java.awt.Toolkit;
@@ -64,7 +63,7 @@ final class CPlatformResponder {
     /**
      * Handles mouse events.
      */
-    void handleMouseEvent(PlatformWindow platformWindow, int eventType, int modifierFlags, int buttonNumber,
+    void handleMouseEvent(int eventType, int modifierFlags, int buttonNumber,
                           int clickCount, int x, int y, int absoluteX,
                           int absoluteY) {
         final SunToolkit tk = (SunToolkit)Toolkit.getDefaultToolkit();
@@ -103,7 +102,7 @@ final class CPlatformResponder {
                                                         modifierFlags);
         boolean jpopupTrigger = NSEvent.isPopupTrigger(jmodifiers);
 
-        eventNotifier.notifyMouseEvent(platformWindow, jeventType, System.currentTimeMillis(), jbuttonNumber,
+        eventNotifier.notifyMouseEvent(jeventType, System.currentTimeMillis(), jbuttonNumber,
                 x, y, absoluteX, absoluteY, jmodifiers, jclickCount,
                 jpopupTrigger, null);
     }

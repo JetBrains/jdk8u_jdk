@@ -32,7 +32,6 @@ import java.awt.Toolkit;
 
 import sun.awt.EmbeddedFrame;
 import sun.lwawt.LWWindowPeer;
-import sun.lwawt.PlatformWindow;
 
 public class CEmbeddedFrame extends EmbeddedFrame {
 
@@ -69,7 +68,7 @@ public class CEmbeddedFrame extends EmbeddedFrame {
     //                          SYNTHETIC EVENT DELIVERY
     // -----------------------------------------------------------------------
 
-    public void handleMouseEvent(PlatformWindow platformWindow, int eventType, int modifierFlags, double pluginX,
+    public void handleMouseEvent(int eventType, int modifierFlags, double pluginX,
                                  double pluginY, int buttonNumber, int clickCount) {
         int x = (int)pluginX;
         int y = (int)pluginY;
@@ -83,7 +82,7 @@ public class CEmbeddedFrame extends EmbeddedFrame {
             CCursorManager.nativeSetAllowsCursorSetInBackground(false);
         }
 
-        responder.handleMouseEvent(platformWindow, eventType, modifierFlags, buttonNumber,
+        responder.handleMouseEvent(eventType, modifierFlags, buttonNumber,
                                    clickCount, x, y, screenX, screenY);
     }
 

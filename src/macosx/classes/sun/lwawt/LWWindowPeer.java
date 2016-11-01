@@ -708,7 +708,7 @@ public class LWWindowPeer
      * point of the client area is (insets.top, insets.left).
      */
     @Override
-    public void notifyMouseEvent(PlatformWindow eventPlatformWindow, int id, long when, int button,
+    public void notifyMouseEvent(int id, long when, int button,
                                  int x, int y, int screenX, int screenY,
                                  int modifiers, int clickCount, boolean popupTrigger,
                                  byte[] bdata)
@@ -750,9 +750,11 @@ public class LWWindowPeer
                 lastMouseEventPeer = targetPeer;
             }
         } else {
+            PlatformWindow topmostPlatforWindow =
+                    platformWindow.getTopmostPlatformWindowUnderMouse();
 
             LWWindowPeer topmostWindowPeer =
-                    eventPlatformWindow != null ? eventPlatformWindow.getPeer() : null;
+                    topmostPlatforWindow != null ? topmostPlatforWindow.getPeer() : null;
 
             // topmostWindowPeer == null condition is added for the backward
             // compatibility with applets. It can be removed when the
@@ -763,7 +765,8 @@ public class LWWindowPeer
                         screenX, screenY, modifiers, clickCount, popupTrigger,
                         targetPeer);
             } else {
-                LWComponentPeer<?, ?> topmostTargetPeer = topmostWindowPeer.findPeerAt(r.x + x, r.y + y);
+                LWComponentPeer<?, ?> topmostTargetPeer =
+                        topmostWindowPeer != null ? topmostWindowPeer.findPeerAt(r.x + x, r.y + y) : null;
                 topmostWindowPeer.generateMouseEnterExitEventsForComponents(when, button, x, y,
                         screenX, screenY, modifiers, clickCount, popupTrigger,
                         topmostTargetPeer);
