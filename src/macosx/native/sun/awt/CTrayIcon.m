@@ -30,6 +30,7 @@
 #import "ThreadUtilities.h"
 #include "GeomUtilities.h"
 #import "LWCToolkit.h"
+#import "AWTWindow.h"
 
 #define kImageInset 4.0
 

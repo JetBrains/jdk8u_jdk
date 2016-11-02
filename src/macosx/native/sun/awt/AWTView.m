@@ -447,13 +447,37 @@ AWT_ASSERT_APPKIT_THREAD;
         return;
     }
 
-    static JNF_CLASS_CACHE(jc_PlatformView, "sun/lwawt/macosx/CPlatformView");
-    static JNF_MEMBER_CACHE(jm_deliverMouseEvent, jc_PlatformView, "deliverMouseEvent", "(Lsun/lwawt/macosx/NSEvent;)V");
+    AWTWindow *awtWindow = (AWTWindow*)[event window];
 
-    jobject jlocal = (*env)->NewLocalRef(env, m_cPlatformView);
-    if (!(*env)->IsSameObject(env, jlocal, NULL)) {
-        JNFCallVoidMethod(env, jlocal, jm_deliverMouseEvent, jEvent);
-        (*env)->DeleteLocalRef(env, jlocal);
+    if (![AWTWindow isAWTWindow: awtWindow]) {
+        NSLog(@"awt Window is not an AWTWindow instance");
+        return;
+    }
+
+    AWTWindow* aDelegate = (AWTWindow*)[awtWindow delegate];
+
+    jobject platformWindow = [aDelegate.javaPlatformWindow jObjectWithEnv:env];
+
+    if (platformWindow == nil) {
+        NSLog(@"Platform window is nil");
+        return;
+    }
+
+    static JNF_CLASS_CACHE(jc_PlatformWindow, "sun/lwawt/macosx/CPlatformWindow");
+
+    if (!JNFIsInstanceOf(env, platformWindow, &jc_PlatformWindow)) {
+        NSLog(@"Platform window is not an instance of CPlatformWindow");
+    }
+
+    static JNF_CLASS_CACHE(jc_PlatformView, "sun/lwawt/macosx/CPlatformView");
+    static JNF_MEMBER_CACHE(jm_deliverMouseEvent, jc_PlatformView, "deliverMouseEvent", "(Lsun/lwawt/macosx/NSEvent;Lsun/lwawt/macosx/CPlatformWindow;)V");
+
+    jobject platformViewLocalRef = (*env)->NewLocalRef(env, m_cPlatformView);
+    if (!(*env)->IsSameObject(env, platformViewLocalRef, NULL)) {
+        JNFCallVoidMethod(env, platformViewLocalRef, jm_deliverMouseEvent, jEvent, platformWindow);
+        (*env)->DeleteLocalRef(env, platformViewLocalRef);
+    } else {
+        NSLog(@"m_cPlatformView is null");
     }
 }
 
