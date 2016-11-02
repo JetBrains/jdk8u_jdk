@@ -35,6 +35,7 @@ import sun.lwawt.LWWindowPeer;
 import sun.java2d.SurfaceData;
 import sun.java2d.opengl.CGLLayer;
 import sun.java2d.opengl.CGLSurfaceData;
+import sun.lwawt.PlatformWindow;
 
 public class CPlatformView extends CFRetainedResource {
     private native long nativeCreateView(int x, int y, int width, int height, long windowLayerPtr);
@@ -186,7 +187,7 @@ public class CPlatformView extends CFRetainedResource {
     }
 
 
-    private void deliverMouseEvent(NSEvent event) {
+    private void deliverMouseEvent(NSEvent event, CPlatformWindow platformWindow) {
         int x = event.getX();
         int y = getBounds().height - event.getY();
 
@@ -195,7 +196,7 @@ public class CPlatformView extends CFRetainedResource {
                                         event.getScrollDeltaX(), event.getScrollDeltaY(),
                                         event.getScrollPhase());
         } else {
-            responder.handleMouseEvent(event.getType(), event.getModifierFlags(), event.getButtonNumber(),
+            responder.handleMouseEvent(platformWindow, event.getType(), event.getModifierFlags(), event.getButtonNumber(),
                                        event.getClickCount(), x, y, event.getAbsX(), event.getAbsY());
         }
     }
