@@ -89,14 +89,20 @@
 
 # jdk_awt
 
-# https://bugs.openjdk.java.net/browse/JDK-8075487
-java/awt/Choice/ChoiceKeyEventReaction/ChoiceKeyEventReaction.html       macosx-all
+# https://bugs.openjdk.java.net/browse/JDK-8169106
+java/awt/Choice/ChoiceKeyEventReaction/ChoiceKeyEventReaction.html       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7100044
-java/awt/Choice/ChoiceMouseWheelTest/ChoiceMouseWheelTest.java           macosx-all
+java/awt/Choice/ChoiceMouseWheelTest/ChoiceMouseWheelTest.java           generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169108
+java/awt/Choice/ItemStateChangeTest/ItemStateChangeTest.java             windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8022152
 java/awt/Choice/RemoveAllShrinkTest/RemoveAllShrinkTest.java             generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169104
+java/awt/Component/PaintAll/PaintAll.java                                windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8165863
 java/awt/Component/SetEnabledPerformance/SetEnabledPerformance.java      macosx-all
@@ -135,7 +141,7 @@ java/awt/Focus/8073453/SwingFocusTransitionTest.java                     generic
 java/awt/Focus/ActualFocusedWindowTest/ActualFocusedWindowBlockingTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6862004
-java/awt/Focus/AppletInitialFocusTest/AppletInitialFocusTest.html        windows-all linux-all
+java/awt/Focus/AppletInitialFocusTest/AppletInitialFocusTest.html        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6849367
 java/awt/Focus/AppletInitialFocusTest/AppletInitialFocusTest1.html       generic-all
@@ -150,6 +156,9 @@ java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusToFrontTest.java     generic
 # https://bugs.openjdk.java.net/browse/JDK-6829264
 java/awt/Focus/ActualFocusedWindowTest/ActualFocusedWindowRetaining.java generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8169103
+java/awt/Focus/ChoiceFocus/ChoiceFocus.java                              windows-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8078413
 java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java          generic-all
 
@@ -160,6 +169,9 @@ java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java ma
 # https://bugs.openjdk.java.net/browse/JDK-7191928
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6986252
 java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169101
+java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java        windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8081489
 java/awt/Focus/FocusOwnerFrameOnClick/FocusOwnerFrameOnClick.java        generic-all
@@ -175,6 +187,9 @@ java/awt/Focus/NoAutotransferToDisabledCompTest/NoAutotransferToDisabledCompTest
 
 # https://bugs.openjdk.java.net/browse/JDK-8168296
 java/awt/Focus/NonFocusableWindowTest/NonfocusableOwnerTest.java         generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169110
+java/awt/Focus/OwnedWindowFocusIMECrashTest/OwnedWindowFocusIMECrashTest.java  windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8168294
 java/awt/Focus/ResetMostRecentFocusOwnerTest/ResetMostRecentFocusOwnerTest.java generic-all
@@ -195,6 +210,15 @@ java/awt/Focus/TranserFocusToWindow/TranserFocusToWindow.java        generic-all
 # https://bugs.openjdk.java.net/browse/JDK-6986253
 java/awt/Focus/TypeAhead/TestFocusFreeze.java                        windows-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8169100
+java/awt/Focus/WindowInitialFocusTest/WindowInitialFocusTest.html    windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169099
+java/awt/Focus/WindowIsFocusableAccessByThreadsTest/WindowIsFocusableAccessByThreadsTest.java windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169096
+java/awt/Focus/WrongKeyTypedConsumedTest/WrongKeyTypedConsumedTest.java windows-all
+
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6868690
 java/awt/FontClass/CreateFont/bigfont.html                           generic-all
 
@@ -203,6 +227,9 @@ java/awt/FontClass/CreateFont/fileaccess/FontFile.java               generic-all
 
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8080953
 java/awt/FontClass/DebugFonts.java                                   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169111
+java/awt/Frame/InvisibleOwner/InvisibleOwner.java                    windows-all
 
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
@@ -338,6 +365,9 @@ java/awt/ScrollPane/bug8077409Test.java                              generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8140329
 java/awt/SplashScreen/FullscreenAfterSplash/FullScreenAfterSplash.java generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8159592
+java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java generic-all
+
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
 java/awt/TextArea/Mixing/TextAreaMixing.java                         generic-all
@@ -470,6 +500,9 @@ java/awt/font/TextLayout/VisibleAdvance.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7080150
 java/awt/grab/EmbeddedFrameTest1/EmbeddedFrameTest1.java             generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169109
+java/awt/grab/GrabOnUnfocusableToplevel/GrabOnUnfocusableToplevel.java windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/image/DrawImage/EABlitTest.java                             generic-all
