@@ -71,7 +71,7 @@ AWT_ASSERT_APPKIT_THREAD;
 JNF_COCOA_ENTER(env);
 
     // If we are called as a result of user pressing a shortcut, do nothing,
-    // because AVTView has already sent corresponding key event to the Java
+    // because AWTView has already sent corresponding key event to the Java
     // layer from performKeyEquivalent.
     // There is an exception from the rule above, though: if a window with
     // a menu gets minimized by user and there are no other windows to take
@@ -81,24 +81,8 @@ JNF_COCOA_ENTER(env);
     // means we have to handle it here.
     NSEvent *currEvent = [[NSApplication sharedApplication] currentEvent];
     if ([currEvent type] == NSKeyDown) {
-        NSString *menuKey = [sender keyEquivalent];
-        NSString *eventKey = [currEvent charactersIgnoringModifiers];
-
-        // Apple uses characters from private Unicode range for some of the
-        // keys, so we need to do the same translation here that we do
-        // for the regular key down events
-        if ([eventKey length] == 1) {
-            unichar origChar = [eventKey characterAtIndex:0];
-            unichar newChar =  NsCharToJavaChar(origChar, 0);
-            if (newChar == java_awt_event_KeyEvent_CHAR_UNDEFINED) {
-                newChar = origChar;
-            }
-
-            eventKey = [NSString stringWithCharacters: &newChar length: 1];
-        }
-
-        NSWindow *keyWindow = [NSApp keyWindow];
-        if ([menuKey isEqualToString:eventKey] && keyWindow != nil) {
+        NSWindow* window = [NSApp keyWindow];
+        if (window != nil) {
             return;
         }
     }
