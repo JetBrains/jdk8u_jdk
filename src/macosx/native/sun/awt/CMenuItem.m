@@ -70,23 +70,6 @@ AWT_ASSERT_APPKIT_THREAD;
     JNIEnv *env = [ThreadUtilities getJNIEnv];
 JNF_COCOA_ENTER(env);
 
-    // If we are called as a result of user pressing a shortcut, do nothing,
-    // because AWTView has already sent corresponding key event to the Java
-    // layer from performKeyEquivalent.
-    // There is an exception from the rule above, though: if a window with
-    // a menu gets minimized by user and there are no other windows to take
-    // focus, the window's menu won't be removed from the global menu bar.
-    // However, the Java layer won't handle invocation by a shortcut coming
-    // from this "frameless" menu, because there are no active windows. This
-    // means we have to handle it here.
-    NSEvent *currEvent = [[NSApplication sharedApplication] currentEvent];
-    if ([currEvent type] == NSKeyDown) {
-        NSWindow* window = [NSApp keyWindow];
-        if (window != nil) {
-            return;
-        }
-    }
-
     if (fIsCheckbox) {
         static JNF_CLASS_CACHE(jc_CCheckboxMenuItem, "sun/lwawt/macosx/CCheckboxMenuItem");
         static JNF_MEMBER_CACHE(jm_ckHandleAction, jc_CCheckboxMenuItem, "handleAction", "(Z)V");
@@ -97,6 +80,24 @@ JNF_COCOA_ENTER(env);
         jboolean newState = (state == NSOnState ? JNI_FALSE : JNI_TRUE);
         JNFCallVoidMethod(env, fPeer, jm_ckHandleAction, newState);
     } else {
+
+        // If we are called as a result of user pressing a shortcut, do nothing,
+        // because AWTView has already sent corresponding key event to the Java
+        // layer from performKeyEquivalent.
+        // There is an exception from the rule above, though: if a window with
+        // a menu gets minimized by user and there are no other windows to take
+        // focus, the window's menu won't be removed from the global menu bar.
+        // However, the Java layer won't handle invocation by a shortcut coming
+        // from this "frameless" menu, because there are no active windows. This
+        // means we have to handle it here.
+        NSEvent *currEvent = [[NSApplication sharedApplication] currentEvent];
+        if ([currEvent type] == NSKeyDown) {
+            NSWindow* window = [NSApp keyWindow];
+            if (window != nil) {
+                return;
+            }
+        }
+
         static JNF_CLASS_CACHE(jc_CMenuItem, "sun/lwawt/macosx/CMenuItem");
         static JNF_MEMBER_CACHE(jm_handleAction, jc_CMenuItem, "handleAction", "(JI)V"); // AWT_THREADING Safe (event)
 
