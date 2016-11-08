@@ -494,8 +494,10 @@ else #OPENJDK
       DroidSans.ttf \
       DroidSerif-Bold.ttf \
       DroidSansMono.ttf \
+      DroidSansMonoDotted.ttf \
+      DroidSansMonoSlashed.ttf \
       DroidSerif-BoldItalic.ttf \
-      DroidSerif-Italic.ttf \
+      DroidSerif-Italic.ttf
 
 
   SHARED_FONTS_SRC := $(foreach F, $(SHARED_FONTS_FILES), $(SHARED_FONTS_SRC_DIR)/$(F))
