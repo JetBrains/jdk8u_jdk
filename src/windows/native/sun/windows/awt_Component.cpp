@@ -2513,8 +2513,12 @@ MsgRouting AwtComponent::WmMouseWheel(UINT flags, int x, int y,
 
     DTRACE_PRINTLN("calling SendMouseWheelEvent");
 
+    jint modifiers = GetJavaModifiers();
+    if ((flags & MK_SHIFT) == MK_SHIFT) {
+        modifiers |= java_awt_event_InputEvent_SHIFT_DOWN_MASK;
+    }
     SendMouseWheelEvent(java_awt_event_MouseEvent_MOUSE_WHEEL, TimeHelper::getMessageTimeUTC(),
-                        eventPt.x, eventPt.y, GetJavaModifiers(), 0, 0, scrollType,
+                        eventPt.x, eventPt.y, modifiers, 0, 0, scrollType,
                         scrollLines, roundedWheelRotation, preciseWheelRotation, &msg);
 
     m_wheelRotationAmount %= WHEEL_DELTA;
