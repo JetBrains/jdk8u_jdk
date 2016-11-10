@@ -1386,6 +1386,10 @@ AwtToolkit::CommonPeekMessageFunc(MSG& msg) {
  */
 BOOL AwtToolkit::PreProcessMsg(MSG& msg)
 {
+    if (msg.message == WM_MOUSEHWHEEL) {
+        msg.message = WM_MOUSEWHEEL;
+        msg.wParam |= MK_SHIFT;
+    }
     /*
      * Offer preprocessing first to the target component, then call out to
      * specific mouse and key preprocessor methods

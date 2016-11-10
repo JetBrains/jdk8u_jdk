@@ -45,6 +45,10 @@ extern const UINT SYSCOMMAND_IMM;
 #define WM_MOUSEWHEEL                   0x020A
 #endif //WM_MOUSEWHEEL
 
+#ifndef WM_MOUSEHWHEEL
+#define WM_MOUSEHWHEEL                   0x020E
+#endif //WM_MOUSEHWHEEL
+
 #ifndef WHEEL_DELTA
 #define WHEEL_DELTA                     120
 #endif //WHEEL_DELTA
