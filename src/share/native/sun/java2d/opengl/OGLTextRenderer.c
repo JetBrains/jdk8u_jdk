@@ -1003,6 +1003,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
     int glyphCounter;
     GLuint dstTextureID = 0;
     jboolean hasLCDGlyphs = JNI_FALSE;
+    jboolean lcdOpened = JNI_FALSE;
 
     J2dTraceLn(J2D_TRACE_INFO, "OGLTR_DrawGlyphList");
 
@@ -1038,7 +1039,6 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         dstTextureID = dstOps->textureID;
     }
 #endif
-    jboolean lcdOpened = JNI_FALSE;
     for (glyphCounter = 0; glyphCounter < totalGlyphs; glyphCounter++) {
         jint x, y;
         jfloat glyphx, glyphy;
