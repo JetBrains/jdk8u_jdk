@@ -883,7 +883,6 @@ public abstract class BaseScrollingPerformanceTest extends JFrame {
     private static int N0 = 200;
     private static int N1 = 400;
 
-    private static volatile boolean warmUp = true;
     private static volatile int count = 0;
     private static volatile long overallTime = 0;
     private static volatile long time = 0;
@@ -906,31 +905,40 @@ public abstract class BaseScrollingPerformanceTest extends JFrame {
 
     private static volatile BaseScrollingPerformanceTest test;
 
+    public static void doInitCounts(int nWarmUp, int nMeasure) {
+        N0 = nWarmUp;
+        N1 = nMeasure;
+        count = 0;
+    }
+
     public static void doBeginPaint() {
-        time = System.currentTimeMillis();
+        if (count >= N0) {
+            time = System.currentTimeMillis();
+        }
     }
 
     public static void doEndPaint() {
-        if (!warmUp) {
-            count++;
+        count++;
+        if (count > N0) {
             overallTime += System.currentTimeMillis() - time;
-            if (count == N1) {
+            if (count >= N1 + N0) {
                 System.err.println("value='" + (double) overallTime / N1 + "']");
                 count = 0;
-                warmUp = true;
                 s.release();
                 overallTime = 0;
             }
         }
+
     }
 
-    protected static void doTest(BaseScrollingPerformanceTest testCase) {
+    protected static void doTest(BaseScrollingPerformanceTest testCase, int n0, int n1) {
         try {
             s.acquire();
         } catch (InterruptedException e) {
             throw new RuntimeException("Cannot start test");
         }
 
+        doInitCounts(n0, n1);
         SwingUtilities.invokeLater(() -> {
             test = testCase;
             test.setVisible(true);
@@ -940,7 +948,6 @@ public abstract class BaseScrollingPerformanceTest extends JFrame {
         doScroll(N0);
 
         SwingUtilities.invokeLater(() -> {
-            warmUp = false;
             System.err.print(test.getMessage());
         });
 

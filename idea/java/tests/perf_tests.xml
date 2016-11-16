@@ -31,7 +31,9 @@
             <formatter type="plain" />
 
             <test name="performance.text.LCDTextAreaScrollingTest"/>
+            <test name="performance.text.HugeLCDTextAreaScrollingTest"/>
             <test name="performance.text.GreyscaleTextAreaScrollingTest"/>
+            <test name="performance.text.HugeGreyscaleTextAreaScrollingTest"/>
         </junit>
     </target>
 
