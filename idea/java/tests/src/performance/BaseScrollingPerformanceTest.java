@@ -923,6 +923,7 @@ public abstract class BaseScrollingPerformanceTest extends JFrame {
             overallTime += System.currentTimeMillis() - time;
             if (count >= N1 + N0) {
                 System.err.println("value='" + (double) overallTime / N1 + "']");
+                System.out.println((double) overallTime / N1);
                 count = 0;
                 s.release();
                 overallTime = 0;
