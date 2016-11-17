@@ -28,7 +28,6 @@
 #include "awt_Toolkit.h"
 #include <shlobj.h>
 #include <sun_awt_windows_WClipboard.h>
-#include <strsafe.h>
 
 
 /************************************************************************
@@ -157,31 +156,15 @@ Java_sun_awt_windows_WClipboard_openClipboard(JNIEnv *env, jobject self,
     DASSERT(::GetOpenClipboardWindow() != AwtToolkit::GetInstance().GetHWnd());
 
     if (!::OpenClipboard(AwtToolkit::GetInstance().GetHWnd())) {
-        LPVOID lpMsgBuf;
-        LPVOID lpDisplayBuf;
-        DWORD dw = GetLastError();
+        HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
 
-        FormatMessage(
-            FORMAT_MESSAGE_ALLOCATE_BUFFER |
-            FORMAT_MESSAGE_FROM_SYSTEM |
-            FORMAT_MESSAGE_IGNORE_INSERTS,
-            NULL,
-            dw,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPTSTR) &lpMsgBuf,
-            0, NULL );
-
-        char errmsg[128];
-
-        jio_snprintf(errmsg,
-            sizeof(errmsg),
-            "Clipboard problem - %ls",
-            lpMsgBuf);
-
-        LocalFree(lpMsgBuf);
-        LocalFree(lpDisplayBuf);
-        JNU_ThrowByName(env, "java/lang/IllegalStateException",
-        errmsg);
+        if (hr == E_ACCESSDENIED) {
+            JNU_ThrowByName(env, "java/lang/IllegalStateException",
+                                 "Clipboard is busy");
+        } else {
+            JNU_ThrowByName(env, "java/lang/IllegalStateException",
+                                 "Clipboard problem");
+        }
 
         return;
     }

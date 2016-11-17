@@ -50,6 +50,10 @@ final class CPlatformResponder {
     private int lastKeyPressCode = KeyEvent.VK_UNDEFINED;
     private final DeltaAccumulator deltaAccumulatorX = new DeltaAccumulator();
     private final DeltaAccumulator deltaAccumulatorY = new DeltaAccumulator();
+    private boolean momentumStarted;
+    private int momentumX;
+    private int momentumY;
+    private int momentumModifiers;
     private int lastDraggedAbsoluteX;
     private int lastDraggedAbsoluteY;
     private int lastDraggedRelativeX;
@@ -111,12 +115,26 @@ final class CPlatformResponder {
     /**
      * Handles scroll events.
      */
-    void handleScrollEvent(final int x, final int y, final int modifierFlags,
+    void handleScrollEvent(int x, int y, final int modifierFlags,
                            final double deltaX, final double deltaY,
                            final int scrollPhase) {
         final int buttonNumber = CocoaConstants.kCGMouseButtonCenter;
         int jmodifiers = NSEvent.nsToJavaMouseModifiers(buttonNumber,
                                                         modifierFlags);
+        if (scrollPhase > NSEvent.SCROLL_PHASE_UNSUPPORTED) {
+            if (scrollPhase == NSEvent.SCROLL_PHASE_BEGAN) {
+                momentumStarted = false;
+            } else if (scrollPhase == NSEvent.SCROLL_PHASE_MOMENTUM_BEGAN) {
+                momentumStarted = true;
+                momentumX = x;
+                momentumY = y;
+                momentumModifiers = jmodifiers;
+            } else if (momentumStarted) {
+                x = momentumX;
+                y = momentumY;
+                jmodifiers = momentumModifiers;
+            }
+        }
         final boolean isShift = (jmodifiers & InputEvent.SHIFT_DOWN_MASK) != 0;
 
         int roundDeltaX = deltaAccumulatorX.getRoundedDelta(deltaX, scrollPhase);
