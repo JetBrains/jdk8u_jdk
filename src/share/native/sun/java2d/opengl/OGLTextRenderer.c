@@ -710,13 +710,17 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps,
                            GlyphInfo *ginfo, jint x, jint y,
                            jint glyphIndex, jint totalGlyphs,
                            jboolean rgbOrder, jint contrast,
-                            GLuint dstTextureID)
+                           GLuint dstTextureID, jboolean * opened)
 {
     CacheCellInfo *cell;
     jint dx1, dy1, dx2, dy2;
     jfloat dtx1, dty1, dtx2, dty2;
 
     if (glyphMode != MODE_USE_CACHE_LCD) {
+        if (*opened) {
+            *opened = JNI_FALSE;
+            j2d_glEnd();
+        }
         OGLTR_DisableGlyphModeState();
         CHECK_PREVIOUS_OP(GL_TEXTURE_2D);
         j2d_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -748,6 +752,10 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps,
     }
 
     if (ginfo->cellInfo == NULL) {
+        if (*opened) {
+            *opened = JNI_FALSE;
+            j2d_glEnd();
+        }
         // rowBytes will always be a multiple of 3, so the following is safe
         j2d_glPixelStorei(GL_UNPACK_ROW_LENGTH, ginfo->rowBytes / 3);
 
@@ -773,6 +781,10 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps,
     dy2 = dy1 + ginfo->height;
 
     if (dstTextureID == 0) {
+        if (*opened) {
+            *opened = JNI_FALSE;
+            j2d_glEnd();
+        }
         // copy destination into second cached texture, if necessary
         OGLTR_UpdateCachedDestination(dstOps, ginfo,
                                       dx1, dy1, dx2, dy2,
@@ -800,7 +812,11 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps,
     }
 
     // render composed texture to the destination surface
-    j2d_glBegin(GL_QUADS);
+    if (!*opened)  {
+        j2d_glBegin(GL_QUADS);
+        *opened = JNI_TRUE;
+    }
+
     j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, cell->tx1, cell->ty1);
     j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx1, dty1);
     j2d_glVertex2i(dx1, dy1);
@@ -813,7 +829,6 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps,
     j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, cell->tx1, cell->ty2);
     j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx1, dty2);
     j2d_glVertex2i(dx1, dy2);
-    j2d_glEnd();
 
     return JNI_TRUE;
 }
@@ -988,6 +1003,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
     int glyphCounter;
     GLuint dstTextureID = 0;
     jboolean hasLCDGlyphs = JNI_FALSE;
+    jboolean lcdOpened = JNI_FALSE;
 
     J2dTraceLn(J2D_TRACE_INFO, "OGLTR_DrawGlyphList");
 
@@ -1023,7 +1039,6 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         dstTextureID = dstOps->textureID;
     }
 #endif
-
     for (glyphCounter = 0; glyphCounter < totalGlyphs; glyphCounter++) {
         jint x, y;
         jfloat glyphx, glyphy;
@@ -1060,6 +1075,10 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         }
 
         if (grayscale) {
+            if (lcdOpened) {
+                lcdOpened = JNI_FALSE;
+                j2d_glEnd();
+            }
             // grayscale or monochrome glyph data
             if (ginfo->width <= OGLTR_CACHE_CELL_WIDTH &&
                 ginfo->height <= OGLTR_CACHE_CELL_HEIGHT)
@@ -1095,8 +1114,12 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
                                                 ginfo, x, y,
                                                 glyphCounter, totalGlyphs,
                                                 rgbOrder, lcdContrast,
-                                                dstTextureID);
+                                                dstTextureID, &lcdOpened);
             } else {
+                if (lcdOpened) {
+                    lcdOpened = JNI_FALSE;
+                    j2d_glEnd();
+                }
                 ok = OGLTR_DrawLCDGlyphNoCache(oglc, dstOps,
                                                ginfo, x, y,
                                                rowBytesOffset,
@@ -1109,7 +1132,9 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
             break;
         }
     }
-
+    if (lcdOpened) {
+        j2d_glEnd();
+    }
     OGLTR_DisableGlyphModeState();
 }
 
