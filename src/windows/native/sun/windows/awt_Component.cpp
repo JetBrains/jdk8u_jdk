@@ -1199,6 +1199,7 @@ void SpyWinMessage(HWND hwnd, UINT message, LPCTSTR szComment) {
         WIN_MSG(WM_XBUTTONDOWN)
         WIN_MSG(WM_XBUTTONUP)
         WIN_MSG(WM_MOUSEWHEEL)
+        WIN_MSG(WM_MOUSEHWHEEL)
         WIN_MSG(WM_PARENTNOTIFY)
         WIN_MSG(WM_ENTERMENULOOP)
         WIN_MSG(WM_EXITMENULOOP)
@@ -1630,6 +1631,7 @@ LRESULT AwtComponent::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
       case WM_XBUTTONUP:
       case WM_MOUSEMOVE:
       case WM_MOUSEWHEEL:
+      case WM_MOUSEHWHEEL:
       case WM_AWT_MOUSEENTER:
       case WM_AWT_MOUSEEXIT:
           curPos = ::GetMessagePos();
@@ -1703,6 +1705,11 @@ LRESULT AwtComponent::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
               mr = WmMouseWheel(GET_KEYSTATE_WPARAM(wParam),
                                 GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam),
                                 GET_WHEEL_DELTA_WPARAM(wParam));
+              break;
+          case  WM_MOUSEHWHEEL:
+              mr = WmMouseWheel(GET_KEYSTATE_WPARAM(wParam) | MK_SHIFT,
+                                GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam),
+                                -GET_WHEEL_DELTA_WPARAM(wParam));
               break;
           }
           break;
