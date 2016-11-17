@@ -1386,10 +1386,6 @@ AwtToolkit::CommonPeekMessageFunc(MSG& msg) {
  */
 BOOL AwtToolkit::PreProcessMsg(MSG& msg)
 {
-    if (msg.message == WM_MOUSEHWHEEL) {
-        msg.message = WM_MOUSEWHEEL;
-        msg.wParam |= MK_SHIFT;
-    }
     /*
      * Offer preprocessing first to the target component, then call out to
      * specific mouse and key preprocessor methods
@@ -1398,7 +1394,7 @@ BOOL AwtToolkit::PreProcessMsg(MSG& msg)
     if (p && p->PreProcessMsg(msg) == mrConsume)
         return TRUE;
 
-    if ((msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST) ||
+    if ((msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST) || (msg.message == WM_MOUSEHWHEEL) ||
         (msg.message >= WM_NCMOUSEMOVE && msg.message <= WM_NCMBUTTONDBLCLK)) {
         if (PreProcessMouseMsg(p, msg)) {
             return TRUE;
@@ -1425,7 +1421,7 @@ BOOL AwtToolkit::PreProcessMouseMsg(AwtComponent* p, MSG& msg)
         return FALSE;
     }
 
-    if (msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST) {
+    if ((msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST) || (msg.message == WM_MOUSEHWHEEL)) {
         mouseWParam = msg.wParam;
         mouseLParam = msg.lParam;
     } else {
@@ -1514,7 +1510,7 @@ BOOL AwtToolkit::PreProcessMouseMsg(AwtComponent* p, MSG& msg)
      * the mouse, not the Component with the input focus.
      */
 
-    if (msg.message == WM_MOUSEWHEEL) {
+    if (msg.message == WM_MOUSEWHEEL || msg.message == WM_MOUSEHWHEEL) {
             //i.e. mouse is over client area for this window
             DWORD hWndForWheelProcess;
             DWORD hWndForWheelThread = ::GetWindowThreadProcessId(hWndForWheel, &hWndForWheelProcess);
