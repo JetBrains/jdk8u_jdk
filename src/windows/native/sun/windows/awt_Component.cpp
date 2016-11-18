@@ -210,6 +210,21 @@ BOOL AwtComponent::m_QueryNewPaletteCalled = FALSE;
 CriticalSection windowMoveLock;
 BOOL windowMoveLockHeld = FALSE;
 
+static BOOL flipHorizontalScrolling = FALSE;
+static BOOL flipVerticalScrolling = FALSE;
+
+/*
+ * Class:     sun_awt_windows_WComponentPeer
+ * Method:    setPlatformScrollingFlip
+ * Signature: (ZZ)V
+ */
+JNIEXPORT void JNICALL Java_sun_awt_windows_WComponentPeer_setPlatformScrollingFlip
+  (JNIEnv* env, jclass c, jboolean horizontal, jboolean vertical)
+{
+    flipHorizontalScrolling = horizontal == JNI_TRUE;
+    flipVerticalScrolling = vertical == JNI_TRUE;
+}
+
 /************************************************************************
  * AwtComponent methods
  */
@@ -1704,12 +1719,16 @@ LRESULT AwtComponent::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
           case  WM_MOUSEWHEEL:
               mr = WmMouseWheel(GET_KEYSTATE_WPARAM(wParam),
                                 GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam),
-                                GET_WHEEL_DELTA_WPARAM(wParam));
+                                flipVerticalScrolling
+                                    ? -GET_WHEEL_DELTA_WPARAM(wParam)
+                                    : GET_WHEEL_DELTA_WPARAM(wParam));
               break;
           case  WM_MOUSEHWHEEL:
               mr = WmMouseWheel(GET_KEYSTATE_WPARAM(wParam) | MK_SHIFT,
                                 GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam),
-                                -GET_WHEEL_DELTA_WPARAM(wParam));
+                                flipHorizontalScrolling
+                                    ? -GET_WHEEL_DELTA_WPARAM(wParam)
+                                    : GET_WHEEL_DELTA_WPARAM(wParam));
               break;
           }
           break;
