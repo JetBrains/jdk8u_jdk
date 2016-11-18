@@ -58,6 +58,9 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.peer.DropTargetPeer;
 import sun.awt.AWTAccessor;
 
+import sun.security.action.GetBooleanAction;
+import java.security.AccessController;
+
 import sun.util.logging.PlatformLogger;
 
 public abstract class WComponentPeer extends WObjectPeer
@@ -71,6 +74,23 @@ public abstract class WComponentPeer extends WObjectPeer
     private static final PlatformLogger log = PlatformLogger.getLogger("sun.awt.windows.WComponentPeer");
     private static final PlatformLogger shapeLog = PlatformLogger.getLogger("sun.awt.windows.shape.WComponentPeer");
     private static final PlatformLogger focusLog = PlatformLogger.getLogger("sun.awt.windows.focus.WComponentPeer");
+
+    private static boolean flipHorizontalScrolling;
+    private static boolean flipVerticalScrolling;
+
+    private static native void setPlatformScrollingFlip(boolean horizontal, boolean vertical);
+
+    private static void setScrollingFlip(boolean horizontal, boolean vertical) {
+        setPlatformScrollingFlip(
+                flipHorizontalScrolling = horizontal,
+                flipVerticalScrolling = vertical);
+    }
+
+    static {
+        setScrollingFlip(
+                AccessController.doPrivileged(new GetBooleanAction("awt.flip.horizontal.scrolling")),
+                AccessController.doPrivileged(new GetBooleanAction("awt.flip.vertical.scrolling")));
+    }
 
     // ComponentPeer implementation
     SurfaceData surfaceData;
