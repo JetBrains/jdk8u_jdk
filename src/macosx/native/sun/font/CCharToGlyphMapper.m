@@ -128,10 +128,10 @@ JNF_COCOA_ENTER(env);
     CGGlyph glyph = CTS_CopyGlyphAndFontNamesForCodePoint(awtFont, (UnicodeScalarValue)codePoint, fontNames);
     if (glyph > 0) {
         jstring fontName = (jstring)JNFNSToJavaString(env, fontNames[0]);
-        CFRelease(fontNames[0]);
+        if (fontNames[0]) CFRelease(fontNames[0]);
         (*env)->SetObjectArrayElement(env, resultArray, 0, fontName);
         jstring fontFamilyName = (jstring)JNFNSToJavaString(env, fontNames[1]);
-        CFRelease(fontNames[1]);
+        if (fontNames[1]) CFRelease(fontNames[1]);
         (*env)->SetObjectArrayElement(env, resultArray, 1, fontFamilyName);
     }
     return glyph;
