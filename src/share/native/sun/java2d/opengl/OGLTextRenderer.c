@@ -63,7 +63,8 @@ typedef enum {
     MODE_USE_CACHE_GRAY,
     MODE_USE_CACHE_LCD,
     MODE_NO_CACHE_GRAY,
-    MODE_NO_CACHE_LCD
+    MODE_NO_CACHE_LCD,
+    MODE_NO_CACHE_COLOR
 } GlyphMode;
 static GlyphMode glyphMode = MODE_NOT_INITED;
 
@@ -989,6 +990,27 @@ OGLTR_DrawLCDGlyphNoCache(OGLContext *oglc, OGLSDOps *dstOps,
     return JNI_TRUE;
 }
 
+static jboolean
+OGLTR_DrawColorGlyphNoCache(OGLContext *oglc, GlyphInfo *ginfo, jint x, jint y)
+{
+    if (glyphMode != MODE_NO_CACHE_COLOR) {
+        OGLTR_DisableGlyphModeState();
+        CHECK_PREVIOUS_OP(OGL_STATE_RESET);
+        glyphMode = MODE_NO_CACHE_COLOR;
+    }
+
+    // see OGLBlitSwToSurface() in OGLBlitLoops.c for more info on the following two lines
+    j2d_glRasterPos2i(0, 0);
+    j2d_glBitmap(0, 0, 0, 0, x, -y, NULL);
+
+    j2d_glPixelZoom(1, -1); // in OpenGL image data is assumed to contain lines from bottom to top
+    j2d_glDrawPixels(ginfo->width, ginfo->height, GL_BGRA, GL_UNSIGNED_BYTE, ginfo->image);
+    j2d_glPixelZoom(1, 1); // restoring state
+
+    return JNI_TRUE;
+}
+
+
 // see DrawGlyphList.c for more on this macro...
 #define FLOOR_ASSIGN(l, r) \
     if ((r)<0) (l) = ((int)floor(r)); else (l) = ((int)(r))
@@ -1042,7 +1064,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
     for (glyphCounter = 0; glyphCounter < totalGlyphs; glyphCounter++) {
         jint x, y;
         jfloat glyphx, glyphy;
-        jboolean grayscale, ok;
+        jboolean ok;
         GlyphInfo *ginfo = (GlyphInfo *)jlong_to_ptr(NEXT_LONG(images));
 
         if (ginfo == NULL) {
@@ -1051,8 +1073,6 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
                           "OGLTR_DrawGlyphList: glyph info is null");
             break;
         }
-
-        grayscale = (ginfo->rowBytes == ginfo->width);
 
         if (usePositions) {
             jfloat posx = NEXT_FLOAT(positions);
@@ -1074,7 +1094,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
             continue;
         }
 
-        if (grayscale) {
+        if (ginfo->rowBytes == ginfo->width) {
             if (lcdOpened) {
                 lcdOpened = JNI_FALSE;
                 j2d_glEnd();
@@ -1087,6 +1107,13 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
             } else {
                 ok = OGLTR_DrawGrayscaleGlyphNoCache(oglc, ginfo, x, y);
             }
+        } else if (ginfo->rowBytes == ginfo->width * 4) {
+            if (lcdOpened) {
+                lcdOpened = JNI_FALSE;
+                j2d_glEnd();
+            }
+            // color glyph data
+            ok = OGLTR_DrawColorGlyphNoCache(oglc, ginfo, x, y);
         } else {
             // LCD-optimized glyph data
             jint rowBytesOffset = 0;

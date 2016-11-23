@@ -167,11 +167,9 @@ static void initFontIDs(JNIEnv *env) {
 
      CHECK_NULL(tmpClass = (*env)->FindClass(env, "sun/font/GlyphList"));
      CHECK_NULL(sunFontIDs.glyphListX =
-         (*env)->GetFieldID(env, tmpClass, "x", "F"));
+         (*env)->GetFieldID(env, tmpClass, "gposx", "F"));
      CHECK_NULL(sunFontIDs.glyphListY =
-         (*env)->GetFieldID(env, tmpClass, "y", "F"));
-     CHECK_NULL(sunFontIDs.glyphListLen =
-         (*env)->GetFieldID(env, tmpClass, "len", "I"));
+         (*env)->GetFieldID(env, tmpClass, "gposy", "F"));
      CHECK_NULL(sunFontIDs.glyphImages =
          (*env)->GetFieldID(env, tmpClass, "images", "[J"));
      CHECK_NULL(sunFontIDs.glyphListUsePos =

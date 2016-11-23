@@ -367,7 +367,7 @@ public final class GeneralRenderer {
      * reset the glyphs to non-AA after construction.
      */
     static void doDrawGlyphList(SurfaceData sData, PixelWriter pw,
-                                GlyphList gl, Region clip)
+                                GlyphList gl, int fromGlyph, int toGlyph, Region clip)
     {
         int[] bounds = gl.getBounds();
         clip.clipBoxToBounds(bounds);
@@ -380,8 +380,8 @@ public final class GeneralRenderer {
             (WritableRaster) sData.getRaster(cx1, cy1, cx2 - cx1, cy2 - cy1);
         pw.setRaster(dstRast);
 
-        int num = gl.getNumGlyphs();
-        for (int i = 0; i < num; i++) {
+        gl.startGlyphIteration();
+        for (int i = fromGlyph; i < toGlyph; i++) {
             gl.setGlyphIndex(i);
             int metrics[] = gl.getMetrics();
             int gx1 = metrics[0];
@@ -973,10 +973,10 @@ class XorDrawGlyphListANY extends DrawGlyphList {
     }
 
     public void DrawGlyphList(SunGraphics2D sg2d, SurfaceData sData,
-                              GlyphList gl)
+                              GlyphList gl, int fromGlyph, int toGlyph)
     {
         PixelWriter pw = GeneralRenderer.createXorPixelWriter(sg2d, sData);
-        GeneralRenderer.doDrawGlyphList(sData, pw, gl, sg2d.getCompClip());
+        GeneralRenderer.doDrawGlyphList(sData, pw, gl, fromGlyph, toGlyph, sg2d.getCompClip());
     }
 }
 
@@ -988,10 +988,10 @@ class XorDrawGlyphListAAANY extends DrawGlyphListAA {
     }
 
     public void DrawGlyphListAA(SunGraphics2D sg2d, SurfaceData sData,
-                                GlyphList gl)
+                                GlyphList gl, int fromGlyph, int toGlyph)
     {
         PixelWriter pw = GeneralRenderer.createXorPixelWriter(sg2d, sData);
-        GeneralRenderer.doDrawGlyphList(sData, pw, gl, sg2d.getCompClip());
+        GeneralRenderer.doDrawGlyphList(sData, pw, gl, fromGlyph, toGlyph, sg2d.getCompClip());
     }
 }
 

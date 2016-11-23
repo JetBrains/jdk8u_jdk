@@ -25,9 +25,11 @@
 
 package sun.font;
 
-import java.awt.Font;
 import java.awt.font.GlyphVector;
-import java.awt.font.FontRenderContext;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import sun.java2d.SurfaceData;
 import sun.java2d.loops.FontInfo;
 
 /*
@@ -83,6 +85,7 @@ public final class GlyphList {
 
     int glyphindex;
     int metrics[];
+    int bounds[];
     byte graybits[];
 
     /* A reference to the strike is needed for the case when the GlyphList
@@ -154,6 +157,17 @@ public final class GlyphList {
     private static GlyphList reusableGL = new GlyphList();
     private static boolean inUse;
 
+    private static boolean colorGlyphsSupported;
+    private ColorGlyphSurfaceData glyphSurfaceData;
+
+    static {
+        AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                colorGlyphsSupported = System.getProperty("os.name", "").startsWith("Mac");
+                return null;
+            }
+        });
+    }
 
     void ensureCapacity(int len) {
       /* Note len must not be -ve! only setFromChars should be capable
@@ -271,6 +285,7 @@ public final class GlyphList {
         }
         info.fontStrike.getGlyphImagePtrs(glyphData, images, len);
         glyphindex = -1;
+        resetBounds();
         return true;
     }
 
@@ -294,16 +309,20 @@ public final class GlyphList {
                                           usePositions ? positions : null,
                                           info.devTx);
         glyphindex = -1;
+        resetBounds();
     }
 
     public int[] getBounds() {
-        /* We co-opt the 5 element array that holds per glyph metrics in order
-         * to return the bounds. So a caller must copy the data out of the
-         * array before calling any other methods on this GlyphList
-         */
-        if (glyphindex >= 0) {
-            throw new InternalError("calling getBounds after setGlyphIndex");
+        if (!areBoundsPopulated()) {
+            if (bounds == null) {
+                bounds = new int[4];
+            }
+            fillBounds(bounds);
         }
+        return bounds;
+    }
+
+    public void startGlyphIteration() {
         if (metrics == null) {
             metrics = new int[5];
         }
@@ -311,8 +330,6 @@ public final class GlyphList {
          * Add 0.5f for consistent rounding to pixel position. */
         gposx = x + 0.5f;
         gposy = y + 0.5f;
-        fillBounds(metrics);
-        return metrics;
     }
 
     /* This method now assumes "state", so must be called 0->len
@@ -442,6 +459,17 @@ public final class GlyphList {
         return len;
     }
 
+    private void resetBounds() {
+        if (bounds != null) {
+            bounds[0] = 1;
+            bounds[2] = 0;
+        }
+    }
+
+    private boolean areBoundsPopulated() {
+        return bounds != null && bounds[0] <= bounds[2];
+    }
+
     /* We re-do all this work as we iterate through the glyphs
      * but it seems unavoidable without re-working the Java TextRenderers.
      */
@@ -496,5 +524,23 @@ public final class GlyphList {
         bounds[1] = (int)Math.floor(by0);
         bounds[2] = (int)Math.floor(bx1);
         bounds[3] = (int)Math.floor(by1);
+    }
+
+    public static boolean areColorGlyphsSupported() {
+        return colorGlyphsSupported;
+    }
+
+    public boolean isColorGlyph(int glyphIndex) {
+        int width = StrikeCache.unsafe.getChar(images[glyphIndex] + StrikeCache.widthOffset);
+        int rowBytes = StrikeCache.unsafe.getChar(images[glyphIndex] + StrikeCache.rowBytesOffset);
+        return rowBytes == width * 4;
+    }
+
+    public SurfaceData getColorGlyphData() {
+        if (glyphSurfaceData == null) {
+            glyphSurfaceData = new ColorGlyphSurfaceData();
+        }
+        glyphSurfaceData.setCurrentGlyph(images[glyphindex]);
+        return glyphSurfaceData;
     }
 }
