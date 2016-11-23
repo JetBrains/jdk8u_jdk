@@ -77,7 +77,7 @@ typedef struct FontManagerNativeIDs {
     jmethodID readFileMID;
 
     /* sun/font/GlyphList */
-    jfieldID glyphListX, glyphListY,
+    jfieldID glyphListX, glyphListY, glyphListLen,
       glyphImages, glyphListUsePos, glyphListPos, lcdRGBOrder, lcdSubPixPos;
 } FontManagerNativeIDs;
 
