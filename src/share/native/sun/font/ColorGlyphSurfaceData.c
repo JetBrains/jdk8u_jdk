@@ -12,12 +12,13 @@ static jint Glyph_Lock(JNIEnv *env,
                        SurfaceDataRasInfo *pRasInfo,
                        jint lockflags)
 {
+    SurfaceDataBounds bounds;
+    GlyphInfo *glyph;
     if (lockflags & (SD_LOCK_WRITE | SD_LOCK_LUT | SD_LOCK_INVCOLOR | SD_LOCK_INVGRAY)) {
         JNU_ThrowInternalError(env, "Unsupported mode for glyph image surface");
         return SD_FAILURE;
     }
-    SurfaceDataBounds bounds;
-    GlyphInfo *glyph = ((GlyphOps*)ops)->glyph;
+    glyph = ((GlyphOps*)ops)->glyph;
     bounds.x1 = 0;
     bounds.y1 = 0;
     bounds.x2 = glyph->width;
