@@ -104,6 +104,9 @@ java/awt/Choice/RemoveAllShrinkTest/RemoveAllShrinkTest.java             generic
 # https://bugs.openjdk.java.net/browse/JDK-8169104
 java/awt/Component/PaintAll/PaintAll.java                                windows-all
 
+https://bugs.openjdk.java.net/browse/JDK-6857809
+java/awt/Component/PrintAllXcheckJNI/PrintAllXcheckJNI.java              linux-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8165863
 java/awt/Component/SetEnabledPerformance/SetEnabledPerformance.java      macosx-all
 
@@ -194,8 +197,8 @@ java/awt/Focus/OwnedWindowFocusIMECrashTest/OwnedWindowFocusIMECrashTest.java  w
 # https://bugs.openjdk.java.net/browse/JDK-8168294
 java/awt/Focus/ResetMostRecentFocusOwnerTest/ResetMostRecentFocusOwnerTest.java generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8023165
-java/awt/Focus/ShowFrameCheckForegroundTest/ShowFrameCheckForegroundTest.java windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8028701
+java/awt/Focus/ShowFrameCheckForegroundTest/ShowFrameCheckForegroundTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8159599
 java/awt/Focus/SimpleWindowActivationTest/SimpleWindowActivationTest.java generic-all
@@ -268,9 +271,6 @@ java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8016241
 java/awt/FullScreen/SetFSWindow/FSFrame.java                         generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7179526
-java/awt/Graphics/LineClipTest.java                                  generic-all
-
 # https://bugs.openjdk.java.net/browse/JDK-8080084
 java/awt/Graphics2D/DrawString/DrawStringCrash.java                  generic-all
 
@@ -324,6 +324,9 @@ java/awt/Mixing/NonOpaqueInternalFrame.java                          macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169457
 java/awt/Mixing/OpaqueTest.java                                      windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7124549
+java/awt/Mixing/OverlappingButtons.java                              generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8165619
 java/awt/Mixing/ValidBounds.java                                     generic-all
@@ -576,7 +579,9 @@ java/awt/image/DrawImage/IncorrectClipXorModeSW2Surface.java         linux-all
 java/awt/image/DrawImage/IncorrectClipXorModeSurface2Surface.java    linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169951
+java/awt/image/DrawImage/IncorrectOffset.java                        windows-all
 java/awt/image/DrawImage/IncorrectDestinationOffset.java             windows-all
+java/awt/image/DrawImage/IncorrectSourceOffset.java                  windows-all
 
 # no printer found
 java/awt/print/PrinterJob/ExceptionTest.java                         generic-all
@@ -677,6 +682,9 @@ java/lang/invoke/LFCaching/LFGarbageCollectedTest.java               generic-all
 
 # jdk_management
 
+# https://bugs.openjdk.java.net/browse/JDK-8038822
+java/lang/management/MemoryMXBean/LowMemoryTest2.sh                  generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8160913
 javax/management/security/SecurityTest.java                          generic-all
 
@@ -743,6 +751,9 @@ sun/net/InetAddress/nameservice/simple/DefaultCaching.java	generic-all
 # https://bugs.openjdk.java.net/browse/JDK-6602831
 java/net/Inet6Address/B6206527.java                             generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8065419
+java/net/Inet4Address/textToNumericFormat.java                  generic-all
+
 # 7122846
 java/net/MulticastSocket/NoLoopbackPackets.java                  macosx-all
 java/net/MulticastSocket/SetLoopbackMode.java                    macosx-all
@@ -756,6 +767,9 @@ java/net/DatagramSocket/SendDatagramToBadAddress.java            macosx-all
 ############################################################################
 
 # jdk_nio
+
+# https://bugs.openjdk.java.net/browse/JDK-8068693
+java/nio/channels/AsyncCloseAndInterrupt.java                   generic-all
 
 # 6963118
 java/nio/channels/Selector/Wakeup.java                          windows-all
@@ -842,7 +856,7 @@ sun/security/krb5/auto/tools/KinitConfPlusProps.java                       windo
 # jdk_swing
 
 # https://bugs.openjdk.java.net/browse/JDK-8060765
-javax/swing/AbstractButton/6711682/bug6711682.java                   windows-all
+javax/swing/AbstractButton/6711682/bug6711682.java                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8143021
 javax/swing/JColorChooser/Test6541987.java                           generic-all
@@ -1117,3 +1131,9 @@ sun/tools/jcmd/TestJcmdSanity.java				windows-all
 sun/tools/jps/TestJpsJarRelative.java				generic-all
 
 ############################################################################
+
+# 1. cannot be executed under TC against Oracle JDK
+# located at directory containing spaces in its name
+# 2. it requires jar which does not exist in our OpenJDK builds
+# 3.
+javax/imageio/stream/StreamCloserLeak/run_test.sh                    generic-all
