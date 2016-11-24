@@ -173,9 +173,8 @@ HRESULT __stdcall AwtDropTarget::DragEnter(IDataObject __RPC_FAR *pDataObj, DWOR
         RECT  wr;
 
         ::GetWindowRect(m_window, &wr);
-
-        cp.x = pt.x - wr.left;
-        cp.y = pt.y - wr.top;
+        cp.x = m_component->ScaleDownX(pt.x - wr.left);
+        cp.y = m_component->ScaleDownY(pt.y - wr.top);
 
         jint actions = call_dTCenter(env, m_dtcp, m_target,
                                      (jint)cp.x, (jint)cp.y,
@@ -235,8 +234,8 @@ HRESULT __stdcall AwtDropTarget::DragOver(DWORD grfKeyState, POINTL pt, DWORD __
 
     ::GetWindowRect(m_window, &wr);
 
-    cp.x = pt.x - wr.left;
-    cp.y = pt.y - wr.top;
+    cp.x = m_component->ScaleDownX(pt.x - wr.left);
+    cp.y = m_component->ScaleDownY(pt.y - wr.top);
 
     actions = call_dTCmotion(env, m_dtcp, m_target,(jint)cp.x, (jint)cp.y,
                              ::convertDROPEFFECTToActions(mapModsToDROPEFFECT(*pdwEffect, grfKeyState)),
@@ -334,8 +333,8 @@ HRESULT __stdcall AwtDropTarget::Drop(IDataObject __RPC_FAR *pDataObj, DWORD grf
 
     ::GetWindowRect(m_window, &wr);
 
-    cp.x = pt.x - wr.left;
-    cp.y = pt.y - wr.top;
+    cp.x = m_component->ScaleDownX(pt.x - wr.left);
+    cp.y = m_component->ScaleDownY(pt.y - wr.top);
 
     m_dropActions = java_awt_dnd_DnDConstants_ACTION_NONE;
 
