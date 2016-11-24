@@ -25,12 +25,8 @@
 
 package sun.java2d.pipe;
 
-import java.awt.font.GlyphVector;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import sun.awt.SunHints;
-import sun.font.StrikeCache;
+import sun.font.SunFontManager;
 import sun.java2d.SunGraphics2D;
 import sun.font.GlyphList;
 
@@ -49,7 +45,7 @@ public abstract class GlyphListLoopPipe extends GlyphListPipe
         boolean isColor = false;
         int len = gl.getNumGlyphs();
         gl.startGlyphIteration();
-        if (GlyphList.areColorGlyphsSupported()) {
+        if (SunFontManager.getInstance().areColorGlyphsSupported()) {
             for (int i = 0; i < len; i++) {
                 boolean newIsColor = gl.isColorGlyph(i);
                 if (newIsColor != isColor) {
