@@ -930,51 +930,29 @@ OGLTR_DrawLCDGlyphNoCache(OGLContext *oglc, OGLSDOps *dstOps,
                             pixelFormat, GL_UNSIGNED_BYTE,
                             ginfo->image + rowBytesOffset);
 
+        tx2 = ((GLfloat)w) / OGLC_BLIT_TILE_SIZE;
+        ty2 = ((GLfloat)h) / OGLC_BLIT_TILE_SIZE;;
+        dxadj = dstOps->xOffset + x;
+        dyadj = dstOps->yOffset + dstOps->height - y;
+        dtx1 = ((GLfloat)dxadj) / dstOps->textureWidth;
+        dty1 = ((GLfloat)dyadj) / dstOps->textureHeight;
+        dtx2 = ((GLfloat)dxadj + w) / dstOps->textureWidth;
+        dty2 = ((GLfloat)dyadj - h) / dstOps->textureHeight;
+
+        // render composed texture to the destination surface
         j2d_glBegin(GL_QUADS);
-        for (sy = 0; sy < h; sy += th, y += th) {
-            x = x0;
-            sh = ((sy + th) > h) ? (h - sy) : th;
-
-            // update the upper and lower glyph texture coordinates
-            ty1 = ((GLfloat)sy) /  OGLC_BLIT_TILE_SIZE;
-            ty2 = ((GLfloat)(sh + sy)) / OGLC_BLIT_TILE_SIZE;
-
-            // this accounts for lower origin of the destination region
-            dyadj = dstOps->yOffset + dstOps->height - (y + sh);
-
-            // update the destination texture coordinates
-            dty1 = ((GLfloat)dyadj + sh) / dstOps->textureHeight;
-            dty2 = ((GLfloat)dyadj) / dstOps->textureHeight;
-
-            for (sx = 0; sx < w; sx += tw, x += tw) {
-                sw = ((sx + tw) > w) ? (w - sx) : tw;
-
-                // update the left and right glyph texture coordinates
-                tx1 = ((GLfloat)sx) / OGLC_BLIT_TILE_SIZE;
-                tx2 = ((GLfloat)(sw + sx)) / OGLC_BLIT_TILE_SIZE;
-
-                // this accounts for left origin of the destination region
-                dxadj = dstOps->xOffset + x;
-
-                // update the destination texture coordinates
-                dtx1 =((GLfloat)dxadj) / dstOps->textureWidth;
-                dtx2 = ((GLfloat)dxadj + sw) / dstOps->textureWidth;
-
-                // render composed texture to the destination surface
-                j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1, ty1);
-                j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx1, dty1);
-                j2d_glVertex2i(x, y);
-                j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx2, ty1);
-                j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx2, dty1);
-                j2d_glVertex2i(x + sw, y);
-                j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx2, ty2);
-                j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx2, dty2);
-                j2d_glVertex2i(x + sw, y + sh);
-                j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx1, ty2);
-                j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx1, dty2);
-                j2d_glVertex2i(x, y + sh);
-            }
-        }
+        j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0, 0);
+        j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx1, dty1);
+        j2d_glVertex2i(x, y);
+        j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx2, 0);
+        j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx2, dty1);
+        j2d_glVertex2i(x + w, y);
+        j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, tx2, ty2);
+        j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx2, dty2);
+        j2d_glVertex2i(x + w, y + h);
+        j2d_glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0, ty2);
+        j2d_glMultiTexCoord2fARB(GL_TEXTURE1_ARB, dtx1, dty2);
+        j2d_glVertex2i(x, y + h);
         j2d_glEnd();
 
     } else {
