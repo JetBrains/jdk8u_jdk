@@ -1038,7 +1038,7 @@ OGLTR_DrawColorGlyphNoCache(OGLContext *oglc, GlyphInfo *ginfo, jint x, jint y)
 
     // see OGLBlitSwToSurface() in OGLBlitLoops.c for more info on the following two lines
     j2d_glRasterPos2i(0, 0);
-    j2d_glBitmap(0, 0, 0, 0, x, -y, NULL);
+    j2d_glBitmap(0, 0, 0, 0, (GLfloat) x, (GLfloat) (-y), NULL);
 
     j2d_glPixelZoom(1, -1); // in OpenGL image data is assumed to contain lines from bottom to top
     j2d_glDrawPixels(ginfo->width, ginfo->height, GL_BGRA, GL_UNSIGNED_BYTE, ginfo->image);
