@@ -26,8 +26,6 @@
 package sun.font;
 
 import java.awt.font.GlyphVector;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import sun.java2d.SurfaceData;
 import sun.java2d.loops.FontInfo;
@@ -157,17 +155,7 @@ public final class GlyphList {
     private static GlyphList reusableGL = new GlyphList();
     private static boolean inUse;
 
-    private static boolean colorGlyphsSupported;
     private ColorGlyphSurfaceData glyphSurfaceData;
-
-    static {
-        AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
-                colorGlyphsSupported = System.getProperty("os.name", "").startsWith("Mac");
-                return null;
-            }
-        });
-    }
 
     void ensureCapacity(int len) {
       /* Note len must not be -ve! only setFromChars should be capable
@@ -524,10 +512,6 @@ public final class GlyphList {
         bounds[1] = (int)Math.floor(by0);
         bounds[2] = (int)Math.floor(bx1);
         bounds[3] = (int)Math.floor(by1);
-    }
-
-    public static boolean areColorGlyphsSupported() {
-        return colorGlyphsSupported;
     }
 
     public boolean isColorGlyph(int glyphIndex) {
