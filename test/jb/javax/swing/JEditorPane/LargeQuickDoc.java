@@ -19,12 +19,9 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.html.HTMLEditorKit;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 
 /* @test
  * @bug 8151725
@@ -32,23 +29,14 @@ import java.io.InputStreamReader;
  */
 
 public class LargeQuickDoc {
+
     static private String getText() throws IOException {
-        File file = new File(System.getProperty("test.src", "."), "LargeQuickDoc.txt");
-        StringBuilder stringBuilder = new StringBuilder();
-        InputStream is = null;
-        is = new FileInputStream(file);
-        BufferedReader buf = new BufferedReader(new InputStreamReader(is));
-
-        String line = null;
-
-        line = buf.readLine();
-
-        while (line != null) {
-            stringBuilder.append(line).append("\n");
-            line = buf.readLine();
-        }
-        return stringBuilder.toString();
+        return new String(
+                Files.readAllBytes(
+                        FileSystems.getDefault().getPath(
+                                System.getProperty("test.src", "."), "LargeQuickDoc.txt")));
     }
+
 
     public static void main(String[] args) throws Exception {
         SwingUtilities.invokeAndWait(() -> {
