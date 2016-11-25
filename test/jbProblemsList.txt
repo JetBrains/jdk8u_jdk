@@ -110,6 +110,9 @@ java/awt/Component/PrintAllXcheckJNI/PrintAllXcheckJNI.java              linux-a
 # https://bugs.openjdk.java.net/browse/JDK-8165863
 java/awt/Component/SetEnabledPerformance/SetEnabledPerformance.java      macosx-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8170261
+java/awt/Component/TreeLockDeadlock/TreeLockDeadlock.java                generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8017456
 java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html         generic-all
 
@@ -685,6 +688,9 @@ java/lang/invoke/LFCaching/LFGarbageCollectedTest.java               generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8038822
 java/lang/management/MemoryMXBean/LowMemoryTest2.sh                  generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8170303
+java/lang/management/ThreadMXBean/ThreadInfoArray.java               generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8160913
 javax/management/security/SecurityTest.java                          generic-all
 
@@ -995,6 +1001,9 @@ javax/swing/JTable/6263446/bug6263446.java                           windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169952
 javax/swing/JTableHeader/6884066/bug6884066.java                     windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8170260
+javax/swing/JTabbedPane/4361477/bug4361477.java                      generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7112925
 javax/swing/JTabbedPane/4624207/bug4624207.java                      macosx-all
