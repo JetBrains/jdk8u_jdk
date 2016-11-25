@@ -314,11 +314,6 @@ CGGI_CopyImageFromCanvasToARGBInfo(CGGI_GlyphCanvas *canvas, GlyphInfo *info)
 {
     CGBitmapInfo bitmapInfo = CGBitmapContextGetBitmapInfo(canvas->context);
     bool littleEndian = (bitmapInfo & kCGBitmapByteOrderMask) == kCGBitmapByteOrder32Little;
-    int blueOffset = littleEndian ? 0 : 24;
-    int greenOffset = littleEndian ? 8 : 16;
-    int redOffset = littleEndian ? 16 : 8;
-    int alphaOffset = littleEndian ? 24 : 0;
-
     UInt32 *src = (UInt32 *)canvas->image->data;
     size_t srcRowWidth = canvas->image->width;
 
@@ -331,14 +326,19 @@ CGGI_CopyImageFromCanvasToARGBInfo(CGGI_GlyphCanvas *canvas, GlyphInfo *info)
 
     for (y = 0; y < height; y++) {
         size_t srcRow = y * srcRowWidth;
-
-        size_t x;
-        for (x = 0; x < destRowWidth; x++) {
-            UInt32 p = src[srcRow + x];
-            *dest++ = (p >> blueOffset  & 0xFF); // blue  (alpha-premultiplied)
-            *dest++ = (p >> greenOffset & 0xFF); // green (alpha-premultiplied)
-            *dest++ = (p >> redOffset   & 0xFF); // red   (alpha-premultiplied)
-            *dest++ = (p >> alphaOffset & 0xFF); // alpha
+        if (littleEndian) {
+            UInt16 destRowBytes = info->rowBytes;
+            memcpy(dest, src + srcRow, destRowBytes);
+            dest += destRowBytes;
+        } else {
+            size_t x;
+            for (x = 0; x < destRowWidth; x++) {
+                UInt32 p = src[srcRow + x];
+                *dest++ = (p >> 24  & 0xFF); // blue  (alpha-premultiplied)
+                *dest++ = (p >> 16 & 0xFF); // green (alpha-premultiplied)
+                *dest++ = (p >> 8   & 0xFF); // red   (alpha-premultiplied)
+                *dest++ = (p & 0xFF); // alpha
+            }
         }
     }
 }
