@@ -521,7 +521,7 @@ public:
     virtual MsgRouting WmMouseMove(UINT flags, int x, int y);
     virtual MsgRouting WmMouseExit(UINT flags, int x, int y);
     virtual MsgRouting WmMouseWheel(UINT flags, int x, int y,
-                                    int wheelRotation);
+                                    int wheelRotation, BOOL isHorizontal);
     virtual MsgRouting WmNcMouseDown(WPARAM hitTest, int x, int y, int button);
     virtual MsgRouting WmNcMouseUp(WPARAM hitTest, int x, int y, int button);
     virtual MsgRouting WmWindowPosChanging(LPARAM windowPos);
@@ -818,7 +818,8 @@ private:
     int windowMoveLockPosCY;
 
     // 6524352: support finer-resolution
-    int m_wheelRotationAmount;
+    int m_wheelRotationAmountX;
+    int m_wheelRotationAmountY;
 
     /*
      * The association list of children's IDs and corresponding components.
