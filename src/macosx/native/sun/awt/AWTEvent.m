@@ -419,6 +419,49 @@ static unichar NsGetDeadKeyChar(unsigned short keyCode)
     return 0;
 }
 
+static NSDictionary* getUnicharToVkCodeDictionary() {
+
+    static NSDictionary* unicharToVkCodeDictionary = nil;
+    static dispatch_once_t onceToken;
+
+    dispatch_once(&onceToken, ^{
+         unicharToVkCodeDictionary =
+             @{
+                 @"`" : @java_awt_event_KeyEvent_VK_BACK_QUOTE,
+                 @"1" : @java_awt_event_KeyEvent_VK_1,
+                 @"2" : @java_awt_event_KeyEvent_VK_2,
+                 @"3" : @java_awt_event_KeyEvent_VK_3,
+                 @"4" : @java_awt_event_KeyEvent_VK_4,
+                 @"5" : @java_awt_event_KeyEvent_VK_5,
+                 @"6" : @java_awt_event_KeyEvent_VK_6,
+                 @"7" : @java_awt_event_KeyEvent_VK_7,
+                 @"8" : @java_awt_event_KeyEvent_VK_8,
+                 @"9" : @java_awt_event_KeyEvent_VK_9,
+                 @"0" : @java_awt_event_KeyEvent_VK_0,
+                 @"=" : @java_awt_event_KeyEvent_VK_EQUALS,
+                 @"-" : @java_awt_event_KeyEvent_VK_MINUS,
+                 @"]" : @java_awt_event_KeyEvent_VK_CLOSE_BRACKET,
+                 @"[" : @java_awt_event_KeyEvent_VK_OPEN_BRACKET,
+                 @"\'": @java_awt_event_KeyEvent_VK_QUOTE,
+                 @";" : @java_awt_event_KeyEvent_VK_SEMICOLON,
+                 @"\\": @java_awt_event_KeyEvent_VK_BACK_SLASH,
+                 @"," : @java_awt_event_KeyEvent_VK_COMMA,
+                 @"/" : @java_awt_event_KeyEvent_VK_SLASH,
+                 @"." : @java_awt_event_KeyEvent_VK_PERIOD,
+                 @"." : @java_awt_event_KeyEvent_VK_DECIMAL,
+                 @"*" : @java_awt_event_KeyEvent_VK_MULTIPLY,
+                 @"+" : @java_awt_event_KeyEvent_VK_ADD,
+                 @"/" : @java_awt_event_KeyEvent_VK_DIVIDE,
+                 @"-" : @java_awt_event_KeyEvent_VK_SUBTRACT,
+                 @"=" : @java_awt_event_KeyEvent_VK_EQUALS,
+                 @"," : @java_awt_event_KeyEvent_VK_COMMA
+             };
+             [unicharToVkCodeDictionary retain];
+    });
+
+    return unicharToVkCodeDictionary;
+}
+
 /*
  * This is the function that uses the table above to take incoming
  * NSEvent keyCodes and translate to the Java virtual key code.
@@ -463,7 +506,7 @@ NsCharToJavaVirtualKeyCode(unichar ch, BOOL isDeadChar,
         }
     }
 
-    if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:ch]) {
+  if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:ch]) {
         // key is a digit
         offset = ch - '0';
         // make sure in range for decimal digits
@@ -482,10 +525,19 @@ NsCharToJavaVirtualKeyCode(unichar ch, BOOL isDeadChar,
     }
 
     if (key < size) {
-        *postsTyped = keyTable[key].postsTyped;
-        *keyCode = keyTable[key].javaKeyCode;
-        *keyLocation = keyTable[key].javaKeyLocation;
+       if ([[NSCharacterSet punctuationCharacterSet] characterIsMember:ch] ||
+           [[NSCharacterSet symbolCharacterSet] characterIsMember:ch]) {
+             *keyCode = [getUnicharToVkCodeDictionary() [[NSString stringWithFormat:@"%C",ch]] intValue];
+             // we cannot find key location from a char, so let's use key code
+             *postsTyped = keyTable[ch].postsTyped;
+             *keyLocation = keyTable[key].javaKeyLocation;
+        } else {
+             *postsTyped = keyTable[key].postsTyped;
+             *keyCode = keyTable[key].javaKeyCode;
+             *keyLocation = keyTable[key].javaKeyLocation;
+        }
     } else {
+        NSLog(@"AWT cannot recognize the keyboard");
         // Should we report this? This means we've got a keyboard
         // we don't know about...
         *postsTyped = NO;
