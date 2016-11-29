@@ -26,6 +26,7 @@
 #ifndef HEADLESS
 
 #include <stdlib.h>
+#include <limits.h>
 #include <math.h>
 #include <jlong.h>
 
@@ -1061,6 +1062,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
     GLuint dstTextureID = 0;
     jboolean hasLCDGlyphs = JNI_FALSE;
     jboolean lcdOpened = JNI_FALSE;
+    jint ox1 = INT_MIN;
 
     J2dTraceLn(J2D_TRACE_INFO, "OGLTR_DrawGlyphList");
 
@@ -1096,7 +1098,6 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         dstTextureID = dstOps->textureID;
     }
 #endif
-    jint ox1 = INT32_MIN;
 
     for (glyphCounter = 0; glyphCounter < totalGlyphs; glyphCounter++) {
         jint x, y;
