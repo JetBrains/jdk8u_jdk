@@ -33,12 +33,10 @@
 
 #include "SurfaceData.h"
 #include "OGLContext.h"
-#include "OGLSurfaceData.h"
 #include "OGLRenderQueue.h"
 #include "OGLTextRenderer.h"
 #include "OGLVertexCache.h"
 #include "AccelGlyphCache.h"
-#include "fontscalerdefs.h"
 
 /**
  * The following constants define the inner and outer bounds of the
@@ -1098,6 +1096,8 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         dstTextureID = dstOps->textureID;
     }
 #endif
+    jint ox1 = -INT32_MIN;
+
     for (glyphCounter = 0; glyphCounter < totalGlyphs; glyphCounter++) {
         jint x, y;
         jfloat glyphx, glyphy;
@@ -1170,6 +1170,15 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
                 }
             }
 
+            // Flush GPU buffers before processing overlapping LCD glyphs on OSX
+            if (dstTextureID != 0 && ox1 > x) {
+                if (lcdOpened) {
+                    lcdOpened = JNI_FALSE;
+                    j2d_glEnd();
+                }
+                j2d_glTextureBarrierNV();
+            }
+
             if (rowBytesOffset == 0 &&
                 ginfo->width <= OGLTR_CACHE_CELL_WIDTH &&
                 ginfo->height <= OGLTR_CACHE_CELL_HEIGHT)
@@ -1192,6 +1201,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
             }
         }
 
+        ox1 = x + ginfo->width;
         if (!ok) {
             break;
         }
