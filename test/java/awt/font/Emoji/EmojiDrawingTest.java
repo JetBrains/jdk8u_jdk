@@ -20,6 +20,9 @@
  * @requires os.family == "mac"
  */
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
