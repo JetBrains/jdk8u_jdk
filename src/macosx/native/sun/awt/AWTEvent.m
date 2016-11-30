@@ -579,7 +579,7 @@ NsCharToJavaVirtualKeyCode(unichar ch, BOOL isDeadChar,
         if ([[NSCharacterSet punctuationCharacterSet] characterIsMember:ch] ||
              [[NSCharacterSet symbolCharacterSet] characterIsMember:ch])
         {
-             *keyCode = [unicharToVkCodeDictionary [[NSString stringWithFormat:@"%C",ch]] intValue];
+             *keyCode = [[unicharToVkCodeDictionary objectForKey:[NSString stringWithFormat:@"%C",ch]] intValue];
              // we cannot find key location from a char, so let's use key code
              *postsTyped = YES;
              *keyLocation = keyTable[key].javaKeyLocation;
@@ -587,7 +587,7 @@ NsCharToJavaVirtualKeyCode(unichar ch, BOOL isDeadChar,
         }
 
         NSDictionary* diacriticUnicharToVkCodeDictionary = getDiacriticUnicharToVkCodeDictionary();
-        NSNumber * jkc = diacriticUnicharToVkCodeDictionary [[NSString stringWithFormat:@"%C",ch]];
+        NSNumber * jkc = [diacriticUnicharToVkCodeDictionary objectForKey:[NSString stringWithFormat:@"%C",ch]];
         if (jkc != nil) {
             *keyCode = [jkc intValue];
             // we cannot find key location from a char, so let's use key code
