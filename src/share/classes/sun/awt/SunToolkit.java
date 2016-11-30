@@ -52,6 +52,7 @@ import sun.util.logging.PlatformLogger;
 import sun.misc.SoftCache;
 import sun.font.FontDesignMetrics;
 import sun.awt.im.InputContext;
+import java.awt.image.MultiResolutionImage;
 import sun.awt.image.*;
 import sun.net.util.URLUtil;
 import sun.security.action.GetPropertyAction;
