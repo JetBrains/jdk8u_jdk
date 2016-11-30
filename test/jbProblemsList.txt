@@ -1146,3 +1146,73 @@ sun/tools/jps/TestJpsJarRelative.java				generic-all
 # 2. it requires jar which does not exist in our OpenJDK builds
 # 3.
 javax/imageio/stream/StreamCloserLeak/run_test.sh                    generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8011371
+sun/awt/datatransfer/SuplementaryCharactersTransferTest.java         generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8142540
+sun/awt/dnd/8024061/bug8024061.java                                  linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8022403
+sun/java2d/DirectX/OnScreenRenderingResizeTest/OnScreenRenderingResizeTest.java macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7148533
+sun/java2d/DirectX/OverriddenInsetsTest/OverriddenInsetsTest.java    generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8031433
+sun/java2d/OpenGL/GradientPaints.java                                generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8144033
+sun/java2d/DirectX/RenderingToCachedGraphicsTest/RenderingToCachedGraphicsTest.java generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8047703
+sun/java2d/SunGraphics2D/DrawImageBilinear.java                      generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-6258137
+sun/java2d/SunGraphics2D/PolyVertTest.java                           macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7124403
+sun/java2d/SunGraphics2D/SimplePrimQuality.java                      macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8159142
+sun/java2d/SunGraphics2D/SourceClippingBlitTest/SourceClippingBlitTest.java generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7184899
+sun/java2d/X11SurfaceData/SharedMemoryPixmapsTest/SharedMemoryPixmapsTest.sh macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8046046
+sun/security/pkcs11/Signature/TestDSAKeyLength.java                  generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8142541
+sun/security/pkcs11/ec/TestECDH.java                                 linux-all
+sun/security/pkcs11/ec/TestECDSA.java                                linux-all
+sun/security/pkcs11/ec/TestECGenSpec.java                            linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7057022
+sun/security/pkcs11/fips/ClientJSSEServerJSSE.java                   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8160071
+sun/security/pkcs11/sslecc/ClientJSSEServerJSSE.java                 generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8039280
+sun/security/provider/PolicyFile/GrantAllPermToExtWhenNoPolicy.java  generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8033271
+sun/security/provider/PolicyParser/ExtDirs.java                      generic-all
+sun/security/provider/PolicyParser/ExtDirsChange.java                generic-all
+sun/security/provider/PolicyParser/ExtDirsDefaultPolicy.java         generic-all
+sun/security/provider/PolicyParser/PrincipalExpansionError.java      generic-all
+sun/security/tools/keytool/i18n.sh                                   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8011134
+sun/security/ssl/com/sun/net/ssl/internal/ssl/X509TrustManagerImpl/ClientServer.java generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8039130
+sun/security/ssl/javax/net/ssl/NewAPIs/CheckMyTrustedKeystore.java   generic-all
+sun/security/ssl/javax/net/ssl/NewAPIs/SSLEngine/Basics.java         generic-all
+sun/security/ssl/javax/net/ssl/NewAPIs/SSLEngine/TestAllSuites.java  generic-all
+sun/security/ssl/sanity/ciphersuites/CheckCipherSuites.java          generic-all
+sun/security/ssl/sun/net/www/protocol/https/HttpsURLConnection/CloseKeepAliveCached.java generic-all
+
+# expected failure on JBRE
+sun/misc/Version/Version.java                                        generic-all
