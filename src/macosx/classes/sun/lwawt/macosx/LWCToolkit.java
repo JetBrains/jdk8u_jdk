@@ -48,7 +48,6 @@ import sun.java2d.opengl.OGLRenderQueue;
 import sun.lwawt.*;
 import sun.lwawt.LWWindowPeer.PeerType;
 import sun.security.action.GetBooleanAction;
-import sun.awt.image.MultiResolutionImage;
 
 import sun.util.CoreResourceBundleControl;
 
