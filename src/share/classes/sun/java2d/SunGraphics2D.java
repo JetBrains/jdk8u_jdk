@@ -93,7 +93,7 @@ import java.util.Iterator;
 import sun.misc.PerformanceLogger;
 
 import java.lang.annotation.Native;
-import sun.awt.image.MultiResolutionImage;
+import java.awt.image.MultiResolutionImage;
 
 import static java.awt.geom.AffineTransform.TYPE_FLIP;
 import static java.awt.geom.AffineTransform.TYPE_MASK_SCALE;
@@ -3116,7 +3116,7 @@ public final class SunGraphics2D
                 invalidateTransform();
             }
             return result;
-        } else if (resolutionVariantHint != SunHints.INTVAL_RESOLUTION_VARIANT_DEFAULT /* tav todo: -> INTVAL_RESOLUTION_VARIANT_BASE */
+        } else if (resolutionVariantHint != SunHints.INTVAL_RESOLUTION_VARIANT_BASE
                 && (img instanceof MultiResolutionImage)) {
             // get scaled destination image size
 
@@ -3241,24 +3241,41 @@ public final class SunGraphics2D
         int type = tx.getType();
         int dw = dx2 - dx1;
         int dh = dy2 - dy1;
-        double destRegionWidth;
-        double destRegionHeight;
 
-        if ((type & ~(TYPE_TRANSLATION | TYPE_FLIP)) == 0) {
-            destRegionWidth = dw;
-            destRegionHeight = dh;
-        } else if ((type & ~(TYPE_TRANSLATION | TYPE_FLIP | TYPE_MASK_SCALE)) == 0) {
-            destRegionWidth = dw * tx.getScaleX();
-            destRegionHeight = dh * tx.getScaleY();
+        double destImageWidth;
+        double destImageHeight;
+
+        if (resolutionVariantHint == SunHints.INTVAL_RESOLUTION_VARIANT_BASE) {
+            destImageWidth = srcWidth;
+            destImageHeight = srcHeight;
+        } else if (resolutionVariantHint == SunHints.INTVAL_RESOLUTION_VARIANT_DPI_FIT) {
+            AffineTransform configTransform = getDefaultTransform();
+            if (configTransform.isIdentity()) {
+                destImageWidth = srcWidth;
+                destImageHeight = srcHeight;
+            } else {
+                destImageWidth = srcWidth * configTransform.getScaleX();
+                destImageHeight = srcHeight * configTransform.getScaleY();
+            }
         } else {
-            destRegionWidth = dw * Math.hypot(
-                    tx.getScaleX(), tx.getShearY());
-            destRegionHeight = dh * Math.hypot(
-                    tx.getShearX(), tx.getScaleY());
-        }
+            double destRegionWidth;
+            double destRegionHeight;
 
-        int destImageWidth = (int) Math.abs(srcWidth * destRegionWidth / sw);
-        int destImageHeight = (int) Math.abs(srcHeight * destRegionHeight / sh);
+            if ((type & ~(TYPE_TRANSLATION | TYPE_FLIP)) == 0) {
+                destRegionWidth = dw;
+                destRegionHeight = dh;
+            } else if ((type & ~(TYPE_TRANSLATION | TYPE_FLIP | TYPE_MASK_SCALE)) == 0) {
+                destRegionWidth = dw * transform.getScaleX();
+                destRegionHeight = dh * transform.getScaleY();
+            } else {
+                destRegionWidth = dw * Math.hypot(
+                        transform.getScaleX(), transform.getShearY());
+                destRegionHeight = dh * Math.hypot(
+                        transform.getShearX(), transform.getScaleY());
+            }
+            destImageWidth = Math.abs(srcWidth * destRegionWidth / sw);
+            destImageHeight = Math.abs(srcHeight * destRegionHeight / sh);
+        }
 
         Image resolutionVariant
                 = img.getResolutionVariant(destImageWidth, destImageHeight);
