@@ -44,6 +44,14 @@
 
 extern COLORREF DesktopColor2RGB(int colorIndex);
 
+#ifndef _WIN32_WINNT_WINBLUE
+typedef enum _PROCESS_DPI_AWARENESS {
+    PROCESS_DPI_UNAWARE            = 0,
+    PROCESS_SYSTEM_DPI_AWARE       = 1,
+    PROCESS_PER_MONITOR_DPI_AWARE  = 2
+} PROCESS_DPI_AWARENESS;
+#endif
+
 // val >= 0 todo [tav] until switch to VS'12
 #define round(val) floor(val + 0.5)
 
