@@ -458,7 +458,8 @@ static NSDictionary* getDiacriticUnicharToVkCodeDictionary() {
                   @"ü", [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_U_WITH_DIAERESIS],
                   @"ý", [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_Y_WITH_ACUTE],
                   @"þ", [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_THORN],
-                  @"ÿ", [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_Y_WITH_DIAERESIS]
+                  @"ÿ", [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_Y_WITH_DIAERESIS],
+                  nil
              ];
              // This is ok to retain a singleton object
              [diacriticUnicharToVkCodeDictionary retain];
@@ -502,7 +503,8 @@ static NSDictionary* getUnicharToVkCodeDictionary() {
                  @"-" , [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_SUBTRACT],
                  @"=" , [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_EQUALS],
                  @"," , [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_COMMA],
-                 @"#" , [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_NUMBER_SIGN]
+                 @"#" , [NSNumber numberWithInt:java_awt_event_KeyEvent_VK_NUMBER_SIGN],
+                 nil
              ];
              // This is ok to retain a singleton object
              [unicharToVkCodeDictionary retain];
