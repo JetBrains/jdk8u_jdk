@@ -251,7 +251,7 @@ public class WindowsFlags {
                         javaVersion = javaVersion.substring(0, dashIndex);
                     }
                 }
-                String dpiOverride = System.getProperty("sun.java2d.dpiaware");
+                String dpiOverride = System.getProperty("sun.java2d.dpiaware", "true");
                 if (dpiOverride != null) {
                     setHighDPIAware = dpiOverride.equalsIgnoreCase("true");
                 } else {
