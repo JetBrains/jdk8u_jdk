@@ -129,7 +129,7 @@ java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html          generic
 java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8029675
-java/awt/Focus/6981400/Test1.java                                        windows-all
+java/awt/Focus/6981400/Test1.java                                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6458497
 java/awt/Focus/6981400/Test3.java                                        windows-all
@@ -1002,6 +1002,9 @@ javax/swing/JTable/6263446/bug6263446.java                           windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8169952
 javax/swing/JTableHeader/6884066/bug6884066.java                     windows-all
 
+# https://bugs.openjdk.java.net/browse/JDK-7179842
+javax/swing/JTableHeader/6889007/bug6889007.java.bug6889007          generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8170260
 javax/swing/JTabbedPane/4361477/bug4361477.java                      generic-all
 
@@ -1038,6 +1041,9 @@ javax/swing/SwingUtilities/TestBadBreak/TestBadBreak.java            linux-all
 # https://bugs.openjdk.java.net/browse/JDK-8159454
 javax/swing/ToolTipManager/7123767/bug7123767.java                   generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8167009
+javax/swing/ToolTipManager/Test6256140.java                          generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8081764
 javax/swing/plaf/aqua/CustomComboBoxFocusTest.java                   generic-all
 
@@ -1052,6 +1058,9 @@ javax/swing/plaf/synth/SynthButtonUI/6276188/bug6276188.java         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8130895
 javax/swing/system/6799345/TestShutdown.java                         linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8003533
+javax/swing/text/CSSBorder/6796710/bug6796710.java                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8012469
 javax/swing/text/DefaultEditorKit/4278839/bug4278839.java            generic-all
