@@ -37,12 +37,18 @@ public class EmojiDrawingTest {
 
     public static void main(String[] args) throws Exception {
         BufferedImage actual = createImage();
-        BufferedImage expected = ImageIO.read(EmojiDrawingTest.class.getResource("emoji.png"));
+        BufferedImage expected = ImageIO.read(EmojiDrawingTest.class.getResource(getExpectedImageName()));
         if (!imagesAreEqual(actual, expected)) {
             File file = File.createTempFile("emoji", ".png");
             ImageIO.write(actual, "PNG", file);
             throw new RuntimeException("Unexpected painting on image: " + file);
         }
+    }
+
+    private static String getExpectedImageName() {
+        String[] osVersion = System.getProperty("os.version").split("\\.");
+        return osVersion.length > 1 && osVersion[0].equals("10") && Integer.parseInt(osVersion[1]) < 10
+                ? "emojiOld.png" : "emoji.png";
     }
 
     private static BufferedImage createImage() {
