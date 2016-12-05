@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import javax.imageio.ImageIO;
 
 public class EmojiDrawingTest {
@@ -38,7 +39,9 @@ public class EmojiDrawingTest {
         BufferedImage actual = createImage();
         BufferedImage expected = ImageIO.read(EmojiDrawingTest.class.getResource("emoji.png"));
         if (!imagesAreEqual(actual, expected)) {
-            throw new RuntimeException("Unexpected painting on image");
+            File file = File.createTempFile("emoji", ".png");
+            ImageIO.write(actual, "PNG", file);
+            throw new RuntimeException("Unexpected painting on image: " + file);
         }
     }
 
