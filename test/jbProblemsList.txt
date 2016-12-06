@@ -1240,3 +1240,24 @@ sun/security/ssl/sun/net/www/protocol/https/HttpsURLConnection/CloseKeepAliveCac
 
 # expected failure on JBRE
 sun/misc/Version/Version.java                                        generic-all
+
+# https://youtrack.jetbrains.com/issue/JRE-128
+java/awt/image/multiresolution/MultiDisplayTest/MultiDisplayTest.java                           generic-all
+java/awt/image/multiresolution/MultiResolutionIcon/IconTest.java                                generic-all
+java/awt/image/multiresolution/MultiResolutionTrayIconTest/MultiResolutionTrayIconTest.java     generic-all
+java/awt/image/multiresolution/BaseMultiResolutionImageTest.java                                generic-all
+java/awt/image/multiresolution/Corrupted2XImageTest.java                                        generic-all
+java/awt/image/multiresolution/MenuMultiresolutionIconTest.java                                 generic-all
+java/awt/image/multiresolution/MultiResolutionIcon/MultiResIconTest.java                        generic-all
+java/awt/image/multiresolution/MultiResolutionCachedImageTest.java                              generic-all
+java/awt/image/multiresolution/MultiresolutionIconTest.java                                     generic-all
+java/awt/image/multiresolution/MultiResolutionImagePropertiesTest.java                          generic-all
+java/awt/image/multiresolution/MultiResolutionJOptionPaneIconTest.java                          generic-all
+java/awt/image/multiresolution/MultiResolutionRenderingHintsTest.java                           generic-all
+java/awt/image/multiresolution/MultiresolutionSourceTest.java                                   generic-all
+java/awt/image/multiresolution/MultiResolutionToolkitImageTest.java                             generic-all
+java/awt/image/MultiResolutionImage/MultiResolutionDisabledImageTest.java                       generic-all
+java/awt/image/MultiResolutionImage/MultiResolutionDrawImageWithTransformTest.java              generic-all
+java/awt/image/MultiResolutionImage/NSImageToMultiResolutionImageTest.java                      generic-all
+java/awt/image/MultiResolutionImageCommonTest.java                                              generic-all
+java/awt/image/MultiResolutionImageTest.java                                                    generic-all
