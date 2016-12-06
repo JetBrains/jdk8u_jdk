@@ -274,6 +274,9 @@ java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8016241
 java/awt/FullScreen/SetFSWindow/FSFrame.java                         generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-7179526
+java/awt/Graphics/LineClipTest.java                                  generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8080084
 java/awt/Graphics2D/DrawString/DrawStringCrash.java                  generic-all
 
@@ -291,6 +294,9 @@ java/awt/Graphics2D/FlipDrawImage/FlipDrawImage.java                 windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8145808
 java/awt/Graphics2D/MTGraphicsAccessTest/MTGraphicsAccessTest.java   generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8170729
+java/awt/JAWT/JAWT.sh                                                windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8158380
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html generic-all
@@ -906,6 +912,9 @@ javax/swing/JFileChooser/8021253/bug8021253.java                     windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8064715
 javax/swing/JFileChooser/8062561/bug8062561.java                     generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8170721
+javax/swing/JFrame/4962534/bug4962534.html                           macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8169955
 javax/swing/JFrame/8016356/bug8016356.java                           windows-all
 
@@ -938,6 +947,9 @@ javax/swing/JMenuItem/4654927/bug4654927.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8025083
 javax/swing/JMenuItem/6209975/bug6209975.java                        generic-all
+
+https://bugs.openjdk.java.net/browse/JDK-8139169
+javax/swing/JMenuItem/ActionListenerCalledTwice/ActionListenerCalledTwiceTest.java macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8040917
 javax/swing/JPopupMenu/4458079/bug4458079.java                       generic-all
@@ -1052,6 +1064,9 @@ javax/swing/plaf/nimbus/8041642/bug8041642.java                      generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8160438
 javax/swing/plaf/nimbus/8057791/bug8057791.java                      macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8170722
+javax/swing/plaf/synth/7158712/bug7158712.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8081478
 javax/swing/plaf/synth/SynthButtonUI/6276188/bug6276188.java         generic-all
