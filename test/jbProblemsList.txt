@@ -1256,6 +1256,8 @@ java/awt/image/multiresolution/MultiResolutionJOptionPaneIconTest.java          
 java/awt/image/multiresolution/MultiResolutionRenderingHintsTest.java                           generic-all
 java/awt/image/multiresolution/MultiresolutionSourceTest.java                                   generic-all
 java/awt/image/multiresolution/MultiResolutionToolkitImageTest.java                             generic-all
+java/awt/image/multiresolution/MultiResolutionImageObserverTest.java                            gereric-all
+java/awt/image/multiresolution/MultiResolutionDrawImageWithTransformTest.java                   gereric-all
 java/awt/image/MultiResolutionImage/MultiResolutionDisabledImageTest.java                       generic-all
 java/awt/image/MultiResolutionImage/MultiResolutionDrawImageWithTransformTest.java              generic-all
 java/awt/image/MultiResolutionImage/NSImageToMultiResolutionImageTest.java                      generic-all
