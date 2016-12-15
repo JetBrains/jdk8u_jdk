@@ -235,7 +235,7 @@ java/awt/FontClass/CreateFont/fileaccess/FontFile.java               generic-all
 java/awt/FontClass/DebugFonts.java                                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169111
-java/awt/Frame/InvisibleOwner/InvisibleOwner.java                    windows-all
+java/awt/Frame/InvisibleOwner/InvisibleOwner.java                    generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169472
 java/awt/Frame/LayoutOnMaximizeTest/LayoutOnMaximizeTest.java        windows-all
@@ -1208,7 +1208,8 @@ sun/java2d/SunGraphics2D/SimplePrimQuality.java                      macosx-all
 sun/java2d/SunGraphics2D/SourceClippingBlitTest/SourceClippingBlitTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7184899
-sun/java2d/X11SurfaceData/SharedMemoryPixmapsTest/SharedMemoryPixmapsTest.sh macosx-all
+# it blocks jtreg on Windows
+sun/java2d/X11SurfaceData/SharedMemoryPixmapsTest/SharedMemoryPixmapsTest.sh generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8046046
 sun/security/pkcs11/Signature/TestDSAKeyLength.java                  generic-all
