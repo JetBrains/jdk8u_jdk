@@ -122,8 +122,8 @@ java/awt/Dialog/MakeWindowAlwaysOnTop/MakeWindowAlwaysOnTop.java         generic
 # https://bugs.openjdk.java.net/browse/JDK-6990210
 java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-4931413
-java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html          generic-all
+## https://bugs.openjdk.java.net/browse/JDK-4931413
+#java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8168390
 java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java windows-all
@@ -131,11 +131,11 @@ java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java w
 # https://bugs.openjdk.java.net/browse/JDK-8029675
 java/awt/Focus/6981400/Test1.java                                        generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-6458497
-java/awt/Focus/6981400/Test3.java                                        windows-all
+## https://bugs.openjdk.java.net/browse/JDK-6458497
+#java/awt/Focus/6981400/Test3.java                                        windows-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8013611
-java/awt/Focus/8013611/JDK8013611.java                                   windows-all
+## https://bugs.openjdk.java.net/browse/JDK-8013611
+#java/awt/Focus/8013611/JDK8013611.java                                   windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8136517
 java/awt/Focus/8073453/AWTFocusTransitionTest.java                       generic-all
@@ -171,9 +171,7 @@ java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java          generic
 # https://bugs.openjdk.java.net/browse/JDK-7124555
 java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java macosx-all, linux-all
 
-# similar to
-# https://bugs.openjdk.java.net/browse/JDK-7191928
-# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6986252
+# https://bugs.openjdk.java.net/browse/JDK-6986252
 java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8169101
@@ -274,8 +272,8 @@ java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8016241
 java/awt/FullScreen/SetFSWindow/FSFrame.java                         generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7179526
-java/awt/Graphics/LineClipTest.java                                  generic-all
+## https://bugs.openjdk.java.net/browse/JDK-7179526
+#java/awt/Graphics/LineClipTest.java                                  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080084
 java/awt/Graphics2D/DrawString/DrawStringCrash.java                  generic-all
@@ -304,8 +302,8 @@ java/awt/JAWT/JAWT.sh                                                windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8158380
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8073639
-java/awt/KeyboardFocusmanager/TypeAhead/TestDialogTypeAhead.html     generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8073639
+# java/awt/KeyboardFocusmanager/TypeAhead/TestDialogTypeAhead.html     generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8163261
 java/awt/LightweightDispatcher/LWDispatcherMemoryLeakTest.java       generic-all
@@ -322,8 +320,8 @@ java/awt/Mixing/HWDisappear.java                                     generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8143295
 java/awt/Mixing/LWPopupMenu.java                                     generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-6885735
-java/awt/Mixing/MixingInHwPanel.java                                 generic-all
+## https://bugs.openjdk.java.net/browse/JDK-6885735
+#java/awt/Mixing/MixingInHwPanel.java                                 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-4049668
 java/awt/Mixing/MixingOnDialog.java                                  generic-all
@@ -344,8 +342,8 @@ java/awt/Mixing/OverlappingButtons.java                              generic-all
 java/awt/Mixing/ValidBounds.java                                     generic-all
 java/awt/Mixing/Validating.java                                      generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8029024
-java/awt/Modal/ModalDialogOrderingTest/ModalDialogOrderingTest.java  generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8029024
+#java/awt/Modal/ModalDialogOrderingTest/ModalDialogOrderingTest.java  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8159599
 java/awt/Modal/ModalInternalFrameTest/ModalInternalFrameTest.java    generic-all
@@ -439,8 +437,8 @@ java/awt/TextArea/UsingWithMouse/SelectionAutoscrollTest.html        generic-all
 # https://bugs.openjdk.java.net/browse/JDK-6829250
 java/awt/Toolkit/ScreenInsetsTest/ScreenInsetsTest.java              generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-6829267
-java/awt/Toolkit/ToolkitPropertyTest/ToolkitPropertyTest_Enable.java generic-all
+## https://bugs.openjdk.java.net/browse/JDK-6829267
+#java/awt/Toolkit/ToolkitPropertyTest/ToolkitPropertyTest_Enable.java generic-all
 
 # http://bugs.java.com/view_bug.do?bug_id=8039081
 java/awt/TrayIcon/PopupMenuLeakTest/PopupMenuLeakTest.java           generic-all
@@ -460,8 +458,8 @@ java/awt/Window/Grab/GrabTest.java                                   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-6848409
 java/awt/Window/GrabSequence/GrabSequence.java                       generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-6619458
-java/awt/appletviewer/IOExceptionIfEncodedURLTest/IOExceptionIfEncodedURLTest.sh generic-all
+## https://bugs.openjdk.java.net/browse/JDK-6619458
+#java/awt/appletviewer/IOExceptionIfEncodedURLTest/IOExceptionIfEncodedURLTest.sh generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080982
 java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java    generic-all
@@ -497,8 +495,8 @@ java/awt/dnd/MissingDragExitEventTest/MissingDragExitEventTest.java  generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8164464
 java/awt/dnd/MissingEventsOnModalDialog/MissingEventsOnModalDialogTest.java generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7109239
-java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html              generic-all
+## https://bugs.openjdk.java.net/browse/JDK-7109239
+#java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html              generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8072088
 java/awt/dnd/ImageDecoratedDnDNegative/ImageDecoratedDnDNegative.html generic-all
@@ -534,8 +532,8 @@ java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                     windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8160623
 java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                      generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7124391
-java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java generic-all
+## https://bugs.openjdk.java.net/browse/JDK-7124391
+#java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8032254
 java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java   linux-all
@@ -546,8 +544,8 @@ java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java   linux-all
 # https://bugs.openjdk.java.net/browse/JDK-6854300
 java/awt/event/MouseEvent/SpuriousExitEnter/SpuriousExitEnter_3.java generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-4391548
-java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html               generic-all
+## https://bugs.openjdk.java.net/browse/JDK-4391548
+#java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html               generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8060176
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion.java   generic-all
@@ -637,8 +635,8 @@ java/time/test/java/time/temporal/TestChronoUnit.java                generic-all
 java/time/test/java/time/temporal/TestDateTimeValueRange.java        generic-all
 
 
-# https://bugs.openjdk.java.net/browse/JDK-6560348
-java/awt/xembed/server/RunTestXEmbed.java                            generic-all
+## https://bugs.openjdk.java.net/browse/JDK-6560348
+#java/awt/xembed/server/RunTestXEmbed.java                            generic-all
 
 ############################################################################
 
@@ -833,8 +831,8 @@ sun/rmi/transport/proxy/EagerHttpFallback.java                  generic-all
 
 # jdk_security
 
-# https://bugs.openjdk.java.net/browse/JDK-7054428
-java/security/SecureClassLoader/DefineClassByteBuffer.java      generic-all
+## https://bugs.openjdk.java.net/browse/JDK-7054428
+#java/security/SecureClassLoader/DefineClassByteBuffer.java      generic-all
 
 # Test ignored: Must set up KDC and setup Kerberos configuration file
 javax/security/auth/kerberos/KerberosHashEqualsTest.java             generic-all
@@ -947,8 +945,8 @@ javax/swing/JInternalFrame/8020708/bug8020708.java                   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8160880
 javax/swing/JInternalFrame/Test6325652.java                          generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8012466
-javax/swing/JInternalFrame/Test6505027.java                          generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8012466
+#javax/swing/JInternalFrame/Test6505027.java                          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8040914
 javax/swing/JLabel/6596966/bug6596966.java                           generic-all
@@ -962,14 +960,14 @@ javax/swing/JMenu/4515762/bug4515762.java                            generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8142534
 javax/swing/JMenu/8072900/WrongSelectionOnMouseOver.java             generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8015597
-javax/swing/JMenuBar/4750590/bug4750590.java                         generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8015597
+#javax/swing/JMenuBar/4750590/bug4750590.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8040916
 javax/swing/JMenuItem/4171437/bug4171437.java                        generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-6624200
-javax/swing/JMenuItem/4654927/bug4654927.java                        generic-all
+## https://bugs.openjdk.java.net/browse/JDK-6624200
+#javax/swing/JMenuItem/4654927/bug4654927.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8025083
 javax/swing/JMenuItem/6209975/bug6209975.java                        generic-all
@@ -1011,8 +1009,8 @@ javax/swing/JRootPane/4670486/bug4670486.java                        generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8169957
 javax/swing/JScrollBar/4708809/bug4708809.java                       generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8024407
-javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
+## https://bugs.openjdk.java.net/browse/JDK-8024407
+#javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028618
 javax/swing/JScrollBar/bug4202954/bug4202954.java                    windows-all
@@ -1020,11 +1018,11 @@ javax/swing/JScrollBar/bug4202954/bug4202954.java                    windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8169960
 javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java windows-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7107585
-javax/swing/JSlider/6348946/bug6348946.java                          generic-all
+## https://bugs.openjdk.java.net/browse/JDK-7107585
+#javax/swing/JSlider/6348946/bug6348946.java                          generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8004294
-javax/swing/JSpinner/4973721/bug4973721.java                         generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8004294
+#javax/swing/JSpinner/4973721/bug4973721.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169958
 javax/swing/JSpinner/5012888/bug5012888.java                         windows-all
@@ -1047,8 +1045,8 @@ javax/swing/JTableHeader/6889007/bug6889007.java.bug6889007          generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8170260
 javax/swing/JTabbedPane/4361477/bug4361477.java                      generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7112925
-javax/swing/JTabbedPane/4624207/bug4624207.java                      macosx-all
+## https://bugs.openjdk.java.net/browse/JDK-7112925
+#javax/swing/JTabbedPane/4624207/bug4624207.java                      macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028281
 javax/swing/JTabbedPane/7024235/Test7024235.java                     macosx-all
@@ -1119,8 +1117,8 @@ javax/swing/text/DefaultEditorKit/4278839/bug4278839.java            generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8050988
 javax/swing/text/GlyphPainter2/6427244/bug6427244.java               generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7147408
-javax/swing/text/StyledEditorKit/4506788/bug4506788.java             generic-all
+## https://bugs.openjdk.java.net/browse/JDK-7147408
+#javax/swing/text/StyledEditorKit/4506788/bug4506788.java             generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8041944
 javax/swing/text/View/8014863/bug8014863.java                        generic-all
@@ -1137,11 +1135,11 @@ javax/swing/text/html/parser/Test8017492.java                        generic-all
 # https://bugs.openjdk.java.net/browse/JDK-6962725
 javax/swing/JFileChooser/6738668/bug6738668.java                     generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8016746
-javax/swing/JTable/7068740/bug7068740.java                           generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8016746
+#javax/swing/JTable/7068740/bug7068740.java                           generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-4847025
-javax/swing/JTextArea/4697612/bug4697612.java                        linux-all
+## https://bugs.openjdk.java.net/browse/JDK-4847025
+#javax/swing/JTextArea/4697612/bug4697612.java                        linux-all
 
 ############################################################################
 
@@ -1274,8 +1272,8 @@ sun/security/provider/PolicyParser/ExtDirsDefaultPolicy.java         generic-all
 sun/security/provider/PolicyParser/PrincipalExpansionError.java      generic-all
 sun/security/tools/keytool/i18n.sh                                   generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7083664
-sun/security/tools/jarsigner/diffend.sh                              windows-all
+## https://bugs.openjdk.java.net/browse/JDK-7083664
+#sun/security/tools/jarsigner/diffend.sh                              windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8011134
 sun/security/ssl/com/sun/net/ssl/internal/ssl/X509TrustManagerImpl/ClientServer.java generic-all
