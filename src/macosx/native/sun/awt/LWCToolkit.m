@@ -429,6 +429,16 @@ Java_sun_awt_SunToolkit_closeSplashScreen(JNIEnv *env, jclass cls)
     dlclose(hSplashLib);
 }
 
+/*
+ * Class:     sun_lwawt_macosx_LWCToolkit
+ * Method:    printNativeCallStack
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL
+JNICALL Java_sun_lwawt_macosx_LWCToolkit_printNativeCallStack(JNIEnv *env, jclass cls)
+{
+    NSLog(@"Cocoa AWT: %@", [NSThread callStackSymbols]);
+}
 
 // TODO: definitely doesn't belong here (copied from fontpath.c in the
 // solaris tree)...
