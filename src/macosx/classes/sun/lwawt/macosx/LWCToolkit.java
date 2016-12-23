@@ -134,6 +134,7 @@ public final class LWCToolkit extends LWToolkit {
     };
 
     private native void loadNativeColors(final int[] systemColors, final int[] appleColors);
+    private native void printNativeCallStack();
 
     @Override
     protected void loadSystemColors(final int[] systemColors) {
