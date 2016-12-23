@@ -302,6 +302,19 @@ abstract class XDecoratedPeer extends XWindowPeer {
         super.handlePropertyNotify(xev);
 
         XPropertyEvent ev = xev.get_xproperty();
+        if( !insets_corrected && isReparented() &&
+                                         XWM.getWMID() == XWM.UNITY_COMPIZ_WM) {
+            int state = XWM.getWM().getState(this);
+            if ((state & Frame.MAXIMIZED_BOTH) ==  Frame.MAXIMIZED_BOTH) {
+                // Stop ignoring ConfigureNotify because no extents will be sent
+                // by WM for initially maximized decorated window.
+                // Re-request window bounds to ensure actual dimensions and
+                // notify the target with the initial size.
+                insets_corrected = true;
+                XlibWrapper.XConfigureWindow(XToolkit.getDisplay(),
+                                                             getWindow(), 0, 0);
+            }
+        }
         if (ev.get_atom() == XWM.XA_KDE_NET_WM_FRAME_STRUT.getAtom()
             || ev.get_atom() == XWM.XA_NET_FRAME_EXTENTS.getAtom())
         {
@@ -322,7 +335,6 @@ abstract class XDecoratedPeer extends XWindowPeer {
                 if (!in.equals(dimensions.getInsets())) {
                     handleCorrectInsets(in);
                 }
-                insets_corrected = true;
             }
         }
     }
