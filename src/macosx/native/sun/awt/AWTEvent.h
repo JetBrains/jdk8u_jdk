@@ -28,6 +28,10 @@
 
 #import "LWCToolkit.h"
 
+@interface NSEvent (NSEventExtension)
+- (NSString *)charactersIgnoringModifiersAndShift;
+@end
+
 jlong UTC(NSEvent *event);
 void DeliverJavaKeyEvent(JNIEnv *env, NSEvent *event, jobject peer);
 void DeliverJavaMouseEvent(JNIEnv *env, NSEvent *event, jobject peer);

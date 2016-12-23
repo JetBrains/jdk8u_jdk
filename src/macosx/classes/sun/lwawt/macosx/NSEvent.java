@@ -57,14 +57,17 @@ final class NSEvent {
     private short keyCode;
     private String characters;
     private String charactersIgnoringModifiers;
+    private String charactersIgnoringModifiersAndShift;
 
     // Called from native
-    NSEvent(int type, int modifierFlags, short keyCode, String characters, String charactersIgnoringModifiers) {
+    NSEvent(int type, int modifierFlags, short keyCode, String characters, String charactersIgnoringModifiers,
+            String charactersIgnoringModifiersAndShift) {
         this.type = type;
         this.modifierFlags = modifierFlags;
         this.keyCode = keyCode;
         this.characters = characters;
         this.charactersIgnoringModifiers = charactersIgnoringModifiers;
+        this.charactersIgnoringModifiersAndShift = charactersIgnoringModifiersAndShift;
     }
 
     // Called from native
@@ -136,6 +139,8 @@ final class NSEvent {
         return charactersIgnoringModifiers;
     }
 
+    String getCharactersIgnoringModifiersAndShift() {return charactersIgnoringModifiersAndShift;}
+
     String getCharacters() {
         return characters;
     }
@@ -145,7 +150,7 @@ final class NSEvent {
         return "NSEvent[" + getType() + " ," + getModifierFlags() + " ,"
                 + getClickCount() + " ," + getButtonNumber() + " ," + getX() + " ,"
                 + getY() + " ," + getAbsX() + " ," + getAbsY()+ " ," + getKeyCode() + " ,"
-                + getCharacters() + " ," + getCharactersIgnoringModifiers() + "]";
+                + getCharacters() + " ," + getCharactersIgnoringModifiers() + " ," + getCharactersIgnoringModifiersAndShift() + "]";
     }
 
     /*
@@ -269,7 +274,7 @@ final class NSEvent {
      * There is a small number of NS characters that need to be converted
      * into other characters before we pass them to AWT.
      */
-    static native char nsToJavaChar(char nsChar, int modifierFlags);
+    static native String nsToJavaChar(char nsChar, int modifierFlags);
 
     static boolean isPopupTrigger(int jmodifiers) {
         final boolean isRightButtonDown = ((jmodifiers & InputEvent.BUTTON3_DOWN_MASK) != 0);
