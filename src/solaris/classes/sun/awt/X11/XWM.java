@@ -104,7 +104,8 @@ final class XWM
         COMPIZ_WM = 12,
         LG3D_WM = 13,
         CWM_WM = 14,
-        MUTTER_WM = 15;
+        MUTTER_WM = 15,
+        UNITY_COMPIZ_WM = 16;
     public String toString() {
         switch  (WMID) {
           case NO_WM:
@@ -129,6 +130,8 @@ final class XWM
               return "Metacity";
           case COMPIZ_WM:
               return "Compiz";
+            case UNITY_COMPIZ_WM:
+              return "Unity Compiz";
           case LG3D_WM:
               return "LookingGlass";
           case CWM_WM:
@@ -572,6 +575,10 @@ final class XWM
         return isNetWMName("compiz");
     }
 
+    static boolean isUnityCompiz() {
+        return isNetWMName("Compiz");
+    }
+
     static boolean isLookingGlass() {
         return isNetWMName("LG3D");
     }
@@ -790,6 +797,8 @@ final class XWM
                 awt_wmgr = CWM_WM;
             } else if (doIsIceWM && isIceWM()) {
                 awt_wmgr = XWM.ICE_WM;
+            } else if (isUnityCompiz()) {
+                awt_wmgr = XWM.UNITY_COMPIZ_WM;
             }
             /*
              * We don't check for legacy WM when we already know that WM
@@ -1339,6 +1348,9 @@ final class XWM
               case NO_WM:
               case LG3D_WM:
                   res = zeroInsets;
+                  break;
+              case UNITY_COMPIZ_WM:
+                  res = new Insets(35, 1, 1, 1);
                   break;
               case MOTIF_WM:
               case OPENLOOK_WM:
