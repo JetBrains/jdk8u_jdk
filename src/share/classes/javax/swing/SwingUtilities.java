@@ -326,7 +326,8 @@ public class SwingUtilities implements SwingConstants
                                            sourceWheelEvent.isPopupTrigger(),
                                            sourceWheelEvent.getScrollType(),
                                            sourceWheelEvent.getScrollAmount(),
-                                           sourceWheelEvent.getWheelRotation());
+                                           sourceWheelEvent.getWheelRotation(),
+                                           sourceWheelEvent.getScrollingDelta());
         }
         else if (sourceEvent instanceof MenuDragMouseEvent) {
             MenuDragMouseEvent sourceMenuDragEvent = (MenuDragMouseEvent)sourceEvent;
