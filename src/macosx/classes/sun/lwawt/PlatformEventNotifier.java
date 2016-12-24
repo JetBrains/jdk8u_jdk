@@ -56,7 +56,7 @@ public interface PlatformEventNotifier {
 
     void notifyMouseWheelEvent(long when, int x, int y, int modifiers,
                                int scrollType, int scrollAmount,
-                               int wheelRotation, double preciseWheelRotation,
+                               int wheelRotation, double preciseWheelRotation, double scrollingDelta,
                                byte[] bdata);
     /*
      * Called by the delegate when a key is pressed.

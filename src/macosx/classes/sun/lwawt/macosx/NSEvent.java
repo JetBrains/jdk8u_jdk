@@ -47,8 +47,11 @@ final class NSEvent {
     private int buttonNumber;
     private int x;
     private int y;
-    private double scrollDeltaY;
-    private double scrollDeltaX;
+    private double deltaY;
+    private double deltaX;
+    private boolean hasPreciseScrollingDeltas;
+    private double scrollingDeltaY;
+    private double scrollingDeltaX;
     private int scrollPhase;
     private int absX;
     private int absY;
@@ -73,7 +76,9 @@ final class NSEvent {
     // Called from native
     NSEvent(int type, int modifierFlags, int clickCount, int buttonNumber,
                    int x, int y, int absX, int absY,
-                   double scrollDeltaY, double scrollDeltaX, int scrollPhase) {
+                   double deltaY, double deltaX,
+                   boolean hasPreciseScrollingDeltas, double scrollingDeltaY, double scrollingDeltaX,
+                   int scrollPhase) {
         this.type = type;
         this.modifierFlags = modifierFlags;
         this.clickCount = clickCount;
@@ -82,8 +87,11 @@ final class NSEvent {
         this.y = y;
         this.absX = absX;
         this.absY = absY;
-        this.scrollDeltaY = scrollDeltaY;
-        this.scrollDeltaX = scrollDeltaX;
+        this.deltaY = deltaY;
+        this.deltaX = deltaX;
+        this.hasPreciseScrollingDeltas = hasPreciseScrollingDeltas;
+        this.scrollingDeltaY = scrollingDeltaY;
+        this.scrollingDeltaX = scrollingDeltaX;
         this.scrollPhase = scrollPhase;
     }
 
@@ -111,12 +119,24 @@ final class NSEvent {
         return y;
     }
 
-    double getScrollDeltaY() {
-        return scrollDeltaY;
+    double getDeltaY() {
+        return deltaY;
     }
 
-    double getScrollDeltaX() {
-        return scrollDeltaX;
+    double getDeltaX() {
+        return deltaX;
+    }
+
+    boolean hasPreciseScrollingDeltas() {
+        return hasPreciseScrollingDeltas;
+    }
+
+    double getScrollingDeltaY() {
+        return scrollingDeltaY;
+    }
+
+    double getScrollingDeltaX() {
+        return scrollingDeltaX;
     }
 
     int getScrollPhase() {

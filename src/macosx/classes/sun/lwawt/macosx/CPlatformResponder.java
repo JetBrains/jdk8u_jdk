@@ -117,6 +117,8 @@ final class CPlatformResponder {
      */
     void handleScrollEvent(int x, int y, final int modifierFlags,
                            final double deltaX, final double deltaY,
+                           final boolean hasPreciseScrollingDeltas,
+                           final double scrollingDeltaX, final double scrollingDeltaY,
                            final int scrollPhase) {
         final int buttonNumber = CocoaConstants.kCGMouseButtonCenter;
         int jmodifiers = NSEvent.nsToJavaMouseModifiers(buttonNumber,
@@ -141,27 +143,28 @@ final class CPlatformResponder {
         int roundDeltaY = deltaAccumulatorY.getRoundedDelta(deltaY, scrollPhase);
 
         // Vertical scroll.
-        if (!isShift && (deltaY != 0.0 || roundDeltaY != 0)) {
-            dispatchScrollEvent(x, y, jmodifiers, roundDeltaY, deltaY);
+        if (!isShift && (scrollingDeltaY != 0.0 || deltaY != 0.0 || roundDeltaY != 0)) {
+            dispatchScrollEvent(x, y, jmodifiers, roundDeltaY, deltaY, scrollingDeltaY);
         }
         // Horizontal scroll or shirt+vertical scroll.
+        final double scrollingDelta = isShift && scrollingDeltaY != 0.0 ? scrollingDeltaY : scrollingDeltaX;
         final double delta = isShift && deltaY != 0.0 ? deltaY : deltaX;
         final int roundDelta = isShift && roundDeltaY != 0 ? roundDeltaY : roundDeltaX;
-        if (delta != 0.0 || roundDelta != 0) {
+        if (scrollingDelta != 0.0 || delta != 0.0 || roundDelta != 0) {
             jmodifiers |= InputEvent.SHIFT_DOWN_MASK;
-            dispatchScrollEvent(x, y, jmodifiers, roundDelta, delta);
+            dispatchScrollEvent(x, y, jmodifiers, roundDelta, delta, scrollingDelta);
         }
     }
 
     private void dispatchScrollEvent(final int x, final int y,
                                      final int modifiers,
-                                     final int roundDelta, final double delta) {
+                                     final int roundDelta, final double delta, final double scrollingDelta) {
         final long when = System.currentTimeMillis();
         final int scrollType = MouseWheelEvent.WHEEL_UNIT_SCROLL;
         final int scrollAmount = 1;
         // invert the wheelRotation for the peer
         eventNotifier.notifyMouseWheelEvent(when, x, y, modifiers, scrollType,
-                scrollAmount, -roundDelta, -delta, null);
+                scrollAmount, -roundDelta, -delta, -scrollingDelta, null);
     }
 
     private void handleFlagChangedEvent(int modifierFlags, short keyCode) {
