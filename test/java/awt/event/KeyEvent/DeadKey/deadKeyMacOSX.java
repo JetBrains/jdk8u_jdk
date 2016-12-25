@@ -98,9 +98,10 @@ public class deadKeyMacOSX {
                     if (keyCode != KeyEvent.VK_DEAD_ACUTE) {
                         throw new RuntimeException("Dead ACUTE is not pressed.");
                     }
-                    if (keyChar != 0xB4) {
-                        throw new RuntimeException("Pressed char is not dead acute.");
-                    }
+                    // We should not send dead key char here
+                    //if (keyChar != 0xB4) {
+                    //    throw new RuntimeException("Pressed char is not dead acute.");
+                    //}
 
                     state++;
                     break;
@@ -108,9 +109,10 @@ public class deadKeyMacOSX {
                     if (keyCode != KeyEvent.VK_A) {
                         throw new RuntimeException("A is not pressed.");
                     }
-                    if (keyChar != 0xE1) {
-                        throw new RuntimeException("A char does not have ACCUTE accent");
-                    }
+                    // We should not send dead key char here
+                    //if (keyChar != 0xE1) {
+                    //    throw new RuntimeException("A char does not have ACCUTE accent");
+                    //}
                     state++;
                     break;
                 default:
