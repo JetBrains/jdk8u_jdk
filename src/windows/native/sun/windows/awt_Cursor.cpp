@@ -473,6 +473,7 @@ Java_sun_awt_windows_WGlobalCursorManager_getCursorPos(JNIEnv *env,
 
     POINT p;
     ::GetCursorPos(&p);
+    AwtWin32GraphicsDevice::ScaleDownDPoint(&p);
     env->SetIntField(point, AwtCursor::pointXID, (jint)p.x);
     env->SetIntField(point, AwtCursor::pointYID, (jint)p.y);
 
