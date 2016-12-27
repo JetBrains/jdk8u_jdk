@@ -85,6 +85,7 @@ Java_sun_awt_DefaultMouseInfoPeer_fillPointWithCoords(JNIEnv *env, jclass cls, j
     POINT pt;
 
     VERIFY(::GetCursorPos(&pt));
+    AwtWin32GraphicsDevice::ScaleDownDPoint(&pt);
     if (pointClass == NULL) {
         jclass pointClassLocal = env->FindClass("java/awt/Point");
         DASSERT(pointClassLocal != NULL);
@@ -95,20 +96,13 @@ Java_sun_awt_DefaultMouseInfoPeer_fillPointWithCoords(JNIEnv *env, jclass cls, j
         env->DeleteLocalRef(pointClassLocal);
     }
 
-    int screen = AwtWin32GraphicsDevice::GetDefaultDeviceIndex();
-    Devices::InstanceAccess devices;
-    AwtWin32GraphicsDevice *device = devices->GetDevice(screen);
-
     xID = env->GetFieldID(pointClass, "x", "I");
     CHECK_NULL_RETURN(xID, (jint)0);
     yID = env->GetFieldID(pointClass, "y", "I");
     CHECK_NULL_RETURN(yID, (jint)0);
 
-    int x = (device == NULL) ? pt.x : device->ScaleDownX(pt.x);
-    int y = (device == NULL) ? pt.y : device->ScaleDownY(pt.y);
-
-    env->SetIntField(point, xID, x);
-    env->SetIntField(point, yID, y);
+    env->SetIntField(point, xID, pt.x);
+    env->SetIntField(point, yID, pt.y);
 
     // Always return 0 on Windows: we assume there's always a
     // virtual screen device used.

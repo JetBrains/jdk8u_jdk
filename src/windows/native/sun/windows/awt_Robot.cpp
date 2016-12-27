@@ -80,12 +80,9 @@ void AwtRobot::MouseMove( jint x, jint y)
                                      (PVOID)newSpeed,
                                      SPIF_SENDCHANGE);
 
-      int primaryIndex = AwtWin32GraphicsDevice::GetDefaultDeviceIndex();
-      Devices::InstanceAccess devices;
-      AwtWin32GraphicsDevice *device = devices->GetDevice(primaryIndex);
-
-      x = (device == NULL) ? x : device->ScaleUpX(x);
-      y = (device == NULL) ? y : device->ScaleUpY(y);
+      AwtWin32GraphicsDevice *device = AwtWin32GraphicsDevice::GetDeviceByBounds(RECT_BOUNDS(x, y, 0, 0));
+      x = device == NULL ? x : device->ScaleUpDX(x);
+      y = device == NULL ? y : device->ScaleUpDY(y);
 
       POINT curPos;
       ::GetCursorPos(&curPos);
@@ -236,8 +233,8 @@ void AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height, jintArray p
         VERIFY(::BitBlt(hdcMem, 0, 0, width, height, hdcScreen, x, y,
                SRCCOPY | CAPTUREBLT) != 0);
     } else {
-        int sX = (device == NULL) ? x : device->ScaleUpX(x);
-        int sY = (device == NULL) ? y : device->ScaleUpY(y);
+        int sX = (device == NULL) ? x : device->ScaleUpDX(x);
+        int sY = (device == NULL) ? y : device->ScaleUpDY(y);
         VERIFY(::StretchBlt(hdcMem, 0, 0, width, height,
                hdcScreen, sX, sY, sWidth, sHeight,
                SRCCOPY | CAPTUREBLT) != 0);
