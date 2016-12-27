@@ -360,7 +360,8 @@ public class MouseWheelEvent extends MouseEvent {
      * @throws IllegalArgumentException if <code>source</code> is null
      * @see MouseEvent#MouseEvent(java.awt.Component, int, long, int, int, int, int, boolean)
      * @see MouseEvent#MouseEvent(java.awt.Component, int, long, int, int, int, int, int, int, boolean, int)
-     * @since 1.8
+     * @deprecated This constructor is available only in JetBrains Runtime
+     * @since 1.9
      */
     public MouseWheelEvent (Component source, int id, long when, int modifiers,
                             int x, int y, int xAbs, int yAbs, int clickCount, boolean popupTrigger,
