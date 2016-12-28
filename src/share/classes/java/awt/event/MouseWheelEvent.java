@@ -361,7 +361,7 @@ public class MouseWheelEvent extends MouseEvent {
      * @see MouseEvent#MouseEvent(java.awt.Component, int, long, int, int, int, int, boolean)
      * @see MouseEvent#MouseEvent(java.awt.Component, int, long, int, int, int, int, int, int, boolean, int)
      * @deprecated This constructor is available only in JetBrains Runtime
-     * @since 1.9
+     * @since 1.8
      */
     public MouseWheelEvent (Component source, int id, long when, int modifiers,
                             int x, int y, int xAbs, int yAbs, int clickCount, boolean popupTrigger,
