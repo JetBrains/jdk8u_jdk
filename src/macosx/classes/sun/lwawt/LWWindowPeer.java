@@ -912,7 +912,7 @@ public class LWWindowPeer
     @Override
     public void notifyMouseWheelEvent(long when, int x, int y, int modifiers,
                                       int scrollType, int scrollAmount,
-                                      int wheelRotation, double preciseWheelRotation, double scrollingDelta,
+                                      int wheelRotation, double preciseWheelRotation,
                                       byte[] bdata)
     {
         // TODO: could we just use the last mouse event target here?
@@ -933,7 +933,7 @@ public class LWWindowPeer
                                       0, 0, /* screenX, Y */
                                       0 /* clickCount */, false /* popupTrigger */,
                                       scrollType, scrollAmount,
-                                      wheelRotation, preciseWheelRotation, scrollingDelta));
+                                      wheelRotation, preciseWheelRotation));
     }
 
     /*
