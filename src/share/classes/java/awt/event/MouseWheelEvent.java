@@ -89,13 +89,6 @@ import java.lang.annotation.Native;
  * notches. Applications can benefit by using this method to process
  * mouse wheel events more precisely, and thus, making visual perception
  * smoother.
- * <P>
- * Some devices (e.g. high-precision touchpads) may report scrolling deltas
- * in absolute values rather than in fractions of a "click". This data is
- * available via the {@link #getScrollingDelta} method and can be used,
- * for example, to implement pixel-perfect scrolling (which cannot be
- * implemented via the {@link #getPreciseWheelRotation} method, as fractions
- * of scrolling "units" cannot be reliably translated to pixel-precise deltas).
  *
  * @author Brent Christian
  * @see MouseWheelListener
@@ -160,18 +153,11 @@ public class MouseWheelEvent extends MouseEvent {
      */
     double preciseWheelRotation;
 
-    /**
-     * Contains scrolling delta as an absolute value (if available).
-     *
-     * @see #getScrollingDelta
-     */
-    double scrollingDelta;
-
     /*
      * serialVersionUID
      */
 
-    private static final long serialVersionUID = -991214153494842848L;
+    private static final long serialVersionUID = 6459879390515399677L;
 
     /**
      * Constructs a <code>MouseWheelEvent</code> object with the
@@ -313,61 +299,6 @@ public class MouseWheelEvent extends MouseEvent {
                             int x, int y, int xAbs, int yAbs, int clickCount, boolean popupTrigger,
                             int scrollType, int scrollAmount, int wheelRotation, double preciseWheelRotation) {
 
-        this(source, id, when, modifiers, x, y, xAbs, yAbs, clickCount, popupTrigger,
-             scrollType, scrollAmount, wheelRotation, preciseWheelRotation, 0);
-    }
-
-    /**
-     * Constructs a <code>MouseWheelEvent</code> object with the specified
-     * source component, type, modifiers, coordinates, absolute coordinates,
-     * scroll type, scroll amount, wheel rotation and scrolling delta.
-     * <p>Note that passing in an invalid <code>id</code> parameter results
-     * in unspecified behavior. This method throws an
-     * <code>IllegalArgumentException</code> if <code>source</code> equals
-     * <code>null</code>.
-     * <p>Even if inconsistent values for relative and absolute coordinates
-     * are passed to the constructor, a <code>MouseWheelEvent</code> instance
-     * is still created and no exception is thrown.
-     *
-     * @param source         the <code>Component</code> that originated the event
-     * @param id             the integer value that identifies the event
-     * @param when           a long value that gives the time when the event occurred
-     * @param modifiers      the modifier keys down during event
-     *                       (shift, ctrl, alt, meta)
-     * @param x              the horizontal <code>x</code> coordinate for the
-     *                       mouse location
-     * @param y              the vertical <code>y</code> coordinate for the
-     *                       mouse location
-     * @param xAbs           the absolute horizontal <code>x</code> coordinate for
-     *                       the mouse location
-     * @param yAbs           the absolute vertical <code>y</code> coordinate for
-     *                       the mouse location
-     * @param clickCount     the number of mouse clicks associated with the event
-     * @param popupTrigger   a boolean value, <code>true</code> if this event is a trigger
-     *                       for a popup-menu
-     * @param scrollType     the type of scrolling which should take place in
-     *                       response to this event;  valid values are
-     *                       <code>WHEEL_UNIT_SCROLL</code> and
-     *                       <code>WHEEL_BLOCK_SCROLL</code>
-     * @param  scrollAmount  for scrollType <code>WHEEL_UNIT_SCROLL</code>,
-     *                       the number of units to be scrolled
-     * @param wheelRotation  the integer number of "clicks" by which the mouse wheel
-     *                       was rotated
-     * @param preciseWheelRotation the double number of "clicks" by which the mouse wheel
-     *                       was rotated
-     * @param scrollingDelta the scrolling delta as an absolute value
-     *
-     * @throws IllegalArgumentException if <code>source</code> is null
-     * @see MouseEvent#MouseEvent(java.awt.Component, int, long, int, int, int, int, boolean)
-     * @see MouseEvent#MouseEvent(java.awt.Component, int, long, int, int, int, int, int, int, boolean, int)
-     * @deprecated This constructor is available only in JetBrains Runtime
-     * @since 1.8
-     */
-    public MouseWheelEvent (Component source, int id, long when, int modifiers,
-                            int x, int y, int xAbs, int yAbs, int clickCount, boolean popupTrigger,
-                            int scrollType, int scrollAmount,
-                            int wheelRotation, double preciseWheelRotation, double scrollingDelta) {
-
         super(source, id, when, modifiers, x, y, xAbs, yAbs, clickCount,
               popupTrigger, MouseEvent.NOBUTTON);
 
@@ -375,7 +306,7 @@ public class MouseWheelEvent extends MouseEvent {
         this.scrollAmount = scrollAmount;
         this.wheelRotation = wheelRotation;
         this.preciseWheelRotation = preciseWheelRotation;
-        this.scrollingDelta = scrollingDelta;
+
     }
 
     /**
@@ -422,7 +353,6 @@ public class MouseWheelEvent extends MouseEvent {
      * the user, and positive values if the mouse wheel was rotated down/
      * towards the user
      * @see #getPreciseWheelRotation
-     * @see #getScrollingDelta
      */
     public int getWheelRotation() {
         return wheelRotation;
@@ -437,29 +367,10 @@ public class MouseWheelEvent extends MouseEvent {
      * the user, and positive values if the mouse wheel was rotated down or
      * towards the user
      * @see #getWheelRotation
-     * @see #getScrollingDelta
      * @since 1.7
      */
     public double getPreciseWheelRotation() {
         return preciseWheelRotation;
-    }
-
-    /**
-     * Returns the scrolling delta as an absolute value.
-     * Returns 0.0 when scrolling delta is available only as a number of "clicks" or
-     * as a fraction of a "click".
-     * <P>
-     * The method returns natural numbers, however, for future extensibility,
-     * the return type is declared as {@code double}.
-     *
-     * @return negative values for scrolling up, positive values for scrolling down
-     * (natural numbers)
-     * @see #getWheelRotation
-     * @see #getPreciseWheelRotation
-     * @since 1.8
-     */
-    public double getScrollingDelta() {
-        return scrollingDelta;
     }
 
     /**
@@ -533,7 +444,6 @@ public class MouseWheelEvent extends MouseEvent {
         }
         return super.paramString()+",scrollType="+scrollTypeStr+
          ",scrollAmount="+getScrollAmount()+",wheelRotation="+
-         getWheelRotation()+",preciseWheelRotation="+getPreciseWheelRotation()+
-         ",scrollingDelta="+getScrollingDelta();
+         getWheelRotation()+",preciseWheelRotation="+getPreciseWheelRotation();
     }
 }

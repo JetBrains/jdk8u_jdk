@@ -5032,8 +5032,7 @@ public abstract class Component implements ImageObserver, MenuContainer,
                                              e.getScrollType(),
                                              e.getScrollAmount(),
                                              e.getWheelRotation(),
-                                             e.getPreciseWheelRotation(),
-                                             e.getScrollingDelta());
+                                             e.getPreciseWheelRotation());
                 ((AWTEvent)e).copyPrivateDataInto(newMWE);
                 // When dispatching a wheel event to
                 // ancestor, there is no need trying to find descendant
