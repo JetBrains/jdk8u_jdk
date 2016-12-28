@@ -31,7 +31,6 @@
 #include "GeomUtilities.h"
 #import "LWCToolkit.h"
 #import "AWTWindow.h"
-#import "OSVersion.h"
 
 #define kImageInset 4.0
 
@@ -137,9 +136,8 @@ static NSSize ScaledImageSizeForStatusBar(NSSize imageSize) {
 
     clickCount = [event clickCount];
 
-    bool hasPreciseScrollingDeltas = type == NSScrollWheel && !isSnowLeopardOrLower() && [event hasPreciseScrollingDeltas];
     static JNF_CLASS_CACHE(jc_NSEvent, "sun/lwawt/macosx/NSEvent");
-    static JNF_CTOR_CACHE(jctor_NSEvent, jc_NSEvent, "(IIIIIIIIDDZDDI)V");
+    static JNF_CTOR_CACHE(jctor_NSEvent, jc_NSEvent, "(IIIIIIIIDDI)V");
     jobject jEvent = JNFNewObject(env, jctor_NSEvent,
                                   [event type],
                                   [event modifierFlags],
@@ -149,9 +147,6 @@ static NSSize ScaledImageSizeForStatusBar(NSSize imageSize) {
                                   (jint)absP.x, (jint)absP.y,
                                   [event deltaY],
                                   [event deltaX],
-                                  hasPreciseScrollingDeltas,
-                                  hasPreciseScrollingDeltas ? [event scrollingDeltaY] : 0.0,
-                                  hasPreciseScrollingDeltas ? [event scrollingDeltaX] : 0.0,
                                   [AWTToolkit scrollStateWithEvent: event]);
     if (jEvent == nil) {
         // Unable to create event by some reason.

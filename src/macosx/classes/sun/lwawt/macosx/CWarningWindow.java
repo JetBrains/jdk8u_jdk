@@ -248,7 +248,7 @@ public final class CWarningWindow extends CPlatformWindow
     @Override
     public void notifyMouseWheelEvent(long when, int x, int y, int modifiers,
                                       int scrollType, int scrollAmount,
-                                      int wheelRotation, double preciseWheelRotation, double scrollingDelta,
+                                      int wheelRotation, double preciseWheelRotation,
                                       byte[] bdata) {
     }
 
