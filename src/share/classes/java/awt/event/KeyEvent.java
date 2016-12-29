@@ -1258,7 +1258,8 @@ public class KeyEvent extends InputEvent {
         }
 
         if (keyCode > 0x0300 && keyCode < 0x0400) {
-            return asciiCodeToString.get(keyCode);
+            String asciiCodeStringRepresentation = asciiCodeToString.get(keyCode);
+            if (asciiCodeStringRepresentation != null) return asciiCodeStringRepresentation;
         }
 
         switch(keyCode) {
