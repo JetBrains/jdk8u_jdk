@@ -41,6 +41,9 @@ import java.security.*;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.net.MalformedURLException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import sun.awt.*;
 import sun.awt.datatransfer.DataTransferer;
@@ -606,6 +609,30 @@ public final class LWCToolkit extends LWToolkit {
         }
     }
 
+    private static final AtomicInteger blockingRunLoopCounter = new AtomicInteger(0);
+    private static final AtomicBoolean priorityInvocationPending = new AtomicBoolean(false);
+
+    @Override
+    public void unsafeNonblockingExecute(Runnable runnable) {
+        if (!EventQueue.isDispatchThread()) {
+            throw new Error("the method must be called on the Event Dispatching thread");
+        }
+        if (runnable == null) return;
+
+        synchronized (priorityInvocationPending) {
+            priorityInvocationPending.set(true);
+        }
+        AWTAccessor.getEventQueueAccessor().createSecondaryLoop(
+            getSystemEventQueue(),
+            () -> blockingRunLoopCounter.get() > 0).enter();
+
+        try {
+            runnable.run();
+        } finally {
+            priorityInvocationPending.set(false);
+        }
+    }
+
     /**
      * Kicks an event over to the appropriate eventqueue and waits for it to
      * finish To avoid deadlocking, we manually run the NSRunLoop while waiting
@@ -615,7 +642,15 @@ public final class LWCToolkit extends LWToolkit {
      * runloop Does not dispatch native events while in the loop
      */
     public static void invokeAndWait(Runnable runnable, Component component)
-            throws InvocationTargetException {
+            throws InvocationTargetException
+    {
+        boolean nonBlockingRunLoop;
+
+        synchronized (priorityInvocationPending) {
+            nonBlockingRunLoop = priorityInvocationPending.get();
+            if (!nonBlockingRunLoop) blockingRunLoopCounter.incrementAndGet();
+        }
+
         final long mediator = createAWTRunLoopMediator();
 
         InvocationEvent invocationEvent =
@@ -639,7 +674,8 @@ public final class LWCToolkit extends LWToolkit {
             ((LWCToolkit)Toolkit.getDefaultToolkit()).getSystemEventQueueForInvokeAndWait().postEvent(invocationEvent);
         }
 
-        doAWTRunLoop(mediator, false);
+        doAWTRunLoop(mediator, nonBlockingRunLoop);
+        if (!nonBlockingRunLoop) blockingRunLoopCounter.decrementAndGet();
 
         Throwable eventException = invocationEvent.getException();
         if (eventException != null) {

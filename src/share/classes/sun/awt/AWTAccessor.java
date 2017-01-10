@@ -43,6 +43,7 @@ import java.security.AccessControlContext;
 import java.io.File;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.function.BooleanSupplier;
 
 /**
  * The AWTAccessor utility class.
@@ -510,6 +511,11 @@ public final class AWTAccessor {
          * Gets most recent event time in the EventQueue
          */
         long getMostRecentEventTime(EventQueue eventQueue);
+
+        /**
+         * Creates a secondary loop with the provided condition.
+         */
+        SecondaryLoop createSecondaryLoop(EventQueue eventQueue, BooleanSupplier cond);
     }
 
     /*
