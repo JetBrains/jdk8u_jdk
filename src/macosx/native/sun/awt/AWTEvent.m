@@ -26,7 +26,6 @@
 #import <JavaNativeFoundation/JavaNativeFoundation.h>
 #import <JavaRuntimeSupport/JavaRuntimeSupport.h>
 #import <sys/time.h>
-#include <Carbon/Carbon.h>
 
 #import "jni_util.h" 
 #import "LWCToolkit.h"
