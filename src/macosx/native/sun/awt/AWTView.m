@@ -546,7 +546,7 @@ AWT_ASSERT_APPKIT_THREAD;
 
     if (status == noErr && isDeadKeyPressed != 0) {
 
-        if (event.type != NSEventTypeKeyUp) {
+        if (event.type != 11 /*NSEventTypeKeyUp*/) {
             // We send only key release for dead keys
             return;
         }
