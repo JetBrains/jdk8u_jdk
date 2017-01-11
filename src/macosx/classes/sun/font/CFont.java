@@ -32,8 +32,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-;
-
 // Right now this class is final to avoid a problem with native code.
 // For some reason the JNI IsInstanceOf was not working correctly
 // so we are checking the class specifically. If we subclass this
@@ -249,8 +247,9 @@ public final class CFont extends PhysicalFont implements FontSubstitution {
 
     @Override
     protected boolean isAAT() {
-        // using CoreText layout in Harfbuzz code leads to wrong advances for emoji glyphs
-        return !"AppleColorEmoji".equals(nativeFontName) && super.isAAT();
+        // CoreText layout code ignores fractional metrics font attribute
+        // also, using CoreText layout in Harfbuzz code leads to wrong advances for emoji glyphs
+        return false;
     }
 
     // <rdar://problem/5321707> sun.font.Font2D caches the last used strike,
