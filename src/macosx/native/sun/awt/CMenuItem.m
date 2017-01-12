@@ -72,8 +72,9 @@ JNF_COCOA_ENTER(env);
 
     NSEvent *currEvent = [[NSApplication sharedApplication] currentEvent];
 
-    if (AWTToolkit.latestPerformKeyEquivalentEvent != NULL && [AWTToolkit.latestPerformKeyEquivalentEvent isEqual:currEvent]) {
-        AWTToolkit.latestPerformKeyEquivalentEvent = NULL;
+    NSEvent* latestPerformKeyEquivalentEvent = [AWTToolkit latestPerformKeyEquivalentEvent];
+    if (latestPerformKeyEquivalentEvent != NULL && [currEvent isEqual:latestPerformKeyEquivalentEvent]) {
+        [AWTToolkit setLatestPerformKeyEquivalentEvent:NULL];
         return;
     }
 
