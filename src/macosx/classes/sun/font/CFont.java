@@ -31,12 +31,20 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 // Right now this class is final to avoid a problem with native code.
 // For some reason the JNI IsInstanceOf was not working correctly
 // so we are checking the class specifically. If we subclass this
 // we need to modify the native code in CFontWrapper.m
 public final class CFont extends PhysicalFont implements FontSubstitution {
+    private static final boolean useCoreTextLayout;
+
+    static {
+        useCoreTextLayout = AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
+                Boolean.getBoolean("sun.font.use.coretext.layout"));
+    }
 
     /* CFontStrike doesn't call these methods so they are unimplemented.
      * They are here to meet the requirements of PhysicalFont, needed
@@ -249,7 +257,7 @@ public final class CFont extends PhysicalFont implements FontSubstitution {
     protected boolean isAAT() {
         // CoreText layout code ignores fractional metrics font attribute
         // also, using CoreText layout in Harfbuzz code leads to wrong advances for emoji glyphs
-        return false;
+        return useCoreTextLayout && !"AppleColorEmoji".equals(nativeFontName) && super.isAAT();
     }
 
     // <rdar://problem/5321707> sun.font.Font2D caches the last used strike,
