@@ -295,7 +295,10 @@ abstract class XDecoratedPeer extends XWindowPeer {
     }
 
     private void resetWMSetInsets() {
-        wm_set_insets = null;
+        if (XWM.getWMID() != XWM.UNITY_COMPIZ_WM) {
+            currentInsets = new Insets(0, 0, 0, 0);
+            wm_set_insets = null;
+        }
     }
 
     public void handlePropertyNotify(XEvent xev) {
@@ -877,7 +880,6 @@ abstract class XDecoratedPeer extends XWindowPeer {
     public void setResizable(boolean resizable) {
         int fs = winAttr.functions;
         if (!isResizable() && resizable) {
-            currentInsets = new Insets(0, 0, 0, 0);
             resetWMSetInsets();
             if (!isEmbedded()) {
                 setReparented(false);
@@ -891,7 +893,6 @@ abstract class XDecoratedPeer extends XWindowPeer {
             winAttr.functions = fs;
             XWM.setShellResizable(this);
         } else if (isResizable() && !resizable) {
-            currentInsets = new Insets(0, 0, 0, 0);
             resetWMSetInsets();
             if (!isEmbedded()) {
                 setReparented(false);
