@@ -283,6 +283,10 @@ AWT_ASSERT_APPKIT_THREAD;
     fProcessingKeystroke = YES;
     fKeyEventsNeeded = YES;
 
+    if ([event keyCode] == 24 && (([event modifierFlags] & (NSControlKeyMask | NSCommandKeyMask)) != 0)) {
+        return;
+    }
+
     // Allow TSM to look at the event and potentially send back NSTextInputClient messages.
     [self interpretKeyEvents:[NSArray arrayWithObject:event]];
 
@@ -359,6 +363,12 @@ AWT_ASSERT_APPKIT_THREAD;
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent *) event {
+
+    if ([event keyCode] == 0) return NO;
+
+    if ([event keyCode] == 24 && [[event characters] isEqual:@"+"]) {
+        return 0;
+    }
 
     AWTToolkit.latestPerformKeyEquivalentEvent = event;
 
