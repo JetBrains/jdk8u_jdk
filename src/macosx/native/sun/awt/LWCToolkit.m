@@ -51,6 +51,12 @@ jint* gButtonDownMasks;
 
 @implementation AWTToolkit
 
+static NSEvent* latestPerformKeyEquivalentEvent;
++ (NSEvent*) latestPerformKeyEquivalentEvent
+{ @synchronized(self) { return latestPerformKeyEquivalentEvent; } }
++ (void) setLatestPerformKeyEquivalentEvent:(NSEvent*) e
+{ @synchronized(self) { latestPerformKeyEquivalentEvent = e; } }
+
 static long eventCount;
 
 + (long) getEventCount{

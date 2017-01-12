@@ -360,6 +360,8 @@ AWT_ASSERT_APPKIT_THREAD;
 
 - (BOOL) performKeyEquivalent: (NSEvent *) event {
 
+    AWTToolkit.latestPerformKeyEquivalentEvent = event;
+
     // if IM is active key events should be ignored
     if (![self hasMarkedText] && !fInPressAndHold) {
         [self deliverJavaKeyEventHelper: event];

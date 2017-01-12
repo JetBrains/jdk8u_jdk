@@ -72,25 +72,8 @@ JNF_COCOA_ENTER(env);
 
     NSEvent *currEvent = [[NSApplication sharedApplication] currentEvent];
 
-    BOOL modifierIsPressed = NO;
-
-    if( NSAlphaShiftKeyMask & [NSEvent modifierFlags] ){
-        modifierIsPressed = YES;
-    }
-
-    if( NSShiftKeyMask & [NSEvent modifierFlags] ){
-        modifierIsPressed = YES;
-    }
-
-    if( NSControlKeyMask & [NSEvent modifierFlags] ){
-       modifierIsPressed = YES;
-    }
-
-    if( NSCommandKeyMask & [NSEvent modifierFlags] ){
-       modifierIsPressed = YES;
-    }
-
-    if (modifierIsPressed){
+    if (AWTToolkit.latestPerformKeyEquivalentEvent != NULL && [AWTToolkit.latestPerformKeyEquivalentEvent isEqual:currEvent]) {
+        AWTToolkit.latestPerformKeyEquivalentEvent = NULL;
         return;
     }
 
