@@ -74,6 +74,7 @@ JNF_COCOA_ENTER(env);
 
     NSEvent* latestPerformKeyEquivalentEvent = [AWTToolkit latestPerformKeyEquivalentEvent];
     if (latestPerformKeyEquivalentEvent != NULL && [currEvent isEqual:latestPerformKeyEquivalentEvent]) {
+        [latestPerformKeyEquivalentEvent release];
         [AWTToolkit setLatestPerformKeyEquivalentEvent:NULL];
         return;
     }
