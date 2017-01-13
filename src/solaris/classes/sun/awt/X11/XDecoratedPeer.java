@@ -347,9 +347,29 @@ abstract class XDecoratedPeer extends XWindowPeer {
                 if (!isEmbedded() && !isTargetUndecorated()) {
                     lastKnownInsets.put(getClass(), in);
                 }
-                if (!in.equals(dimensions.getInsets()) ||
-                                                !dimensions.isClientSizeSet()) {
-                    handleCorrectInsets(in);
+                if (!in.equals(dimensions.getInsets())) {
+                    if (insets_corrected || isMaximized()) {
+                        currentInsets = in;
+                        insets_corrected = true;
+                        // insets were changed by WM. To handle this situation
+                        // re-request window bounds because the current
+                        // dimensions may be not actual as well.
+                        XlibWrapper.XConfigureWindow(XToolkit.getDisplay(),
+                                                             getWindow(), 0, 0);
+                    } else {
+                        // recalculate dimensions when window is just created
+                        // and the initially guessed insets were wrong
+                        handleCorrectInsets(in);
+                    }
+                } else if (!insets_corrected || !dimensions.isClientSizeSet()) {
+                    insets_corrected = true;
+                    // initial insets were guessed correctly. Re-request
+                    // frame bounds because they may be changed by WM if the
+                    // initial window position overlapped desktop's toolbars.
+                    // This should initiate the final ConfigureNotify upon which
+                    // the target will be notified with the final size.
+                    XlibWrapper.XConfigureWindow(XToolkit.getDisplay(),
+                                                             getWindow(), 0, 0);
                 }
             }
         }
@@ -498,6 +518,9 @@ abstract class XDecoratedPeer extends XWindowPeer {
                 Insets res = getWMSetInsets(null);
                 if (res == null) {
                     res = XWM.getWM().guessInsets(this);
+                    if (res != null) {
+                        res = copy(res);
+                    }
                 }
                 return res;
             }
