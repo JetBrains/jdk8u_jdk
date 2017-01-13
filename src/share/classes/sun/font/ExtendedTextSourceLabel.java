@@ -765,17 +765,11 @@ class ExtendedTextSourceLabel extends ExtendedTextLabel implements Decoration.La
         charInfo[cp + vish] = cvisb - cvist;
         cc++;
 
-        /* We may have consumed multiple glyphs for this char position.
-         * Map those extra consumed glyphs to char positions that would follow
-         * up to the index prior to that which begins the next cluster.
-         * If we have reached the last glyph (reached gxlimit) then we need to
-         * map remaining unmapped chars to the same location as the last one.
-         */
         int tgt;
         if (gx == gxlimit) {
            tgt = charInfo.length / numvals;
         } else {
-           tgt = indices[gx]-1;
+           tgt = indices[gx];
         }
         if (DEBUG) {
            System.err.println("gx=" + gx + " gxlimit=" + gxlimit +
