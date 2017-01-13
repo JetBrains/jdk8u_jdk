@@ -464,42 +464,16 @@ AWT_ASSERT_APPKIT_THREAD;
         return;
     }
 
-    // setup an image view for the dock tile
-    NSRect frame = NSMakeRect(0, 0, dockTile.size.width, dockTile.size.height);
-    NSImageView *dockImageView = [[NSImageView alloc] initWithFrame: frame];
-    [dockImageView setImageScaling:NSImageScaleProportionallyUpOrDown];
-    [dockImageView setImage:image];
-
-    // add it to the NSDockTile
-    [dockTile setContentView: dockImageView];
-    [dockTile display];
-
-    [dockImageView release];
+    // Set the app's icon instead to meet Retina.
+    [NSApp setApplicationIconImage:image];
 }
 
 // Obtains the image of the Dock icon, either manually set, a drawn copy, or the default NSApplicationIcon
 + (NSImage *)_dockIconImage {
 AWT_ASSERT_APPKIT_THREAD;
 
-    NSDockTile *dockTile = [NSApp dockTile];
-    NSView *view = [dockTile contentView];
-
-    if ([view isKindOfClass:[NSImageView class]]) {
-        NSImage *img = [((NSImageView *)view) image];
-        if (img) return img;
-    }
-
-    if (view == nil) {
-        return [NSImage imageNamed:@"NSApplicationIcon"];
-    }
-
-    NSRect frame = [view frame];
-    NSImage *image = [[NSImage alloc] initWithSize:frame.size];
-    [image lockFocus];
-    [view drawRect:frame];
-    [image unlockFocus];
-    [image autorelease];
-    return image;
+    // The app's dock icon defaults to the app's icon (see the spec) which is Retina-aware unlike the dock icon.
+    return [NSApp applicationIconImage];
 }
 
 @end
