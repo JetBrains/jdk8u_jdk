@@ -243,11 +243,21 @@ public class CImage extends CFRetainedResource {
 
         Dimension2D[] sizes = nativeGetNSImageRepresentationSizes(ptr, size.getWidth(), size.getHeight());
 
+        int dstW = baseWidth;
+        int dstH = baseHeight;
+
         // The image may be represented in the only size which differs from the base one.
         // For instance, the app's dock icon is represented in a Retina-scaled size on Retina.
-        // So, in case of a single represenation its size should be used as the dest size.
-        final int dstWidth  = (sizes != null && sizes.length == 1) ? (int) sizes[0].getWidth() : baseWidth;
-        final int dstHeight = (sizes != null && sizes.length == 1) ? (int) sizes[0].getHeight() : baseHeight;
+        // Check if a single represenation has a bigger size and in that case use it as the dest size.
+        if (sizes != null && sizes.length == 1 &&
+            (sizes[0].getWidth() > baseWidth && sizes[0].getHeight() > baseHeight))
+        {
+            dstW = (int)sizes[0].getWidth();
+            dstH = (int)sizes[0].getHeight();
+        }
+        final int dstWidth  = dstW;
+        final int dstHeight = dstH;
+
 
         return sizes == null || sizes.length < 2 ?
                 new MultiResolutionCachedImage(baseWidth, baseHeight, (width, height)
