@@ -158,7 +158,8 @@ JNF_COCOA_ENTER(env);
     const CTFontRef fallback = CTS_CopyCTFallbackFontAndGlyphForJavaGlyphCode(awtFont, glyphCode, &glyph);
     const CGFontRef cgFallback = CTFontCopyGraphicsFont(fallback, NULL);
     if (CGGI_IsColorFont(cgFallback)) {
-        CGFloat fontSize = awtStrike->fSize;
+        CGAffineTransform matrix = awtStrike->fAltTx;
+        CGFloat fontSize = sqrt(fabs(matrix.a * matrix.d - matrix.b * matrix.c));
         CTFontRef font = CTFontCreateWithGraphicsFont(cgFallback, fontSize, NULL, NULL);
         CTFontGetAdvancesForGlyphs(font, kCTFontDefaultOrientation, &glyph, &advance, 1);
         CFRelease(font);
