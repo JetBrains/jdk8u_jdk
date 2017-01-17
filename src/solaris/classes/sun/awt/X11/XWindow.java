@@ -1141,7 +1141,7 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
                              jkc.getJavaKeycode();
         postKeyEvent( java.awt.event.KeyEvent.KEY_PRESSED,
                           ev.get_time(),
-                          jkeyExtended,
+                          isDeadKey ? jkeyExtended : jkeyToReturn,
                           (unicodeKey == 0 ? java.awt.event.KeyEvent.CHAR_UNDEFINED : unicodeKey),
                           jkc.getKeyLocation(),
                           ev.get_state(),ev.getPData(), XKeyEvent.getSize(), (long)(ev.get_keycode()),
@@ -1155,7 +1155,7 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
                 }
                 postKeyEvent( java.awt.event.KeyEvent.KEY_TYPED,
                               ev.get_time(),
-                              jkeyExtended,
+                              java.awt.event.KeyEvent.VK_UNDEFINED,
                               unicodeKey,
                               java.awt.event.KeyEvent.KEY_LOCATION_UNKNOWN,
                               ev.get_state(),ev.getPData(), XKeyEvent.getSize(), (long)0,
@@ -1225,7 +1225,7 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
                              jkc.getJavaKeycode();
         postKeyEvent(  java.awt.event.KeyEvent.KEY_RELEASED,
                           ev.get_time(),
-                          jkeyExtended,
+                          isDeadKey ? jkeyExtended : jkeyToReturn,
                           (unicodeKey == 0 ? java.awt.event.KeyEvent.CHAR_UNDEFINED : unicodeKey),
                           jkc.getKeyLocation(),
                           ev.get_state(),ev.getPData(), XKeyEvent.getSize(), (long)(ev.get_keycode()),
