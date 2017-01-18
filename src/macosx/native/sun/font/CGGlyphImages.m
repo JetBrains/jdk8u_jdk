@@ -648,8 +648,8 @@ CGGI_CreateImageForGlyph
         // where CTFont instance with actual size is available
         CGSize advance;
         CTFontGetAdvancesForGlyphs(font, kCTFontDefaultOrientation, &glyph, &advance, 1);
-        advance.width *= normFactor;
-        advance.height *= normFactor;
+        advance.width /= fontSize;
+        advance.height /= fontSize;
         advance = CGGI_ScaleAdvance(advance, strike);
         info->advanceX = advance.width;
         info->advanceY = advance.height;
