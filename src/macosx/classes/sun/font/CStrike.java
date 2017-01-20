@@ -26,6 +26,7 @@
 package sun.font;
 
 import com.apple.concurrent.Dispatch;
+import sun.lwawt.macosx.CThreading;
 
 import java.awt.Rectangle;
 import java.awt.geom.*;
@@ -466,7 +467,7 @@ public final class CStrike extends PhysicalStrike {
 
             final Dispatch dispatch = Dispatch.getInstance();
 
-            if (dispatch != null)
+            if (!CThreading.isAppKit() && dispatch != null)
                 dispatch.getNonBlockingMainQueueExecutor().execute(command);
             else
                 command.run();
