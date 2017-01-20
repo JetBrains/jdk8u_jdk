@@ -93,6 +93,12 @@ static long eventCount;
     // phase and momentum phase both are not set
     return SCROLL_PHASE_UNSUPPORTED;
 }
+
++ (BOOL) hasPreciseScrollingDeltas: (NSEvent*) event {
+    return [event type] == NSScrollWheel
+        && [event respondsToSelector:@selector(hasPreciseScrollingDeltas)]
+        && [event hasPreciseScrollingDeltas];
+}
 @end
 
 
