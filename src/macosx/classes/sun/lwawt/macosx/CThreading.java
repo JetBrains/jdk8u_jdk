@@ -34,7 +34,7 @@ public class CThreading {
         return EventQueue.isDispatchThread();
     }
 
-    static boolean isAppKit() {
+    public static boolean isAppKit() {
         return APPKIT_THREAD_NAME.equals(Thread.currentThread().getName());
     }
 
