@@ -144,8 +144,8 @@ void CTS_GetGlyphsAsIntsForCharacters
 }
 
 /*
- *   Returns glyph code for a given Unicode character. Names of the relevant font (original or substituted one)
- *   are also returned.
+ *   Returns glyph code for a given Unicode character.
+ *   Names of the corresponding substituted font are also returned if substitution is performed.
  */
 CGGlyph CTS_CopyGlyphAndFontNamesForCodePoint
 (const AWTFont *font, const UnicodeScalarValue codePoint, CFStringRef fontNames[])
@@ -163,16 +163,15 @@ CGGlyph CTS_CopyGlyphAndFontNamesForCodePoint
     CTFontRef actualFonts[count];
     GetFontsAndGlyphsForCharacters(fontRef, unicodes, glyphs, glyphsAsInts, actualFonts, count);
     CGGlyph glyph = glyphs[0];
-    if (glyph > 0) {
-        bool substitutionHappened = glyphsAsInts[0] < 0;
-        CTFontRef actualFont = substitutionHappened ? actualFonts[0] : fontRef;
+    bool substitutionHappened = glyphsAsInts[0] < 0;
+    if (glyph > 0 && substitutionHappened) {
+        CTFontRef actualFont = actualFonts[0];
         CFStringRef fontName = CTFontCopyPostScriptName(actualFont);
         CFStringRef familyName = CTFontCopyFamilyName(actualFont);
-        if (substitutionHappened) {
-            CFRelease(actualFont);
-        }
+        CFRelease(actualFont);
         fontNames[0] = fontName;
         fontNames[1] = familyName;
+        if (!fontName || !familyName) glyph = 0;
     }
     return glyph;
 }

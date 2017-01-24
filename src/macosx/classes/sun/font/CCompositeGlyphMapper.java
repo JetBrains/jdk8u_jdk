@@ -44,7 +44,7 @@ public final class CCompositeGlyphMapper extends CompositeGlyphMapper {
         String fallbackFontName = fallbackFontInfo[0];
         String fallbackFontFamilyName = fallbackFontInfo[1];
         if (fallbackFontName == null || fallbackFontFamilyName == null) {
-            return missingGlyph;
+            return compositeGlyphCode(0, glyphCode);
         }
 
         int slot = compositeFont.findSlot(fallbackFontName);
