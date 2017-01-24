@@ -54,7 +54,9 @@ CTFontRef CTS_CopyCTFallbackFontAndGlyphForJavaGlyphCode(const AWTFont *font, co
 // Returns the substituted font, and places the appropriate glyph into "glyphRef"
 CTFontRef CTS_CopyCTFallbackFontAndGlyphForUnicode(const AWTFont *font, const UTF16Char *charRef, CGGlyph *glyphRef, int count);
 
-// Transform a single Unicode character into glyphs. Names of the relevant font (original or substituted one) are also returned
+// Transform a single Unicode character code into glyph code.
+// Names of the relevant font are also returned, if the substitution is used.
+// Non-null components of fontNames array should always be released by the calling code, regardless of the returned value.
 CGGlyph CTS_CopyGlyphAndFontNamesForCodePoint(const AWTFont *font, const UnicodeScalarValue codePoint, CFStringRef fontNames[]);
 
 // Breakup a 32 bit unicode value into the component surrogate pairs
