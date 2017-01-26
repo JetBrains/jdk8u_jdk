@@ -1072,8 +1072,9 @@ javax/swing/JScrollBar/4708809/bug4708809.java                       generic-all
 ## https://bugs.openjdk.java.net/browse/JDK-8024407
 #javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8028618
-javax/swing/JScrollBar/bug4202954/bug4202954.java                    windows-all
+## https://bugs.openjdk.java.net/browse/JDK-8028618
+# fix was backported
+#javax/swing/JScrollBar/bug4202954/bug4202954.java                    windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169960
 javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java windows-all
