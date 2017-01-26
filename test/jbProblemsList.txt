@@ -1293,8 +1293,8 @@ sun/awt/datatransfer/SuplementaryCharactersTransferTest.java         generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8142540
 sun/awt/dnd/8024061/bug8024061.java                                  linux-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8042098
-sun/java2d/AcceleratedXORModeTest.java                               windows-all
+## https://bugs.openjdk.java.net/browse/JDK-8042098
+#sun/java2d/AcceleratedXORModeTest.java                               windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172888
 sun/java2d/DirectX/InfiniteValidationLoopTest/InfiniteValidationLoopTest.java windows-all
