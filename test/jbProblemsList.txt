@@ -1160,8 +1160,9 @@ javax/swing/ToolTipManager/7123767/bug7123767.java                   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8167009
 javax/swing/ToolTipManager/Test6256140.java                          generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8081764
-javax/swing/plaf/aqua/CustomComboBoxFocusTest.java                   generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8081764
+# fix was backported
+#javax/swing/plaf/aqua/CustomComboBoxFocusTest.java                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8042383
 javax/swing/plaf/basic/BasicMenuUI/4983388/bug4983388.java           generic-all
