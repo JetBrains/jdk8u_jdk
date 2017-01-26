@@ -113,8 +113,9 @@ java/awt/Component/SetEnabledPerformance/SetEnabledPerformance.java      macosx-
 # https://bugs.openjdk.java.net/browse/JDK-8170261
 java/awt/Component/TreeLockDeadlock/TreeLockDeadlock.java                generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8017456
-java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html         generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8017456
+# the fix was integrated
+#java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8081469
 java/awt/Dialog/MakeWindowAlwaysOnTop/MakeWindowAlwaysOnTop.java         generic-all
@@ -169,7 +170,7 @@ java/awt/Focus/ChoiceFocus/ChoiceFocus.java                              windows
 java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7124555
-java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java macosx-all, linux-all
+java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6986252
 java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java generic-all
@@ -755,6 +756,19 @@ demo/jvmti/compiledMethodLoad/CompiledMethodLoadTest.java	generic-all
 # 7027502
 demo/jvmti/hprof/MonitorTest.java                               generic-all
 
+# The demos are a separate bundle, they require a build which has jdk/demo
+demo/jvmti/gctest/Gctest.java                                        generic-all
+demo/jvmti/heapTracker/HeapTrackerTest.java                          generic-all
+demo/jvmti/heapViewer/HeapViewerTest.java                            generic-all
+demo/jvmti/minst/MinstTest.java                                      generic-all
+demo/jvmti/mtrace/TraceJFrame.java                                   generic-all
+demo/jvmti/versionCheck/FailsWhenJvmtiVersionDiffers.java            generic-all
+demo/jvmti/waiters/WaitersTest.java                                  generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8151352
+sample/chatserver/ChatTest.java                                      generic-all
+sample/mergesort/MergeSortTest.java                                  generic-all
+
 # 8027973
 javax/xml/jaxp/transform/jdk8004476/XSLTExFuncTest.java		windows-all
 
@@ -1222,8 +1236,8 @@ javax/swing/JTextArea/4697612/bug4697612.java                        linux-all
 tools/pack200/CommandLineTests.java                             solaris-all, macosx-all
 tools/pack200/Pack200Test.java                                  solaris-all, macosx-all
 
-# 8007410
-tools/launcher/FXLauncherTest.java                              linux-all
+# https://bugs.openjdk.java.net/browse/JDK-8172782
+tools/launcher/FXLauncherTest.java                              generic-all
 
 ############################################################################
 
@@ -1363,6 +1377,9 @@ sun/security/ssl/sun/net/www/protocol/https/HttpsURLConnection/CloseKeepAliveCac
 
 # https://bugs.openjdk.java.net/browse/JDK-8171489
 sun/security/ssl/sun/net/www/protocol/https/HttpsURLConnection/B6216082.java linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8160023
+sun/security/ssl/sun/net/www/protocol/https/HttpsURLConnection/PostThruProxyWithAuth.sh         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8160624
 sun/security/tools/keytool/printssl.sh                               windows-all
