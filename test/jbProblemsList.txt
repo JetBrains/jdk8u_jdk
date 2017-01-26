@@ -1169,8 +1169,9 @@ javax/swing/plaf/basic/BasicMenuUI/4983388/bug4983388.java           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8137101
 javax/swing/plaf/basic/BasicHTML/4251579/bug4251579.java             generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8079450
-javax/swing/plaf/nimbus/8041642/bug8041642.java                      generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8079450
+# fix was backported
+#javax/swing/plaf/nimbus/8041642/bug8041642.java                      generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8160438
 javax/swing/plaf/nimbus/8057791/bug8057791.java                      macosx-all
@@ -1294,6 +1295,7 @@ sun/awt/datatransfer/SuplementaryCharactersTransferTest.java         generic-all
 sun/awt/dnd/8024061/bug8024061.java                                  linux-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8042098
+# fix was backported
 #sun/java2d/AcceleratedXORModeTest.java                               windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172888
