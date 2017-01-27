@@ -655,8 +655,9 @@ java/time/test/java/time/temporal/TestDateTimeValueRange.java        generic-all
 
 
 ## https://bugs.openjdk.java.net/browse/JDK-6560348
-# https://bugs.openjdk.java.net/browse/JDK-7146533
-java/awt/xembed/server/RunTestXEmbed.java                            generic-all
+## https://bugs.openjdk.java.net/browse/JDK-7146533
+# fix was backported
+#java/awt/xembed/server/RunTestXEmbed.java                            generic-all
 
 ############################################################################
 
