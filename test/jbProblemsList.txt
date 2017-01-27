@@ -618,8 +618,9 @@ java/awt/print/PrinterJob/ExceptionTest.java                         generic-all
 java/awt/print/PrinterJob/ImagePrinting/NullClipARGB.java            generic-all
 java/awt/print/PrinterJob/PrtException.java                          generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8172009
-java/awt/print/PaintSetEnabledDeadlock/PaintSetEnabledDeadlock.java  macosx-all
+## https://bugs.openjdk.java.net/browse/JDK-8172009
+# fix was backported
+#java/awt/print/PaintSetEnabledDeadlock/PaintSetEnabledDeadlock.java  macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8152944
 https://bugs.openjdk.java.net/browse/JDK-8152944
