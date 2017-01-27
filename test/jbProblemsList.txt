@@ -810,8 +810,9 @@ java/net/PortUnreachableException/OneExceptionOnly.java         windows-all
 sun/net/InetAddress/nameservice/simple/CacheTest.java		generic-all
 sun/net/InetAddress/nameservice/simple/DefaultCaching.java	generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8041924
-sun/net/www/http/ChunkedOutputStream/checkError.java            linux-all
+## https://bugs.openjdk.java.net/browse/JDK-8041924
+# fix was backported
+#sun/net/www/http/ChunkedOutputStream/checkError.java            linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8146257
 sun/net/www/protocol/jar/B4957695.java                          generic-all
