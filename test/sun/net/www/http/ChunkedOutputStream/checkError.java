@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2004, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,228 +24,108 @@
 /**
  * @test
  * @bug 5054016
- * @run main/othervm/timeout=300 checkError
  * @summary get the failure immediately when writing individual chunks over socket fail
  */
 
-import java.io.*;
-import java.net.*;
-import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URL;
+import static java.lang.System.out;
 
+public class CheckError {
 
-public class checkError {
-    static final int TEST_PASSED = 95;
-    static final int TEST_FAILED = 97;
-
-    static int testStatus = TEST_PASSED;
-
-    static String serverName = "localhost";
-    static int bufferSize = 8192; // 8k
-    static int totalBytes = 1048576; // 1M
-
-    static int j = 0;
-
-    static public Object threadStarting = new Object();
-    static public Object threadWaiting = new Object();
-
+    static int BUFFER_SIZE = 8192; // 8k
+    static int TOTAL_BYTES = 1 * 1024 * 1024; // 1M
 
     public static void main(String[] args) throws Exception {
-        HttpURLConnection conn = null;
-        OutputStream toServer = null;
-        byte[] buffer = null;
-        HTTPServer server = null;
-        synchronized(threadWaiting) {
-            System.out.println("HTTP-client>Starting default Http-server");
-            synchronized(threadStarting) {
-                server = new HTTPServer();
-                server.start();
-                try {
-                    System.out.println("waiting server to be start");
-                    threadStarting.wait();
-                } catch (InterruptedException e) {
-                }
-            }
-            int port = server.getPort();
-            URL url = new URL("http://" + serverName + ":" + port);
-            conn = (HttpURLConnection )url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
 
-            System.out.println("assigning 1024 to the chunk length");
-            conn.setChunkedStreamingMode(1024);
-            conn.connect();
+        HTTPServer server = new HTTPServer();
+        server.start();
+        int port = server.getPort();
+        out.println("Server listening on " + port);
 
-            toServer = conn.getOutputStream();
-            buffer = getThickBuffer(bufferSize);
-            System.out.println("sending " + totalBytes + " bytes");
-        }
 
-        int byteAtOnce = 0;
-        int sendingBytes = totalBytes;
-        try {
+        URL url = new URL("http://localhost:" + port);
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.setChunkedStreamingMode(1024);
+
+        out.println("sending " + TOTAL_BYTES + " bytes");
+
+        int byteAtOnce;
+        int sendingBytes = TOTAL_BYTES;
+        byte[] buffer = getBuffer(BUFFER_SIZE);
+        try (OutputStream toServer = conn.getOutputStream()) {
             while (sendingBytes > 0) {
-                if (sendingBytes > bufferSize) {
-                    byteAtOnce = bufferSize;
+                if (sendingBytes > BUFFER_SIZE) {
+                    byteAtOnce = BUFFER_SIZE;
                 } else {
                     byteAtOnce = sendingBytes;
                 }
                 toServer.write(buffer, 0, byteAtOnce);
                 sendingBytes -= byteAtOnce;
-                // System.out.println((totalBytes - sendingBytes) + " was sent");
+                out.print((TOTAL_BYTES - sendingBytes) + " was sent. ");
                 toServer.flush();
+                // gives the server thread time to read, and eventually close;
+                Thread.sleep(500);
             }
-        } catch (OutOfMemoryError e) {
-            e.printStackTrace();
-            System.out.println("***ERR***> UNEXPECTED error: " + e);
-            testStatus = TEST_FAILED;
-            testExit();
-        } catch (IOException e) {
-            // e.printStackTrace();
-            // this is the expected IOException
-            // due to server.close()
-            testStatus = TEST_PASSED;
-            testExit();
-        } finally {
-            toServer.close();
+        } catch (IOException expected) {
+            // Expected IOException due to server.close()
+            out.println("PASSED. Caught expected: " + expected);
+            return;
         }
 
-        // we have not received the expected IOException
-        // test fail
-        testStatus = TEST_FAILED;
-        testExit();
-
+        // Expected IOException not received. FAIL
+        throw new RuntimeException("Failed: Expected IOException not received");
     }
 
-    static void testExit() {
-        if (testStatus == TEST_FAILED) {
-            throw new RuntimeException("Test Failed: haven't received the expected IOException");
-        } else {
-            System.out.println("TEST PASSED");
-        }
-        System.exit(testStatus);
-    }
-
-    static byte[] getThickBuffer(int size) {
-
+    static byte[] getBuffer(int size) {
         byte[] buffer = new byte[size];
-
-        for (int i = 0; i < size; i++) {
-            if (j > 9)
-                j = 0;
-            String s = Integer.toString(j);
-            buffer[i] = (byte )s.charAt(0);
-            j++;
-        }
-
+        for (int i = 0; i < size; i++)
+            buffer[i] = (byte)i;
         return buffer;
     }
-}
 
+    static class HTTPServer extends Thread {
 
-class HTTPServer extends Thread {
+        final ServerSocket serverSocket;
 
-    static volatile boolean isCompleted;
-
-    Socket client;
-    ServerSocket serverSocket;
-
-    int getPort() {
-        return serverSocket.getLocalPort();
-    }
-
-    public void run() {
-
-        synchronized(checkError.threadStarting) {
-
-            try {
-                serverSocket = new ServerSocket(0, 100);
-            } catch (Exception e) {
-                e.printStackTrace();
-                checkError.testStatus = checkError.TEST_FAILED;
-                return;
-            }
-            checkError.threadStarting.notify();
+        HTTPServer() throws IOException {
+            serverSocket = new ServerSocket(0);
         }
 
-        try {
-            client = serverSocket.accept();
-        } catch (Exception e) {
-            e.printStackTrace();
-            checkError.testStatus = checkError.TEST_FAILED;
-            return;
+        int getPort() {
+            return serverSocket.getLocalPort();
         }
 
-        System.out.println("Server started");
+        public void run() {
+            try (Socket client = serverSocket.accept()) {
 
-        BufferedReader in = null;
-        PrintStream out = null;
-        InputStreamReader reader = null;
-        String version = null;
-        String line;
-        String method;
+                InputStream in = client.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                do {
+                    line = reader.readLine();
+                    out.println("Server: " + line);
+                } while (line != null && line.length() > 0);
 
-        synchronized(checkError.threadWaiting) {
-            try {
-                reader = new InputStreamReader(client.getInputStream());
-                in = new BufferedReader(reader);
-                line = in.readLine();
+                System.out.println("Server: receiving some data");
+                // just read some data, then close the connection
+                in.read(new byte[1024]);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                checkError.testStatus = checkError.TEST_FAILED;
-                return;
-            }
-            StringTokenizer st = new StringTokenizer(line);
-            method = st.nextToken();
-            String fileName = st.nextToken();
-
-            // save version for replies
-            if (st.hasMoreTokens()) version = st.nextToken();
-
-            System.out.println("HTTP version: " + version);
-
-        }
-
-        try {
-
-            while (line != null && line.length() > 0) {
-                line = in.readLine();
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            checkError.testStatus = checkError.TEST_FAILED;
-            return;
-        }
-
-        if (method.equals("POST")) {
-            System.out.println("receiving data");
-            byte[] buf = new byte[1024];
-            try {
-                //reading bytes until chunk whose size is zero,
-                // see 19.4.6 Introduction of Transfer-Encoding in RFC2616
-                int count = 0;
-                while (count <=5) {
-                    count++;
-                    in.readLine();
-                }
-
-                System.out.println("Server socket is closed");
                 in.close();
                 client.close();
-                serverSocket.close();
-
+                out.println("Server closed socket");
             } catch (IOException e) {
                 e.printStackTrace();
-                checkError.testStatus = checkError.TEST_FAILED;
-                return;
-            } catch (OutOfMemoryError e) {
-                e.printStackTrace();
-                checkError.testStatus = checkError.TEST_FAILED;
-                return;
             }
-
         }
     }
-
 }
