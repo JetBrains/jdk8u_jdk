@@ -364,9 +364,10 @@ java/awt/Mouse/MouseComboBoxTest/MouseComboBoxTest.java              generic-all
 java/awt/Mouse/EnterExitEvents/DragWindowOutOfFrameTest.java         generic-all
 java/awt/Mouse/EnterExitEvents/DragWindowTest.java                   generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7087869
+## https://bugs.openjdk.java.net/browse/JDK-7087869
+#fix was backported
 # https://bugs.openjdk.java.net/browse/JDK-8169534
-java/awt/Mouse/ExtraMouseClick/ExtraMouseClick.html                  generic-all
+java/awt/Mouse/ExtraMouseClick/ExtraMouseClick.html                  windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8051455
 java/awt/Mouse/EnterExitEvents/FullscreenEnterEventTest.java         macosx-all
