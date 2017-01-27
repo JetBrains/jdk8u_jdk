@@ -1155,8 +1155,9 @@ javax/swing/SpringLayout/4726194/bug4726194.java                     macosx-all
 # https://bugs.openjdk.java.net/browse/JDK-8172064
 javax/swing/SwingUtilities/4917669/bug4917669.java                   windows-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7195187
-javax/swing/SwingUtilities/7088744/bug7088744.java                   generic-all
+## https://bugs.openjdk.java.net/browse/JDK-7195187
+#fix was backported
+#javax/swing/SwingUtilities/7088744/bug7088744.java                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8079253
 javax/swing/SwingUtilities/TestBadBreak/TestBadBreak.java            linux-all
