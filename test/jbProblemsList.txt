@@ -420,8 +420,9 @@ java/awt/Paint/ExposeOnEDT.java                                      windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8031422
-java/awt/Paint/bug8024864.java                                       generic-all
+## https://bugs.openjdk.java.net/browse/JDK-8031422
+# fix has been backported already
+#java/awt/Paint/bug8024864.java                                       generic-all
 
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
