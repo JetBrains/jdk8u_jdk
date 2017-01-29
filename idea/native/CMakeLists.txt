@@ -15,8 +15,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux"
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_FRAMEWORK_PATH ${CMAKE_FRAMEWORK_PATH} ${CMAKE_OSX_SYSROOT}/System/Library/Frameworks/JavaVM.framework/Versions/A/Frameworks/)
+    find_library(JAVA_NATIVE_FOUNDATION JavaNativeFoundation)
     include_directories(
+            ../../src/macosx/native/sun/osxapp
             ../../../build/macosx-x86_64-normal-server-release/jdk/gensrc_headers)
+
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     include_directories(
             ../../../build/linux-x86_64-normal-server-release/jdk/gensrc_headers)
@@ -1035,6 +1039,173 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
             ../../src/solaris/native/sun/xawt/XWindow.c)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(SOURCE_FILES
+            ${SOURCE_FILES}
+            ../../src/macosx/native/apple/applescript/AppleScriptEngine.m
+            ../../src/macosx/native/apple/applescript/AppleScriptExecutionContext.h
+            ../../src/macosx/native/apple/applescript/AppleScriptExecutionContext.m
+            ../../src/macosx/native/apple/applescript/AS_NS_ConversionUtils.h
+            ../../src/macosx/native/apple/applescript/AS_NS_ConversionUtils.m
+            ../../src/macosx/native/apple/applescript/NS_Java_ConversionUtils.h
+            ../../src/macosx/native/apple/applescript/NS_Java_ConversionUtils.m
+            ../../src/macosx/native/apple/launcher/JavaAppLauncher.m
+            ../../src/macosx/native/apple/security/KeystoreImpl.m
+            ../../src/macosx/native/com/apple/concurrent/Dispatch.m
+            ../../src/macosx/native/com/apple/eio/CFileManager.m
+            ../../src/macosx/native/com/apple/laf/AquaFileView.m
+            ../../src/macosx/native/com/apple/laf/AquaLookAndFeel.m
+            ../../src/macosx/native/com/apple/laf/AquaNativeResources.m
+            ../../src/macosx/native/com/apple/laf/JRSUIConstantSync.h
+            ../../src/macosx/native/com/apple/laf/JRSUIConstantSync.m
+            ../../src/macosx/native/com/apple/laf/JRSUIController.m
+            ../../src/macosx/native/com/apple/laf/JRSUIFocus.m
+            ../../src/macosx/native/com/apple/laf/ScreenMenu.h
+            ../../src/macosx/native/com/apple/laf/ScreenMenu.m
+            ../../src/macosx/native/com/apple/laf/ScreenPopupFactory.m
+            ../../src/macosx/native/com/sun/media/sound/PLATFORM_API_MacOSX_MidiIn.c
+            ../../src/macosx/native/com/sun/media/sound/PLATFORM_API_MacOSX_MidiOut.c
+            ../../src/macosx/native/com/sun/media/sound/PLATFORM_API_MacOSX_MidiUtils.c
+            ../../src/macosx/native/com/sun/media/sound/PLATFORM_API_MacOSX_MidiUtils.h
+            ../../src/macosx/native/com/sun/media/sound/PLATFORM_API_MacOSX_PCM.cpp
+            ../../src/macosx/native/com/sun/media/sound/PLATFORM_API_MacOSX_Ports.cpp
+            ../../src/macosx/native/com/sun/media/sound/PLATFORM_API_MacOSX_Utils.cpp
+            ../../src/macosx/native/com/sun/media/sound/PLATFORM_API_MacOSX_Utils.h
+            ../../src/macosx/native/java/util/MacOSXPreferencesFile.m
+            ../../src/macosx/native/java/util/SCDynamicStoreConfig.m
+            ../../src/macosx/native/jobjc/src/core/native/CIF.m
+            ../../src/macosx/native/jobjc/src/core/native/Coder.m
+            ../../src/macosx/native/jobjc/src/core/native/FFIType.m
+            ../../src/macosx/native/jobjc/src/core/native/Function.m
+            ../../src/macosx/native/jobjc/src/core/native/ID.m
+            ../../src/macosx/native/jobjc/src/core/native/Invoke.m
+            ../../src/macosx/native/jobjc/src/core/native/JObjCRuntime.m
+            ../../src/macosx/native/jobjc/src/core/native/MacOSXFramework.m
+            ../../src/macosx/native/jobjc/src/core/native/NativeBuffer.h
+            ../../src/macosx/native/jobjc/src/core/native/NativeBuffer.m
+            ../../src/macosx/native/jobjc/src/core/native/NativeObjectLifecycleManager.m
+            ../../src/macosx/native/jobjc/src/core/native/NSClass.m
+            ../../src/macosx/native/jobjc/src/core/native/SEL.m
+            ../../src/macosx/native/jobjc/src/core/native/Subclassing.m
+            ../../src/macosx/native/jobjc/src/core/PrimitiveCoder.hs
+            ../../src/macosx/native/jobjc/src/runtime-additions/native/NativeNumber.m
+            ../../src/macosx/native/jobjc/src/runtime-additions/native/NativeString.m
+            ../../src/macosx/native/jobjc/src/runtime-additions/native/NativeThread.m
+            ../../src/macosx/native/jobjc/src/tests/native/FunCallBench.m
+            ../../src/macosx/native/sun/awt/ApplicationDelegate.h
+            ../../src/macosx/native/sun/awt/ApplicationDelegate.m
+            ../../src/macosx/native/sun/awt/awt.m
+            ../../src/macosx/native/sun/awt/awt_DrawingSurface.m
+            ../../src/macosx/native/sun/awt/AWTEvent.h
+            ../../src/macosx/native/sun/awt/AWTEvent.m
+            ../../src/macosx/native/sun/awt/AWTSurfaceLayers.h
+            ../../src/macosx/native/sun/awt/AWTSurfaceLayers.m
+            ../../src/macosx/native/sun/awt/AWTView.h
+            ../../src/macosx/native/sun/awt/AWTView.m
+            ../../src/macosx/native/sun/awt/AWTWindow.h
+            ../../src/macosx/native/sun/awt/AWTWindow.m
+            ../../src/macosx/native/sun/awt/CClipboard.h
+            ../../src/macosx/native/sun/awt/CClipboard.m
+            ../../src/macosx/native/sun/awt/CCursorManager.m
+            ../../src/macosx/native/sun/awt/CDataTransferer.h
+            ../../src/macosx/native/sun/awt/CDataTransferer.m
+            ../../src/macosx/native/sun/awt/CDesktopPeer.m
+            ../../src/macosx/native/sun/awt/CDragSource.h
+            ../../src/macosx/native/sun/awt/CDragSource.m
+            ../../src/macosx/native/sun/awt/CDragSourceContextPeer.m
+            ../../src/macosx/native/sun/awt/CDropTarget.h
+            ../../src/macosx/native/sun/awt/CDropTarget.m
+            ../../src/macosx/native/sun/awt/CDropTargetContextPeer.m
+            ../../src/macosx/native/sun/awt/CFileDialog.h
+            ../../src/macosx/native/sun/awt/CFileDialog.m
+            ../../src/macosx/native/sun/awt/CFRetainedResource.m
+            ../../src/macosx/native/sun/awt/CGraphicsConfig.m
+            ../../src/macosx/native/sun/awt/CGraphicsDevice.m
+            ../../src/macosx/native/sun/awt/CGraphicsEnv.m
+            ../../src/macosx/native/sun/awt/CImage.m
+            ../../src/macosx/native/sun/awt/CInputMethod.m
+            ../../src/macosx/native/sun/awt/CMenu.h
+            ../../src/macosx/native/sun/awt/CMenu.m
+            ../../src/macosx/native/sun/awt/CMenuBar.h
+            ../../src/macosx/native/sun/awt/CMenuBar.m
+            ../../src/macosx/native/sun/awt/CMenuComponent.h
+            ../../src/macosx/native/sun/awt/CMenuComponent.m
+            ../../src/macosx/native/sun/awt/CMenuItem.h
+            ../../src/macosx/native/sun/awt/CMenuItem.m
+            ../../src/macosx/native/sun/awt/CPopupMenu.h
+            ../../src/macosx/native/sun/awt/CPopupMenu.m
+            ../../src/macosx/native/sun/awt/CPrinterJob.m
+            ../../src/macosx/native/sun/awt/CRobot.m
+            ../../src/macosx/native/sun/awt/CSystemColors.h
+            ../../src/macosx/native/sun/awt/CSystemColors.m
+            ../../src/macosx/native/sun/awt/CTextPipe.m
+            ../../src/macosx/native/sun/awt/CTrayIcon.h
+            ../../src/macosx/native/sun/awt/CTrayIcon.m
+            ../../src/macosx/native/sun/awt/CWrapper.m
+            ../../src/macosx/native/sun/awt/DnDUtilities.h
+            ../../src/macosx/native/sun/awt/DnDUtilities.m
+            ../../src/macosx/native/sun/awt/GeomUtilities.h
+            ../../src/macosx/native/sun/awt/GeomUtilities.m
+            ../../src/macosx/native/sun/awt/ImageSurfaceData.h
+            ../../src/macosx/native/sun/awt/ImageSurfaceData.m
+            ../../src/macosx/native/sun/awt/InitIDs.h
+            ../../src/macosx/native/sun/awt/InitIDs.m
+            ../../src/macosx/native/sun/awt/JavaAccessibilityAction.h
+            ../../src/macosx/native/sun/awt/JavaAccessibilityAction.m
+            ../../src/macosx/native/sun/awt/JavaAccessibilityUtilities.h
+            ../../src/macosx/native/sun/awt/JavaAccessibilityUtilities.m
+            ../../src/macosx/native/sun/awt/JavaComponentAccessibility.h
+            ../../src/macosx/native/sun/awt/JavaComponentAccessibility.m
+            ../../src/macosx/native/sun/awt/JavaTextAccessibility.h
+            ../../src/macosx/native/sun/awt/JavaTextAccessibility.m
+            ../../src/macosx/native/sun/awt/jawt.m
+            ../../src/macosx/native/sun/awt/LWCToolkit.h
+            ../../src/macosx/native/sun/awt/LWCToolkit.m
+            ../../src/macosx/native/sun/awt/OSVersion.h
+            ../../src/macosx/native/sun/awt/OSVersion.m
+            ../../src/macosx/native/sun/awt/PrinterSurfaceData.h
+            ../../src/macosx/native/sun/awt/PrinterSurfaceData.m
+            ../../src/macosx/native/sun/awt/PrinterView.h
+            ../../src/macosx/native/sun/awt/PrinterView.m
+            ../../src/macosx/native/sun/awt/PrintModel.h
+            ../../src/macosx/native/sun/awt/PrintModel.m
+            ../../src/macosx/native/sun/awt/QuartzRenderer.m
+            ../../src/macosx/native/sun/awt/QuartzSurfaceData.h
+            ../../src/macosx/native/sun/awt/QuartzSurfaceData.m
+            ../../src/macosx/native/sun/awt/splashscreen/splashscreen_config.h
+            ../../src/macosx/native/sun/awt/splashscreen/splashscreen_sys.m
+            ../../src/macosx/native/sun/font/AWTFont.h
+            ../../src/macosx/native/sun/font/AWTFont.m
+            ../../src/macosx/native/sun/font/AWTStrike.h
+            ../../src/macosx/native/sun/font/AWTStrike.m
+            ../../src/macosx/native/sun/font/CCharToGlyphMapper.m
+            ../../src/macosx/native/sun/font/CGGlyphImages.h
+            ../../src/macosx/native/sun/font/CGGlyphImages.m
+            ../../src/macosx/native/sun/font/CGGlyphOutlines.h
+            ../../src/macosx/native/sun/font/CGGlyphOutlines.m
+            ../../src/macosx/native/sun/font/CoreTextSupport.h
+            ../../src/macosx/native/sun/font/CoreTextSupport.m
+            ../../src/macosx/native/sun/java2d/opengl/CGLGraphicsConfig.h
+            ../../src/macosx/native/sun/java2d/opengl/CGLGraphicsConfig.m
+            ../../src/macosx/native/sun/java2d/opengl/CGLLayer.h
+            ../../src/macosx/native/sun/java2d/opengl/CGLLayer.m
+            ../../src/macosx/native/sun/java2d/opengl/CGLSurfaceData.h
+            ../../src/macosx/native/sun/java2d/opengl/CGLSurfaceData.m
+            ../../src/macosx/native/sun/java2d/opengl/J2D_GL/cglext.h
+            ../../src/macosx/native/sun/java2d/opengl/OGLFuncs_md.h
+            ../../src/macosx/native/sun/nio/ch/KQueueArrayWrapper.c
+            ../../src/macosx/native/sun/osxapp/AWT_debug.h
+            ../../src/macosx/native/sun/osxapp/NSApplicationAWT.h
+            ../../src/macosx/native/sun/osxapp/NSApplicationAWT.m
+            ../../src/macosx/native/sun/osxapp/PropertiesUtilities.h
+            ../../src/macosx/native/sun/osxapp/PropertiesUtilities.m
+            ../../src/macosx/native/sun/osxapp/QueuingApplicationDelegate.h
+            ../../src/macosx/native/sun/osxapp/QueuingApplicationDelegate.m
+            ../../src/macosx/native/sun/osxapp/ThreadUtilities.h
+            ../../src/macosx/native/sun/osxapp/ThreadUtilities.m
+            ../../src/macosx/native/sun/util/locale/provider/HostLocaleProviderAdapter_md.c)
+endif()
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(SOURCE_FILES
             ${SOURCE_FILES}
@@ -1710,3 +1881,7 @@ add_custom_target(make_java /usr/bin/make COMPILER_WARNINGS_FATAL=false -C ${CMA
         DEPENDS ${SOURCE_FILES})
 
 add_executable(java ${SOURCE_FILES})
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    target_link_libraries(java ${JAVA_NATIVE_FOUNDATION})
+endif()
