@@ -219,6 +219,12 @@ class GlyphPainter1 extends GlyphView.GlyphPainter {
     }
 
     void sync(GlyphView v) {
+        if (v.getContainer() != null && metrics != null) {
+            GraphicsConfiguration gc = v.getContainer().getGraphicsConfiguration();
+            if (gc != null && !gc.getDefaultTransform().equals(metrics.getFontRenderContext().getTransform())) {
+                metrics = null;
+            }
+        }
         Font f = v.getFont();
         if ((metrics == null) || (! f.equals(metrics.getFont()))) {
             // fetch a new FontMetrics
