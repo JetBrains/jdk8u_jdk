@@ -742,8 +742,8 @@ JNF_COCOA_ENTER(env);
 
     // in  = [testChar, testDeadChar, modifierFlags, keyCode]
     jchar testChar = (jchar)data[0];
-    BOOL isDeadChar = (data[1] != 0);
-    jint modifierFlags = data[2];
+    jint modifierFlags = data[1];
+    BOOL isDeadChar = (data[2] != 0);
     jshort keyCode = (jshort)data[3];
 
     jint jkeyCode = java_awt_event_KeyEvent_VK_UNDEFINED;
