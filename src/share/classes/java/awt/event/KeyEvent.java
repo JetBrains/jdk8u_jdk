@@ -310,6 +310,7 @@ public class KeyEvent extends InputEvent {
 
     public static final int START_OF_LATIN_DIACRITIC_LETTERS = 0x0300;
 
+    public static final int VK_ESZETT = START_OF_LATIN_DIACRITIC_LETTERS + 0xDF;
     public static final int VK_A_WITH_GRAVE = START_OF_LATIN_DIACRITIC_LETTERS + 0xE0;
     public static final int VK_A_WITH_ACUTE = START_OF_LATIN_DIACRITIC_LETTERS + 0xE1;
     public static final int VK_A_WITH_CIRCUMFLEX = START_OF_LATIN_DIACRITIC_LETTERS + 0xE2;
@@ -1209,6 +1210,7 @@ public class KeyEvent extends InputEvent {
 
     private static final HashMap<Integer, String> asciiCodeToString = new HashMap<Integer, String>() {
         {
+            put(VK_ESZETT, "\u00DF");
             put(VK_A_WITH_GRAVE, "\u00e0");
             put(VK_A_WITH_ACUTE, "\u00e1");
             put(VK_A_WITH_CIRCUMFLEX, "\u00e2");
