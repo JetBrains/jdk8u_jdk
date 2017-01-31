@@ -1162,6 +1162,13 @@ public class SwingUtilities2 {
         if (c != null) {
             GraphicsConfiguration gc = c.getGraphicsConfiguration();
             AffineTransform tx = (gc == null) ? null : gc.getDefaultTransform();
+            if (tx == null && !GraphicsEnvironment.isHeadless()) {
+                tx =  GraphicsEnvironment
+                        .getLocalGraphicsEnvironment()
+                        .getDefaultScreenDevice()
+                        .getDefaultConfiguration()
+                        .getDefaultTransform();
+            }
             AATextInfo info = (AATextInfo)c.getClientProperty(AA_TEXT_PROPERTY_KEY);
             if (info != null) {
                 return info.getFRC(tx);
