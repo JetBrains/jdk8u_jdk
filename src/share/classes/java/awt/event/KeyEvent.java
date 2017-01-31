@@ -1049,6 +1049,11 @@ public class KeyEvent extends InputEvent {
                     int keyCode, char keyChar, int keyLocation) {
         super(source, id, when, modifiers);
 
+        if (id == KEY_TYPED) {
+            if (keyChar == CHAR_UNDEFINED) {
+                throw new IllegalArgumentException("invalid keyChar");
+            }
+        }
 
         this.keyCode = keyCode;
         this.keyChar = keyChar;
