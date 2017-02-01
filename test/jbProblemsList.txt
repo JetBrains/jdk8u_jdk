@@ -98,8 +98,8 @@ java/awt/Choice/ChoiceMouseWheelTest/ChoiceMouseWheelTest.java           generic
 # https://bugs.openjdk.java.net/browse/JDK-8169108
 java/awt/Choice/ItemStateChangeTest/ItemStateChangeTest.java             windows-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8022152
-# java/awt/Choice/RemoveAllShrinkTest/RemoveAllShrinkTest.java             generic-all
+# https://bugs.openjdk.java.net/browse/JDK-8047703
+java/awt/Choice/RemoveAllShrinkTest/RemoveAllShrinkTest.java             generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169104
 java/awt/Component/PaintAll/PaintAll.java                                windows-all
@@ -129,11 +129,14 @@ java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html          generic
 # https://bugs.openjdk.java.net/browse/JDK-8168390
 java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java windows-all
 
+# https://bugs.openjdk.java.net/browse/JDK-7149081
+java/awt/FileDialog/FilenameFilterTest/FilenameFilterTest.html           generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8029675
 java/awt/Focus/6981400/Test1.java                                        generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-6458497
-#java/awt/Focus/6981400/Test3.java                                        windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8173264
+java/awt/Focus/6981400/Test3.java                                        generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8013611
 #java/awt/Focus/8013611/JDK8013611.java                                   windows-all
@@ -273,8 +276,9 @@ java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8016241
 java/awt/FullScreen/SetFSWindow/FSFrame.java                         generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-7179526
-#java/awt/Graphics/LineClipTest.java                                  generic-all
+# https://bugs.openjdk.java.net/browse/JDK-7179526
+# fixed in 8_112
+java/awt/Graphics/LineClipTest.java                                  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080084
 java/awt/Graphics2D/DrawString/DrawStringCrash.java                  generic-all
@@ -367,7 +371,7 @@ java/awt/Mouse/EnterExitEvents/DragWindowTest.java                   generic-all
 ## https://bugs.openjdk.java.net/browse/JDK-7087869
 #fix was backported
 # https://bugs.openjdk.java.net/browse/JDK-8169534
-java/awt/Mouse/ExtraMouseClick/ExtraMouseClick.html                  windows-all
+java/awt/Mouse/ExtraMouseClick/ExtraMouseClick.html                  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8051455
 java/awt/Mouse/EnterExitEvents/FullscreenEnterEventTest.java         macosx-all
@@ -457,6 +461,10 @@ java/awt/TrayIcon/PopupMenuLeakTest/PopupMenuLeakTest.java           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7107528
 java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java  generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7081594
+# fixed in 8_112
+java/awt/Window/AlwaysOnTop/AlwaysOnTopFieldTest.java                macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169530
 java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java           windows-all
@@ -657,7 +665,8 @@ java/time/test/java/time/temporal/TestDateTimeValueRange.java        generic-all
 ## https://bugs.openjdk.java.net/browse/JDK-6560348
 ## https://bugs.openjdk.java.net/browse/JDK-7146533
 # fix was backported
-#java/awt/xembed/server/RunTestXEmbed.java                            generic-all
+# https://bugs.openjdk.java.net/browse/JDK-8144247
+java/awt/xembed/server/RunTestXEmbed.java                            generic-all
 
 ############################################################################
 
@@ -1066,7 +1075,8 @@ javax/swing/JRadioButton/8033699/bug8033699.java                     generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8130430
 # fix was backported
-#javax/swing/JRadioButton/8075609/bug8075609.java                     generic-all
+# https://bugs.openjdk.java.net/browse/JDK-8136371
+javax/swing/JRadioButton/8075609/bug8075609.java                     generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8042381
 javax/swing/JRootPane/4670486/bug4670486.java                        generic-all
@@ -1245,6 +1255,9 @@ javax/swing/JTextArea/4697612/bug4697612.java                        linux-all
 # Tests take too long, on sparcs see 7143279
 tools/pack200/CommandLineTests.java                             solaris-all, macosx-all
 tools/pack200/Pack200Test.java                                  solaris-all, macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8140611
+tools/pack200/UnpackerMemoryTest.java                           linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172782
 tools/launcher/FXLauncherTest.java                              generic-all
