@@ -50,6 +50,7 @@
 -(void) resetTrackingArea;
 -(void) deliverJavaKeyEventHelper: (NSEvent*) event;
 -(BOOL) isCodePointInUnicodeBlockNeedingIMEvent: (unichar) codePoint;
+-(NSMutableString *) parseString : (id) complexString;
 @end
 
 // Uncomment this line to see fprintfs of each InputMethod API being called on this View
@@ -736,6 +737,15 @@ AWT_ASSERT_APPKIT_THREAD;
     return NO;
 }
 
+-(NSMutableString *) parseString : (id) complexString {
+    if ([complexString isKindOfClass:[NSString class]]) {
+        return [complexString mutableCopy];
+    }
+    else {
+        return [complexString mutableString];
+    }
+}
+
 // NSAccessibility support
 - (jobject)awtComponent:(JNIEnv*)env
 {
@@ -1136,11 +1146,13 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
     // text, or 'text in progress'.  We also need to send the event if we get an insert text out of the blue!
     // (i.e., when the user uses the Character palette or Inkwell), or when the string to insert is a complex
     // Unicode value.
-    NSUInteger utf16Length = [aString lengthOfBytesUsingEncoding:NSUTF16StringEncoding];
-    NSUInteger utf8Length = [aString lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+
+    NSMutableString * useString = [self parseString:aString];
+    NSUInteger utf16Length = [useString lengthOfBytesUsingEncoding:NSUTF16StringEncoding];
+    NSUInteger utf8Length = [useString lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
     BOOL aStringIsComplex = NO;
     if ((utf16Length > 2) ||
-        ((utf8Length > 1) && [self isCodePointInUnicodeBlockNeedingIMEvent:[aString characterAtIndex:0]])) {
+        ((utf8Length > 1) && [self isCodePointInUnicodeBlockNeedingIMEvent:[useString characterAtIndex:0]])) {
         aStringIsComplex = YES;
     }
 
@@ -1155,7 +1167,7 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
         }
 
         static JNF_MEMBER_CACHE(jm_insertText, jc_CInputMethod, "insertText", "(Ljava/lang/String;)V");
-        jstring insertedText =  JNFNSToJavaString(env, aString);
+        jstring insertedText =  JNFNSToJavaString(env, useString);
         JNFCallVoidMethod(env, fInputMethodLOCKABLE, jm_insertText, insertedText); // AWT_THREADING Safe (AWTRunLoopMode)
         (*env)->DeleteLocalRef(env, insertedText);
 
