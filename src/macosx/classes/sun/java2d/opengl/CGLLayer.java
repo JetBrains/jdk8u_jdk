@@ -25,15 +25,17 @@
 
 package sun.java2d.opengl;
 
-import sun.awt.CGraphicsConfig;
-import sun.java2d.NullSurfaceData;
-import sun.java2d.SurfaceData;
-import sun.lwawt.LWWindowPeer;
 import sun.lwawt.macosx.CFRetainedResource;
-import sun.lwawt.macosx.LWCToolkit;
+import sun.lwawt.LWWindowPeer;
 
-import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
+import sun.java2d.SurfaceData;
+import sun.java2d.NullSurfaceData;
+
+import sun.awt.CGraphicsConfig;
+
+import java.awt.Rectangle;
+import java.awt.GraphicsConfiguration;
+import java.awt.Transparency;
 
 public class CGLLayer extends CFRetainedResource {
 
@@ -130,25 +132,13 @@ public class CGLLayer extends CFRetainedResource {
     // NATIVE CALLBACKS
     // ----------------------------------------------------------------------
 
-    /**
-     * Called from AppKit thread
-     */
-    @SuppressWarnings("unused")
     private void drawInCGLContext() {
         // tell the flusher thread not to update the intermediate buffer
         // until we are done blitting from it
         OGLRenderQueue rq = OGLRenderQueue.getInstance();
+        rq.lock();
         try {
-            // Process system events while waiting for OGLRenderQueue lock
-            while (!rq.tryLock()) {
-                LWCToolkit.invokeAndWait(() -> {
-                }, null, true);
-            }
             blitTexture(getPointer());
-        } catch (InvocationTargetException e) {
-            //noinspection ThrowablePrintedToSystemOut
-            System.err.println(e);
-            e.printStackTrace();
         } finally {
             rq.unlock();
         }
