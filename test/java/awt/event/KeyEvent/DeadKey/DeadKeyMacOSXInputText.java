@@ -99,13 +99,10 @@ public class DeadKeyMacOSXInputText {
                     state++;
                     break;
                 case 1:
-                    if (keyCode != KeyEvent.VK_DEAD_ACUTE) {
-                        throw new RuntimeException("Dead ACUTE is not pressed.");
+                    if (keyCode != KeyEvent.VK_E) {
+                        throw new RuntimeException("E is not pressed.");
                     }
-                    // We are sending char that is written on the keyboard key.
-                    //if (keyChar != 0xB4) {
-                    //    throw new RuntimeException("Pressed char is not dead acute.");
-                    //}
+
                     state++;
                     break;
             }
