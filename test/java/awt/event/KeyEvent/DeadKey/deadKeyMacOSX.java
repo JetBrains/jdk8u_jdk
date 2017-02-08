@@ -95,13 +95,9 @@ public class deadKeyMacOSX {
                     state++;
                     break;
                 case 1:
-                    if (keyCode != KeyEvent.VK_DEAD_ACUTE) {
-                        throw new RuntimeException("Dead ACUTE is not pressed.");
+                    if (keyCode != KeyEvent.VK_E) {
+                        throw new RuntimeException("E is not pressed.");
                     }
-                    // We should not send dead key char here
-                    //if (keyChar != 0xB4) {
-                    //    throw new RuntimeException("Pressed char is not dead acute.");
-                    //}
 
                     state++;
                     break;
@@ -109,10 +105,6 @@ public class deadKeyMacOSX {
                     if (keyCode != KeyEvent.VK_A) {
                         throw new RuntimeException("A is not pressed.");
                     }
-                    // We should not send dead key char here
-                    //if (keyChar != 0xE1) {
-                    //    throw new RuntimeException("A char does not have ACCUTE accent");
-                    //}
                     state++;
                     break;
                 default:
@@ -127,15 +119,15 @@ public class deadKeyMacOSX {
 
             if (state == 3) {
                 // Now we send key codes
-//                if (keyCode != 0) {
-//                    throw new RuntimeException("Key code should be undefined.");
-//                }
+                if (keyCode != KeyEvent.VK_A) {
+                    throw new RuntimeException("Key code should be undefined.");
+                }
                 // This works for US keyboard only
                 if (keyChar != 0xE1) {
                     throw new RuntimeException("A char does not have ACCUTE accent");
                 }
             } else {
-                throw new RuntimeException("Wron number of keyTyped events.");
+                throw new RuntimeException("Wrong number of keyTyped events.");
             }
         }
     }
