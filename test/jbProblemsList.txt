@@ -321,7 +321,8 @@ java/awt/LightweightDispatcher/LWDispatcherMemoryLeakTest.java       generic-all
 java/awt/List/FirstItemRemoveTest/FirstItemRemoveTest.html           windows-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-6561487
-# java/awt/List/NofocusListDblClickTest/NofocusListDblClickTest.java   generic-all
+# https://bugs.openjdk.java.net/browse/JDK-7125471
+java/awt/List/NofocusListDblClickTest/NofocusListDblClickTest.java   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7037728
 java/awt/Menu/OpensWithNoGrab/OpensWithNoGrab.java                   linux-all
@@ -424,9 +425,8 @@ java/awt/Paint/ExposeOnEDT.java                                      windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8031422
-# fix has been backported already
-#java/awt/Paint/bug8024864.java                                       generic-all
+# https://bugs.openjdk.java.net/browse/JDK-8031422
+java/awt/Paint/bug8024864.java                                       generic-all
 
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
@@ -712,6 +712,9 @@ java/io/SystemInAvailable.java                                       generic-all
 
 # jdk_lang
 
+# https://bugs.openjdk.java.net/browse/JDK-8029891
+java/lang/ClassLoader/deadlock/GetResource.java                      generic-all
+
 # Test ignored: This test has huge memory requirements
 java/lang/StringBuilder/HugeCapacity.java                            generic-all
 
@@ -926,6 +929,9 @@ sun/security/pkcs11/Secmod/AddPrivateKey.java                   solaris-all
 sun/security/pkcs11/ec/ReadCertificates.java                    solaris-all
 sun/security/pkcs11/ec/ReadPKCS12.java                          solaris-all
 sun/security/pkcs11/sslecc/ClientJSSEServerJSSE.java            solaris-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8074580
+sun/security/pkcs11/rsa/TestKeyPairGenerator.java               generic-all
 
 # 7041639, Solaris DSA keypair generation bug
 java/security/KeyPairGenerator/SolarisShortDSA.java             solaris-all
@@ -1167,7 +1173,8 @@ javax/swing/SwingUtilities/4917669/bug4917669.java                   windows-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-7195187
 #fix was backported
-#javax/swing/SwingUtilities/7088744/bug7088744.java                   generic-all
+# https://bugs.openjdk.java.net/browse/JDK-8072110
+javax/swing/SwingUtilities/7088744/bug7088744.java                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8079253
 javax/swing/SwingUtilities/TestBadBreak/TestBadBreak.java            linux-all
@@ -1301,6 +1308,9 @@ sun/tools/jcmd/TestJcmdSanity.java				windows-all
 
 # 6456333
 sun/tools/jps/TestJpsJarRelative.java				generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8165727
+sun/tools/jstatd/TestJstatdExternalRegistry.java                     generic-all
 
 ############################################################################
 
