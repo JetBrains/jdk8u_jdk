@@ -174,6 +174,10 @@ public class TargetVM implements Runnable {
         // inform the VM mamager that this VM is history
         vm.vmManager.disposeVirtualMachine(vm);
 
+        if (eventController != null) {
+            eventController.release();
+        }
+
         // close down all the event queues
         // Closing a queue causes a VMDisconnectEvent to
         // be put onto the queue.
@@ -321,9 +325,6 @@ public class TargetVM implements Runnable {
         try {
             connection.close();
         } catch (IOException ioe) { }
-        if (eventController != null) {
-            eventController.release();
-        }
     }
 
     private class EventController extends Thread {
