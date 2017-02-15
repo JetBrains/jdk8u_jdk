@@ -117,7 +117,7 @@ public class XMLHTMLReporter {
     /**
      * Generate a Display Name for this group
      */
-    private static String getDisplayGroupName(String group) {
+     static String getDisplayGroupName(String group) {
 
         String groupSplit[] = group.replace('.', '_').split("_");
 
