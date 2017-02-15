@@ -66,8 +66,7 @@
 #define  DEFAULT_DPI 72
 #define  MAX_DPI 1024
 #define  ADJUST_FONT_SIZE(X, DPI) (((X)*DEFAULT_DPI + ((DPI)>>1))/(DPI))
-#define  MAX_FCSIZE_LTL_DISABLED 12.0
-
+#define  MAX_FC_FILE_NAME_LEN (16)
 #ifndef DISABLE_FONTCONFIG
 #define FONTCONFIG_DLL JNI_LIB_NAME("fontconfig")
 #define FONTCONFIG_DLL_VERSIONED VERSIONED_JNI_LIB_NAME("fontconfig", "1")
@@ -135,6 +134,7 @@ static jmethodID getDefaultToolkitMID;
 static jclass tkClass;
 static jmethodID getScreenResolutionMID;
 static jfieldID platNameFID;
+static jfieldID familyNameFID;
 
 #ifndef DISABLE_FONTCONFIG
 typedef FcBool (*FcPatternAddPtrType) (FcPattern *p, const char *object, FcValue value, FcBool append);
@@ -148,6 +148,11 @@ typedef void (*FcPatternDestroyPtrType) (FcPattern *p);
 typedef FcResult (*FcPatternGetBoolPtrType) (const FcPattern *p, const char *object, int n, FcBool *b);
 typedef FcResult (*FcPatternGetIntegerPtrType) (const FcPattern *p, const char *object, int n, int *i);
 typedef FT_Error (*FtLibrarySetLcdFilterPtrType) (FT_Library library, FT_LcdFilter  filter);
+typedef FcBool (*FcConfigParseAndLoadPtrType) (FcConfig *config, const FcChar8 *file, FcBool complain);
+typedef FcBool (*FcConfigSetCurrentPtrType) (FcConfig *config);
+typedef FcBool (*FcConfigBuildFontsPtrType) (FcConfig *config);
+typedef FcConfig * (*FcInitLoadConfigAndFontsPtrType)();
+typedef int (*FcGetVersionPtrType)();
 #endif
 
 static void *libFontConfig = NULL;
@@ -165,6 +170,11 @@ static FcFontMatchPtrType FcFontMatchPtr;
 static FcPatternDestroyPtrType FcPatternDestroyPtr;
 static FcPatternGetBoolPtrType FcPatternGetBoolPtr;
 static FcPatternGetIntegerPtrType FcPatternGetIntegerPtr;
+static FcConfigParseAndLoadPtrType FcConfigParseAndLoadPtr;
+static FcConfigSetCurrentPtrType FcConfigSetCurrentPtr;
+static FcConfigBuildFontsPtrType FcConfigBuildFontsPtr;
+static FcInitLoadConfigAndFontsPtrType FcInitLoadConfigAndFontsPtr;
+static FcGetVersionPtrType FcGetVersionPtr;
 #endif
 
 static void* openFontConfig() {
@@ -196,8 +206,15 @@ static void* openFontConfig() {
 
 JNIEXPORT void JNICALL
 Java_sun_font_FreetypeFontScaler_initIDs(
-        JNIEnv *env, jobject scaler, jclass FFSClass, jclass TKClass, jclass PFClass) {
+        JNIEnv *env, jobject scaler, jclass FFSClass, jclass TKClass,
+        jclass PFClass, jstring jreFontDirName)
+{
     char *fssLogEnabled = getenv("OPENJDK_LOG_FFS");
+    char *fontDir = (char*)(*env)->GetStringUTFChars(env, jreFontDirName, NULL);
+
+    char *fontConf = malloc(strlen(fontDir) + MAX_FC_FILE_NAME_LEN);
+    strcpy(fontConf, fontDir);
+    strcat(fontConf, "font.conf");
 
     if (fssLogEnabled != NULL && !strcmp(fssLogEnabled, "yes")) {
         logFFS = JNI_TRUE;
@@ -212,9 +229,12 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         (*env)->GetMethodID(env, TKClass, "getScreenResolution", "()I");
     tkClass = (*env)->NewGlobalRef(env, TKClass);
     platNameFID = (*env)->GetFieldID(env, PFClass, "platName", "Ljava/lang/String;");
+    familyNameFID = (*env)->GetFieldID(env, PFClass, "familyName", "Ljava/lang/String;");
     libFontConfig = openFontConfig();
 #ifndef DISABLE_FONTCONFIG
     if (libFontConfig) {
+        FcConfig* fcConfig;
+        FcBool result;
         FcPatternAddPtr = (FcPatternAddPtrType) dlsym(libFontConfig, "FcPatternAdd");
         FcPatternAddBoolPtr = (FcPatternAddBoolPtrType) dlsym(libFontConfig, "FcPatternAddBool");
         FcPatternAddDoublePtr = (FcPatternAddDoublePtrType) dlsym(libFontConfig, "FcPatternAddDouble");
@@ -225,8 +245,29 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         FcPatternDestroyPtr = (FcPatternDestroyPtrType)  dlsym(libFontConfig, "FcPatternDestroy");
         FcPatternGetBoolPtr = (FcPatternGetBoolPtrType)  dlsym(libFontConfig, "FcPatternGetBool");
         FcPatternGetIntegerPtr = (FcPatternGetIntegerPtrType)  dlsym(libFontConfig, "FcPatternGetInteger");
+        FcConfigParseAndLoadPtr = (FcConfigParseAndLoadPtrType) dlsym(libFontConfig, "FcConfigParseAndLoad");
+        FcConfigSetCurrentPtr =  (FcConfigSetCurrentPtrType) dlsym(libFontConfig, "FcConfigSetCurrent");
+        FcConfigBuildFontsPtr = (FcConfigBuildFontsPtrType) dlsym(libFontConfig, "FcConfigBuildFonts");
+        FcInitLoadConfigAndFontsPtr = (FcInitLoadConfigAndFontsPtrType) dlsym(libFontConfig, "FcInitLoadConfigAndFonts");
+        FcGetVersionPtr = (FcGetVersionPtrType) dlsym(libFontConfig, "FcGetVersion");
+
+
+        if (logFC) fprintf(stderr, "FC_LOG: fontconfig version %d \n", (*FcGetVersionPtr)());
+        fcConfig = (*FcInitLoadConfigAndFontsPtr)();
+        if (fcConfig != NULL) {
+            result = (*FcConfigParseAndLoadPtr)(fcConfig, (const FcChar8 *) fontConf, FcFalse);
+            if (logFC) fprintf(stderr, "FC_LOG: FcConfigParseAndLoad %d \n", result);
+            result = (*FcConfigBuildFontsPtr)(fcConfig);
+            if (logFC) fprintf(stderr, "FC_LOG: FcConfigBuildFonts %d \n", result);
+            result = (*FcConfigSetCurrentPtr)(fcConfig);
+            if (logFC) fprintf(stderr, "FC_LOG: FcConfigSetCurrent %d \n", result);
+        }
+        else {
+            if (logFC) fprintf(stderr, "FC_LOG: FcInitLoadConfigAndFontsPtr failed\n");
+        }
     }
 #endif
+    free(fontConf);
 }
 
 static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  filter) {
@@ -254,6 +295,12 @@ static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  
 static char* getPhysFontName(JNIEnv *env, jobject font2d) {
     jstring jstr;
     jstr = (*env)->GetObjectField(env, font2d, platNameFID);
+    return (char*)(*env)->GetStringUTFChars(env, jstr, NULL);
+}
+
+static char* getFontFamilyName(JNIEnv *env, jobject font2d) {
+    jstring jstr;
+    jstr = (*env)->GetObjectField(env, font2d, familyNameFID);
     return (char*)(*env)->GetStringUTFChars(env, jstr, NULL);
 }
 
@@ -583,19 +630,15 @@ static void setDefaultScalerSettings(FTScalerContext *context) {
 static void setupLoadRenderFlags(FTScalerContext *context, int fcHintStyle, FcBool fcAutohint, FcBool fcAutohintSet,
                           FT_Int32 fcLoadFlags, FT_Render_Mode fcRenderFlags, double fcSize)
 {
-    if (fcSize > MAX_FCSIZE_LTL_DISABLED  ||  !fcAutohintSet || fcAutohint) {
-        switch (fcHintStyle) {
-            case FC_HINT_NONE:
-                context->loadFlags = FT_LOAD_NO_HINTING;
-                break;
-            case FC_HINT_SLIGHT:
-                context->loadFlags = (fcRenderFlags != FT_RENDER_MODE_MONO) ? FT_LOAD_TARGET_LIGHT : FT_LOAD_NO_HINTING;
-                break;
-            default:
-                context->loadFlags = fcLoadFlags;
-        }
-    } else {
-        context->loadFlags = fcLoadFlags;
+    switch (fcHintStyle) {
+        case FC_HINT_NONE:
+            context->loadFlags = FT_LOAD_NO_HINTING;
+            break;
+        case FC_HINT_SLIGHT:
+            context->loadFlags = (fcRenderFlags != FT_RENDER_MODE_MONO) ? FT_LOAD_TARGET_LIGHT : FT_LOAD_NO_HINTING;
+            break;
+        default:
+            context->loadFlags = fcLoadFlags;
     }
 
     context->renderFlags = fcRenderFlags;
@@ -635,12 +678,12 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             fcPattern = (*FcPatternCreatePtr)();
             FcValue fcValue;
             fcValue.type = FcTypeString;
-            char *fontName = getPhysFontName(env, font2D);
+            char *fontFamilyName = getFontFamilyName(env, font2D);
 
-            if (logFC) fprintf(stderr, "FC_LOG: %s ", fontName);
+            if (logFC) fprintf(stderr, "FC_LOG: %s %s ", fontFamilyName, getPhysFontName(env, font2D));
 
-            fcValue.u.s = fontName;
-            (*FcPatternAddPtr)(fcPattern, FC_FILE, fcValue, FcTrue);
+            fcValue.u.s = fontFamilyName;
+            (*FcPatternAddPtr)(fcPattern, FC_FAMILY, fcValue, FcTrue);
             (*FcPatternAddBoolPtr)(fcPattern, FC_SCALABLE, FcTrue);
             double fcSize = FT26Dot6ToDouble(ADJUST_FONT_SIZE(context->ptsz, dpi));
             (*FcPatternAddDoublePtr)(fcPattern, FC_SIZE, fcSize);
