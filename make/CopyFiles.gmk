@@ -512,6 +512,9 @@ else #OPENJDK
   $(SHARED_FONTS_DST_DIR)/LICENSE.txt: $(JDK_TOPDIR)/src/share/lib/fonts/LICENSE.txt
 	$(call install-file)
 
+  $(SHARED_FONTS_DST_DIR)/font.conf: $(JDK_TOPDIR)/src/share/lib/fonts/font.conf
+	$(call install-file)
+
   COPY_FILES += $(SHARED_FONTS_DST)
 
   ifneq ($(OPENJDK_TARGET_OS), windows)
@@ -519,6 +522,7 @@ else #OPENJDK
   endif
 
   COPY_FILES += $(SHARED_FONTS_DST_DIR)/LICENSE.txt
+  COPY_FILES += $(SHARED_FONTS_DST_DIR)/font.conf
 
 endif # OPENJDK
 
