@@ -24,17 +24,23 @@
  */
 package sun.lwawt.macosx;
 
+import com.apple.concurrent.Dispatch;
+
 import java.awt.EventQueue;
+import java.awt.AWTError;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 
 public class CThreading {
-    static String APPKIT_THREAD_NAME = "AppKit Thread";
+    static String APPKIT_THREAD_NAME = "AWT-AppKit";
 
     static boolean isEventQueue() {
         return EventQueue.isDispatchThread();
     }
 
-    public static boolean isAppKit() {
+    private static boolean isAppKit() {
         return APPKIT_THREAD_NAME.equals(Thread.currentThread().getName());
     }
 
@@ -60,5 +66,42 @@ public class CThreading {
         final boolean isNotAppKitThread = !isAppKit();
         assert isNotAppKitThread : "Threading violation: AppKit thread";
         return isNotAppKitThread;
+    }
+
+    public static <V> V executeOnAppKit(Callable<V> command) throws Throwable {
+        if (!isAppKit()) {
+            Dispatch dispatch = Dispatch.getInstance();
+
+            if (dispatch == null) {
+                throw new AWTError("Could not get Dispatch object");
+            }
+
+            FutureTask<V> future = new FutureTask<>(command);
+
+            dispatch.getNonBlockingMainQueueExecutor().execute(future);
+
+            try {
+                return future.get();
+            } catch (InterruptedException e) {
+                throw new AWTError(e.getMessage());
+            } catch (ExecutionException e) {
+                throw e.getCause();
+            }
+        } else
+            return command.call();
+    }
+
+    public static void executeOnAppKit(Runnable command) {
+        if (!isAppKit()) {
+            Dispatch dispatch = Dispatch.getInstance();
+
+            if (dispatch != null) {
+                dispatch.getNonBlockingMainQueueExecutor().execute(command);
+            }
+            else {
+                throw new AWTError("Could not get Dispatch object");
+            }
+        } else
+            command.run();
     }
 }
