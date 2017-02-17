@@ -511,11 +511,15 @@ JNICALL Java_sun_lwawt_macosx_LWCToolkit_switchKeyboardLayoutNative(JNIEnv *env,
 JNF_COCOA_ENTER(env);
 __block NSString* layoutId = [JNFJavaToNSString(env, jLayoutId) retain];
 [ThreadUtilities performOnMainThreadWaiting:NO block:^(){
-    NSArray* sources = CFBridgingRelease(TISCreateInputSourceList((__bridge CFDictionaryRef)@{ (__bridge NSString*)kTISPropertyInputSourceID : layoutId }, FALSE));
-    TISInputSourceRef source = (__bridge TISInputSourceRef)sources[0];
+     NSDictionary* property = [NSDictionary dictionaryWithObject:layoutId
+                                                          forKey:(NSString*)kTISPropertyInputSourceID];
+
+    NSArray* sources = CFBridgingRelease(TISCreateInputSourceList((CFDictionaryRef)property, FALSE));
+    TISInputSourceRef source = (TISInputSourceRef)sources[0];
     OSStatus status = TISSelectInputSource(source);
     if (status != noErr) {
-        NSLog(@"error during keyboard layout switch");
+        NSString* errorMessage = (NSString *) SecCopyErrorMessageString(status, NULL);
+        NSLog(@"%@", errorMessage);
     }
     [layoutId release];
 }];
