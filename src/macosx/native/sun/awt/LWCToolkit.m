@@ -494,7 +494,7 @@ JNF_COCOA_ENTER(env);
 __block NSString * layoutId;
 [ThreadUtilities performOnMainThreadWaiting:YES block:^(){
     TISInputSourceRef source = TISCopyCurrentKeyboardInputSource();
-    layoutId = TISGetInputSourceProperty(source, kTISPropertyInputSourceID);
+    layoutId = (__bridge NSString*)TISGetInputSourceProperty(source, kTISPropertyInputSourceID);
 }];
 return JNFNSToJavaString(env, layoutId);
 JNF_COCOA_EXIT(env);
@@ -512,10 +512,10 @@ JNF_COCOA_ENTER(env);
 __block NSString* layoutId = [JNFJavaToNSString(env, jLayoutId) retain];
 [ThreadUtilities performOnMainThreadWaiting:NO block:^(){
      NSDictionary* property = [NSDictionary dictionaryWithObject:layoutId
-                                                          forKey:(NSString*)kTISPropertyInputSourceID];
+                                                          forKey:(__bridge NSString*)kTISPropertyInputSourceID];
 
-    NSArray* sources = CFBridgingRelease(TISCreateInputSourceList((CFDictionaryRef)property, FALSE));
-    TISInputSourceRef source = (TISInputSourceRef)sources[0];
+    NSArray* sources = CFBridgingRelease(TISCreateInputSourceList((__bridge CFDictionaryRef)property, FALSE));
+    TISInputSourceRef source = (__bridge TISInputSourceRef)sources[0];
     OSStatus status = TISSelectInputSource(source);
     if (status != noErr) {
         NSString* errorMessage = (NSString *) SecCopyErrorMessageString(status, NULL);
