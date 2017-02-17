@@ -49,12 +49,12 @@ class FreetypeFontScaler extends FontScaler {
         /* At the moment fontmanager library depends on freetype library
            and therefore no need to load it explicitly here */
         FontManagerNativeLibrary.load();
-        String jreFontDirName =
+        String jreFontConfName =
                 (System.getProperty("java.home", "") +
                         File.separator + "lib") + File.separator + "fonts" +
-                        File.separator;
+                        File.separator + "font.conf";
         initIDs(FreetypeFontScaler.class, Toolkit.class, PhysicalFont.class,
-                jreFontDirName);
+                jreFontConfName);
     }
 
     private static native void initIDs(Class FFS, Class toolkitClass, Class pfClass,
