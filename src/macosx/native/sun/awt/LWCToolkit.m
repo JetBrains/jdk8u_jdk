@@ -512,10 +512,10 @@ JNF_COCOA_ENTER(env);
 __block NSString* layoutId = [JNFJavaToNSString(env, jLayoutId) retain];
 [ThreadUtilities performOnMainThreadWaiting:NO block:^(){
      NSDictionary* property = [NSDictionary dictionaryWithObject:layoutId
-                                                          forKey:(__bridge NSString*)kTISPropertyInputSourceID];
+                                                          forKey:(NSString*)kTISPropertyInputSourceID];
 
-    NSArray* sources = CFBridgingRelease(TISCreateInputSourceList((__bridge CFDictionaryRef)property, FALSE));
-    TISInputSourceRef source = (__bridge TISInputSourceRef)sources[0];
+    NSArray* sources = (NSArray*)CFBridgingRelease(TISCreateInputSourceList((CFDictionaryRef)property, FALSE));
+    TISInputSourceRef source = (TISInputSourceRef)sources[0];
     OSStatus status = TISSelectInputSource(source);
     if (status != noErr) {
         NSString* errorMessage = (NSString *) SecCopyErrorMessageString(status, NULL);
