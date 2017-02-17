@@ -263,11 +263,12 @@ Java_sun_font_FreetypeFontScaler_initIDs(
             if (logFC) fprintf(stderr, "FC_LOG: FcConfigSetCurrent %d \n", result);
         }
         else {
-            if (logFC) fprintf(stderr, "FC_LOG: FcInitLoadConfigAndFontsPtr failed\n");
+            if (logFC) fprintf(stderr, "FC_LOG: FcInitLoadConfigAndFonts failed\n");
         }
     }
 #endif
     free(fontConf);
+    (*env)->ReleaseStringUTFChars(env, jreFontDirName, fontDir);
 }
 
 static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  filter) {
@@ -290,18 +291,6 @@ static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  
 #else
     return FT_Library_SetLcdFilter(library, filter);
 #endif
-}
-
-static char* getPhysFontName(JNIEnv *env, jobject font2d) {
-    jstring jstr;
-    jstr = (*env)->GetObjectField(env, font2d, platNameFID);
-    return (char*)(*env)->GetStringUTFChars(env, jstr, NULL);
-}
-
-static char* getFontFamilyName(JNIEnv *env, jobject font2d) {
-    jstring jstr;
-    jstr = (*env)->GetObjectField(env, font2d, familyNameFID);
-    return (char*)(*env)->GetStringUTFChars(env, jstr, NULL);
 }
 
 static int getScreenResolution(JNIEnv *env) {
@@ -678,11 +667,17 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             fcPattern = (*FcPatternCreatePtr)();
             FcValue fcValue;
             fcValue.type = FcTypeString;
-            char *fontFamilyName = getFontFamilyName(env, font2D);
+            jstring jfontFamilyName = (*env)->GetObjectField(env, font2D, familyNameFID);
+            char *cfontFamilyName = (char*)(*env)->GetStringUTFChars(env, jfontFamilyName, NULL);
 
-            if (logFC) fprintf(stderr, "FC_LOG: %s %s ", fontFamilyName, getPhysFontName(env, font2D));
+            if (logFC) {
+                jstring jfontPath = (*env)->GetObjectField(env, font2D, platNameFID);
+                char *cfontPath = (char*)(*env)->GetStringUTFChars(env, jfontPath, NULL);
+                fprintf(stderr, "FC_LOG: %s %s ", cfontFamilyName, cfontPath);
+                (*env)->ReleaseStringUTFChars(env, jfontPath, cfontPath);
+            }
 
-            fcValue.u.s = fontFamilyName;
+            fcValue.u.s = cfontFamilyName;
             (*FcPatternAddPtr)(fcPattern, FC_FAMILY, fcValue, FcTrue);
             (*FcPatternAddBoolPtr)(fcPattern, FC_SCALABLE, FcTrue);
             double fcSize = FT26Dot6ToDouble(ADJUST_FONT_SIZE(context->ptsz, dpi));
@@ -841,6 +836,7 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
                 }
             }
             (*FcPatternDestroyPtr)(pattern);
+            (*env)->ReleaseStringUTFChars(env, jfontFamilyName, cfontFamilyName);
             if (logFC) fprintf(stderr, "\n");
 #endif
         }
