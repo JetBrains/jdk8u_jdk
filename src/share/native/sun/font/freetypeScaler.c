@@ -66,7 +66,6 @@
 #define  DEFAULT_DPI 72
 #define  MAX_DPI 1024
 #define  ADJUST_FONT_SIZE(X, DPI) (((X)*DEFAULT_DPI + ((DPI)>>1))/(DPI))
-#define  MAX_FC_FILE_NAME_LEN (16)
 #ifndef DISABLE_FONTCONFIG
 #define FONTCONFIG_DLL JNI_LIB_NAME("fontconfig")
 #define FONTCONFIG_DLL_VERSIONED VERSIONED_JNI_LIB_NAME("fontconfig", "1")
@@ -150,7 +149,6 @@ typedef FcResult (*FcPatternGetIntegerPtrType) (const FcPattern *p, const char *
 typedef FT_Error (*FtLibrarySetLcdFilterPtrType) (FT_Library library, FT_LcdFilter  filter);
 typedef FcBool (*FcConfigParseAndLoadPtrType) (FcConfig *config, const FcChar8 *file, FcBool complain);
 typedef FcBool (*FcConfigSetCurrentPtrType) (FcConfig *config);
-typedef FcBool (*FcConfigBuildFontsPtrType) (FcConfig *config);
 typedef FcConfig * (*FcInitLoadConfigAndFontsPtrType)();
 typedef int (*FcGetVersionPtrType)();
 #endif
@@ -172,7 +170,6 @@ static FcPatternGetBoolPtrType FcPatternGetBoolPtr;
 static FcPatternGetIntegerPtrType FcPatternGetIntegerPtr;
 static FcConfigParseAndLoadPtrType FcConfigParseAndLoadPtr;
 static FcConfigSetCurrentPtrType FcConfigSetCurrentPtr;
-static FcConfigBuildFontsPtrType FcConfigBuildFontsPtr;
 static FcInitLoadConfigAndFontsPtrType FcInitLoadConfigAndFontsPtr;
 static FcGetVersionPtrType FcGetVersionPtr;
 #endif
@@ -207,14 +204,10 @@ static void* openFontConfig() {
 JNIEXPORT void JNICALL
 Java_sun_font_FreetypeFontScaler_initIDs(
         JNIEnv *env, jobject scaler, jclass FFSClass, jclass TKClass,
-        jclass PFClass, jstring jreFontDirName)
+        jclass PFClass, jstring jreFontConfName)
 {
-    char *fssLogEnabled = getenv("OPENJDK_LOG_FFS");
-    char *fontDir = (char*)(*env)->GetStringUTFChars(env, jreFontDirName, NULL);
-
-    char *fontConf = malloc(strlen(fontDir) + MAX_FC_FILE_NAME_LEN);
-    strcpy(fontConf, fontDir);
-    strcat(fontConf, "font.conf");
+    const char *fssLogEnabled = getenv("OPENJDK_LOG_FFS");
+    const char *fontConf = (char*)(*env)->GetStringUTFChars(env, jreFontConfName, NULL);
 
     if (fssLogEnabled != NULL && !strcmp(fssLogEnabled, "yes")) {
         logFFS = JNI_TRUE;
@@ -247,7 +240,6 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         FcPatternGetIntegerPtr = (FcPatternGetIntegerPtrType)  dlsym(libFontConfig, "FcPatternGetInteger");
         FcConfigParseAndLoadPtr = (FcConfigParseAndLoadPtrType) dlsym(libFontConfig, "FcConfigParseAndLoad");
         FcConfigSetCurrentPtr =  (FcConfigSetCurrentPtrType) dlsym(libFontConfig, "FcConfigSetCurrent");
-        FcConfigBuildFontsPtr = (FcConfigBuildFontsPtrType) dlsym(libFontConfig, "FcConfigBuildFonts");
         FcInitLoadConfigAndFontsPtr = (FcInitLoadConfigAndFontsPtrType) dlsym(libFontConfig, "FcInitLoadConfigAndFonts");
         FcGetVersionPtr = (FcGetVersionPtrType) dlsym(libFontConfig, "FcGetVersion");
 
@@ -257,8 +249,6 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         if (fcConfig != NULL) {
             result = (*FcConfigParseAndLoadPtr)(fcConfig, (const FcChar8 *) fontConf, FcFalse);
             if (logFC) fprintf(stderr, "FC_LOG: FcConfigParseAndLoad %d \n", result);
-            result = (*FcConfigBuildFontsPtr)(fcConfig);
-            if (logFC) fprintf(stderr, "FC_LOG: FcConfigBuildFonts %d \n", result);
             result = (*FcConfigSetCurrentPtr)(fcConfig);
             if (logFC) fprintf(stderr, "FC_LOG: FcConfigSetCurrent %d \n", result);
         }
@@ -267,8 +257,7 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         }
     }
 #endif
-    free(fontConf);
-    (*env)->ReleaseStringUTFChars(env, jreFontDirName, fontDir);
+    (*env)->ReleaseStringUTFChars(env, jreFontConfName, fontConf);
 }
 
 static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  filter) {
@@ -617,7 +606,7 @@ static void setDefaultScalerSettings(FTScalerContext *context) {
 
 #ifndef DISABLE_FONTCONFIG
 static void setupLoadRenderFlags(FTScalerContext *context, int fcHintStyle, FcBool fcAutohint, FcBool fcAutohintSet,
-                          FT_Int32 fcLoadFlags, FT_Render_Mode fcRenderFlags, double fcSize)
+                                FT_Int32 fcLoadFlags, FT_Render_Mode fcRenderFlags)
 {
     switch (fcHintStyle) {
         case FC_HINT_NONE:
@@ -668,7 +657,7 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             FcValue fcValue;
             fcValue.type = FcTypeString;
             jstring jfontFamilyName = (*env)->GetObjectField(env, font2D, familyNameFID);
-            char *cfontFamilyName = (char*)(*env)->GetStringUTFChars(env, jfontFamilyName, NULL);
+            const char *cfontFamilyName = (char*)(*env)->GetStringUTFChars(env, jfontFamilyName, NULL);
 
             if (logFC) {
                 jstring jfontPath = (*env)->GetObjectField(env, font2D, platNameFID);
@@ -677,7 +666,7 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
                 (*env)->ReleaseStringUTFChars(env, jfontPath, cfontPath);
             }
 
-            fcValue.u.s = cfontFamilyName;
+            fcValue.u.s = (const FcChar8 *) cfontFamilyName;
             (*FcPatternAddPtr)(fcPattern, FC_FAMILY, fcValue, FcTrue);
             (*FcPatternAddBoolPtr)(fcPattern, FC_SCALABLE, FcTrue);
             double fcSize = FT26Dot6ToDouble(ADJUST_FONT_SIZE(context->ptsz, dpi));
@@ -767,10 +756,12 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             if (logFC && fcAutohintSet) fprintf(stderr, "FC_AUTOHINT(%d) ", fcAutohint);
 
             if (context->aaType == TEXT_AA_ON) { // Greyscale AA
-                setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet, FT_LOAD_DEFAULT, FT_RENDER_MODE_NORMAL, fcSize);
+                setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet, FT_LOAD_DEFAULT,
+                                     FT_RENDER_MODE_NORMAL);
             }
             else if (context->aaType == TEXT_AA_OFF) { // No AA
-                setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet, FT_LOAD_TARGET_MONO, FT_RENDER_MODE_MONO, fcSize);
+                setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet, FT_LOAD_TARGET_MONO,
+                                     FT_RENDER_MODE_MONO);
             } else {
                 int fcRGBA = FC_RGBA_UNKNOWN;
                 if (fcAntialiasSet && fcAntialias) {
@@ -780,13 +771,13 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
                             case FC_RGBA_BGR:
                                 if (logFC) fprintf(stderr, fcRGBA == FC_RGBA_RGB ? "FC_RGBA_RGB " : "FC_RGBA_BGR ");
                                 setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet,
-                                                     FT_LOAD_TARGET_LCD, FT_RENDER_MODE_LCD, fcSize);
+                                                     FT_LOAD_TARGET_LCD, FT_RENDER_MODE_LCD);
                                 break;
                             case FC_RGBA_VRGB:
                             case FC_RGBA_VBGR:
                                 if (logFC) fprintf(stderr, fcRGBA == FC_RGBA_VRGB ? "FC_RGBA_VRGB " : "FC_RGBA_VBGR ");
                                 setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet,
-                                                     FT_LOAD_TARGET_LCD_V, FT_RENDER_MODE_LCD_V, fcSize);
+                                                     FT_LOAD_TARGET_LCD_V, FT_RENDER_MODE_LCD_V);
                                 break;
                             case FC_RGBA_NONE:
                                 if (logFC) fprintf(stderr, "FC_RGBA_NONE ");
@@ -801,11 +792,11 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
 
                     if (context->aaType == TEXT_AA_LCD_HRGB ||
                         context->aaType == TEXT_AA_LCD_HBGR) {
-                        setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet,
-                                             FT_LOAD_TARGET_LCD, FT_RENDER_MODE_LCD, fcSize);
+                        setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet, FT_LOAD_TARGET_LCD,
+                                             FT_RENDER_MODE_LCD);
                     } else {
-                        setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet,
-                                             FT_LOAD_TARGET_LCD_V, FT_RENDER_MODE_LCD_V, fcSize);
+                        setupLoadRenderFlags(context, fcHintStyle, fcAutohint, fcAutohintSet, FT_LOAD_TARGET_LCD_V,
+                                             FT_RENDER_MODE_LCD_V);
                     }
                 }
             }
