@@ -43,7 +43,6 @@ import java.util.concurrent.Callable;
 import java.net.MalformedURLException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import sun.awt.*;
 import sun.awt.datatransfer.DataTransferer;
@@ -72,6 +71,8 @@ public final class LWCToolkit extends LWToolkit {
     private static final int BUTTONS = 5;
 
     private static native void initIDs();
+    private static native void switchKeyboardLayoutNative(String layoutName);
+    private static native String getKeyboardLayoutNativeId();
 
     private static CInputMethodDescriptor sInputMethodDescriptor;
 
@@ -968,6 +969,17 @@ public final class LWCToolkit extends LWToolkit {
                 !path.isEmpty() &&
                 !path.endsWith("/") &&
                 !path.endsWith(".");
+    }
+
+    public static void switchKeyboardLayout (String layoutName) {
+        if (layoutName == null || layoutName.isEmpty()) {
+            throw new RuntimeException("A valid layout ID is expected. Found:  " + layoutName);
+        }
+        switchKeyboardLayoutNative(layoutName);
+    }
+
+    public static String getKeyboardLayoutId () {
+        return getKeyboardLayoutNativeId();
     }
 
     @Override
