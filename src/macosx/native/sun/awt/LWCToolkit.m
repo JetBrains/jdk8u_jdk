@@ -487,7 +487,7 @@ Java_sun_lwawt_macosx_LWCToolkit_isEmbedded
  * Method:    getKeyboardLayoutNativeId
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL
+/*JNIEXPORT jstring JNICALL
 JNICALL Java_sun_lwawt_macosx_LWCToolkit_getKeyboardLayoutNativeId(JNIEnv *env, jclass cls)
 {
 JNF_COCOA_ENTER(env);
@@ -498,14 +498,14 @@ __block NSString * layoutId;
 }];
 return JNFNSToJavaString(env, layoutId);
 JNF_COCOA_EXIT(env);
-}
+}*/
 
 /*
  * Class:     sun_lwawt_macosx_LWCToolkit
  * Method:    switchKeyboardLayoutNative
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL
+/*JNIEXPORT void JNICALL
 JNICALL Java_sun_lwawt_macosx_LWCToolkit_switchKeyboardLayoutNative(JNIEnv *env, jclass cls, jstring jLayoutId)
 {
 JNF_COCOA_ENTER(env);
@@ -524,4 +524,4 @@ __block NSString* layoutId = [JNFJavaToNSString(env, jLayoutId) retain];
     [layoutId release];
 }];
 JNF_COCOA_EXIT(env);
-}
+}*/
