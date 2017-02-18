@@ -975,11 +975,12 @@ public final class LWCToolkit extends LWToolkit {
         if (layoutName == null || layoutName.isEmpty()) {
             throw new RuntimeException("A valid layout ID is expected. Found:  " + layoutName);
         }
-        switchKeyboardLayoutNative(layoutName);
+        //switchKeyboardLayoutNative(layoutName);
     }
 
     public static String getKeyboardLayoutId () {
-        return getKeyboardLayoutNativeId();
+        //return getKeyboardLayoutNativeId();
+        return "";
     }
 
     @Override
