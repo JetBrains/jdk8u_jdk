@@ -207,7 +207,7 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         jclass PFClass, jstring jreFontConfName)
 {
     const char *fssLogEnabled = getenv("OPENJDK_LOG_FFS");
-    const char *fontConf = (char*)(*env)->GetStringUTFChars(env, jreFontConfName, NULL);
+    const char *fontConf = (*env)->GetStringUTFChars(env, jreFontConfName, NULL);
 
     if (fssLogEnabled != NULL && !strcmp(fssLogEnabled, "yes")) {
         logFFS = JNI_TRUE;
@@ -657,7 +657,7 @@ static int setupFTContext(JNIEnv *env, jobject font2D, FTScalerInfo *scalerInfo,
             FcValue fcValue;
             fcValue.type = FcTypeString;
             jstring jfontFamilyName = (*env)->GetObjectField(env, font2D, familyNameFID);
-            const char *cfontFamilyName = (char*)(*env)->GetStringUTFChars(env, jfontFamilyName, NULL);
+            const char *cfontFamilyName = (*env)->GetStringUTFChars(env, jfontFamilyName, NULL);
 
             if (logFC) {
                 jstring jfontPath = (*env)->GetObjectField(env, font2D, platNameFID);
