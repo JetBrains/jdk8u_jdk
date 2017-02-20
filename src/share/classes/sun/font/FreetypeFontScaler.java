@@ -31,6 +31,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.security.PrivilegedAction;
 
 /* This is Freetype based implementation of FontScaler.
  *
@@ -49,10 +50,12 @@ class FreetypeFontScaler extends FontScaler {
         /* At the moment fontmanager library depends on freetype library
            and therefore no need to load it explicitly here */
         FontManagerNativeLibrary.load();
-        String jreFontConfName =
-                (System.getProperty("java.home", "") +
+        String jreFontConfName = java.security.AccessController.doPrivileged(
+                (PrivilegedAction<String>) () -> (
+                        System.getProperty("java.home", "") +
                         File.separator + "lib") + File.separator + "fonts" +
-                        File.separator + "font.conf";
+                        File.separator + "font.conf");
+
         initIDs(FreetypeFontScaler.class, Toolkit.class, PhysicalFont.class,
                 jreFontConfName);
     }
