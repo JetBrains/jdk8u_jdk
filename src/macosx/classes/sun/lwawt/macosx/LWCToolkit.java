@@ -640,12 +640,12 @@ public final class LWCToolkit extends LWToolkit {
      * Any selector invoked using ThreadUtilities performOnMainThread will be
      * processed in doAWTRunLoop The InvocationEvent will call
      * LWCToolkit.stopAWTRunLoop() when finished, which will stop our manual
-     * runloop Does not dispatch native events while in the loop
+     * runloop. Dispatch native events while in the loop
      */
     public static void invokeAndWait(Runnable runnable, Component component)
             throws InvocationTargetException
     {
-        invokeAndWait(runnable, component, false);
+        invokeAndWait(runnable, component, true);
     }
 
     /**
