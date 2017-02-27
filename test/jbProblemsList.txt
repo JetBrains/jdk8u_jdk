@@ -101,9 +101,6 @@ java/awt/Choice/ItemStateChangeTest/ItemStateChangeTest.java             windows
 # https://bugs.openjdk.java.net/browse/JDK-8047703
 java/awt/Choice/RemoveAllShrinkTest/RemoveAllShrinkTest.java             generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7105576
-java/awt/Component/F10TopToplevel/F10TopToplevel.html                    windows-all
-
 # https://bugs.openjdk.java.net/browse/JDK-8169104
 java/awt/Component/PaintAll/PaintAll.java                                windows-all
 
@@ -120,8 +117,7 @@ java/awt/Component/TreeLockDeadlock/TreeLockDeadlock.java                generic
 # the fix was integrated
 #java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html         generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8081469
-# https://bugs.openjdk.java.net/browse/JDK-7054586
+# https://bugs.openjdk.java.net/browse/JDK-8081469
 java/awt/Dialog/MakeWindowAlwaysOnTop/MakeWindowAlwaysOnTop.java         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6990210
@@ -143,7 +139,8 @@ java/awt/Focus/6981400/Test1.java                                        generic
 java/awt/Focus/6981400/Test3.java                                        generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8013611
-#java/awt/Focus/8013611/JDK8013611.java                                   windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8175366
+java/awt/Focus/8013611/JDK8013611.java                                   windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8136517
 java/awt/Focus/8073453/AWTFocusTransitionTest.java                       generic-all
@@ -163,7 +160,8 @@ java/awt/Focus/AppletInitialFocusTest/AppletInitialFocusTest1.html       generic
 # https://bugs.openjdk.java.net/browse/JDK-6848407
 java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusSetVisibleTest.java  generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-6848406
+# similar to
+# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6848406
 java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusToFrontTest.java     generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6829264
@@ -200,7 +198,7 @@ java/awt/Focus/NoAutotransferToDisabledCompTest/NoAutotransferToDisabledCompTest
 java/awt/Focus/NonFocusableWindowTest/NonfocusableOwnerTest.java         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169110
-java/awt/Focus/OwnedWindowFocusIMECrashTest/OwnedWindowFocusIMECrashTest.java  generic-all
+java/awt/Focus/OwnedWindowFocusIMECrashTest/OwnedWindowFocusIMECrashTest.java  windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8168294
 java/awt/Focus/ResetMostRecentFocusOwnerTest/ResetMostRecentFocusOwnerTest.java generic-all
@@ -230,13 +228,13 @@ java/awt/Focus/WindowIsFocusableAccessByThreadsTest/WindowIsFocusableAccessByThr
 # https://bugs.openjdk.java.net/browse/JDK-8169096
 java/awt/Focus/WrongKeyTypedConsumedTest/WrongKeyTypedConsumedTest.java windows-all
 
-# https://bugs.openjdk.java.net/browse/JDK-6868690
+# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6868690
 java/awt/FontClass/CreateFont/bigfont.html                           generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8076151
+#http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8076151
 java/awt/FontClass/CreateFont/fileaccess/FontFile.java               generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8080953
+# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8080953
 java/awt/FontClass/DebugFonts.java                                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169111
@@ -441,10 +439,6 @@ java/awt/SplashScreen/FullscreenAfterSplash/FullScreenAfterSplash.java generic-a
 
 # https://bugs.openjdk.java.net/browse/JDK-8159592
 java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java generic-all
-
-# excluded from regular runs since the test was not run
-# see http://download.java.net/openjdk/testresults/8/
-#java/awt/TextArea/Mixing/TextAreaMixing.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169533
 java/awt/TextField/SelectionInvisibleTest/SelectionInvisibleTest.java windows-all
@@ -701,9 +695,7 @@ java/io/ByteArrayOutputStream/MaxCapacity.java                       generic-all
 
 # Test ignored: until 6492634 and 6501010 is fixed
 # http://bugs.java.com/view_bug.do?bug_id=6492634
-# https://bugs.openjdk.java.net/browse/JDK-6492634
 # http://bugs.java.com/view_bug.do?bug_id=6501010
-# https://bugs.openjdk.java.net/browse/JDK-6501010
 java/io/File/GetXSpace.java                                          generic-all
 
 # Test ignored: Test truncates system files when run as root, see 7042603
@@ -726,14 +718,12 @@ java/lang/StringBuilder/HugeCapacity.java                            generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8072130
 java/lang/instrument/BootClassPath/BootClassPathTest.sh              macosx-all
 
-## Test ignored: until bug 6835233 dealt with
-## http://bugs.java.com/view_bug.do?bug_id=6835233
-# https://bugs.openjdk.java.net/browse/JDK-8166026
+# Test ignored: until bug 6835233 dealt with
+# http://bugs.java.com/view_bug.do?bug_id=6835233
 java/lang/instrument/ParallelTransformerLoader.sh                    generic-all
 
 # Test ignored: 8078602
 # http://bugs.java.com/view_bug.do?bug_id=8078602
-# https://bugs.openjdk.java.net/browse/JDK-8078602
 java/lang/invoke/LFCaching/LFGarbageCollectedTest.java               generic-all
 
 ############################################################################
@@ -749,7 +739,10 @@ java/lang/management/MemoryMXBean/LowMemoryTest2.sh                  generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8160913
 javax/management/security/SecurityTest.java                          generic-all
 
-# 8028150
+# https://bugs.openjdk.java.net/browse/JDK-8030616
+sun/management/jmxremote/bootstrap/RmiBootstrapTest.sh               windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8028150
 sun/management/jmxremote/bootstrap/RmiSslBootstrapTest.sh	         generic-all
 
 ############################################################################
@@ -773,8 +766,8 @@ com/sun/management/DiagnosticCommandMBean/DcmdMBeanPermissionsTest.java generic-
 
 # jdk_other
 
-# https://bugs.openjdk.java.net/browse/JDK-6988950
-demo/jvmti/compiledMethodLoad/CompiledMethodLoadTest.java	         generic-all
+# 6988950
+demo/jvmti/compiledMethodLoad/CompiledMethodLoadTest.java	generic-all
 
 # 7027502
 demo/jvmti/hprof/MonitorTest.java                               generic-all
@@ -1204,8 +1197,7 @@ javax/swing/plaf/basic/BasicHTML/4251579/bug4251579.java             generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8079450
 # fix was backported
-# https://bugs.openjdk.java.net/browse/JDK-8140237
-javax/swing/plaf/nimbus/8041642/bug8041642.java                      generic-all
+#javax/swing/plaf/nimbus/8041642/bug8041642.java                      generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8160438
 javax/swing/plaf/nimbus/8057791/bug8057791.java                      macosx-all
@@ -1274,7 +1266,7 @@ tools/pack200/Pack200Test.java                                  solaris-all, mac
 # https://bugs.openjdk.java.net/browse/JDK-8140611
 tools/pack200/UnpackerMemoryTest.java                           linux-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8172782
+# https://bugs.openjdk.java.net/browse/JDK-8130392
 tools/launcher/FXLauncherTest.java                              generic-all
 
 ############################################################################
@@ -1301,8 +1293,7 @@ java/util/ResourceBundle/RestrictedBundleTest.java                   generic-all
 #Test ignored: 6876961
 java/util/ResourceBundle/Test4300693.java                            generic-all
 
-#Test ignored: until 6842353 is resolved
-# https://bugs.openjdk.java.net/browse/JDK-6842353
+Test ignored: until 6842353 is resolved
 java/util/WeakHashMap/GCDuringIteration.java                         generic-all
 
 # Test ignored: runs for hours and eats up 7 Gigabytes of disk space
@@ -1488,18 +1479,20 @@ com/sun/nio/sctp/SctpMultiChannel/SocketOptionTests.java                        
 
 # https://bugs.openjdk.java.net/browse/JDK-8172887
 com/sun/awt/Translucency/WindowOpacity.java                                                     windows-all
-java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html
 java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java                               windows-all
 java/awt/Mixing/MixingInHwPanel.java                                                            windows-all
+java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                                         windows-all
 java/io/File/SetLastModified.java                                                               windows-all
 javax/swing/JScrollBar/7163696/Test7163696.java                                                 windows-all
 javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                                    windows-all
 javax/swing/dnd/7171812/bug7171812.java                                                         windows-all
 javax/swing/plaf/basic/BasicTreeUI/8023474/bug8023474.java                                      windows-all
+javax/swing/plaf/basic/Test6984643.java                                                         windows-all
 javax/swing/plaf/nimbus/8041642/ScrollBarThumbVisibleTest.java                                  windows-all
 javax/swing/text/JTextComponent/5074573/bug5074573.java                                         windows-all
 javax/swing/text/StyledEditorKit/4506788/bug4506788.java                                        windows-all
+sun/java2d/DirectX/OpaqueImageToSurfaceBlitTest/OpaqueImageToSurfaceBlitTest.java               windows-all
 sun/java2d/DrawXORModeTest.java                                                                 windows-all
 sun/java2d/OpenGL/CustomCompositeTest.java                                                      windows-all
 sun/java2d/OpenGL/DrawBufImgOp.java                                                             windows-all
