@@ -1122,6 +1122,7 @@ javax/swing/JSplitPane/4885629/bug4885629.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7033533
 javax/swing/JTable/4220171/bug4220171.java                           generic-all
+javax/swing/JComboBox/4199622/bug4199622.java                        linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169959
 javax/swing/JTable/6263446/bug6263446.java                           windows-all
@@ -1478,6 +1479,9 @@ com/sun/jdi/Redefine-g.sh                                                       
 com/sun/jdi/RedefineAbstractClass.sh                                                            windows-all
 com/sun/jdi/RedefineImplementor.sh                                                              windows-all
 com/sun/jdi/RedefineMulti.sh                                                                    windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8151887
+com/sun/jdi/RedefineClearBreakpoint.sh                                                          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8141694
 # https://bugs.openjdk.java.net/browse/JDK-8075066
