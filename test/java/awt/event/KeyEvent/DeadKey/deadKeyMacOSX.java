@@ -29,16 +29,25 @@
  * @run main deadKeyMacOSX
  */
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.Robot;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import sun.awt.OSInfo;
-import sun.awt.SunToolkit;
 
 public class deadKeyMacOSX {
 
-    private static SunToolkit toolkit;
     private static volatile int state = 0;
+
+    private final static Object keyMainObj = new Object();
+    private final static Object keyPressObj = new Object();
+    private final static Object keyTypedObj = new Object();
+
 
     public static void main(String[] args) throws Exception {
 
@@ -46,7 +55,6 @@ public class deadKeyMacOSX {
             return;
         }
 
-        toolkit = (SunToolkit) Toolkit.getDefaultToolkit();
         Robot robot = new Robot();
         robot.setAutoDelay(50);
 
@@ -54,80 +62,122 @@ public class deadKeyMacOSX {
 
         // Pressed keys: Alt + E + A
         // Results:  ALT + VK_DEAD_ACUTE + a with accute accent
-        robot.keyPress(KeyEvent.VK_ALT);
-        robot.keyPress(KeyEvent.VK_E);
-        robot.keyRelease(KeyEvent.VK_E);
-        robot.keyRelease(KeyEvent.VK_ALT);
+        keyPress(robot, KeyEvent.VK_ALT);
+        keyPress(robot, KeyEvent.VK_E);
+        keyRelease(robot, KeyEvent.VK_E);
+        keyRelease(robot, KeyEvent.VK_ALT);
 
-        robot.keyPress(KeyEvent.VK_A);
-        robot.keyRelease(KeyEvent.VK_A);
+        keyPress(robot, KeyEvent.VK_A);
+        keyRelease(robot, KeyEvent.VK_A);
 
         if (state != 3) {
             throw new RuntimeException("Wrong number of key events.");
         }
     }
 
+    private static void keyPress(Robot robot, int keyCode) {
+        synchronized (keyMainObj) {
+            robot.keyPress(keyCode);
+        }
+        synchronized (keyPressObj) {
+        }
+    }
+
+    private static void keyRelease(Robot robot, int keyCode) {
+        synchronized (keyMainObj) {
+            robot.keyRelease(keyCode);
+        }
+        synchronized (keyTypedObj) {
+        }
+    }
+
+    static final Lock lock = new ReentrantLock();
+    static final Condition isPainted = lock.newCondition();
+
     static void createAndShowGUI() {
         Frame frame = new Frame();
         frame.setSize(300, 300);
-        Panel panel = new Panel();
+        Panel panel = new Panel() {
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+                lock.lock();
+                isPainted.signalAll();
+                lock.unlock();
+            }
+        };
         panel.addKeyListener(new DeadKeyListener());
         frame.add(panel);
-        frame.setVisible(true);
-        toolkit.realSync();
 
+        lock.lock();
+
+        frame.setVisible(true);
         panel.requestFocusInWindow();
-        toolkit.realSync();
+
+        try {
+            isPainted.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            lock.unlock();
+        }
     }
 
     static class DeadKeyListener extends KeyAdapter {
 
         @Override
         public void keyPressed(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-            char keyChar = e.getKeyChar();
+            synchronized (keyPressObj) {
+                synchronized (keyMainObj) {
+                    int keyCode = e.getKeyCode();
 
-            switch (state) {
-                case 0:
-                    if (keyCode != KeyEvent.VK_ALT) {
-                        throw new RuntimeException("Alt is not pressed.");
-                    }
-                    state++;
-                    break;
-                case 1:
-                    if (keyCode != KeyEvent.VK_E) {
-                        throw new RuntimeException("E is not pressed.");
-                    }
+                    switch (state) {
+                        case 0:
+                            if (keyCode != KeyEvent.VK_ALT) {
+                                throw new RuntimeException("Alt is not pressed.");
+                            }
+                            state++;
+                            break;
+                        case 1:
+                            if (keyCode != KeyEvent.VK_DEAD_ACUTE) {
+                                throw new RuntimeException("E is not pressed.");
+                            }
 
-                    state++;
-                    break;
-                case 2:
-                    if (keyCode != KeyEvent.VK_A) {
-                        throw new RuntimeException("A is not pressed.");
+                            state++;
+                            break;
+                        case 2:
+                            if (keyCode != KeyEvent.VK_A) {
+                                throw new RuntimeException("A is not pressed.");
+                            }
+                            state++;
+                            break;
+                        default:
+                            throw new RuntimeException("Excessive keyPressed event.");
                     }
-                    state++;
-                    break;
-                default:
-                    throw new RuntimeException("Excessive keyPressed event.");
+                }
             }
         }
 
         @Override
         public void keyTyped(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-            char keyChar = e.getKeyChar();
+            synchronized (keyTypedObj) {
+                synchronized (keyMainObj) {
+                    int keyCode = e.getKeyCode();
+                    char keyChar = e.getKeyChar();
 
-            if (state == 3) {
-                // Now we send key codes
-                if (keyCode != KeyEvent.VK_A) {
-                    throw new RuntimeException("Key code should be undefined.");
+                    if (state == 3) {
+                        // Now we send key codes
+                        if (keyCode != 0) {
+                            throw new RuntimeException("Key code should be undefined.");
+                        }
+                        // This works for US keyboard only
+                        if (keyChar != 0xE1) {
+                            throw new RuntimeException("A char does not have ACCUTE accent");
+                        }
+                    } else {
+                        throw new RuntimeException("Wrong number of keyTyped events.");
+                    }
                 }
-                // This works for US keyboard only
-                if (keyChar != 0xE1) {
-                    throw new RuntimeException("A char does not have ACCUTE accent");
-                }
-            } else {
-                throw new RuntimeException("Wrong number of keyTyped events.");
             }
         }
     }
