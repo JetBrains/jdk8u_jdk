@@ -25,7 +25,7 @@
 /* @test
  * @summary Test chat server chatserver test
  *
- * @library /src/share/sample/nio/chatserver
+ * @library /src/sample/share/nio/chatserver
  * @build ChatTest ChatServer Client ClientReader DataReader MessageReader NameReader
  * @run testng ChatTest
  */
@@ -358,8 +358,8 @@ public class ChatTest {
         @Override
         public void run() {
             try (Socket socket = new Socket("localhost", listeningPort);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            Writer writer = new FlushingWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                 Writer writer = new FlushingWriter(new OutputStreamWriter(socket.getOutputStream()))) {
                 socket.setTcpNoDelay(true);
 
                 run(socket, reader, writer);
