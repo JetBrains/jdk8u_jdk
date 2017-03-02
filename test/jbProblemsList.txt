@@ -215,10 +215,6 @@ java/awt/Focus/SimpleWindowActivationTest/SimpleWindowActivationTest.java generi
 # https://bugs.openjdk.java.net/browse/JDK-7156130
 java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                        generic-all
 
-# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6848810
-# https://bugs.openjdk.java.net/browse/JDK-7035459
-java/awt/Focus/TranserFocusToWindow/TranserFocusToWindow.java        generic-all
-
 # https://bugs.openjdk.java.net/browse/JDK-6986253
 java/awt/Focus/TypeAhead/TestFocusFreeze.java                        windows-all
 
@@ -236,9 +232,6 @@ java/awt/FontClass/CreateFont/bigfont.html                           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8076151
 java/awt/FontClass/CreateFont/fileaccess/FontFile.java               generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8080953
-java/awt/FontClass/DebugFonts.java                                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169111
 java/awt/Frame/InvisibleOwner/InvisibleOwner.java                    generic-all
@@ -331,9 +324,6 @@ java/awt/List/NofocusListDblClickTest/NofocusListDblClickTest.java   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-7037728
 java/awt/Menu/OpensWithNoGrab/OpensWithNoGrab.java                   linux-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8068305
-java/awt/Mixing/HWDisappear.java                                     generic-all
-
 # https://bugs.openjdk.java.net/browse/JDK-8143295
 java/awt/Mixing/LWPopupMenu.java                                     generic-all
 
@@ -373,8 +363,6 @@ java/awt/Mouse/MouseComboBoxTest/MouseComboBoxTest.java              generic-all
 java/awt/Mouse/EnterExitEvents/DragWindowOutOfFrameTest.java         generic-all
 java/awt/Mouse/EnterExitEvents/DragWindowTest.java                   generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-7087869
-#fix was backported
 # https://bugs.openjdk.java.net/browse/JDK-8169534
 java/awt/Mouse/ExtraMouseClick/ExtraMouseClick.html                  generic-all
 
@@ -429,16 +417,10 @@ java/awt/Paint/ExposeOnEDT.java                                      windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8031422
-java/awt/Paint/bug8024864.java                                       generic-all
-
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
 java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java  generic-all
 java/awt/ScrollPane/bug8077409Test.java                              generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8140329
-java/awt/SplashScreen/FullscreenAfterSplash/FullScreenAfterSplash.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8159592
 java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java generic-all
@@ -480,9 +462,6 @@ java/awt/Window/GrabSequence/GrabSequence.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8051857
 java/awt/Window/WindowType/WindowType.java                           linux-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8137087
-java/awt/appletviewer/IOExceptionIfEncodedURLTest/IOExceptionIfEncodedURLTest.sh windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080982
 java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java    generic-all
@@ -626,10 +605,6 @@ java/awt/print/PrinterJob/ExceptionTest.java                         generic-all
 java/awt/print/PrinterJob/ImagePrinting/NullClipARGB.java            generic-all
 java/awt/print/PrinterJob/PrtException.java                          generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8172009
-# fix was backported
-#java/awt/print/PaintSetEnabledDeadlock/PaintSetEnabledDeadlock.java  macosx-all
-
 # https://bugs.openjdk.java.net/browse/JDK-8152944
 https://bugs.openjdk.java.net/browse/JDK-8152944
 excluded from regular runs
@@ -662,9 +637,6 @@ java/time/test/java/time/temporal/TestChronoUnit.java                generic-all
 java/time/test/java/time/temporal/TestDateTimeValueRange.java        generic-all
 
 
-## https://bugs.openjdk.java.net/browse/JDK-6560348
-## https://bugs.openjdk.java.net/browse/JDK-7146533
-# fix was backported
 # https://bugs.openjdk.java.net/browse/JDK-8144247
 java/awt/xembed/server/RunTestXEmbed.java                            generic-all
 
@@ -788,10 +760,6 @@ demo/jvmti/mtrace/TraceJFrame.java                                   generic-all
 demo/jvmti/versionCheck/FailsWhenJvmtiVersionDiffers.java            generic-all
 demo/jvmti/waiters/WaitersTest.java                                  generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8151352
-sample/chatserver/ChatTest.java                                      generic-all
-sample/mergesort/MergeSortTest.java                                  generic-all
-
 # 8027973
 javax/xml/jaxp/transform/jdk8004476/XSLTExFuncTest.java		windows-all
 
@@ -828,10 +796,6 @@ java/net/PortUnreachableException/OneExceptionOnly.java         windows-all
 # 7148829
 sun/net/InetAddress/nameservice/simple/CacheTest.java		generic-all
 sun/net/InetAddress/nameservice/simple/DefaultCaching.java	generic-all
-
-## https://bugs.openjdk.java.net/browse/JDK-8041924
-# fix was backported
-#sun/net/www/http/ChunkedOutputStream/checkError.java            linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8146257
 sun/net/www/protocol/jar/B4957695.java                          generic-all
@@ -1086,8 +1050,6 @@ javax/swing/JPopupMenu/7156657/bug7156657.java                       generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8064920
 javax/swing/JRadioButton/8033699/bug8033699.java                     generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8130430
-# fix was backported
 # https://bugs.openjdk.java.net/browse/JDK-8136371
 javax/swing/JRadioButton/8075609/bug8075609.java                     generic-all
 
@@ -1100,10 +1062,6 @@ javax/swing/JScrollBar/4708809/bug4708809.java                       generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8024407
 #javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
-
-## https://bugs.openjdk.java.net/browse/JDK-8028618
-# fix was backported
-#javax/swing/JScrollBar/bug4202954/bug4202954.java                    windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169960
 javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java windows-all
@@ -1179,23 +1137,14 @@ javax/swing/SpringLayout/4726194/bug4726194.java                     macosx-all
 # https://bugs.openjdk.java.net/browse/JDK-8172064
 javax/swing/SwingUtilities/4917669/bug4917669.java                   windows-all
 
-## https://bugs.openjdk.java.net/browse/JDK-7195187
-#fix was backported
 # https://bugs.openjdk.java.net/browse/JDK-8072110
 javax/swing/SwingUtilities/7088744/bug7088744.java                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8079253
 javax/swing/SwingUtilities/TestBadBreak/TestBadBreak.java            linux-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8159454
-javax/swing/ToolTipManager/7123767/bug7123767.java                   generic-all
-
 # https://bugs.openjdk.java.net/browse/JDK-8167009
 javax/swing/ToolTipManager/Test6256140.java                          generic-all
-
-## https://bugs.openjdk.java.net/browse/JDK-8081764
-# fix was backported
-#javax/swing/plaf/aqua/CustomComboBoxFocusTest.java                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8042383
 javax/swing/plaf/basic/BasicMenuUI/4983388/bug4983388.java           generic-all
@@ -1203,8 +1152,6 @@ javax/swing/plaf/basic/BasicMenuUI/4983388/bug4983388.java           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8137101
 javax/swing/plaf/basic/BasicHTML/4251579/bug4251579.java             generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8079450
-# fix was backported
 # https://bugs.openjdk.java.net/browse/JDK-8140237
 javax/swing/plaf/nimbus/8041642/bug8041642.java                      generic-all
 
@@ -1335,10 +1282,6 @@ sun/awt/datatransfer/SuplementaryCharactersTransferTest.java         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8142540
 sun/awt/dnd/8024061/bug8024061.java                                  linux-all
-
-## https://bugs.openjdk.java.net/browse/JDK-8042098
-# fix was backported
-#sun/java2d/AcceleratedXORModeTest.java                               windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172888
 sun/java2d/DirectX/InfiniteValidationLoopTest/InfiniteValidationLoopTest.java windows-all
