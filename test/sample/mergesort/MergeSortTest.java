@@ -25,7 +25,7 @@
 /* @test
  * @summary Test MergeSort
  *
- * @library /src/share/sample/forkjoin/mergesort
+ * @library /src/sample/share/forkjoin/mergesort
  * @build MergeSortTest MergeDemo MergeSort
  * @run testng MergeSortTest
  */
@@ -75,7 +75,7 @@ public class MergeSortTest {
             target.sort(array);
             assertEqual(copy, array);
         }
-   }
+    }
 
     private void testSortEmpty() {
         int[] array = { };

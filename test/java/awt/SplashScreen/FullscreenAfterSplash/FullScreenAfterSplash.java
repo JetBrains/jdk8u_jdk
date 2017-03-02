@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2013, 2017, Oracle and/or its affiliates. All rights reserved.
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 *
 * This code is free software; you can redistribute it and/or modify it
@@ -21,9 +21,8 @@
 * questions.
 */
 
-import sun.awt.OSInfo;
-
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Window;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.lang.InterruptedException;
@@ -31,13 +30,19 @@ import java.lang.System;
 import java.lang.Thread;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 /*
  * @test
  * @bug 8024185
  * @summary Native Mac OS X full screen does not work after showing the splash
+ * @requires (os.family == "mac")
  * @library ../
+ * @library ../../../../lib/testlibrary
+ * @modules java.desktop/sun.awt
+ *          java.desktop/com.apple.eawt
  * @build GenerateTestImage
  * @run main GenerateTestImage
  * @author Petr Pchelko area=awt.event
@@ -52,13 +57,10 @@ public class FullScreenAfterSplash {
 
     public static void main(String[] args) throws Exception {
 
-        if (OSInfo.getOSType() != OSInfo.OSType.MACOSX) {
-            System.out.println("The test is applicable only to Mac OS X. Passed");
-            return;
-        }
         try {
             //Move the mouse out, because it could interfere with the test.
             Robot r = new Robot();
+            r.setAutoDelay(50);
             r.mouseMove(0, 0);
             sleep();
 
@@ -66,7 +68,10 @@ public class FullScreenAfterSplash {
             sleep();
 
             Point fullScreenButtonPos = frame.getLocation();
-            fullScreenButtonPos.translate(frame.getWidth() - 10, 10);
+            if(System.getProperty("os.version").equals("10.9"))
+                fullScreenButtonPos.translate(frame.getWidth() - 10, frame.getHeight()/2);
+            else
+                fullScreenButtonPos.translate(55,frame.getHeight()/2);
             r.mouseMove(fullScreenButtonPos.x, fullScreenButtonPos.y);
 
             //Cant use waitForIdle for full screen transition.

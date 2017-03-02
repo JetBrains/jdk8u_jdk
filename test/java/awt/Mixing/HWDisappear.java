@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,6 +23,7 @@
 
 /*
   @test %W% %E%
+  @key headful
   @bug 6769511
   @summary AWT components are invisible for a while after frame is moved & menu items are visible
   @author anthony.petrov@...: area=awt.mixing
@@ -40,6 +41,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import test.java.awt.regtesthelpers.Util;
 
 public class HWDisappear
@@ -52,11 +54,11 @@ public class HWDisappear
         //*** Create instructions for the user here ***
 
         String[] instructions =
-        {
-            "This is an AUTOMATIC test, simply wait until it is done.",
-            "The result (passed or failed) will be shown in the",
-            "message window below."
-        };
+                {
+                        "This is an AUTOMATIC test, simply wait until it is done.",
+                        "The result (passed or failed) will be shown in the",
+                        "message window below."
+                };
         Sysout.createDialog( );
         Sysout.printInstructions( instructions );
 
@@ -109,7 +111,7 @@ public class HWDisappear
 
         // Click on the button.
         Point bLoc = b.getLocationOnScreen();
-        robot.mouseMove(bLoc.x + b.getWidth() / 2, bLoc.y + 5);
+        robot.mouseMove(bLoc.x + b.getWidth() / 2, bLoc.y + b.getHeight() / 2);
 
         robot.mousePress(InputEvent.BUTTON1_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_MASK);
@@ -148,8 +150,9 @@ public class HWDisappear
     //  instantiated in the same VM.  Being static (and using
     //  static vars), it aint gonna work.  Not worrying about
     //  it for now.
-    public static void main( String args[] ) throws InterruptedException
+    public static void main( String args[] ) throws Exception
     {
+        UIManager.setLookAndFeel(new MetalLookAndFeel());
         mainThread = Thread.currentThread();
         try
         {
@@ -290,21 +293,21 @@ class NewClass implements anInterface
 /****************************************************
  Standard Test Machinery
  DO NOT modify anything below -- it's a standard
-  chunk of code whose purpose is to make user
-  interaction uniform, and thereby make it simpler
-  to read and understand someone else's test.
+ chunk of code whose purpose is to make user
+ interaction uniform, and thereby make it simpler
+ to read and understand someone else's test.
  ****************************************************/
 
 /**
  This is part of the standard test machinery.
  It creates a dialog (with the instructions), and is the interface
-  for sending text messages to the user.
+ for sending text messages to the user.
  To print the instructions, send an array of strings to Sysout.createDialog
-  WithInstructions method.  Put one line of instructions per array entry.
+ WithInstructions method.  Put one line of instructions per array entry.
  To display a message for the tester to see, simply call Sysout.println
-  with the string to be displayed.
+ with the string to be displayed.
  This mimics System.out.println but works within the test harness as well
-  as standalone.
+ as standalone.
  */
 
 class Sysout
@@ -344,13 +347,13 @@ class Sysout
 }// Sysout  class
 
 /**
-  This is part of the standard test machinery.  It provides a place for the
-   test instructions to be displayed, and a place for interactive messages
-   to the user to be displayed.
-  To have the test instructions displayed, see Sysout.
-  To have a message to the user be displayed, see Sysout.
-  Do not call anything in this dialog directly.
-  */
+ This is part of the standard test machinery.  It provides a place for the
+ test instructions to be displayed, and a place for interactive messages
+ to the user to be displayed.
+ To have the test instructions displayed, see Sysout.
+ To have a message to the user be displayed, see Sysout.
+ Do not call anything in this dialog directly.
+ */
 class TestDialog extends Dialog
 {
 
@@ -394,7 +397,7 @@ class TestDialog extends Dialog
                 {
                     //Try to chop on a word boundary
                     int posOfSpace = remainingStr.
-                        lastIndexOf( ' ', maxStringLength - 1 );
+                            lastIndexOf( ' ', maxStringLength - 1 );
 
                     if( posOfSpace <= 0 ) posOfSpace = maxStringLength - 1;
 
