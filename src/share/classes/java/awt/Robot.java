@@ -27,6 +27,7 @@ package java.awt;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
@@ -37,6 +38,7 @@ import java.lang.reflect.InvocationTargetException;
 import sun.awt.ComponentFactory;
 import sun.awt.SunToolkit;
 import sun.awt.image.SunWritableRaster;
+import sun.font.FontUtilities;
 import sun.security.util.SecurityConstants;
 
 /**
@@ -431,6 +433,17 @@ public class Robot {
         // cases rendering to the screen may be delayed
         Toolkit.getDefaultToolkit().sync();
 
+        if (!GraphicsEnvironment.isHeadless()) {
+            Point2D center = new Point2D.Float(screenRect.x + screenRect.width / 2, screenRect.y + screenRect.height / 2);
+            for (GraphicsDevice device : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
+                Rectangle bounds = device.getDefaultConfiguration().getBounds();
+                if (bounds.contains(center)) {
+                    scaleUp(screenRect, device);
+                    break;
+                }
+            }
+        }
+
         int pixels[];
         int[] bandmasks = new int[3];
 
@@ -447,6 +460,28 @@ public class Robot {
         image = new BufferedImage(screenCapCM, raster, false, null);
 
         return image;
+    }
+
+    private static void scaleUp(Rectangle bounds, GraphicsDevice device) {
+        double scaleX = device.getDefaultConfiguration().getDefaultTransform().getScaleX();
+        double scaleY = device.getDefaultConfiguration().getDefaultTransform().getScaleY();
+        int x;
+        int y;
+        if (FontUtilities.isWindows) {
+            // On Windows JDK transforms the screen bounds to the user space as follows:
+            // [x, y, width, height] -> [x, y, width / scale, height / scale]
+            // xy are not transformed in order to avoid overlapping of the screen bounds in multi-dpi env.
+            Rectangle deviceBounds = device.getDefaultConfiguration().getBounds();
+
+            // scale the delta b/w xy and deviceBounds.xy
+            x = (int) Math.floor(deviceBounds.x + (bounds.x - deviceBounds.x) * scaleX);
+            y = (int) Math.floor(deviceBounds.y + (bounds.y - deviceBounds.y) * scaleY);
+        } else {
+            x = (int) Math.floor(bounds.x * scaleX);
+            y = (int) Math.floor(bounds.y * scaleY);
+        }
+
+        bounds.setBounds(x, y, (int)Math.ceil(bounds.width * scaleX), (int)Math.ceil(bounds.height * scaleY));
     }
 
     private static void checkValidRect(Rectangle rect) {
