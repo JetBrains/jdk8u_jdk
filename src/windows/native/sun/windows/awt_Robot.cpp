@@ -208,6 +208,12 @@ void AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height, jintArray p
     HPALETTE hOldPalette = NULL;
     JNIEnv *env = (JNIEnv *)JNU_GetEnv(jvm, JNI_VERSION_1_2);
 
+    AwtWin32GraphicsDevice* device = AwtWin32GraphicsDevice::GetDeviceByBounds(RECT_BOUNDS(x, y, width, height));
+    x = (device == NULL) ? x : device->ScaleUpDX(x);
+    y = (device == NULL) ? y : device->ScaleUpDY(y);
+    width = (device == NULL) ? width : device->ScaleUpX(width);
+    height = (device == NULL) ? height : device->ScaleUpY(height);
+
     // create an offscreen bitmap
     hbitmap = ::CreateCompatibleBitmap(hdcScreen, width, height);
     if (hbitmap == NULL) {
@@ -215,30 +221,16 @@ void AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height, jintArray p
     }
     hOldBitmap = (HBITMAP)::SelectObject(hdcMem, hbitmap);
 
-    // REMIND: not multimon-friendly...
-    int primaryIndex = AwtWin32GraphicsDevice::GetDefaultDeviceIndex();
-    hOldPalette =
-        AwtWin32GraphicsDevice::SelectPalette(hdcMem, primaryIndex);
-    AwtWin32GraphicsDevice::RealizePalette(hdcMem, primaryIndex);
-
-    Devices::InstanceAccess devices;
-    AwtWin32GraphicsDevice *device = devices->GetDevice(primaryIndex);
-    int sWidth = (device == NULL) ? width : device->ScaleUpX(width);
-    int sHeight = (device == NULL) ? height : device->ScaleUpY(height);
+    int index = (device == NULL) ? AwtWin32GraphicsDevice::GetDefaultDeviceIndex() : device->GetDeviceIndex();
+    hOldPalette = AwtWin32GraphicsDevice::SelectPalette(hdcMem, index);
+    AwtWin32GraphicsDevice::RealizePalette(hdcMem, index);
 
     // copy screen image to offscreen bitmap
     // CAPTUREBLT flag is required to capture WS_EX_LAYERED windows' contents
     // correctly on Win2K/XP
-    if (width == sWidth && height == sHeight) {
-        VERIFY(::BitBlt(hdcMem, 0, 0, width, height, hdcScreen, x, y,
-               SRCCOPY | CAPTUREBLT) != 0);
-    } else {
-        int sX = (device == NULL) ? x : device->ScaleUpDX(x);
-        int sY = (device == NULL) ? y : device->ScaleUpDY(y);
-        VERIFY(::StretchBlt(hdcMem, 0, 0, width, height,
-               hdcScreen, sX, sY, sWidth, sHeight,
-               SRCCOPY | CAPTUREBLT) != 0);
-    }
+    VERIFY(::StretchBlt(hdcMem, 0, 0, width, height,
+           hdcScreen, x, y, width, height,
+           SRCCOPY | CAPTUREBLT) != 0);
 
     static const int BITS_PER_PIXEL = 32;
     static const int BYTES_PER_PIXEL = BITS_PER_PIXEL/8;
