@@ -23,7 +23,6 @@
 
 /*
  * @test
- * @key headful
  * @bug 8024864 8031422
  * @summary [macosx] Problems with rendering of controls
  * @author Petr Pchelko
