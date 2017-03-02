@@ -139,7 +139,7 @@ public class deadKeyMacOSX {
                             state++;
                             break;
                         case 1:
-                            if (keyCode != KeyEvent.VK_DEAD_ACUTE) {
+                            if (keyCode != KeyEvent.VK_E) {
                                 throw new RuntimeException("E is not pressed.");
                             }
 
