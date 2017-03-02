@@ -215,6 +215,10 @@ java/awt/Focus/SimpleWindowActivationTest/SimpleWindowActivationTest.java generi
 # https://bugs.openjdk.java.net/browse/JDK-7156130
 java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                        generic-all
 
+# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6848810
+# https://bugs.openjdk.java.net/browse/JDK-7035459
+java/awt/Focus/TranserFocusToWindow/TranserFocusToWindow.java        generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-6986253
 java/awt/Focus/TypeAhead/TestFocusFreeze.java                        windows-all
 
@@ -421,6 +425,9 @@ java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
 # see http://download.java.net/openjdk/testresults/8/
 java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java  generic-all
 java/awt/ScrollPane/bug8077409Test.java                              generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8140329
+java/awt/SplashScreen/FullscreenAfterSplash/FullScreenAfterSplash.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8159592
 java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java generic-all

@@ -23,7 +23,6 @@
 
 /*
   @test %W% %E%
-  @key headful
   @bug 6769511
   @summary AWT components are invisible for a while after frame is moved & menu items are visible
   @author anthony.petrov@...: area=awt.mixing
