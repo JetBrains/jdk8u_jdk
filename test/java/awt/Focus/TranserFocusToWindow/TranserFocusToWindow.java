@@ -23,12 +23,13 @@
 
 /*
   @test
-  @bug       6562853
-  @summary   Tests that focus transfered directy to window w/o transfering it to frame.
-  @author    Oleg Sukhodolsky: area=awt.focus
-  @library    ../../regtesthelpers
-  @build      Util
-  @run       main TranserFocusToWindow
+  @key headful
+  @bug 6562853 7035459
+  @summary Tests that focus transfered directy to window w/o transfering it to frame.
+  @author Oleg Sukhodolsky: area=awt.focus
+  @library ../../regtesthelpers
+  @build Util
+  @run main TranserFocusToWindow
 */
 
 import java.awt.Button;
@@ -44,10 +45,13 @@ import test.java.awt.regtesthelpers.Util;
 
 public class TranserFocusToWindow
 {
+    private static final int WIDTH = 300;
+    private static final int HEIGHT = 200;
+
     public static void main(String[] args) {
         Robot robot = Util.createRobot();
         Frame owner_frame = new Frame("Owner frame");
-        owner_frame.setBounds(0, 0, 200, 200);
+        owner_frame.setBounds(0, 0, WIDTH, HEIGHT);
         owner_frame.setVisible(true);
         Util.waitForIdle(robot);
 
@@ -55,7 +59,7 @@ public class TranserFocusToWindow
         Button btn1 = new Button("button for focus");
         window.add(btn1);
         window.pack();
-        window.setLocation(0, 300);
+        window.setLocation(0, HEIGHT + 100);
         window.setVisible(true);
         Util.waitForIdle(robot);
 
@@ -63,43 +67,40 @@ public class TranserFocusToWindow
         Button btn2 = new Button("button in a frame");
         another_frame.add(btn2);
         another_frame.pack();
-        another_frame.setLocation(300, 0);
+        another_frame.setLocation(WIDTH + 100, 0);
         another_frame.setVisible(true);
         Util.waitForIdle(robot);
 
+        owner_frame.addWindowFocusListener(new WindowFocusListener() {
+            public void windowLostFocus(WindowEvent we) {
+                System.out.println(we);
+            }
+            public void windowGainedFocus(WindowEvent we) {
+                System.out.println(we);
+                throw new RuntimeException("owner frame must not receive WINDWO_GAINED_FOCUS");
+            }
+        });
+        window.addWindowFocusListener(new WindowFocusListener() {
+            public void windowLostFocus(WindowEvent we) {
+                System.out.println(we);
+            }
+            public void windowGainedFocus(WindowEvent we) {
+                System.out.println(we);
+            }
+        });
+        another_frame.addWindowFocusListener(new WindowFocusListener() {
+            public void windowLostFocus(WindowEvent we) {
+                System.out.println(we);
+            }
+            public void windowGainedFocus(WindowEvent we) {
+                System.out.println(we);
+            }
+        });
+
         Util.clickOnTitle(owner_frame, robot);
         Util.waitForIdle(robot);
-
         setFocus(btn1, robot);
-
         setFocus(btn2, robot);
-
-        owner_frame.addWindowFocusListener(new WindowFocusListener() {
-                public void windowLostFocus(WindowEvent we) {
-                    System.out.println(we);
-                }
-                public void windowGainedFocus(WindowEvent we) {
-                    System.out.println(we);
-                    throw new RuntimeException("owner frame must not receive WINDWO_GAINED_FOCUS");
-                }
-            });
-        window.addWindowFocusListener(new WindowFocusListener() {
-                public void windowLostFocus(WindowEvent we) {
-                    System.out.println(we);
-                }
-                public void windowGainedFocus(WindowEvent we) {
-                    System.out.println(we);
-                }
-            });
-        another_frame.addWindowFocusListener(new WindowFocusListener() {
-                public void windowLostFocus(WindowEvent we) {
-                    System.out.println(we);
-                }
-                public void windowGainedFocus(WindowEvent we) {
-                    System.out.println(we);
-                }
-            });
-
         // we need this delay so WM can not treat two clicks on title as double click
         robot.delay(500);
         Util.clickOnTitle(owner_frame, robot);
