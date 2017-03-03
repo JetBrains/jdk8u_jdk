@@ -167,7 +167,7 @@ public class deadKeyMacOSX {
 
                     if (state == 3) {
                         // Now we send key codes
-                        if (keyCode != 0) {
+                        if (keyCode != KeyEvent.VK_A) {
                             throw new RuntimeException("Key code should be undefined.");
                         }
                         // This works for US keyboard only
