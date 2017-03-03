@@ -421,6 +421,10 @@ java/awt/Paint/ExposeOnEDT.java                                      windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8031422
+#the test fails with the applied fix
+java/awt/Paint/bug8024864.java                                       generic-all
+
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
 java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java  generic-all
@@ -1332,6 +1336,9 @@ sun/java2d/X11SurfaceData/SharedMemoryPixmapsTest/SharedMemoryPixmapsTest.sh gen
 
 # https://bugs.openjdk.java.net/browse/JDK-8171303
 sun/java2d/pipe/InterpolationQualityTest.java                        generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8058767
+sun/jvmstat/monitor/MonitoredVm/MonitorVmStartTerminate.java         windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8046046
 sun/security/pkcs11/Signature/TestDSAKeyLength.java                  generic-all
