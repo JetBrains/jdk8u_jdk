@@ -34,7 +34,6 @@
  *
  * @author   Vladislav Karnaukhov
  *
- * @key      headful
  * @key      randomness
  *
  * @modules  java.desktop/sun.awt
