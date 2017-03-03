@@ -106,8 +106,6 @@ public class deadKeyMacOSX {
                 lock.unlock();
             }
         };
-        panel.addKeyListener(new DeadKeyListener());
-        frame.add(panel);
 
         lock.lock();
 
@@ -120,6 +118,8 @@ public class deadKeyMacOSX {
             throw new RuntimeException(e);
         } finally {
             lock.unlock();
+            panel.addKeyListener(new DeadKeyListener());
+            frame.add(panel);
         }
     }
 
