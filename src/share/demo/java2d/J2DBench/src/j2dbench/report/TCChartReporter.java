@@ -123,6 +123,8 @@ public class TCChartReporter {
 
                     System.out.println("##teamcity[buildStatisticValue key='" + OJRname + "." + curTestName
                             + "' value='" + decimalFormat.format(value) + "']\n");
+                    System.out.println("key='" + OJRname + "." + curTestName
+                            + "' value=" + decimalFormat.format(value) + "\n");
                     if (rememberReference) {
                         referenceValues.put(curTestName, value);
                     } else {
