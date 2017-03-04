@@ -106,6 +106,7 @@ public class deadKeyMacOSX {
                 lock.unlock();
             }
         };
+        frame.add(panel);
 
         lock.lock();
 
@@ -119,7 +120,6 @@ public class deadKeyMacOSX {
         } finally {
             lock.unlock();
             panel.addKeyListener(new DeadKeyListener());
-            frame.add(panel);
         }
     }
 
