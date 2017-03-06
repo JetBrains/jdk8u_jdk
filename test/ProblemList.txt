@@ -289,3 +289,7 @@ sun/tools/jcmd/TestJcmdSanity.java				windows-all
 sun/tools/jps/TestJpsJarRelative.java				generic-all
 
 ############################################################################
+
+# https://bugs.openjdk.java.net/browse/JDK-8158356
+#affects runs (on OSX, causes the reopen dialog)
+java/awt/geom/AffineTransform/InvalidTransformParameterTest.java     generic-all

@@ -587,6 +587,10 @@ java/awt/font/TextLayout/TestTibetan.java                            generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8164818
 java/awt/font/TextLayout/VisibleAdvance.java                         generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8158356
+#affects runs (on OSX, causes the reopen dialog)
+java/awt/geom/AffineTransform/InvalidTransformParameterTest.java     generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-7080150
 java/awt/grab/EmbeddedFrameTest1/EmbeddedFrameTest1.java             generic-all
 
