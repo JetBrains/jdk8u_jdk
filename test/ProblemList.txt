@@ -160,6 +160,10 @@ javax/xml/jaxp/transform/jdk8004476/XSLTExFuncTest.java		windows-all
 # Filed 7052625
 com/sun/net/httpserver/bugs/6725892/Test.java                   generic-all
 
+# failing on vista 32/64 on nightly
+# 7102702
+java/net/PortUnreachableException/OneExceptionOnly.java         windows-all
+
 # 7148829
 sun/net/InetAddress/nameservice/simple/CacheTest.java		generic-all
 sun/net/InetAddress/nameservice/simple/DefaultCaching.java	generic-all
@@ -279,9 +283,32 @@ sun/tools/jps/TestJpsJarRelative.java				generic-all
 
 ############################################################################
 
+# https://bugs.openjdk.java.net/browse/JDK-7179526
+#fixed in 8_112
+java/awt/Graphics/LineClipTest.java                                  generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8158356
 #affects runs (on OSX, causes the reopen dialog)
 java/awt/geom/AffineTransform/InvalidTransformParameterTest.java     generic-all
+
+# no printer found
+javax/print/CheckDupFlavor.java                                      generic-all
+javax/print/PrintServiceLookup/CountPrintServices.java               generic-all
+javax/print/attribute/AttributeTest.java                             generic-all
+javax/print/attribute/GetCopiesSupported.java                        generic-all
+javax/print/attribute/SidesPageRangesTest.java                       generic-all
+javax/print/attribute/SupportedPrintableAreas.java                   generic-all
+
+# it looks like the tests spend a lot of time on Windows
+javax/print/attribute/Chroma.java                                    generic-all
+javax/print/attribute/ChromaticityValues.java                        generic-all
+javax/print/attribute/CollateAttr.java                               generic-all
+javax/print/attribute/MediaMappingsTest.java                         generic-all
+javax/print/attribute/PSCopiesFlavorTest.java                        generic-all
+javax/print/attribute/autosense/PrintAutoSenseData.java              generic-all
+
+# hangs on Windows
+javax/print/PrintSE/PrintSE.sh                                       windows-all
 
 # jdk_other
 
