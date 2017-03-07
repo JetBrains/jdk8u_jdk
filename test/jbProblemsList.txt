@@ -278,7 +278,7 @@ java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java           generic-all
 java/awt/FullScreen/SetFSWindow/FSFrame.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7179526
-# fixed in 8_112
+#fixed in 8_112
 java/awt/Graphics/LineClipTest.java                                  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080084
@@ -989,7 +989,7 @@ javax/swing/JFileChooser/6396844/TwentyThousandTest.java             generic-all
 javax/swing/JFileChooser/8002077/bug8002077.java                     generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169954
-javax/swing/JFileChooser/8021253/bug8021253.java                     windows-all
+javax/swing/JFileChooser/8021253/bug8021253.java                     generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8064715
 javax/swing/JFileChooser/8062561/bug8062561.java                     generic-all
