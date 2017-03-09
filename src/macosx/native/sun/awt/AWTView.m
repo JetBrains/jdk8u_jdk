@@ -57,13 +57,6 @@
 //#define IM_DEBUG TRUE
 //#define EXTRA_DEBUG
 
-static BOOL shouldUsePressAndHold() {
-    static int shouldUsePressAndHold = -1;
-    if (shouldUsePressAndHold != -1) return shouldUsePressAndHold;
-    shouldUsePressAndHold = !isSnowLeopardOrLower();
-    return shouldUsePressAndHold;
-}
-
 @implementation AWTView
 
 @synthesize _dropTarget;
@@ -85,10 +78,6 @@ AWT_ASSERT_APPKIT_THREAD;
     fInputMethodLOCKABLE = NULL;
     fKeyEventsNeeded = NO;
     fProcessingKeystroke = NO;
-
-    fEnablePressAndHold = shouldUsePressAndHold();
-    fInPressAndHold = NO;
-    fPAHNeedsToSelect = NO;
 
     mouseIsOver = NO;
     [self resetTrackingArea];
@@ -291,15 +280,6 @@ AWT_ASSERT_APPKIT_THREAD;
     // Allow TSM to look at the event and potentially send back NSTextInputClient messages.
     [self interpretKeyEvents:[NSArray arrayWithObject:event]];
 
-    if (fEnablePressAndHold && [event willBeHandledByComplexInputMethod]) {
-        fProcessingKeystroke = NO;
-        if (!fInPressAndHold) {
-            fInPressAndHold = YES;
-            fPAHNeedsToSelect = YES;
-        }
-        return;
-    }
-
     NSString *eventCharacters = [event characters];
     BOOL isDeadKey = (eventCharacters != nil && [eventCharacters length] == 0);
 
@@ -377,10 +357,7 @@ AWT_ASSERT_APPKIT_THREAD;
     AWTToolkit.latestPerformKeyEquivalentEvent = event;
     [event retain];
 
-    // if IM is active key events should be ignored
-    if (![self hasMarkedText] && !fInPressAndHold) {
-        [self deliverJavaKeyEventHelper: event];
-    }
+    [self deliverJavaKeyEventHelper: event];
 
     return NO;
 }
@@ -1137,9 +1114,6 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
     if (fInputMethodLOCKABLE == NULL) {
         return;
     }
-
-    // Insert happens at the end of PAH
-    fInPressAndHold = NO;
 
     // insertText gets called when the user commits text generated from an input method.  It also gets
     // called during ordinary input as well.  We only need to send an input method event when we have marked
