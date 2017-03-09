@@ -734,7 +734,7 @@ java/lang/management/MemoryMXBean/LowMemoryTest2.sh                  generic-all
 javax/management/security/SecurityTest.java                          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8030616
-sun/management/jmxremote/bootstrap/RmiBootstrapTest.sh               windows-all
+sun/management/jmxremote/bootstrap/RmiBootstrapTest.sh               generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028150
 sun/management/jmxremote/bootstrap/RmiSslBootstrapTest.sh	         generic-all
@@ -869,6 +869,11 @@ java/nio/file/WatchService/LotsOfEvents.java			solaris-all
 ############################################################################
 
 # jdk_rmi
+
+# https://bugs.openjdk.java.net/browse/JDK-8085192
+java/rmi/activation/Activatable/checkRegisterInLog/CheckRegisterInLog.java generic-all
+java/rmi/activation/Activatable/restartService/RestartService.java         generic-all
+java/rmi/activation/CommandEnvironment/SetChildEnv.java                    generic-all
 
 # 7140992
 java/rmi/server/Unreferenced/finiteGCLatency/FiniteGCLatency.java  generic-all
