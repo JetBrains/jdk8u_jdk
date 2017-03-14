@@ -35,13 +35,15 @@ import java.util.concurrent.FutureTask;
 
 public class CThreading {
     static String APPKIT_THREAD_NAME = "AWT-AppKit";
+    static String FX_APPKIT_THREAD_NAME = "JavaFX Application Thread";
 
     static boolean isEventQueue() {
         return EventQueue.isDispatchThread();
     }
 
     private static boolean isAppKit() {
-        return APPKIT_THREAD_NAME.equals(Thread.currentThread().getName());
+        return APPKIT_THREAD_NAME.equals(Thread.currentThread().getName()) ||
+               FX_APPKIT_THREAD_NAME.equals(Thread.currentThread().getName());
     }
 
     static boolean assertEventQueue() {
