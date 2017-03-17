@@ -328,6 +328,10 @@ java/awt/List/NofocusListDblClickTest/NofocusListDblClickTest.java   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-7037728
 java/awt/Menu/OpensWithNoGrab/OpensWithNoGrab.java                   linux-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8068305
+#fix ported but the test fails
+java/awt/Mixing/HWDisappear.java                                     generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8143295
 java/awt/Mixing/LWPopupMenu.java                                     generic-all
 
@@ -743,7 +747,10 @@ sun/management/jmxremote/bootstrap/RmiSslBootstrapTest.sh	         generic-all
 
 # jdk_jmx
 
-# 8030957
+# https://bugs.openjdk.java.net/browse/JDK-8047295
+com/sun/management/OperatingSystemMXBean/GetCommittedVirtualMemorySize.java macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8030957
 com/sun/management/OperatingSystemMXBean/GetProcessCpuLoad.java aix-all
 com/sun/management/OperatingSystemMXBean/GetSystemCpuLoad.java  aix-all
 javax/management/MBeanServer/OldMBeanServerTest.java            aix-all
@@ -872,6 +879,8 @@ java/nio/file/WatchService/LotsOfEvents.java			solaris-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8085192
 java/rmi/activation/Activatable/checkRegisterInLog/CheckRegisterInLog.java generic-all
+java/rmi/activation/Activatable/forceLogSnapshot/ForceLogSnapshot.java     generic-all
+java/rmi/activation/Activatable/inactiveGroup/InactiveGroup.java           generic-all
 java/rmi/activation/Activatable/restartService/RestartService.java         generic-all
 java/rmi/activation/CommandEnvironment/SetChildEnv.java                    generic-all
 
@@ -1103,8 +1112,12 @@ javax/swing/JSpinner/5012888/bug5012888.java                         windows-all
 javax/swing/JSplitPane/4885629/bug4885629.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7033533
-javax/swing/JTable/4220171/bug4220171.java                           generic-all
+javax/swing/JTable/4220171/bug4220171.java                           linux-all
 javax/swing/JComboBox/4199622/bug4199622.java                        linux-all
+javax/swing/JPopupMenu/6495920/bug6495920.java                       linux-all
+javax/swing/Security/6657138/ComponentTest.java                      linux-all
+
+
 
 # https://bugs.openjdk.java.net/browse/JDK-8169959
 javax/swing/JTable/6263446/bug6263446.java                           windows-all
@@ -1469,12 +1482,14 @@ java/awt/TextArea/Mixing/TextAreaMixing.java                                    
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                                         windows-all
 java/io/File/SetLastModified.java                                                               windows-all
 javax/swing/JScrollBar/7163696/Test7163696.java                                                 windows-all
-javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                                    windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8065099
+javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                                    generic-all
 javax/swing/dnd/7171812/bug7171812.java                                                         windows-all
 javax/swing/plaf/basic/BasicTreeUI/8023474/bug8023474.java                                      windows-all
 javax/swing/plaf/basic/Test6984643.java                                                         windows-all
 javax/swing/plaf/nimbus/8041642/ScrollBarThumbVisibleTest.java                                  windows-all
-javax/swing/text/JTextComponent/5074573/bug5074573.java                                         windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8155740
+javax/swing/text/JTextComponent/5074573/bug5074573.java                                         generic-all
 javax/swing/text/StyledEditorKit/4506788/bug4506788.java                                        windows-all
 sun/java2d/DirectX/OpaqueImageToSurfaceBlitTest/OpaqueImageToSurfaceBlitTest.java               windows-all
 sun/java2d/DrawXORModeTest.java                                                                 windows-all
