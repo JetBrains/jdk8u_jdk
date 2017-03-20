@@ -207,7 +207,8 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         jclass PFClass, jstring jreFontConfName)
 {
     const char *fssLogEnabled = getenv("OPENJDK_LOG_FFS");
-    const char *fontConf = (*env)->GetStringUTFChars(env, jreFontConfName, NULL);
+    const char *fontConf = (*env)->IsSameObject(env, jreFontConfName, NULL) ?
+                           NULL : (*env)->GetStringUTFChars(env, jreFontConfName, NULL);
 
     if (fssLogEnabled != NULL && !strcmp(fssLogEnabled, "yes")) {
         logFFS = JNI_TRUE;
@@ -246,14 +247,21 @@ Java_sun_font_FreetypeFontScaler_initIDs(
 
         if (logFC) fprintf(stderr, "FC_LOG: fontconfig version %d \n", (*FcGetVersionPtr)());
         fcConfig = (*FcInitLoadConfigAndFontsPtr)();
-        if (fcConfig != NULL) {
+        if (fcConfig != NULL && fontConf != NULL) {
             result = (*FcConfigParseAndLoadPtr)(fcConfig, (const FcChar8 *) fontConf, FcFalse);
             if (logFC) fprintf(stderr, "FC_LOG: FcConfigParseAndLoad %d \n", result);
             result = (*FcConfigSetCurrentPtr)(fcConfig);
             if (logFC) fprintf(stderr, "FC_LOG: FcConfigSetCurrent %d \n", result);
         }
         else {
-            if (logFC) fprintf(stderr, "FC_LOG: FcInitLoadConfigAndFonts failed\n");
+            if (logFC) {
+                if (fontConf) {
+                    fprintf(stderr, "FC_LOG: FcInitLoadConfigAndFonts failed\n");
+                }
+                else {
+                    fprintf(stderr, "FC_LOG: FcInitLoadConfigAndFonts disabled\n");
+                }
+            }
         }
     }
 #endif
