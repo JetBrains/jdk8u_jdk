@@ -32,8 +32,6 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 
-import sun.swing.SwingUtilities2;
-
 /**
  * Support for providing html views for the swing components.
  * This translates a simple html string to a javax.swing.text.View
@@ -44,6 +42,8 @@ import sun.swing.SwingUtilities2;
  * @since 1.3
  */
 public class BasicHTML {
+    // Rebase CSS size map to let relative font sizes scale properly.
+    private final static boolean REBASE_CSS_SIZE_MAP = Boolean.getBoolean("javax.swing.rebaseCssSizeMap");
 
     /**
      * Create an html renderer for the given component and
@@ -364,6 +364,10 @@ public class BasicHTML {
         private void setFontAndColor(Font font, Color fg) {
             getStyleSheet().addRule(sun.swing.SwingUtilities2.
                                     displayPropertiesToCSS(font,fg));
+            if (REBASE_CSS_SIZE_MAP && font != null) {
+                // See: javax.swing.plaf.basic.BasicEditorPaneUI.updateCSS()
+                if (font != null) getStyleSheet().addRule("BASE_SIZE " + font.getSize());
+            }
         }
     }
 
