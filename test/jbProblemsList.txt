@@ -357,6 +357,9 @@ java/awt/Mixing/OverlappingButtons.java                              generic-all
 java/awt/Mixing/ValidBounds.java                                     generic-all
 java/awt/Mixing/Validating.java                                      generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8177323
+java/awt/Modal/LWModalTest/LWModalTest.java                          macosx-all
+
 ## https://bugs.openjdk.java.net/browse/JDK-8029024
 # https://bugs.openjdk.java.net/browse/JDK-8066259
 java/awt/Modal/ModalDialogOrderingTest/ModalDialogOrderingTest.java  generic-all
@@ -881,6 +884,7 @@ java/nio/file/WatchService/LotsOfEvents.java			solaris-all
 java/rmi/activation/Activatable/checkRegisterInLog/CheckRegisterInLog.java generic-all
 java/rmi/activation/Activatable/forceLogSnapshot/ForceLogSnapshot.java     generic-all
 java/rmi/activation/Activatable/inactiveGroup/InactiveGroup.java           generic-all
+java/rmi/activation/Activatable/lookupActivationSystem/LookupActivationSystem.java generic-all
 java/rmi/activation/Activatable/restartService/RestartService.java         generic-all
 java/rmi/activation/CommandEnvironment/SetChildEnv.java                    generic-all
 
