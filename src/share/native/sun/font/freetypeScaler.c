@@ -207,7 +207,7 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         jclass PFClass, jstring jreFontConfName)
 {
     const char *fssLogEnabled = getenv("OPENJDK_LOG_FFS");
-    const char *fontConf = (*env)->IsSameObject(env, jreFontConfName, NULL) ?
+    const char *fontConf = (jreFontConfName == NULL) ?
                            NULL : (*env)->GetStringUTFChars(env, jreFontConfName, NULL);
 
     if (fssLogEnabled != NULL && !strcmp(fssLogEnabled, "yes")) {
@@ -265,7 +265,9 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         }
     }
 #endif
-    (*env)->ReleaseStringUTFChars(env, jreFontConfName, fontConf);
+    if (!fontConf) {
+        (*env)->ReleaseStringUTFChars(env, jreFontConfName, fontConf);
+    }
 }
 
 static FT_Error FT_Library_SetLcdFilter_Proxy(FT_Library library, FT_LcdFilter  filter) {
