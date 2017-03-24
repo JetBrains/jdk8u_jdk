@@ -60,6 +60,8 @@ final class NSEvent {
     private short keyCode;
     private String characters;
     private String charactersIgnoringModifiers;
+    private String oldCharacters;
+    private String oldCharactersIgnoringModifiers;
     private String charactersIgnoringModifiersAndShift;
 
     public boolean isHasDeadKey() {
@@ -72,7 +74,8 @@ final class NSEvent {
 
     // Called from native
     NSEvent(int type, int modifierFlags, short keyCode, String characters, String charactersIgnoringModifiers,
-            String charactersIgnoringModifiersAndShift, boolean hasDeadKey, int deadKeyCode) {
+            String charactersIgnoringModifiersAndShift, boolean hasDeadKey, int deadKeyCode,
+            String oldCharacters, String oldCharactersIgnoringModifiers) {
         this.type = type;
         this.modifierFlags = modifierFlags;
 
@@ -82,6 +85,8 @@ final class NSEvent {
         this.charactersIgnoringModifiersAndShift = charactersIgnoringModifiersAndShift;
         this.hasDeadKey = hasDeadKey;
         this.deadKeyCode = deadKeyCode;
+        this.oldCharacters = oldCharacters;
+        this.oldCharactersIgnoringModifiers = oldCharactersIgnoringModifiers;
     }
 
     // Called from native
@@ -157,6 +162,14 @@ final class NSEvent {
 
     String getCharacters() {
         return characters;
+    }
+
+    String getOldCharactersIgnoringModifiers() {
+        return oldCharactersIgnoringModifiers;
+    }
+
+    String getOldCharacters() {
+        return oldCharacters;
     }
 
     @Override
@@ -278,6 +291,11 @@ final class NSEvent {
      * Converts NSEvent key info to AWT key info.
      */
     static native boolean nsToJavaKeyInfo(int[] in, int[] out);
+    /*
+     * Converts NSEvent key info to AWT key info.
+     */
+    static native boolean nsToJavaKeyInfoOld(int[] in, int[] out);
+
 
     /*
      * Converts NSEvent key modifiers to AWT key info.
@@ -289,6 +307,7 @@ final class NSEvent {
      * into other characters before we pass them to AWT.
      */
     static native String nsToJavaChar(char nsChar, int modifierFlags);
+    static native char nsToJavaCharOld(char nsChar, int modifierFlags);
 
     static boolean isPopupTrigger(int jmodifiers) {
         final boolean isRightButtonDown = ((jmodifiers & InputEvent.BUTTON3_DOWN_MASK) != 0);
