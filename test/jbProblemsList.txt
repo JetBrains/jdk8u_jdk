@@ -1045,8 +1045,8 @@ javax/swing/JMenu/4692443/bug4692443.java                            windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8142534
 javax/swing/JMenu/8072900/WrongSelectionOnMouseOver.java             generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8015597
-#javax/swing/JMenuBar/4750590/bug4750590.java                         generic-all
+# https://bugs.openjdk.java.net/browse/JDK-8158496
+javax/swing/JMenuBar/4750590/bug4750590.java                         windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8040916
 javax/swing/JMenuItem/4171437/bug4171437.java                        generic-all
@@ -1099,6 +1099,9 @@ javax/swing/JScrollBar/4708809/bug4708809.java                       generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8024407
 #javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8028618
+javax/swing/JScrollBar/bug4202954/bug4202954.java                    windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169960
 javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java windows-all
@@ -1324,6 +1327,9 @@ sun/awt/datatransfer/SuplementaryCharactersTransferTest.java         generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8142540
 sun/awt/dnd/8024061/bug8024061.java                                  linux-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8042098
+sun/java2d/AcceleratedXORModeTest.java                               windows-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8172888
 sun/java2d/DirectX/InfiniteValidationLoopTest/InfiniteValidationLoopTest.java windows-all
 
@@ -1484,7 +1490,7 @@ java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java               
 java/awt/Mixing/MixingInHwPanel.java                                                            windows-all
 java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                                         windows-all
-java/io/File/SetLastModified.java                                                               windows-all
+java/io/File/SetLastModified.java                                                               generic-all
 javax/swing/JScrollBar/7163696/Test7163696.java                                                 windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8065099
 javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                                    generic-all
