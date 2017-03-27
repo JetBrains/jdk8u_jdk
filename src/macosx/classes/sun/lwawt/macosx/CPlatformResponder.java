@@ -36,7 +36,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.KeyEvent;
-import java.security.PrivilegedAction;import java.util.Locale;import java.util.MissingResourceException;import java.util.ResourceBundle;
+import java.security.PrivilegedAction;
+import java.util.Locale;
 
 /**
  * Translates NSEvents/NPCocoaEvents into AWT events.
