@@ -43,6 +43,10 @@ public class TCChartReporter {
 
     private static FileSystem defaultFileSystem = FileSystems.getDefault();
 
+    private static double getMeasurementError(String osName) {
+        return osName.toLowerCase().contains("linux") ? 0.15: 0.1;
+    }
+
     /**
      * Level at which tests are grouped to be displayed in summary
      */
@@ -129,11 +133,12 @@ public class TCChartReporter {
                         referenceValues.put(curTestName, value);
                     } else {
                         double refValue = referenceValues.getOrDefault(curTestName, 0.);
-                        if ((refValue - value) >= refValue * 0.1) {
+                        if ((refValue - value) >= refValue * getMeasurementError(OJRname)) {
+                            System.err.println(OJRname);
                             System.err.println(curTestName);
                             System.err.println("\treferenceValue=" + refValue);
                             System.err.println("\t   actualValue=" + value);
-                            System.err.println("\t          diff:" + (Math.abs(1 - value / refValue) * 100));
+                            System.err.println("\t          diff:" + ((value / refValue - 1) * 100));
                             testFailed = true;
                         }
                     }
@@ -219,7 +224,7 @@ public class TCChartReporter {
         List<Path> jbsdkFiles, openjdkFiles;
 
         try {
-            jbsdkFiles = listResFiles(directoryToResFiles, "*{jbsdk}*.{res}");
+            jbsdkFiles = listResFiles(directoryToResFiles, "*{jbsdk,jbre}*.{res}");
             openjdkFiles = listResFiles(directoryToResFiles, "*{openjdk}*.{res}");
         } catch (IOException e) {
             e.printStackTrace();
