@@ -365,7 +365,13 @@ AWT_ASSERT_APPKIT_THREAD;
 
 - (BOOL) performKeyEquivalent: (NSEvent *) event {
 
-    if ([event keyCode] == 24 && [[event characters] isEqual:@"+"]) {
+    // French keyboard layouts invoke the method several times
+    // with '+' character, but '/' keycode. Correct character
+    // is passed into the method ony once.
+    // Current keyboard layout status call could be quite expensive.
+    // We assume that where are no keyboards that actually use
+    // the improper combination
+    if ([event keyCode] == 44 && [[event characters] isEqual:@"+"]) {
         return 0;
     }
 
