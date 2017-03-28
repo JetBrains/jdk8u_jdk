@@ -363,6 +363,8 @@ AWT_ASSERT_APPKIT_THREAD;
     [self deliverJavaKeyEventHelper: newEvent];
 }
 
+static const int COCOA_KEYCODE_US_BACKSLASH = 44;
+
 - (BOOL) performKeyEquivalent: (NSEvent *) event {
 
     // French keyboard layouts invoke the method several times
@@ -371,7 +373,7 @@ AWT_ASSERT_APPKIT_THREAD;
     // Current keyboard layout status call could be quite expensive.
     // We assume that where are no keyboards that actually use
     // the improper combination
-    if ([event keyCode] == 44 && [[event characters] isEqual:@"+"]) {
+    if ([event keyCode] == COCOA_KEYCODE_US_BACKSLASH && [[event characters] isEqual:@"+"]) {
         return 0;
     }
 
