@@ -44,7 +44,7 @@ public class TCChartReporter {
     private static FileSystem defaultFileSystem = FileSystems.getDefault();
 
     private static double getMeasurementError(String testCaseName, String osName) {
-        if (testCaseName.contains("text.Rendering.tests.drawString") && osName.toLowerCase().contains("linux")  )
+        if (testCaseName.contains("text.Rendering.tests.drawString") && osName.toLowerCase().contains("lin")  )
             return 0.18;
         return 0.1;
     }
