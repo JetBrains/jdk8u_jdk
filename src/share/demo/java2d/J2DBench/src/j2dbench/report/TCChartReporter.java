@@ -135,7 +135,7 @@ public class TCChartReporter {
                         referenceValues.put(curTestName, value);
                     } else {
                         double refValue = referenceValues.getOrDefault(curTestName, 0.);
-                        if (Math.abs(value/refValue - 1) <= getMeasurementError(curTestName, OJRname)) {
+                        if (Math.abs(value/refValue - 1) >= getMeasurementError(OJRname)) {
                             System.err.println(OJRname);
                             System.err.println(curTestName);
                             System.err.println("\treferenceValue=" + refValue);
