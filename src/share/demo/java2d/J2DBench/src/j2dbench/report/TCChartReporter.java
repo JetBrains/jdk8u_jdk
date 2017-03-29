@@ -43,8 +43,10 @@ public class TCChartReporter {
 
     private static FileSystem defaultFileSystem = FileSystems.getDefault();
 
-    private static double getMeasurementError(String osName) {
-        return osName.toLowerCase().contains("linux") ? 0.15: 0.1;
+    private static double getMeasurementError(String testCaseName, String osName) {
+        if (testCaseName.contains("text.Rendering.tests.drawString") && osName.toLowerCase().contains("linux")  )
+            return 0.18;
+        return 0.1;
     }
 
     /**
@@ -133,7 +135,7 @@ public class TCChartReporter {
                         referenceValues.put(curTestName, value);
                     } else {
                         double refValue = referenceValues.getOrDefault(curTestName, 0.);
-                        if ((refValue - value) >= refValue * getMeasurementError(OJRname)) {
+                        if (Math.abs(value/refValue - 1) <= getMeasurementError(curTestName, OJRname)) {
                             System.err.println(OJRname);
                             System.err.println(curTestName);
                             System.err.println("\treferenceValue=" + refValue);
