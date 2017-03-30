@@ -27,6 +27,7 @@ package javax.swing.plaf.basic;
 import java.io.*;
 import java.awt.*;
 import java.net.URL;
+import java.security.PrivilegedAction;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -43,7 +44,11 @@ import javax.swing.text.html.*;
  */
 public class BasicHTML {
     // Rebase CSS size map to let relative font sizes scale properly.
-    private final static boolean REBASE_CSS_SIZE_MAP = Boolean.getBoolean("javax.swing.rebaseCssSizeMap");
+    private final static boolean REBASE_CSS_SIZE_MAP =
+            java.security.AccessController.doPrivileged(
+                (PrivilegedAction<Boolean>)
+                        () -> Boolean.getBoolean(
+                                "javax.swing.rebaseCssSizeMap"));
 
     /**
      * Create an html renderer for the given component and
