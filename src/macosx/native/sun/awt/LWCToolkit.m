@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -72,13 +72,13 @@ static long eventCount;
     if ([event type] != NSScrollWheel) {
         return 0;
     }
-    if ([event phase]) {
-        // process a phase of manual scrolling
-        switch ([event phase]) {
-            case NSEventPhaseBegan: return SCROLL_PHASE_BEGAN;
-            case NSEventPhaseCancelled: return SCROLL_PHASE_ENDED;
-            case NSEventPhaseEnded: return SCROLL_PHASE_ENDED;
-            default: return SCROLL_PHASE_CONTINUED;
+
+    if ( [event phase]) {
+    // process aphase of manual scrolling
+    switch ([eventphase]) {
+        case NSEventPhaseBegan: return SCROLL_PHASE_BEGAN;
+        case NSEventPhaseCancelled: return SCROLL_PHASE_ENDED;
+        case NSEventPhaseEnded: return SCROLL_PHASE_ENDED;default: return SCROLL_PHASE_CONTINUED;
         }
     }
     if ([event momentumPhase]) {
@@ -87,8 +87,7 @@ static long eventCount;
             case NSEventPhaseBegan: return SCROLL_PHASE_MOMENTUM_BEGAN;
             case NSEventPhaseCancelled: return SCROLL_PHASE_ENDED;
             case NSEventPhaseEnded: return SCROLL_PHASE_ENDED;
-            default: return SCROLL_PHASE_CONTINUED;
-        }
+            default:return SCROLL_PHASE_CONTINUED;}
     }
     // phase and momentum phase both are not set
     return SCROLL_PHASE_UNSUPPORTED;
@@ -294,17 +293,15 @@ JNIEXPORT jlong JNICALL Java_sun_lwawt_macosx_LWCToolkit_createAWTRunLoopMediato
 {
 AWT_ASSERT_APPKIT_THREAD;
 
-    AWTRunLoopObject *o = nil;
+    jlong result;
 
+JNF_COCOA_ENTER(env);
     // We double retain because this object is owned by both main thread and "other" thread
     // We release in both doAWTRunLoop and stopAWTRunLoop
-    o = [[AWTRunLoopObject alloc] init];
-    if (o) {
-        CFRetain(o); // GC
-        CFRetain(o); // GC
-        [o release];
-    }
-    return ptr_to_jlong(o);
+    result = ptr_to_jlong([[[AWTRunLoopObject alloc] init] retain]);
+JNF_COCOA_EXIT(env);
+
+    return result;
 }
 
 /*
@@ -341,10 +338,7 @@ JNF_COCOA_ENTER(env);
 
         }
     }
-
-   
-    CFRelease(mediatorObject);
-
+    [mediatorObject release];
 JNF_COCOA_EXIT(env);
 }
 
@@ -362,7 +356,7 @@ JNF_COCOA_ENTER(env);
 
     [ThreadUtilities performOnMainThread:@selector(endRunLoop) on:mediatorObject withObject:nil waitUntilDone:NO];
 
-    CFRelease(mediatorObject);
+    [mediatorObject release];
 
 JNF_COCOA_EXIT(env);
 }
