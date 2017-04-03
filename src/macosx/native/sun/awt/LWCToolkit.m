@@ -75,7 +75,7 @@ static long eventCount;
 
     if ( [event phase]) {
     // process aphase of manual scrolling
-    switch ([eventphase]) {
+    switch ([event phase]) {
         case NSEventPhaseBegan: return SCROLL_PHASE_BEGAN;
         case NSEventPhaseCancelled: return SCROLL_PHASE_ENDED;
         case NSEventPhaseEnded: return SCROLL_PHASE_ENDED;default: return SCROLL_PHASE_CONTINUED;
