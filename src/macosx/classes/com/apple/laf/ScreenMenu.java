@@ -109,7 +109,6 @@ final class ScreenMenu extends Menu
         final Component[] items = fInvoker.getMenuComponents();
         if (needsUpdate(items, childHashArray)) {
             removeAll();
-            fItems.clear();
             if (count <= 0) return;
 
             childHashArray = new int[count];
@@ -233,7 +232,7 @@ final class ScreenMenu extends Menu
         synchronized (getTreeLock()) {
             super.addNotify();
             if (fModelPtr == 0) {
-                fInvoker.getPopupMenu().addContainerListener(this);
+                fInvoker.addContainerListener(this);
                 fInvoker.addComponentListener(this);
                 fPropertyListener = new ScreenMenuPropertyListener(this);
                 fInvoker.addPropertyChangeListener(fPropertyListener);
@@ -267,7 +266,7 @@ final class ScreenMenu extends Menu
             if (fModelPtr != 0) {
                 removeMenuListeners(fModelPtr);
                 fModelPtr = 0;
-                fInvoker.getPopupMenu().removeContainerListener(this);
+                fInvoker.removeContainerListener(this);
                 fInvoker.removeComponentListener(this);
                 fInvoker.removePropertyChangeListener(fPropertyListener);
             }
@@ -288,10 +287,11 @@ final class ScreenMenu extends Menu
     @Override
     public void componentRemoved(final ContainerEvent e) {
         final Component child = e.getChild();
-        final MenuItem sm = fItems.remove(child);
+        final MenuItem sm = fItems.get(child);
         if (sm == null) return;
 
         remove(sm);
+        fItems.remove(sm);
     }
 
     /**
