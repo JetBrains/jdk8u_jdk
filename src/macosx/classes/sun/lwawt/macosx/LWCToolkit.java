@@ -982,4 +982,9 @@ public final class LWCToolkit extends LWToolkit {
         //return getKeyboardLayoutNativeId();
         return "";
     }
+
+    @Override
+    protected PlatformWindow getPlatformWindowUnderMouse() {
+        return CPlatformWindow.nativeGetTopmostPlatformWindowUnderMouse();
+    }
 }
