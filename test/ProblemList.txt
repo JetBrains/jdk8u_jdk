@@ -154,17 +154,6 @@ demo/jvmti/hprof/MonitorTest.java                               generic-all
 
 # jdk_net
 
-# Filed 7052625
-com/sun/net/httpserver/bugs/6725892/Test.java                   generic-all
-
-# failing on vista 32/64 on nightly
-# 7102702
-java/net/PortUnreachableException/OneExceptionOnly.java         windows-all
-
-# 7148829
-sun/net/InetAddress/nameservice/simple/CacheTest.java		generic-all
-sun/net/InetAddress/nameservice/simple/DefaultCaching.java	generic-all
-
 # 7122846
 java/net/MulticastSocket/NoLoopbackPackets.java                  macosx-all
 
@@ -193,9 +182,6 @@ sun/net/www/protocol/http/B6296310.java                          macosx-x64
 java/net/CookieHandler/CookieManagerTest.java                    macosx-x64
 java/net/HttpURLConnection/UnmodifiableMaps.java                 macosx-x64
 sun/net/www/protocol/http/B6299712.java                          macosx-x64
-
-# 8166362
-sun/net/www/http/HttpClient/B8025710.java			generic-all
 
 ############################################################################
 
@@ -355,6 +341,13 @@ sun/tools/jps/TestJpsJarRelative.java				generic-all
 
 ############################################################################
 
+# jdk_other
+
+############################################################################
+
+# 8141370
+com/sun/jndi/ldap/DeadSSLLdapTimeoutTest.java			linux-i586,macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-7179526
 #fixed in 8_112
 java/awt/Graphics/LineClipTest.java                                  generic-all
@@ -380,7 +373,8 @@ javax/print/attribute/PSCopiesFlavorTest.java                        generic-all
 javax/print/attribute/autosense/PrintAutoSenseData.java              generic-all
 
 # hangs on Windows
-javax/print/PrintSE/PrintSE.sh                                       windows-all
+javax/print/PrintSE/PrintSE.sh                                               windows-all
+sun/java2d/X11SurfaceData/SharedMemoryPixmapsTest/SharedMemoryPixmapsTest.sh windows-all
 
 # jdk_other
 
