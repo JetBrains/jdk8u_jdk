@@ -1877,7 +1877,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
             ../../src/windows/native/sun/windows/WPrinterJob.cpp)
 endif()
 
-add_custom_target(make_java /usr/bin/make -C ${CMAKE_SOURCE_DIR}/../../../ images
+add_custom_target(make_java /usr/bin/make COMPILER_WARNINGS_FATAL=false -C ${CMAKE_SOURCE_DIR}/../../../ images
         DEPENDS ${SOURCE_FILES})
 
 add_executable(java ${SOURCE_FILES})

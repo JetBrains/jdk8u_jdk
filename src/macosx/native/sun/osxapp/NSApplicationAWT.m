@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -71,7 +71,6 @@ AWT_ASSERT_APPKIT_THREAD;
 
     [super dealloc];
 }
-//- (void)finalize { [super finalize]; }
 
 - (void)finishLaunching
 {
@@ -349,6 +348,32 @@ AWT_ASSERT_APPKIT_THREAD;
         [super sendEvent:event];
     }
 }
+
+/*
+ * Posts the block to the AppKit event queue which will be executed 
+ * on the main AppKit loop. 
+ * While running nested loops this event will be ignored. 
+ */
+- (void)postRunnableEvent:(void (^)())block 
+{
+    void (^copy)() = [block copy];
+    NSInteger encode = (NSInteger) copy;
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSEvent* event = [NSEvent otherEventWithType: NSApplicationDefined
+                                        location: NSMakePoint(0,0)
+                                   modifierFlags: 0
+                                       timestamp: 0
+                                    windowNumber: 0
+                                         context: nil
+                                         subtype: 777
+                                           data1: encode
+                                           data2: 0];
+
+    [NSApp postEvent: event atStart: NO];
+    [pool drain];
+}
+
+
 
 - (void)postDummyEvent {
     seenDummyEventLock = [[NSConditionLock alloc] initWithCondition:NO];

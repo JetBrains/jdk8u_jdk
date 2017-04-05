@@ -38,6 +38,7 @@ final class NSEvent {
     static final int SCROLL_PHASE_CONTINUED = 3;
     static final int SCROLL_PHASE_MOMENTUM_BEGAN = 4;
     static final int SCROLL_PHASE_ENDED = 5;
+
     private boolean hasDeadKey;
     private int deadKeyCode;
 
