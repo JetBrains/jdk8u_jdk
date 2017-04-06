@@ -197,7 +197,7 @@ inline jint AwtRobot::WinToJavaPixel(USHORT r, USHORT g, USHORT b)
     return value;
 }
 
-void AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height, jintArray pixelArray)
+jintArray AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height)
 {
     DASSERT(width > 0 && height > 0);
 
@@ -285,7 +285,9 @@ void AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height, jintArray p
         *prgbq = *( (RGBQUAD *)(&jpixel) );
     }
 
-    // copy pixels into Java array
+    jintArray pixelArray = env->NewIntArray(numPixels);
+
+// copy pixels into Java array
     env->SetIntArrayRegion(pixelArray, 0, numPixels, (jint *)pixelData);
     delete pinfo;
 
@@ -297,6 +299,8 @@ void AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height, jintArray p
     ::DeleteObject(hbitmap);
     ::DeleteDC(hdcMem);
     ::DeleteDC(hdcScreen);
+
+    return pixelArray;
 }
 
 void AwtRobot::KeyPress( jint jkey )
@@ -404,14 +408,14 @@ JNIEXPORT void JNICALL Java_sun_awt_windows_WRobotPeer_mouseWheel(
     CATCH_BAD_ALLOC;
 }
 
-JNIEXPORT void JNICALL Java_sun_awt_windows_WRobotPeer_getRGBPixels(
-    JNIEnv *env, jobject self, jint x, jint y, jint width, jint height, jintArray pixelArray)
+JNIEXPORT jintArray JNICALL Java_sun_awt_windows_WRobotPeer_getRGBPixels(
+    JNIEnv *env, jobject self, jint x, jint y, jint width, jint height)
 {
     TRY;
 
-    AwtRobot::GetRobot(self)->GetRGBPixels(x, y, width, height, pixelArray);
+    return AwtRobot::GetRobot(self)->GetRGBPixels(x, y, width, height);
 
-    CATCH_BAD_ALLOC;
+    CATCH_BAD_ALLOC_RET(NULL);
 }
 
 JNIEXPORT void JNICALL Java_sun_awt_windows_WRobotPeer_keyPress(
