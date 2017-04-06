@@ -44,7 +44,7 @@ class AwtRobot : public AwtObject
         void MouseWheel(jint wheelAmt);
         jint getNumberOfButtons();
 
-        void GetRGBPixels(jint x, jint y, jint width, jint height, jintArray pixelArray);
+        jintArray GetRGBPixels(jint x, jint y, jint width, jint height);
 
         void KeyPress( jint key );
         void KeyRelease( jint key );
