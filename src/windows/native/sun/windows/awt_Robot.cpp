@@ -26,6 +26,7 @@
 #include "awt.h"
 #include "awt_Toolkit.h"
 #include "awt_Component.h"
+#include "awt_Rectangle.h"
 #include "awt_Robot.h"
 #include "sun_awt_windows_WRobotPeer.h"
 #include "java_awt_event_InputEvent.h"
@@ -197,7 +198,7 @@ inline jint AwtRobot::WinToJavaPixel(USHORT r, USHORT g, USHORT b)
     return value;
 }
 
-jintArray AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height)
+jintArray AwtRobot::GetRGBPixels(jobject bounds) // bounds is IN/OUT param
 {
     DASSERT(width > 0 && height > 0);
 
@@ -208,11 +209,22 @@ jintArray AwtRobot::GetRGBPixels(jint x, jint y, jint width, jint height)
     HPALETTE hOldPalette = NULL;
     JNIEnv *env = (JNIEnv *)JNU_GetEnv(jvm, JNI_VERSION_1_2);
 
+    jint x = env->GetIntField(bounds, AwtRectangle::xID);
+    jint y = env->GetIntField(bounds, AwtRectangle::yID);
+    jint width = env->GetIntField(bounds, AwtRectangle::widthID);
+    jint height = env->GetIntField(bounds, AwtRectangle::heightID);
+
     AwtWin32GraphicsDevice* device = AwtWin32GraphicsDevice::GetDeviceByBounds(RECT_BOUNDS(x, y, width, height));
     x = (device == NULL) ? x : device->ScaleUpDX(x);
     y = (device == NULL) ? y : device->ScaleUpDY(y);
     width = (device == NULL) ? width : device->ScaleUpX(width);
     height = (device == NULL) ? height : device->ScaleUpY(height);
+
+    // set the device bounds to return
+    env->SetIntField(bounds, AwtRectangle::xID, x);
+    env->SetIntField(bounds, AwtRectangle::yID, y);
+    env->SetIntField(bounds, AwtRectangle::widthID, width);
+    env->SetIntField(bounds, AwtRectangle::heightID, height);
 
     // create an offscreen bitmap
     hbitmap = ::CreateCompatibleBitmap(hdcScreen, width, height);
@@ -409,11 +421,11 @@ JNIEXPORT void JNICALL Java_sun_awt_windows_WRobotPeer_mouseWheel(
 }
 
 JNIEXPORT jintArray JNICALL Java_sun_awt_windows_WRobotPeer_getRGBPixels(
-    JNIEnv *env, jobject self, jint x, jint y, jint width, jint height)
+    JNIEnv *env, jobject self, jobject bounds)
 {
     TRY;
 
-    return AwtRobot::GetRobot(self)->GetRGBPixels(x, y, width, height);
+    return AwtRobot::GetRobot(self)->GetRGBPixels(bounds);
 
     CATCH_BAD_ALLOC_RET(NULL);
 }

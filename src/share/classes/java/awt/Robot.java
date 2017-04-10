@@ -434,20 +434,15 @@ public class Robot {
         int pixels[];
         int[] bandmasks = new int[3];
 
-        pixels = peer.getRGBPixels(screenRect);
+        Rectangle devScreenRect = screenRect.getBounds();
+        pixels = peer.getRGBPixels(devScreenRect); // devScreenRect is IN/OUT param
         buffer = new DataBufferInt(pixels, pixels.length);
 
         bandmasks[0] = screenCapCM.getRedMask();
         bandmasks[1] = screenCapCM.getGreenMask();
         bandmasks[2] = screenCapCM.getBlueMask();
 
-        assert pixels != null;
-        int arraySize = screenRect.width * screenRect.height;
-        double devScale = arraySize != 0 ? Math.sqrt(pixels.length / arraySize) : 1;
-        int devScreenWidth = (int)Math.ceil(screenRect.width * devScale);
-        int devScreenHeight = (int)Math.ceil(screenRect.height * devScale);
-
-        raster = Raster.createPackedRaster(buffer, devScreenWidth, devScreenHeight, devScreenWidth, bandmasks, null);
+        raster = Raster.createPackedRaster(buffer, devScreenRect.width, devScreenRect.height, devScreenRect.width, bandmasks, null);
         SunWritableRaster.makeTrackable(buffer);
 
         image = new BufferedImage(screenCapCM, raster, false, null);

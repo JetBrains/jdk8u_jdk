@@ -69,9 +69,5 @@ final class WRobotPeer extends WObjectPeer implements RobotPeer
     }
 
     @Override
-    public int [] getRGBPixels(Rectangle bounds) {
-        return getRGBPixels(bounds.x, bounds.y, bounds.width, bounds.height);
-    }
-
-    private native int[] getRGBPixels(int x, int y, int width, int height);
+    public native int[] getRGBPixels(Rectangle bounds);
 }
