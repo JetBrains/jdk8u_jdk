@@ -133,6 +133,9 @@ java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html          generic
 # https://bugs.openjdk.java.net/browse/JDK-8168390
 java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java windows-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8131670
+java/awt/EventQueue/6980209/bug6980209.java                              generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-7149081
 java/awt/FileDialog/FilenameFilterTest/FilenameFilterTest.html           generic-all
 
@@ -374,6 +377,9 @@ java/awt/Mouse/MouseComboBoxTest/MouseComboBoxTest.java              generic-all
 java/awt/Mouse/EnterExitEvents/DragWindowOutOfFrameTest.java         generic-all
 java/awt/Mouse/EnterExitEvents/DragWindowTest.java                   generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8165619
+java/awt/Mouse/EnterExitEvents/ModalDialogEnterExitEventsTest.java   generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8169534
 java/awt/Mouse/ExtraMouseClick/ExtraMouseClick.html                  generic-all
 
@@ -412,6 +418,10 @@ java/awt/Mouse/TitleBarDoubleClick/TitleBarDoubleClick.html          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8012577
 java/awt/MouseAdapter/MouseAdapterUnitTest/MouseAdapterUnitTest.java generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8130741
+# https://bugs.openjdk.java.net/browse/JDK-8158798
+java/awt/MouseInfo/GetPointerInfoTest.java                           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028484
 java/awt/MouseInfo/JContainerMousePositionTest.java                  generic-all
@@ -626,6 +636,7 @@ java/awt/image/DrawImage/IncorrectSourceOffset.java                  windows-all
 java/awt/print/PrinterJob/ExceptionTest.java                         generic-all
 java/awt/print/PrinterJob/ImagePrinting/NullClipARGB.java            generic-all
 java/awt/print/PrinterJob/PrtException.java                          generic-all
+java/awt/print/PrinterJob/PrintCrashTest.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8152944
 https://bugs.openjdk.java.net/browse/JDK-8152944
@@ -690,6 +701,9 @@ java/beans/Introspector/Test8027648.java                             linux-all
 # Test ignored: This test has huge memory requirements
 java/io/ByteArrayOutputStream/MaxCapacity.java                       generic-all
 
+# Test ignored: This test has huge memory requirements
+java/io/CharArrayReader/OverflowInRead.java                          generic-all
+
 # Test ignored: until 6492634 and 6501010 is fixed
 # http://bugs.java.com/view_bug.do?bug_id=6492634
 # https://bugs.openjdk.java.net/browse/JDK-6492634
@@ -700,6 +714,16 @@ java/io/File/GetXSpace.java                                          generic-all
 # Test ignored: Test truncates system files when run as root, see 7042603
 # http://bugs.java.com/view_bug.do?bug_id=7042603
 java/io/IOException/LastErrorString.java                             generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8169055
+java/io/Serializable/serialFilter/CheckInputOrderTest.java           generic-all
+java/io/Serializable/serialFilter/FilterWithSecurityManagerTest.java generic-all
+java/io/Serializable/serialFilter/GlobalFilterTest.java              generic-all
+java/io/Serializable/serialFilter/MixedFiltersTest.java              generic-all
+java/io/Serializable/serialFilter/SerialFilterTest.java              generic-all
+
+# Test ignored: This test has huge memory requirements
+java/io/StringBufferInputStream/OverflowInRead.java                  generic-all
 
 # Test ignored: This test requires console (/dev/tty) input, which is not supported by the current harness
 java/io/SystemInAvailable.java                                       generic-all
@@ -1473,6 +1497,9 @@ com/sun/jdi/RedefineAbstractClass.sh                                            
 com/sun/jdi/RedefineImplementor.sh                                                              windows-all
 com/sun/jdi/RedefineMulti.sh                                                                    windows-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8054066
+com/sun/jdi/DoubleAgentTest.java                                                                generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8151887
 com/sun/jdi/RedefineClearBreakpoint.sh                                                          generic-all
 
@@ -1487,6 +1514,7 @@ com/sun/nio/sctp/SctpMultiChannel/SocketOptionTests.java                        
 com/sun/awt/Translucency/WindowOpacity.java                                                     windows-all
 java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html                                windows-all
 java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java                               windows-all
+java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                                    windows-all
 java/awt/Mixing/MixingInHwPanel.java                                                            windows-all
 java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                                         windows-all
@@ -1507,3 +1535,6 @@ sun/java2d/OpenGL/CustomCompositeTest.java                                      
 sun/java2d/OpenGL/DrawBufImgOp.java                                                             windows-all
 sun/java2d/OpenGL/DrawHugeImageTest.java                                                        windows-all
 sun/java2d/XRenderBlitsTest.java                                                                windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8160536
+com/apple/eawt/DefaultMenuBar/DefaultMenuBarTest.java                                           macosx-all
