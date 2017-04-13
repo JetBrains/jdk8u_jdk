@@ -1497,6 +1497,9 @@ com/sun/jdi/RedefineAbstractClass.sh                                            
 com/sun/jdi/RedefineImplementor.sh                                                              windows-all
 com/sun/jdi/RedefineMulti.sh                                                                    windows-all
 
+# https://bugs.openjdk.java.net/browse/JDK-6822627
+com/sun/jdi/ConstantPoolInfoGC.java                                                             generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8054066
 com/sun/jdi/DoubleAgentTest.java                                                                generic-all
 
