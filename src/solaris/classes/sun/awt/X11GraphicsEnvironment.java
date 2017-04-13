@@ -126,10 +126,16 @@ public class X11GraphicsEnvironment
 
                     // only attempt to initialize Xrender if it was requested
                     if (xRenderRequested) {
-                        xRenderAvailable = initXRender(xRenderVerbose, xRenderIgnoreLinuxVersion);
-                        if (xRenderVerbose && !xRenderAvailable) {
-                            System.out.println(
-                                         "Could not enable XRender pipeline");
+                        String waylandDisplay = System.getenv("WAYLAND_DISPLAY");
+                        // Do not use Xrender on Wayland
+                        if (waylandDisplay == null) {
+                            xRenderAvailable = initXRender(xRenderVerbose, xRenderIgnoreLinuxVersion);
+                            if (xRenderVerbose && !xRenderAvailable) {
+                                System.out.println(
+                                        "Could not enable XRender pipeline");
+                            }
+                        } else {
+                            System.out.println("XRender is not supported on Wayland");
                         }
                     }
 
