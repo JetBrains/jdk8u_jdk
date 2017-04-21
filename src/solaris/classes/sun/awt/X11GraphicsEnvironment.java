@@ -124,18 +124,18 @@ public class X11GraphicsEnvironment
                         }
                     }
 
+                    wayland = System.getenv("WAYLAND_DISPLAY") != null;
+
                     // only attempt to initialize Xrender if it was requested
                     if (xRenderRequested) {
                         String waylandDisplay = System.getenv("WAYLAND_DISPLAY");
                         // Do not use Xrender on Wayland
-                        if (waylandDisplay == null) {
+                        if (!wayland) {
                             xRenderAvailable = initXRender(xRenderVerbose, xRenderIgnoreLinuxVersion);
                             if (xRenderVerbose && !xRenderAvailable) {
                                 System.out.println(
                                         "Could not enable XRender pipeline");
                             }
-                        } else {
-                            System.out.println("XRender is not supported on Wayland");
                         }
                     }
 
@@ -179,6 +179,9 @@ public class X11GraphicsEnvironment
         return xRenderVerbose;
     }
 
+    private static boolean wayland;
+
+    public static boolean isWayland() { return wayland; }
     /**
      * Checks if Shared Memory extension can be used.
      * Returns:
