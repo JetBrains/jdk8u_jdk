@@ -131,7 +131,7 @@ java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java gene
 java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8168390
-java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java windows-all
+java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8131670
 java/awt/EventQueue/6980209/bug6980209.java                              generic-all
@@ -850,6 +850,9 @@ java/net/PortUnreachableException/OneExceptionOnly.java         windows-all
 sun/net/InetAddress/nameservice/simple/CacheTest.java		generic-all
 sun/net/InetAddress/nameservice/simple/DefaultCaching.java	generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8166362
+sun/net/www/http/HttpClient/B8025710.java                       generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8146257
 sun/net/www/protocol/jar/B4957695.java                          generic-all
 
@@ -900,6 +903,9 @@ java/nio/channels/Selector/OutOfBand.java                       macosx-all
 java/nio/file/WatchService/Basic.java				solaris-all
 java/nio/file/WatchService/LotsOfEvents.java			solaris-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8156511
+java/nio/file/WatchService/DeleteInterference.java              generic-all
+
 ############################################################################
 
 # jdk_rmi
@@ -911,6 +917,9 @@ java/rmi/activation/Activatable/inactiveGroup/InactiveGroup.java           gener
 java/rmi/activation/Activatable/lookupActivationSystem/LookupActivationSystem.java generic-all
 java/rmi/activation/Activatable/restartService/RestartService.java         generic-all
 java/rmi/activation/CommandEnvironment/SetChildEnv.java                    generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8085192
+java/rmi/activation/Activatable/restartCrashedService/RestartCrashedService.java generic-all
 
 # 7140992
 java/rmi/server/Unreferenced/finiteGCLatency/FiniteGCLatency.java  generic-all
@@ -1528,7 +1537,8 @@ javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                    
 javax/swing/dnd/7171812/bug7171812.java                                                         windows-all
 javax/swing/plaf/basic/BasicTreeUI/8023474/bug8023474.java                                      windows-all
 javax/swing/plaf/basic/Test6984643.java                                                         windows-all
-javax/swing/plaf/nimbus/8041642/ScrollBarThumbVisibleTest.java                                  windows-all
+javax/swing/plaf/basic/Test6984643.java                                                         windows-all
+javax/swing/plaf/nimbus/8041642/ScrollBarThumbVisibleTest.java                                  generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8155740
 javax/swing/text/JTextComponent/5074573/bug5074573.java                                         generic-all
 javax/swing/text/StyledEditorKit/4506788/bug4506788.java                                        windows-all
