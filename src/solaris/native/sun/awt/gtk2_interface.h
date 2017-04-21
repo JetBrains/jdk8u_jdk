@@ -272,6 +272,10 @@ typedef enum
 typedef void GError;
 typedef void GMainContext;
 typedef void GVfs;
+typedef void GCancellable;
+typedef void GVariant;
+typedef void GDBusConnection;
+typedef void GVariantType;
 
 typedef struct _GSList GSList;
 struct _GSList
@@ -638,6 +642,20 @@ typedef enum {
   G_CONNECT_AFTER = 1 << 0, G_CONNECT_SWAPPED = 1 << 1
 } GConnectFlags;
 
+typedef enum {
+    G_DBUS_CALL_FLAGS_NONE = 0,
+    G_DBUS_CALL_FLAGS_NO_AUTO_START = (1<<0),
+    G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION = (1<<1)
+} GDBusCallFlags;
+
+typedef enum
+{
+    G_BUS_TYPE_STARTER = -1,
+    G_BUS_TYPE_NONE = 0,
+    G_BUS_TYPE_SYSTEM  = 1,
+    G_BUS_TYPE_SESSION = 2
+} GBusType;
+
 typedef struct _GThreadFunctions GThreadFunctions;
 
 /*
@@ -770,6 +788,24 @@ void gtk2_set_range_value(WidgetType widget_type, jdouble value,
 
 void (*fp_g_free)(gpointer mem);
 void (*fp_g_object_unref)(gpointer object);
+void (*fp_g_unlink)(const gchar *filename);
+void (*fp_g_variant_get)(GVariant *value, const gchar *format_string, ...);
+
+gint (*fp_g_file_open_tmp)(const gchar  *tmpl, gchar **name_used, GError **error);
+GVariant* (*fp_g_variant_new)(const gchar *format_string, ...);
+GDBusConnection* (*fp_g_bus_get_sync) (GBusType bus_type, GCancellable *cancellable, GError **error);
+GVariant *(*fp_g_dbus_connection_call_sync)(GDBusConnection    *connection,
+                                            const gchar        *bus_name,
+                                            const gchar        *object_path,
+                                            const gchar        *interface_name,
+                                            const gchar        *method_name,
+                                            GVariant           *parameters,
+                                            const GVariantType *reply_type,
+                                            GDBusCallFlags      flags,
+                                            gint                timeout_msec,
+                                            GCancellable       *cancellable,
+                                            GError            **error);
+
 GdkWindow *(*fp_gdk_get_default_root_window) (void);
 
 int (*fp_gdk_pixbuf_get_bits_per_sample)(const GdkPixbuf *pixbuf);

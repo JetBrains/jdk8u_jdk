@@ -211,7 +211,8 @@ Java_sun_awt_X11_XRobotPeer_getRGBPixelsImpl( JNIEnv *env,
                              jint jwidth,
                              jint jheight,
                              jintArray pixelArray,
-                             jboolean isGtkSupported) {
+                             jboolean isGtkSupported,
+                             jboolean isWayland) {
     XImage *image;
     jint *ary;               /* Array of jints for sending pixel values back
                               * to parent process.
@@ -258,12 +259,65 @@ Java_sun_awt_X11_XRobotPeer_getRGBPixelsImpl( JNIEnv *env,
     int index;
 
     if (isGtkSupported) {
-        GdkPixbuf *pixbuf;
+        GdkPixbuf *pixbuf = NULL;
         (*fp_gdk_threads_enter)();
-        GdkWindow *root = (*fp_gdk_get_default_root_window)();
 
-        pixbuf = (*fp_gdk_pixbuf_get_from_drawable)(NULL, root, NULL,
-                                                    x, y, 0, 0, width, height);
+        if (isWayland) {
+            GError *error = NULL;
+            const gchar *method_name;
+            gchar *filename;
+            GVariant *method_params;
+            GVariant *res;
+            GDBusConnection *connection;
+            int status;
+            FILE* f;
+
+            f = (FILE *) fp_g_file_open_tmp (NULL, &filename, &error);
+            close((int) f);
+            if (error == NULL) {
+
+                method_name = "ScreenshotArea";
+                method_params = fp_g_variant_new("(iiiibs)",
+                                                    x, y, width, height,
+                                                    FALSE, filename);
+
+                connection = fp_g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, &error);
+
+                res = fp_g_dbus_connection_call_sync(connection,
+                                                  "org.gnome.Shell.Screenshot",
+                                                  "/org/gnome/Shell/Screenshot",
+                                                  "org.gnome.Shell.Screenshot",
+                                                  method_name,
+                                                  method_params,
+                                                  NULL,
+                                                  G_DBUS_CALL_FLAGS_NONE,
+                                                  -1,
+                                                  NULL,
+                                                  &error);
+
+
+                if (error == NULL) {
+                    gboolean success;
+                    gchar* filename_used;
+
+                    fp_g_variant_get(res, "(bs)", &success, &filename_used);
+
+                    if (success) {
+                        pixbuf = (*fp_gdk_pixbuf_new_from_file)(filename_used, &error);
+                    }
+                    fp_g_free(filename_used);
+                }
+                /* remove the temporary file created by the shell */
+                fp_g_unlink(filename);
+                fp_g_free(filename);
+            }
+            gtk_failed = FALSE; // We cannot rely on X fallback on Wayland
+        } else {
+            GdkWindow *root = (*fp_gdk_get_default_root_window)();
+
+            pixbuf = (*fp_gdk_pixbuf_get_from_drawable)(NULL, root, NULL,
+                                                        x, y, 0, 0, width, height);
+        }
 
         if (pixbuf) {
             int nchan = (*fp_gdk_pixbuf_get_n_channels)(pixbuf);
