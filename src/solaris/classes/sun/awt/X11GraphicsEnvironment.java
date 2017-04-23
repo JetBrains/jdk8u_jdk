@@ -128,7 +128,6 @@ public class X11GraphicsEnvironment
 
                     // only attempt to initialize Xrender if it was requested
                     if (xRenderRequested) {
-                        String waylandDisplay = System.getenv("WAYLAND_DISPLAY");
                         // Do not use Xrender on Wayland
                         if (!wayland) {
                             xRenderAvailable = initXRender(xRenderVerbose, xRenderIgnoreLinuxVersion);
