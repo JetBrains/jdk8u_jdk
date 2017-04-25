@@ -201,6 +201,47 @@ Java_sun_awt_X11_XRobotPeer_setup (JNIEnv * env, jclass cls, jint numberOfButton
     AWT_UNLOCK();
 }
 
+static GdkPixbuf* gnomeShellScreenShot(jint x, jint y, jint width, jint height, GError** pError) {
+    gchar *filename;
+    GVariant *res;
+    GDBusConnection *connection;
+    GdkPixbuf *pixbuf = NULL;
+    int f = fp_g_file_open_tmp(NULL, &filename, pError);
+
+    if (*pError != NULL) return NULL;
+
+    close(f);
+    connection = fp_g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, pError);
+
+    if (*pError != NULL) return NULL;
+
+    res = fp_g_dbus_connection_call_sync(
+        connection,
+        "org.gnome.Shell.Screenshot",
+        "/org/gnome/Shell/Screenshot",
+        "org.gnome.Shell.Screenshot",
+        "ScreenshotArea",
+        fp_g_variant_new("(iiiibs)", x, y, width, height, FALSE, filename),
+        NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, pError);
+
+    if (*pError == NULL) {
+        gboolean success;
+        gchar *filename_used;
+
+        fp_g_variant_get(res, "(bs)", &success, &filename_used);
+
+        if (success) {
+            pixbuf = (*fp_gdk_pixbuf_new_from_file)(filename_used, pError);
+        }
+        fp_g_free(filename_used);
+        fp_g_variant_unref(res);
+    }
+    /* remove the temporary file created by the shell */
+    fp_g_unlink(filename);
+    fp_g_free(filename);
+    fp_g_object_unref(connection);
+    return pixbuf;
+}
 
 JNIEXPORT void JNICALL
 Java_sun_awt_X11_XRobotPeer_getRGBPixelsImpl( JNIEnv *env,
@@ -261,56 +302,11 @@ Java_sun_awt_X11_XRobotPeer_getRGBPixelsImpl( JNIEnv *env,
     if (isGtkSupported) {
         GdkPixbuf *pixbuf = NULL;
         (*fp_gdk_threads_enter)();
+        GError *error = NULL;
 
         if (isWayland) {
-            GError *error = NULL;
-            const gchar *method_name;
-            gchar *filename;
-            GVariant *method_params;
-            GVariant *res;
-            GDBusConnection *connection;
-            int status;
-            FILE* f;
+            pixbuf = gnomeShellScreenShot(x, y, width, height, &error);
 
-            f = (FILE *) fp_g_file_open_tmp (NULL, &filename, &error);
-            close((int) f);
-            if (error == NULL) {
-
-                method_name = "ScreenshotArea";
-                method_params = fp_g_variant_new("(iiiibs)",
-                                                    x, y, width, height,
-                                                    FALSE, filename);
-
-                connection = fp_g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, &error);
-
-                res = fp_g_dbus_connection_call_sync(connection,
-                                                  "org.gnome.Shell.Screenshot",
-                                                  "/org/gnome/Shell/Screenshot",
-                                                  "org.gnome.Shell.Screenshot",
-                                                  method_name,
-                                                  method_params,
-                                                  NULL,
-                                                  G_DBUS_CALL_FLAGS_NONE,
-                                                  -1,
-                                                  NULL,
-                                                  &error);
-
-
-                if (error == NULL) {
-                    gboolean success;
-                    gchar* filename_used;
-
-                    fp_g_variant_get(res, "(bs)", &success, &filename_used);
-
-                    if (success) {
-                        pixbuf = (*fp_gdk_pixbuf_new_from_file)(filename_used, &error);
-                    }
-                    fp_g_free(filename_used);
-                }
-                /* remove the temporary file created by the shell */
-                fp_g_unlink(filename);
-                fp_g_free(filename);
-            }
             gtk_failed = FALSE; // We cannot rely on X fallback on Wayland
         } else {
             GdkWindow *root = (*fp_gdk_get_default_root_window)();
