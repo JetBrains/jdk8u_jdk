@@ -793,6 +793,7 @@ void (*fp_g_variant_get)(GVariant *value, const gchar *format_string, ...);
 
 gint (*fp_g_file_open_tmp)(const gchar  *tmpl, gchar **name_used, GError **error);
 GVariant* (*fp_g_variant_new)(const gchar *format_string, ...);
+void (*fp_g_variant_unref)(GVariant* value);
 GDBusConnection* (*fp_g_bus_get_sync) (GBusType bus_type, GCancellable *cancellable, GError **error);
 GVariant *(*fp_g_dbus_connection_call_sync)(GDBusConnection    *connection,
                                             const gchar        *bus_name,
