@@ -1524,7 +1524,7 @@ com/sun/nio/sctp/SctpMultiChannel/SocketOptionTests.java                        
 
 # https://bugs.openjdk.java.net/browse/JDK-8172887
 com/sun/awt/Translucency/WindowOpacity.java                                                     windows-all
-java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html                                windows-all
+java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html                                generic-all
 java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java                               windows-all
 java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                                    windows-all
 java/awt/Mixing/MixingInHwPanel.java                                                            windows-all
