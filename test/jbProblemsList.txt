@@ -761,6 +761,9 @@ java/lang/management/MemoryMXBean/LowMemoryTest2.sh                  generic-all
 ## https://bugs.openjdk.java.net/browse/JDK-8170303
 # java/lang/management/ThreadMXBean/ThreadInfoArray.java               generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8029098
+javax/management/remote/mandatory/notif/ListenerScaleTest.java       generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8160913
 javax/management/security/SecurityTest.java                          generic-all
 
