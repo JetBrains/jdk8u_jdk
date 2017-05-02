@@ -99,15 +99,11 @@ public class JLabel269 {
                     return maxHeight;
                 }
 
-                int r = rgb >> 16;
-                int g = (rgb >> 8) & 0x000000FF;
-                int b = rgb & 0x00000FF;
-                if (r == g && g == b && b == 255)
+                if (rgb == 0xFFFFFF)
                     System.out.print(" .");
-                else
+                else {
                     System.out.print(" X");
 
-                if (rgb != 0xFFFFFF) {
                     if (maxHeight < height - row) {
                         maxHeight = height - row;
                     }
