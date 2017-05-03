@@ -1155,12 +1155,12 @@ javax/swing/JSpinner/5012888/bug5012888.java                         windows-all
 javax/swing/JSplitPane/4885629/bug4885629.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7033533
-javax/swing/JTable/4220171/bug4220171.java                           linux-all
 javax/swing/JComboBox/4199622/bug4199622.java                        linux-all
+javax/swing/JInternalFrame/Test6802868.java                          linux-all
 javax/swing/JPopupMenu/6495920/bug6495920.java                       linux-all
+javax/swing/JTable/4220171/bug4220171.java                           linux-all
 javax/swing/Security/6657138/ComponentTest.java                      linux-all
-
-
+javax/swing/text/html/CSS/4530474/bug4530474.java                    linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169959
 javax/swing/JTable/6263446/bug6263446.java                           windows-all
@@ -1264,9 +1264,6 @@ javax/swing/text/GlyphPainter2/6427244/bug6427244.java               generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8041944
 javax/swing/text/View/8014863/bug8014863.java                        generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-7033533
-javax/swing/text/html/CSS/4530474/bug4530474.java                    generic-all
 
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8076178
 javax/swing/text/html/HTMLEditorKit/5043626/bug5043626.java          generic-all
