@@ -18,6 +18,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,6 +30,8 @@ import javax.swing.plaf.FontUIResource;
  * @run main/othervm -Djavax.swing.rebaseCssSizeMap=true JLabel269
  */
 public class JLabel269 {
+
+    private static boolean verbose = false;
 
     static class JLabelTest extends JLabel {
         JLabelTest(String label) {
@@ -47,6 +50,8 @@ public class JLabel269 {
     public static void main(String[] args) {
 
         String labelText = "<html><body><code>A</code></body></html>";
+
+        verbose = Arrays.asList(args).contains("-verbose");
 
         JFrame mainFrame = new JFrame();
 
@@ -81,15 +86,15 @@ public class JLabel269 {
 
         mainFrame.dispose();
 
-        if (Math.abs(height2 - 2*height1) > 2) {
-            throw new RuntimeException ("Heights of \"<code>A</code>\" for 36pt and for 72pt "
+        if (Math.abs(height2 - 2 * height1) > 2) {
+            throw new RuntimeException("Heights of \"<code>A</code>\" for 36pt and for 72pt "
                     + "must differ by half (+/- 2pxs)");
         }
     }
 
     private static int maxCharHeight(BufferedImage bufferedImage, int width, int height) {
         int rgb;
-        int maxHeight=0;
+        int maxHeight = 0;
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
                 try {
@@ -99,17 +104,14 @@ public class JLabel269 {
                     return maxHeight;
                 }
 
-                if (rgb == 0xFFFFFF)
-                    System.out.print(" .");
-                else {
-                    System.out.print(" X");
+                if (verbose)
+                    System.out.print((rgb == 0xFFFFFF) ? " ." : " X");
 
-                    if (maxHeight < height - row) {
-                        maxHeight = height - row;
-                    }
-                }
+                if (rgb != 0xFFFFFF && maxHeight < height - row)
+                    maxHeight = height - row;
             }
-            System.out.println("maxHeight=" + maxHeight);
+            if (verbose)
+                System.out.println("maxHeight=" + maxHeight);
         }
         return maxHeight;
     }
