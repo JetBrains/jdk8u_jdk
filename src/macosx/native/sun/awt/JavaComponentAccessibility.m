@@ -895,7 +895,16 @@ static NSObject *sAttributeNamesLOCK = nil;
 // Element containing current element (id)
 - (id)accessibilityParentAttribute
 {
-    return NSAccessibilityUnignoredAncestor([self parent]);
+    // NSAccessibilityUnignoredAncestor may cause a chain of recursive calls with
+    // accessibilityAttributeNames method involved, that leads to a noticeable performance delay.
+    // return NSAccessibilityUnignoredAncestor([self parent]);
+
+    // In order to manually test whether an element is ignored there's "accessibilityIsIgnored" method,
+    // though deprecated, so its suggested replacement - "accessibilityElement" method - should be used.
+    // According to the spec, the method returns "true" by default for an element adopting NSAccessibility
+    // protocol. So the only we should test is whether the java target of the element is accessible.
+    // But we already have such method  - "parent". It returns a native JCA wrapper over accessible parent.
+    return [self parent];
 }
 
 - (BOOL)accessibilityIsParentAttributeSettable
