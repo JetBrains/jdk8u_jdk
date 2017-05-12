@@ -25,6 +25,7 @@
 
 #import <AppKit/AppKit.h>
 #import <JavaNativeFoundation/JavaNativeFoundation.h>
+#import "jni_util.h"
 
 #import "CTrayIcon.h"
 #import "ThreadUtilities.h"
@@ -155,14 +156,12 @@ static NSSize ScaledImageSizeForStatusBar(NSSize imageSize) {
                                   deltaY,
                                   deltaX,
                                   [AWTToolkit scrollStateWithEvent: event]);
-    if (jEvent == nil) {
-        // Unable to create event by some reason.
-        return;
-    }
+    CHECK_NULL(jEvent);
 
     static JNF_CLASS_CACHE(jc_TrayIcon, "sun/lwawt/macosx/CTrayIcon");
     static JNF_MEMBER_CACHE(jm_handleMouseEvent, jc_TrayIcon, "handleMouseEvent", "(Lsun/lwawt/macosx/NSEvent;)V");
     JNFCallVoidMethod(env, peer, jm_handleMouseEvent, jEvent);
+    (*env)->DeleteLocalRef(env, jEvent);
 }
 
 @end //AWTTrayIcon
