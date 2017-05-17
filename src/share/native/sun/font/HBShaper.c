@@ -138,7 +138,7 @@ jboolean storeGVData(JNIEnv* env,
         int storei = i + initialCount;
         int cluster = glyphInfo[i].cluster - offset;
         indices[storei] = baseIndex + cluster;
-        glyphs[storei] = (unsigned int)(glyphInfo[i].codepoint & 0x00FFFFFF | slot);
+        glyphs[storei] = (unsigned int)(glyphInfo[i].codepoint | slot);
         positions[storei*2] = startX + x + glyphPos[i].x_offset * scale;
         positions[(storei*2)+1] = startY + y - glyphPos[i].y_offset * scale;
         x += glyphPos[i].x_advance * scale;
