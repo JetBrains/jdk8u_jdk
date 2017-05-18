@@ -332,7 +332,6 @@ java/awt/List/NofocusListDblClickTest/NofocusListDblClickTest.java   generic-all
 java/awt/Menu/OpensWithNoGrab/OpensWithNoGrab.java                   linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8068305
-#fix ported but the test fails
 java/awt/Mixing/HWDisappear.java                                     generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8143295
@@ -562,9 +561,6 @@ java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                     windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8160623
 java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                      generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-7124391
-#java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java generic-all
-
 # https://bugs.openjdk.java.net/browse/JDK-8032254
 java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java   linux-all
 
@@ -573,9 +569,6 @@ java/awt/event/MouseEvent/MouseClickTest/MouseClickTest.html         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6854300
 java/awt/event/MouseEvent/SpuriousExitEnter/SpuriousExitEnter_3.java generic-all
-
-## https://bugs.openjdk.java.net/browse/JDK-4391548
-#java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html               generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8060176
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion.java   generic-all
@@ -778,6 +771,7 @@ sun/management/jmxremote/bootstrap/RmiSslBootstrapTest.sh	         generic-all
 # jdk_jmx
 
 # https://bugs.openjdk.java.net/browse/JDK-8047295
+# https://bugs.openjdk.java.net/browse/JDK-8031036
 com/sun/management/OperatingSystemMXBean/GetCommittedVirtualMemorySize.java macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8030957
@@ -852,9 +846,6 @@ java/net/PortUnreachableException/OneExceptionOnly.java         windows-all
 # 7148829
 sun/net/InetAddress/nameservice/simple/CacheTest.java		generic-all
 sun/net/InetAddress/nameservice/simple/DefaultCaching.java	generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8166362
-sun/net/www/http/HttpClient/B8025710.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8146257
 sun/net/www/protocol/jar/B4957695.java                          generic-all
@@ -975,6 +966,8 @@ sun/security/pkcs11/ec/ReadPKCS12.java                          solaris-all
 sun/security/pkcs11/sslecc/ClientJSSEServerJSSE.java            solaris-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8074580
+sun/security/pkcs11/Secmod/AddTrustedCert.java                  linux-all
+sun/security/pkcs11/tls/TestKeyMaterial.java                    linux-all
 sun/security/pkcs11/rsa/TestKeyPairGenerator.java               generic-all
 
 # 7041639, Solaris DSA keypair generation bug
@@ -1155,12 +1148,12 @@ javax/swing/JSpinner/5012888/bug5012888.java                         windows-all
 javax/swing/JSplitPane/4885629/bug4885629.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7033533
-javax/swing/JTable/4220171/bug4220171.java                           linux-all
 javax/swing/JComboBox/4199622/bug4199622.java                        linux-all
+javax/swing/JInternalFrame/Test6802868.java                          linux-all
 javax/swing/JPopupMenu/6495920/bug6495920.java                       linux-all
+javax/swing/JTable/4220171/bug4220171.java                           linux-all
 javax/swing/Security/6657138/ComponentTest.java                      linux-all
-
-
+javax/swing/text/html/CSS/4530474/bug4530474.java                    linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169959
 javax/swing/JTable/6263446/bug6263446.java                           windows-all
@@ -1265,9 +1258,6 @@ javax/swing/text/GlyphPainter2/6427244/bug6427244.java               generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8041944
 javax/swing/text/View/8014863/bug8014863.java                        generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7033533
-javax/swing/text/html/CSS/4530474/bug4530474.java                    generic-all
-
 # http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8076178
 javax/swing/text/html/HTMLEditorKit/5043626/bug5043626.java          generic-all
 
@@ -1304,6 +1294,9 @@ tools/pack200/UnpackerMemoryTest.java                           linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8130392
 tools/launcher/FXLauncherTest.java                              generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8180478
+tools/launcher/MultipleJRE.sh                                   windows_all
 
 ############################################################################
 
@@ -1529,12 +1522,17 @@ com/sun/nio/sctp/SctpMultiChannel/SocketOptionTests.java                        
 com/sun/awt/Translucency/WindowOpacity.java                                                     windows-all
 java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html                                generic-all
 java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java                               windows-all
+java/awt/Frame/NormalToIconified/NormalToIconifiedTest.java                                     generic-all
+java/awt/Frame/ObscuredFrame/ObscuredFrameTest.java                                             linux-all
 java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                                    windows-all
 java/awt/Mixing/MixingInHwPanel.java                                                            windows-all
+java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java                          windows-all
+java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                                          windows-all
 java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                                         windows-all
 java/io/File/SetLastModified.java                                                               generic-all
 javax/swing/JScrollBar/7163696/Test7163696.java                                                 windows-all
+javax/swing/text/html/CSS/4530474/bug4530474.java                                               windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8065099
 javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                                    generic-all
 javax/swing/dnd/7171812/bug7171812.java                                                         windows-all

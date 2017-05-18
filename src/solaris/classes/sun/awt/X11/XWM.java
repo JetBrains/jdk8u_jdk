@@ -105,7 +105,10 @@ final class XWM
         LG3D_WM = 13,
         CWM_WM = 14,
         MUTTER_WM = 15,
-        UNITY_COMPIZ_WM = 16;
+        UNITY_COMPIZ_WM = 16,
+        XMONAD_WM = 17,
+        AWESOME_WM = 18;
+
     public String toString() {
         switch  (WMID) {
           case NO_WM:
@@ -138,6 +141,10 @@ final class XWM
               return "CWM";
           case MUTTER_WM:
               return "Mutter";
+          case XMONAD_WM:
+              return "XMonad";
+          case AWESOME_WM:
+              return "Awesome";
           case UNDETERMINED_WM:
           default:
               return "Undetermined WM";
@@ -602,13 +609,23 @@ final class XWM
         return isNetWMName("Mutter") || isNetWMName("GNOME Shell");
     }
 
+    static boolean isXmonad() {
+        return isNetWMName("xmonad");
+    }
+
+    static boolean isAwesome() {
+        return isNetWMName("awesome");
+    }
+
     static int awtWMNonReparenting = -1;
     static boolean isNonReparentingWM() {
         if (awtWMNonReparenting == -1) {
             awtWMNonReparenting = (XToolkit.getEnv("_JAVA_AWT_WM_NONREPARENTING") != null) ? 1 : 0;
         }
         return (awtWMNonReparenting == 1 || XWM.getWMID() == XWM.COMPIZ_WM
-                || XWM.getWMID() == XWM.LG3D_WM || XWM.getWMID() == XWM.CWM_WM);
+                || XWM.getWMID() == XWM.LG3D_WM || XWM.getWMID() == XWM.CWM_WM  ||
+                XWM.getWMID() == XWM.XMONAD_WM
+               );
     }
 
     /*
@@ -799,6 +816,10 @@ final class XWM
                 awt_wmgr = XWM.ICE_WM;
             } else if (isUnityCompiz()) {
                 awt_wmgr = XWM.UNITY_COMPIZ_WM;
+            } else if (isXmonad()) {
+                awt_wmgr = XWM.XMONAD_WM;
+            } else if (isAwesome()) {
+                awt_wmgr = XWM.AWESOME_WM;
             }
             /*
              * We don't check for legacy WM when we already know that WM
@@ -1114,6 +1135,8 @@ final class XWM
           case XWM.SAWFISH_WM:
           case XWM.ICE_WM:
           case XWM.METACITY_WM:
+          case XWM.XMONAD_WM:
+          case XWM.AWESOME_WM:
               return true;
           case XWM.OPENLOOK_WM:
           case XWM.MOTIF_WM:
@@ -1353,6 +1376,8 @@ final class XWM
                   break;
               case NO_WM:
               case LG3D_WM:
+              case XMONAD_WM:
+              case AWESOME_WM:
                   res = zeroInsets;
                   break;
               case UNITY_COMPIZ_WM:
@@ -1630,7 +1655,9 @@ final class XWM
                       break;
                   }
                   case XWM.SAWFISH_WM:
-                  case XWM.OPENLOOK_WM: {
+                  case XWM.OPENLOOK_WM:
+                  case XWM.AWESOME_WM:
+                      {
                       /* single reparenting */
                       syncTopLevelPos(window, lwinAttr);
                       correctWM.top    = lwinAttr.get_y();
