@@ -27,6 +27,7 @@
 
 #import <JavaNativeFoundation/JavaNativeFoundation.h>
 #import <JavaRuntimeSupport/JavaRuntimeSupport.h>
+#import "jni_util.h"
 
 
 #import "ThreadUtilities.h"
@@ -459,10 +460,7 @@ static const int COCOA_KEYCODE_US_BACKSLASH = 44;
                                   deltaY,
                                   deltaX,
                                   [AWTToolkit scrollStateWithEvent: event]);
-    if (jEvent == nil) {
-        // Unable to create event by some reason.
-        return;
-    }
+    CHECK_NULL(jEvent);
 
     AWTWindow *awtWindow = (AWTWindow*)[event window];
 
@@ -660,7 +658,7 @@ static const int COCOA_KEYCODE_US_BACKSLASH = 44;
     static JNF_CLASS_CACHE(jc_NSEvent, "sun/lwawt/macosx/NSEvent");
     static JNF_CTOR_CACHE(jctor_NSEvent, jc_NSEvent,
     "(IISLjava/lang/String;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;)V");
-    jobject jevent = JNFNewObject(env, jctor_NSEvent,
+    jobject jEvent = JNFNewObject(env, jctor_NSEvent,
                                   [event type],
                                   [event modifierFlags],
                                   [event keyCode],
@@ -672,6 +670,7 @@ static const int COCOA_KEYCODE_US_BACKSLASH = 44;
                                   oldCharacters,
                                   oldCharactersIgnoringModifiers
                                   );
+    CHECK_NULL(jEvent);
 
     static JNF_CLASS_CACHE(jc_PlatformView, "sun/lwawt/macosx/CPlatformView");
     static JNF_MEMBER_CACHE(jm_deliverKeyEvent, jc_PlatformView,
@@ -679,13 +678,14 @@ static const int COCOA_KEYCODE_US_BACKSLASH = 44;
 
     jobject jlocal = (*env)->NewLocalRef(env, m_cPlatformView);
     if (!(*env)->IsSameObject(env, jlocal, NULL)) {
-        JNFCallVoidMethod(env, jlocal, jm_deliverKeyEvent, jevent);
+        JNFCallVoidMethod(env, jlocal, jm_deliverKeyEvent, jEvent);
         (*env)->DeleteLocalRef(env, jlocal);
     }
 
     if (characters != NULL) {
         (*env)->DeleteLocalRef(env, characters);
     }
+    (*env)->DeleteLocalRef(env, jEvent);
 }
 
 -(void) deliverResize: (NSRect) rect {
