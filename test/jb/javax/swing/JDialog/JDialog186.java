@@ -40,14 +40,14 @@ public class JDialog186 {
     private static Process process;
     static final Object lock = new Object();
 
-    private static Thread modalDialogThread = new Thread() {
+    private static Runnable modalDialogThread = new Runnable() {
         @Override
         public void run() {
             dialog = new JDialog(frame, true);
             dialog.setTitle("Modal input");
             dialog.getContentPane().add(new JTextArea());
             dialog.setLocation(new Point(20, 100));
-            dialog.setSize(350, 50);
+            dialog.setSize(350, 100);
             dialog.setVisible(true);
         }
     };
@@ -138,7 +138,7 @@ public class JDialog186 {
             throw new RuntimeException();
         }
 
-        modalDialogThread.start();
+        SwingUtilities.invokeLater(modalDialogThread);
         process.waitFor();
         dialog.dispose();
         frame.dispose();
