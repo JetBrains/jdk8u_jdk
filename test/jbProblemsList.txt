@@ -1552,3 +1552,6 @@ sun/java2d/XRenderBlitsTest.java                                                
 
 # https://bugs.openjdk.java.net/browse/JDK-8160536
 com/apple/eawt/DefaultMenuBar/DefaultMenuBarTest.java                                           macosx-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8180821
+com/apple/laf/ScreenMenu/ScreenMenuMemoryLeakTest.java                                          macosx-all
