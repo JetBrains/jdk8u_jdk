@@ -172,12 +172,15 @@ public final class CGraphicsEnvironment extends SunGraphicsEnvironment {
             // of discrete video.
             // So, we initialize the main display first, and then
             // retrieve actual list of displays.
-            final Callable<Integer> command = CGraphicsEnvironment::getMainDisplayID;
 
             try {
-                mainDisplayID = CThreading.executeOnAppKit(command);
-            } catch (Throwable throwable) {
-                throw new RuntimeException("Could not get main display ID");
+                mainDisplayID = CThreading.privilegedExecuteOnAppKit(
+                        CGraphicsEnvironment::getMainDisplayID);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException("Could not get main display ID: " +
+                        e.getMessage() );
             }
 
             createDevices();
@@ -193,13 +196,15 @@ public final class CGraphicsEnvironment extends SunGraphicsEnvironment {
         if (!old.containsKey(mainDisplayID)) {
             old.put(mainDisplayID, new CGraphicsDevice(mainDisplayID));
         }
-        final Callable<int[]> command = CGraphicsEnvironment::getDisplayIDs;
-
         int[] displayIDs;
         try {
-            displayIDs = CThreading.executeOnAppKit(command);
-        } catch (Throwable throwable) {
-            throw new RuntimeException("Could not get main display IDs");
+            displayIDs = CThreading.privilegedExecuteOnAppKit(
+                    CGraphicsEnvironment::getDisplayIDs);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Could not get display IDs: " +
+                    e.getMessage());
         }
 
         for (final int id : displayIDs) {
