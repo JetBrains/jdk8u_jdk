@@ -32,7 +32,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.IIOImage;
@@ -47,20 +46,6 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageOutputStream;
 
 public class DestTypeTest implements IIOWriteWarningListener, IIOReadWarningListener {
-
-    private static BufferedImage orig = null;
-    static {
-        try {
-        String dir = System.getProperty("test.src", ".");
-        String sep = File.separator;
-        String fname = dir+sep+".."+sep+".."+sep+"images"+sep+"VancouverIsland200.jpg";
-
-            orig = ImageIO.read(new File(fname));
-        } catch(IOException e) {
-            e.printStackTrace();
-            orig = null;
-        }
-    }
 
     ImageWriter w;
     ImageReader r;
@@ -145,14 +130,6 @@ public class DestTypeTest implements IIOWriteWarningListener, IIOReadWarningList
     }
 
     public static BufferedImage createTestImage(int type) {
-        if (orig != null) {
-            BufferedImage bi = new BufferedImage(orig.getWidth(),
-                                                 orig.getHeight(),
-                                                 type);
-            Graphics g = bi.createGraphics();
-            g.drawImage(orig, 0, 0, null);
-            return bi;
-        }
         int w = 100;
         int h = 500;
         BufferedImage bi = new BufferedImage(3*w, h, type);
