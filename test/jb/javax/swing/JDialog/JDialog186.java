@@ -27,6 +27,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /* @test
