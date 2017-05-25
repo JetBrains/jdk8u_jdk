@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 
 import javax.swing.*;
 
@@ -250,10 +249,8 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
         } else {
             bounds = _peer.constrainBounds(_target.getBounds());
         }
-        long nativeWindowPtr = LWCToolkit.performOnMainThreadWaiting(() ->
-                nativeCreateNSWindow(contentView.getAWTView(),
-                                     ownerPtr, styleBits,
-                                     bounds.x, bounds.y, bounds.width, bounds.height));
+        final long nativeWindowPtr = nativeCreateNSWindow(contentView.getAWTView(),
+                ownerPtr, styleBits, bounds.x, bounds.y, bounds.width, bounds.height);
         setPtr(nativeWindowPtr);
 
         if (target instanceof javax.swing.RootPaneContainer) {
