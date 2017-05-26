@@ -32,6 +32,7 @@ import javax.swing.WindowConstants;
 
 /* @test
  * @summary regression test on JRE-186 Modal dialogs (Messages) shouldn't popup IDEA when another application is active
+ * @run main/othervm/timeout=360 JDialog186
  */
 
 public class JDialog186 {
