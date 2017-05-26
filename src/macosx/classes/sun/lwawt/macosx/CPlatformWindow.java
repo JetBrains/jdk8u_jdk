@@ -255,7 +255,7 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
         } else {
             bounds = _peer.constrainBounds(_target.getBounds());
         }
-        long nativeWindowPtr = LWCToolkit.performOnMainThreadWaiting(() ->
+        long nativeWindowPtr = LWCToolkit.SelectorPerformer.perform(() ->
                 nativeCreateNSWindow(contentView.getAWTView(),
                                      ownerPtr, styleBits,
                                      bounds.x, bounds.y, bounds.width, bounds.height));
