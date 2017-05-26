@@ -81,8 +81,7 @@ final class HelloExtensions {
             } else if (extType == ExtensionType.EXT_ELLIPTIC_CURVES) {
                 extension = new EllipticCurvesExtension(s, extlen);
             } else if (extType == ExtensionType.EXT_EC_POINT_FORMATS) {
-                extension =
-                        new SupportedEllipticPointFormatsExtension(s, extlen);
+                extension = new EllipticPointFormatsExtension(s, extlen);
             } else if (extType == ExtensionType.EXT_RENEGOTIATION_INFO) {
                 extension = new RenegotiationInfoExtension(s, extlen);
             } else if (extType == ExtensionType.EXT_EXTENDED_MASTER_SECRET) {
