@@ -24,7 +24,6 @@
 /*
  * @test
  * @bug 4994702
- * @key headful
  * @summary verifies that no regression were introduced with the fix for this
  *          bug
  */

@@ -24,7 +24,6 @@
 /*
  * @test
  * @bug 4481957
- * @key headful
  * @summary Tests that applet-supplied ImageReader, ImageWriter, and
  *          IIOMetadataFormat implementations do not throw unexpected exceptions
  *          when indirectly attempting to access ResourceBundles
