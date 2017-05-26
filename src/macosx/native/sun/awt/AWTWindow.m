@@ -275,11 +275,11 @@ AWT_NS_WINDOW_IMPLEMENTATION
         }
     }
 
-    if (IS(self.styleBits, DARK)) {
+    /*if (IS(self.styleBits, DARK)) {
         [self.nsWindow setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantDark]];
     } else {
         [self.nsWindow setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantLight]];
-    }
+    }*/
 
 }
 
