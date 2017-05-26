@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -3854,7 +3854,10 @@ void AwtComponent::OpenCandidateWindow(int x, int y)
     HWND hWnd = GetHWnd();
     HWND hTop = GetTopLevelParentForWindow(hWnd);
     ::ClientToScreen(hTop, &p);
-
+    if (!m_bitsCandType) {
+        SetCandidateWindow(m_bitsCandType, x - p.x, y - p.y);
+        return;
+    }
     for (int iCandType=0; iCandType<32; iCandType++, bits<<=1) {
         if ( m_bitsCandType & bits )
             SetCandidateWindow(iCandType, x - p.x, y - p.y);
@@ -3872,7 +3875,7 @@ void AwtComponent::SetCandidateWindow(int iCandType, int x, int y)
     HIMC hIMC = ImmGetContext(hwnd);
     CANDIDATEFORM cf;
     cf.dwIndex = iCandType;
-    cf.dwStyle = CFS_CANDIDATEPOS;
+    cf.dwStyle = CFS_POINT;
     cf.ptCurrentPos.x = x;
     cf.ptCurrentPos.y = y;
 
@@ -3904,8 +3907,12 @@ MsgRouting AwtComponent::WmImeSetContext(BOOL fSet, LPARAM *lplParam)
 
 MsgRouting AwtComponent::WmImeNotify(WPARAM subMsg, LPARAM bitsCandType)
 {
-    if (!m_useNativeCompWindow && subMsg == IMN_OPENCANDIDATE) {
-        m_bitsCandType = bitsCandType;
+    if (!m_useNativeCompWindow) {
+        if (subMsg == IMN_OPENCANDIDATE) {
+            m_bitsCandType = subMsg;
+        } else if (subMsg != IMN_SETCANDIDATEPOS) {
+            m_bitsCandType = 0;
+        }
         InquireCandidatePosition();
         return mrConsume;
     }
