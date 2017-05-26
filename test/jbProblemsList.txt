@@ -1526,7 +1526,7 @@ java/awt/Frame/NormalToIconified/NormalToIconifiedTest.java                     
 java/awt/Frame/ObscuredFrame/ObscuredFrameTest.java                                             linux-all
 java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                                    windows-all
 java/awt/Mixing/MixingInHwPanel.java                                                            windows-all
-java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java                          windows-all
+java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java                          generic-all
 java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                                          windows-all
 java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                                         windows-all
