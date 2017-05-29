@@ -275,12 +275,19 @@ AWT_NS_WINDOW_IMPLEMENTATION
         }
     }
 
-    /*if (IS(self.styleBits, DARK)) {
-        [self.nsWindow setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantDark]];
-    } else {
-        [self.nsWindow setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantLight]];
-    }*/
+/*    Class* nsAppearanceClass = NSClassFromString(@"NSAppearance");
 
+    if (nsAppearanceClass != nil) {
+        if (IS(self.styleBits, DARK)) {
+            id darkAppearanceObject = [nsAppearanceClass appearanceNamed:@"NSAppearanceNameVibrantDark"];
+            [self.nsWindow setAppearance:darkAppearanceObject];
+        } else if (IS(self.styleBits, LIGHT)) {
+            id lightAppearanceObject = [nsAppearanceClass appearanceNamed:@"NSAppearanceNameVibrantLight"];
+            [self.nsWindow setAppearance:lightAppearanceObject];
+        } else {
+            [self.nsWindow setAppearance:nil];
+        }
+    }*/
 }
 
 - (id) initWithPlatformWindow:(JNFWeakJObjectWrapper *)platformWindow
@@ -1031,6 +1038,21 @@ JNF_COCOA_ENTER(env);
         }
 
         window.styleBits = newBits;
+
+        Class* nsAppearanceClass = NSClassFromString(@"NSAppearance");
+
+        if (nsAppearanceClass != nil) {
+            if (IS(window.styleBits, DARK)) {
+                id darkAppearanceObject = [nsAppearanceClass appearanceNamed:@"NSAppearanceNameVibrantDark"];
+                [nsWindow setAppearance:darkAppearanceObject];
+            } else if (IS(window.styleBits, LIGHT)) {
+                id lightAppearanceObject = [nsAppearanceClass appearanceNamed:@"NSAppearanceNameVibrantLight"];
+                [nsWindow setAppearance:lightAppearanceObject];
+            } else {
+                [nsWindow setAppearance:nil];
+            }
+        }
+
     }];
 
 JNF_COCOA_EXIT(env);
