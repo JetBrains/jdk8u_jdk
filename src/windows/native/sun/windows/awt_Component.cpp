@@ -3910,10 +3910,12 @@ MsgRouting AwtComponent::WmImeNotify(WPARAM subMsg, LPARAM bitsCandType)
     if (!m_useNativeCompWindow) {
         if (subMsg == IMN_OPENCANDIDATE) {
             m_bitsCandType = subMsg;
-        } else if (subMsg != IMN_SETCANDIDATEPOS) {
+            InquireCandidatePosition();
+        } else if (subMsg == IMN_OPENSTATUSWINDOW ||
+                   subMsg == WM_IME_STARTCOMPOSITION) {
             m_bitsCandType = 0;
+            InquireCandidatePosition();
         }
-        InquireCandidatePosition();
         return mrConsume;
     }
     return mrDoDefault;
@@ -4173,14 +4175,14 @@ HWND AwtComponent::GetProxyFocusOwner()
     return (HWND)NULL;
 }
 
-/* Call DefWindowProc for the focus proxy, if any */
+/* Redirects message to the focus proxy, if any */
 void AwtComponent::CallProxyDefWindowProc(UINT message, WPARAM wParam,
     LPARAM lParam, LRESULT &retVal, MsgRouting &mr)
 {
     if (mr != mrConsume)  {
         HWND proxy = GetProxyFocusOwner();
         if (proxy != NULL && ::IsWindowEnabled(proxy)) {
-            retVal = ComCtl32Util::GetInstance().DefWindowProc(NULL, proxy, message, wParam, lParam);
+            retVal = ::DefWindowProc(proxy, message, wParam, lParam);
             mr = mrConsume;
         }
     }
