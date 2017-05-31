@@ -185,6 +185,9 @@ java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java ge
 # https://bugs.openjdk.java.net/browse/JDK-6986252
 java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8015886
+java/awt/Focus/DeiconifiedFrameLoosesFocus/DeiconifiedFrameLoosesFocus.html linux-all
+
 ## https://bugs.openjdk.java.net/browse/JDK-8169101
 # java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java        windows-all
 
@@ -282,7 +285,7 @@ java/awt/FullScreen/SetFSWindow/FSFrame.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7179526
 #fixed in 8_112
-java/awt/Graphics/LineClipTest.java                                  generic-all
+java/awt/Graphics/LineClipTest*                                  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080084
 java/awt/Graphics2D/DrawString/DrawStringCrash.java                  generic-all
@@ -915,6 +918,10 @@ java/rmi/activation/CommandEnvironment/SetChildEnv.java                    gener
 # https://bugs.openjdk.java.net/browse/JDK-8085192
 java/rmi/activation/Activatable/restartCrashedService/RestartCrashedService.java generic-all
 
+https://bugs.openjdk.java.net/browse/JDK-8019538
+java/rmi/activation/rmidViaInheritedChannel/RmidViaInheritedChannel.java         generic-all
+java/rmi/activation/rmidViaInheritedChannel/InheritedChannelNotServerSocket.java generic-all
+
 # 7140992
 java/rmi/server/Unreferenced/finiteGCLatency/FiniteGCLatency.java  generic-all
 
@@ -1517,6 +1524,9 @@ com/sun/nio/sctp/SctpChannel/SocketOptionTests.java                             
 
 # https://bugs.openjdk.java.net/browse/JDK-8141694
 com/sun/nio/sctp/SctpMultiChannel/SocketOptionTests.java                                        linux-all
+
+https://bugs.openjdk.java.net/browse/JDK-8022224
+sun/nio/cs/FindDecoderBugs.java                                                                 linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172887
 com/sun/awt/Translucency/WindowOpacity.java                                                     windows-all
