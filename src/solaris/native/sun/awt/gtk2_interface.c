@@ -647,10 +647,8 @@ gboolean gtk2_load(JNIEnv *env)
             fp_g_variant_new = dl_symbol("g_variant_new");
             fp_g_variant_get = dl_symbol("g_variant_get");
             fp_g_variant_unref = dl_symbol("g_variant_unref");
-        }
-
-        if (fp_gtk_check_version(2, 26, 0) == NULL) {
-            fp_g_dbus_connection_call_sync = dl_symbol("g_dbus_connection_call_sync");
+            fp_g_dbus_connection_call_sync = 
+                dl_symbol("g_dbus_connection_call_sync");
             fp_g_bus_get_sync = dl_symbol("g_bus_get_sync");
         }
 
