@@ -206,7 +206,11 @@ static GdkPixbuf* gnomeShellScreenShot(jint x, jint y, jint width, jint height, 
     GVariant *res;
     GDBusConnection *connection;
     GdkPixbuf *pixbuf = NULL;
-    int f = fp_g_file_open_tmp(NULL, &filename, pError);
+    int f;
+
+    if (fp_gtk_check_version(2, 26, 0)) return NULL;
+
+    f = fp_g_file_open_tmp(NULL, &filename, pError);
 
     if (*pError != NULL) return NULL;
 
