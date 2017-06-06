@@ -42,11 +42,15 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DirectColorModel;
 import java.awt.image.VolatileImage;
 import java.awt.image.WritableRaster;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.concurrent.Callable;
 
 import sun.awt.CGraphicsConfig;
 import sun.awt.CGraphicsDevice;
+import sun.awt.DisplayChangedListener;
 import sun.awt.image.OffScreenImage;
 import sun.awt.image.SunVolatileImage;
 import sun.java2d.Disposer;
@@ -65,13 +69,18 @@ import sun.java2d.pipe.hw.AccelDeviceEventNotifier;
 import sun.lwawt.LWComponentPeer;
 import sun.lwawt.macosx.CPlatformView;
 import sun.lwawt.macosx.CThreading;
+import sun.util.logging.PlatformLogger;
+
 import java.security.PrivilegedAction;
 
 public final class CGLGraphicsConfig extends CGraphicsConfig
-    implements OGLGraphicsConfig
+    implements OGLGraphicsConfig, DisplayChangedListener
 {
     //private static final int kOpenGLSwapInterval =
     // RuntimeOptions.getCurrentOptions().OpenGLSwapInterval;
+    private static final PlatformLogger log = PlatformLogger.getLogger("sun.java2d.opengl.CGLGraphicsConfig");
+    private HashSet<WeakReference<SurfaceData>>  surfDataSet = new HashSet<>();
+
     private static final int kOpenGLSwapInterval = 0; // TODO
     private static boolean cglAvailable;
     private static ImageCapabilities imageCaps = new CGLImageCaps();
@@ -131,6 +140,10 @@ public final class CGLGraphicsConfig extends CGraphicsConfig
                                          getColorModel(transparency),
                                          null,
                                          OGLSurfaceData.TEXTURE);
+    }
+
+    void addSData(SurfaceData data) {
+        surfDataSet.add(new WeakReference<>(data));
     }
 
     public static CGLGraphicsConfig getConfig(CGraphicsDevice device,
@@ -294,7 +307,7 @@ public final class CGLGraphicsConfig extends CGraphicsConfig
     }
 
     // TODO: CGraphicsConfig doesn't implement displayChanged() yet
-    //@Override
+    @Override
     public synchronized void displayChanged() {
         //super.displayChanged();
 
@@ -308,6 +321,27 @@ public final class CGLGraphicsConfig extends CGraphicsConfig
         } finally {
             rq.unlock();
         }
+
+        Iterator<WeakReference<SurfaceData> > iter = surfDataSet.iterator();
+        while (iter.hasNext()) {
+            WeakReference<SurfaceData> ref  = iter.next();
+            SurfaceData surfaceData = ref.get();
+            if (surfaceData != null) {
+                surfaceData.flush();
+
+                if (log.isLoggable(PlatformLogger.Level.FINE)) {
+                    log.fine("Flush: " + surfaceData.toString());
+                }
+            }
+            else {
+                iter.remove();
+            }
+        }
+    }
+
+    @Override
+    public void paletteChanged() {
+
     }
 
     @Override

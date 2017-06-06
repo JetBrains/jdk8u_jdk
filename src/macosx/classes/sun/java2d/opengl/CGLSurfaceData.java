@@ -61,6 +61,7 @@ public abstract class CGLSurfaceData extends OGLSurfaceData {
         scale = type == TEXTURE ? 1 : gc.getDevice().getScaleFactor();
         this.width = width * scale;
         this.height = height * scale;
+        gc.addSData(this);
     }
 
     protected CGLSurfaceData(CPlatformView pView, CGLGraphicsConfig gc,
