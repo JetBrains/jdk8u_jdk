@@ -1025,7 +1025,7 @@ JNF_COCOA_ENTER(env);
 
         window.styleBits = newBits;
 
-        nsWindow.titlebarAppearsTransparent = IS(window.styleBits, TRANSPARENT_TITLEBAR);
+        [nsWindow setTitlebarAppearsTransparent:IS(window.styleBits, TRANSPARENT_TITLEBAR)];
 
         Class* nsAppearanceClass = NSClassFromString(@"NSAppearance");
 
