@@ -846,6 +846,9 @@ com/sun/net/httpserver/bugs/6725892/Test.java                   generic-all
 # 7102702
 java/net/PortUnreachableException/OneExceptionOnly.java         windows-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8181645
+java/net/Socket/GetLocalAddress.java                            windows-all
+
 # 7148829
 sun/net/InetAddress/nameservice/simple/CacheTest.java		generic-all
 sun/net/InetAddress/nameservice/simple/DefaultCaching.java	generic-all
