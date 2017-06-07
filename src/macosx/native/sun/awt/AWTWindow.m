@@ -274,20 +274,6 @@ AWT_NS_WINDOW_IMPLEMENTATION
             [self.nsWindow setCollectionBehavior:NSWindowCollectionBehaviorDefault];
         }
     }
-
-/*    Class* nsAppearanceClass = NSClassFromString(@"NSAppearance");
-
-    if (nsAppearanceClass != nil) {
-        if (IS(self.styleBits, DARK)) {
-            id darkAppearanceObject = [nsAppearanceClass appearanceNamed:@"NSAppearanceNameVibrantDark"];
-            [self.nsWindow setAppearance:darkAppearanceObject];
-        } else if (IS(self.styleBits, LIGHT)) {
-            id lightAppearanceObject = [nsAppearanceClass appearanceNamed:@"NSAppearanceNameVibrantLight"];
-            [self.nsWindow setAppearance:lightAppearanceObject];
-        } else {
-            [self.nsWindow setAppearance:nil];
-        }
-    }*/
 }
 
 - (id) initWithPlatformWindow:(JNFWeakJObjectWrapper *)platformWindow
@@ -1038,6 +1024,8 @@ JNF_COCOA_ENTER(env);
         }
 
         window.styleBits = newBits;
+
+        nsWindow.titlebarAppearsTransparent = IS(window.styleBits, TRANSPARENT_TITLEBAR);
 
         Class* nsAppearanceClass = NSClassFromString(@"NSAppearance");
 
