@@ -142,12 +142,6 @@ public final class CGraphicsDevice extends GraphicsDevice
         yResolution = nativeGetYResolution(displayID);
         scale = (int) nativeGetScaleFactor(displayID);
         //TODO configs/fullscreenWindow/modes?
-
-        for (GraphicsConfiguration gc : configs) {
-            if (gc instanceof DisplayChangedListener) {
-                ((DisplayChangedListener)gc).displayChanged();
-            }
-        }
     }
 
     @Override
