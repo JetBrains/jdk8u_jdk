@@ -41,7 +41,7 @@ import java.util.Arrays;
 
 // The test displays two modal dialogs one by one
 // and checks that the latest modal dialog would be on top of all windows
-public class JDialog392 {
+public class JDialog392 implements Runnable {
 
     private static JFrame frame = new JFrame("JDialog392");
 
@@ -154,7 +154,7 @@ public class JDialog392 {
                 BufferedImage screenImage = robot.createScreenCapture(captureRect);
 
                 int rgb;
-                int expectedRGB = screenImage.getRGB((int) (shotSize.getWidth()/2), (int) (shotSize.getHeight()/2)) & 0x00FFFFFF;
+                int expectedRGB = screenImage.getRGB((int) (shotSize.getWidth() / 2), (int) (shotSize.getHeight() / 2)) & 0x00FFFFFF;
 
                 for (int col = 1; col < shotSize.getWidth(); col++) {
                     for (int row = 1; row < shotSize.getHeight(); row++) {
@@ -190,7 +190,7 @@ public class JDialog392 {
         }
     }
 
-    private void doTest() {
+    public void run() {
         frame.setSize(350, 300);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -201,15 +201,15 @@ public class JDialog392 {
                 250, 150,
                 new FirstDialogListener());
 
-        try {
-            SwingUtilities.invokeAndWait(modalDialogThread1);
-        } catch (InterruptedException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        SwingUtilities.invokeLater(modalDialogThread1);
     }
 
     public static void main(String[] args) throws Exception {
         JDialog392.verbose = Arrays.asList(args).contains("-verbose");
-        new JDialog392().doTest();
+        try {
+            SwingUtilities.invokeAndWait(new JDialog392());
+        } catch (InterruptedException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
