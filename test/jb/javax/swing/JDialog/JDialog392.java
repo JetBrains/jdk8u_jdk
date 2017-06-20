@@ -52,7 +52,7 @@ public class JDialog392 implements Runnable {
 
     static DialogThread modalDialogThread2;
 
-    static class DialogThread implements Runnable {
+    static class DialogThread {
 
         JDialog dialog;
 
@@ -71,8 +71,7 @@ public class JDialog392 implements Runnable {
             this.eventListener = eventListener;
         }
 
-        @Override
-        public void run() {
+        void run() {
             dialog = new JDialog(frame, true);
             dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
             dialog.setTitle(dialogTitle);
@@ -133,7 +132,7 @@ public class JDialog392 implements Runnable {
                     new Point(5, 50),
                     300, 200,
                     new SecondDialogListener());
-            SwingUtilities.invokeLater(modalDialogThread2);
+            modalDialogThread2.run();
         }
     }
 
@@ -200,8 +199,7 @@ public class JDialog392 implements Runnable {
                 new Point(10, 75),
                 250, 150,
                 new FirstDialogListener());
-
-        SwingUtilities.invokeLater(modalDialogThread1);
+        modalDialogThread1.run();
     }
 
     public static void main(String[] args) throws Exception {
