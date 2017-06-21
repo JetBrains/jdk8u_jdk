@@ -45,7 +45,7 @@ final class CCursorManager extends LWCursorManager {
         return theInstance;
     }
 
-    //private volatile Cursor currentCursor;
+    private volatile Cursor currentCursor;
 
     private CCursorManager() { }
 
@@ -57,10 +57,10 @@ final class CCursorManager extends LWCursorManager {
 
     @Override
     protected void setCursor(final Cursor cursor) {
-        //if (cursor == currentCursor) {
-        //    return;
-        //}
-        //currentCursor = cursor;
+        if (cursor == currentCursor) {
+            return;
+        }
+        currentCursor = cursor;
 
         if (cursor == null) {
             nativeSetBuiltInCursor(Cursor.DEFAULT_CURSOR, null);
