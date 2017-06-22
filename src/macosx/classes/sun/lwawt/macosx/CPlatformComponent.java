@@ -51,7 +51,10 @@ class CPlatformComponent extends CFRetainedResource
     @Override
     public void initialize(final PlatformWindow platformWindow) {
         this.platformWindow = platformWindow;
-        setPtr(nativeCreateComponent(platformWindow.getLayerPtr()));
+        long nativeWindowPtr = LWCToolkit.SelectorPerformer.perform(() ->
+            nativeCreateComponent(platformWindow.getLayerPtr())
+        );
+        setPtr(nativeWindowPtr);
     }
 
     // TODO: visibility, z-order
