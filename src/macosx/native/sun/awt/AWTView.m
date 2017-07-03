@@ -494,6 +494,7 @@ static const int COCOA_KEYCODE_US_BACKSLASH = 44;
     } else {
         NSLog(@"m_cPlatformView is null");
     }
+    (*env)->DeleteLocalRef(env, platformWindow);
 }
 
 - (void) resetTrackingArea {
