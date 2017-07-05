@@ -349,32 +349,6 @@ AWT_ASSERT_APPKIT_THREAD;
     }
 }
 
-/*
- * Posts the block to the AppKit event queue which will be executed 
- * on the main AppKit loop. 
- * While running nested loops this event will be ignored. 
- */
-- (void)postRunnableEvent:(void (^)())block 
-{
-    void (^copy)() = [block copy];
-    NSInteger encode = (NSInteger) copy;
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSEvent* event = [NSEvent otherEventWithType: NSApplicationDefined
-                                        location: NSMakePoint(0,0)
-                                   modifierFlags: 0
-                                       timestamp: 0
-                                    windowNumber: 0
-                                         context: nil
-                                         subtype: 777
-                                           data1: encode
-                                           data2: 0];
-
-    [NSApp postEvent: event atStart: NO];
-    [pool drain];
-}
-
-
-
 - (void)postDummyEvent {
     seenDummyEventLock = [[NSConditionLock alloc] initWithCondition:NO];
     dummyEventTimestamp = [NSProcessInfo processInfo].systemUptime;
