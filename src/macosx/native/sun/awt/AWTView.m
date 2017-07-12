@@ -448,20 +448,6 @@ static const int COCOA_KEYCODE_US_BACKSLASH = 44;
         deltaY = [event scrollingDeltaY] * 0.1;
     }
 
-    static JNF_CLASS_CACHE(jc_NSEvent, "sun/lwawt/macosx/NSEvent");
-    static JNF_CTOR_CACHE(jctor_NSEvent, jc_NSEvent, "(IIIIIIIIDDI)V");
-    jobject jEvent = JNFNewObject(env, jctor_NSEvent,
-                                  [event type],
-                                  [event modifierFlags],
-                                  clickCount,
-                                  [event buttonNumber],
-                                  (jint)localPoint.x, (jint)localPoint.y,
-                                  (jint)absP.x, (jint)absP.y,
-                                  deltaY,
-                                  deltaX,
-                                  [AWTToolkit scrollStateWithEvent: event]);
-    CHECK_NULL(jEvent);
-
     AWTWindow *awtWindow = (AWTWindow*)[event window];
 
     if (![AWTWindow isAWTWindow: awtWindow]) {
@@ -479,6 +465,19 @@ static const int COCOA_KEYCODE_US_BACKSLASH = 44;
     }
 
     static JNF_CLASS_CACHE(jc_PlatformWindow, "sun/lwawt/macosx/CPlatformWindow");
+    static JNF_CLASS_CACHE(jc_NSEvent, "sun/lwawt/macosx/NSEvent");
+    static JNF_CTOR_CACHE(jctor_NSEvent, jc_NSEvent, "(IIIIIIIIDDI)V");
+    jobject jEvent = JNFNewObject(env, jctor_NSEvent,
+                                  [event type],
+                                  [event modifierFlags],
+                                  clickCount,
+                                  [event buttonNumber],
+                                  (jint)localPoint.x, (jint)localPoint.y,
+                                  (jint)absP.x, (jint)absP.y,
+                                  deltaY,
+                                  deltaX,
+                                  [AWTToolkit scrollStateWithEvent: event]);
+    CHECK_NULL(jEvent);
 
     if (!JNFIsInstanceOf(env, platformWindow, &jc_PlatformWindow)) {
         NSLog(@"Platform window is not an instance of CPlatformWindow");
@@ -494,6 +493,7 @@ static const int COCOA_KEYCODE_US_BACKSLASH = 44;
     } else {
         NSLog(@"m_cPlatformView is null");
     }
+    (*env)->DeleteLocalRef(env, jEvent);
     (*env)->DeleteLocalRef(env, platformWindow);
 }
 
