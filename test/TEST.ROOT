@@ -9,7 +9,7 @@
 # should be taken to handle test failures of intermittent or
 # randomness tests.
 
-keys=2d dnd i18n intermittent randomness
+keys=2d dnd i18n intermittent randomness dtrace
 
 # Tests that must run in othervm mode
 othervm.dirs=java/awt java/beans java/rmi javax/accessibility javax/imageio javax/sound javax/print javax/management com/sun/awt sun/awt sun/java2d sun/pisces sun/rmi

@@ -32,7 +32,7 @@ import javax.swing.WindowConstants;
  *     <li>JRE-401 AppCode freezes during autocomplete and other operations; and</li>
  *     <li>JRE-415 Mistake in "Merge with jdk8u152-b00"</li>
  * </ul>
- * @run main/othervm/timeout=360 Popup401
+ * @run main/othervm/timeout=360 Popup401 1000
  */
 
 /*
@@ -53,14 +53,15 @@ public class Popup401 extends JPanel {
     private JTextArea textArea;
     private JEditorPane editorPane;
 
+    private static JFrame frame;
     private static Popup401 test;
     private static Robot robot;
 
-    private static final int ITERATION_NUMBER = 1000;
+    private static int ITERATION_NUMBER = 10;
     private static final int ROBOT_DELAY = 200;
     private static final int HANG_TIME_FACTOR = 10;
 
-    private static Object testCompleted = new Object();
+    private static final Object testCompleted = new Object();
 
     private Popup401() {
         textArea = new JTextArea("§1234567890-=\nqwertyuiop[]\nasdfghjkl;'\\\n`zxcvbnm,./\n");
@@ -103,7 +104,7 @@ public class Popup401 extends JPanel {
     }
 
     private static void createAndShowGUI() {
-        JFrame frame = new JFrame("HangPopupTest");
+        frame = new JFrame("HangPopupTest");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(1000, 1000);
 
@@ -125,13 +126,14 @@ public class Popup401 extends JPanel {
 
     public static void main(String[] args) throws Exception {
         robot = new Robot();
+        if (args.length > 0)
+            Popup401.ITERATION_NUMBER = Integer.parseInt(args[0]);
+
         synchronized (testCompleted) {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                public void run() {
-                    createAndShowGUI();
-                }
-            });
+            SwingUtilities.invokeAndWait(Popup401::createAndShowGUI);
             testCompleted.wait();
+            frame.setVisible(false);
+            frame.dispose();
         }
     }
 }
