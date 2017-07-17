@@ -200,8 +200,6 @@ inline jint AwtRobot::WinToJavaPixel(USHORT r, USHORT g, USHORT b)
 
 jintArray AwtRobot::GetRGBPixels(jobject bounds) // bounds is IN/OUT param
 {
-    DASSERT(width > 0 && height > 0);
-
     HDC hdcScreen = ::CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
     HDC hdcMem = ::CreateCompatibleDC(hdcScreen);
     HBITMAP hbitmap;
@@ -213,6 +211,8 @@ jintArray AwtRobot::GetRGBPixels(jobject bounds) // bounds is IN/OUT param
     jint y = env->GetIntField(bounds, AwtRectangle::yID);
     jint width = env->GetIntField(bounds, AwtRectangle::widthID);
     jint height = env->GetIntField(bounds, AwtRectangle::heightID);
+
+    DASSERT(width > 0 && height > 0);
 
     AwtWin32GraphicsDevice* device = AwtWin32GraphicsDevice::GetDeviceByBounds(RECT_BOUNDS(x, y, width, height));
     x = (device == NULL) ? x : device->ScaleUpDX(x);
