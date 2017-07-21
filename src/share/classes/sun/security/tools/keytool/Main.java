@@ -1571,11 +1571,12 @@ public final class Main {
     {
         if (keysize == -1) {
             if ("EC".equalsIgnoreCase(keyAlgName)) {
-                keysize = 256;
+                keysize = SecurityProviderConstants.DEF_EC_KEY_SIZE;
             } else if ("RSA".equalsIgnoreCase(keyAlgName)) {
-                keysize = 2048;
-            } else {
-                keysize = 1024;
+                // hardcode for now as DEF_RSA_KEY_SIZE is still 1024
+                keysize = 2048; // SecurityProviderConstants.DEF_RSA_KEY_SIZE;
+            } else if ("DSA".equalsIgnoreCase(keyAlgName)) {
+                keysize = SecurityProviderConstants.DEF_DSA_KEY_SIZE;
             }
         }
 
