@@ -36,9 +36,28 @@ case "$OS" in
     ;;
 esac
 
+if [ -z "${TESTSRC}" ]; then
+  echo "TESTSRC undefined: set to ."
+  TESTSRC=.
+fi
+
+if [ -z "${TESTCLASSES}" ]; then
+  echo "TESTCLASSES undefined: set to ."
+  TESTCLASSES=.
+fi
+
+if [ -z "${TESTJAVA}" ]; then
+  echo "TESTJAVA undefined: testing cancelled"
+  exit 1
+fi
+
+cd ${TESTSRC}
+${TESTJAVA}/bin/javac -d ${TESTCLASSES} Popup401.java
+
 echo "Running ${DTRACE}"
 echo ${BUPWD} | sudo -S ${DTRACE} -Z -q -s ${TESTSRCPATH}/popup401.d -c "${TESTJAVA}/bin/java -cp ${TESTCLASSPATH} Popup401 10"
 exit_code=$?
+
 case $exit_code in
 0) echo "PASSED: mem leaks not found"
    ;;
