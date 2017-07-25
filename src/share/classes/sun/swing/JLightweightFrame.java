@@ -35,6 +35,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.dnd.DragGestureEvent;
@@ -470,7 +471,13 @@ public final class JLightweightFrame extends LightweightFrame implements RootPan
      * and could not be overridden.
      */
     private void updateClientCursor() {
-        Point p = MouseInfo.getPointerInfo().getLocation();
+        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+        if (pointerInfo == null) {
+            // Sometimes it's impossible to determine which graphics
+            // device contains the current mouse position.
+            return;
+        }
+        Point p = pointerInfo.getLocation();
         SwingUtilities.convertPointFromScreen(p, this);
         Component target = SwingUtilities.getDeepestComponentAt(this, p.x, p.y);
         if (target != null) {
