@@ -130,6 +130,7 @@ extern "C" JNIEXPORT jboolean JNICALL AWTIsHeadless() {
 GetThreadDpiAwarenessContextFunc* AwtToolkit::lpGetThreadDpiAwarenessContext = NULL;
 SetThreadDpiAwarenessContextFunc* AwtToolkit::lpSetThreadDpiAwarenessContext = NULL;
 AreDpiAwarenessContextsEqualFunc* AwtToolkit::lpAreDpiAwarenessContextsEqual = NULL;
+EnableNonClientDpiScalingFunc* AwtToolkit::lpEnableNonClientDpiScaling = NULL;
 
 static LPCTSTR szAwtToolkitClassName = TEXT("SunAwtToolkit");
 
@@ -515,6 +516,8 @@ BOOL AwtToolkit::Initialize(BOOL localPump) {
                 (SetThreadDpiAwarenessContextFunc*)GetProcAddress(hLibUser32Dll, "SetThreadDpiAwarenessContext");
         lpAreDpiAwarenessContextsEqual =
                 (AreDpiAwarenessContextsEqualFunc*)GetProcAddress(hLibUser32Dll, "AreDpiAwarenessContextsEqual");
+        lpEnableNonClientDpiScaling =
+                (EnableNonClientDpiScalingFunc*)GetProcAddress(hLibUser32Dll, "EnableNonClientDpiScaling");
         ::FreeLibrary(hLibUser32Dll);
     }
 
