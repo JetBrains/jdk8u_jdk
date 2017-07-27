@@ -79,6 +79,18 @@ static BOOL sSetupHelpMenu = NO;
     self = [super initWithPeer: peer];
     if (self) {
         fMenuList = [[NSMutableArray alloc] init];
+        // Workaround for JRE-434
+        NSMenu* mainMenu = [NSApp mainMenu];
+        if (mainMenu == nil) {
+            NSMenu* menu = [[NSMenu alloc] initWithTitle:@"DefaultApp"];
+            menu.autoenablesItems = NO;
+            NSMenuItem* menuItem = [[NSMenuItem alloc] initWithTitle:@"NewApplication"
+            action:nil
+            keyEquivalent:@""];
+            [menu addItem:menuItem];
+            [NSApp setMainMenu:menu];
+            [menu release];
+        }
     }
     return self;
 }
