@@ -87,7 +87,23 @@ static BOOL sSetupHelpMenu = NO;
             NSMenuItem* menuItem = [[NSMenuItem alloc] initWithTitle:@"NewApplication"
             action:nil
             keyEquivalent:@""];
+
             [menu addItem:menuItem];
+
+            NSMenuItem* quitItem = [[NSMenuItem alloc] initWithTitle:@"Quit"
+                        action:@selector(terminate:)
+                        keyEquivalent:@"q"];
+
+            quitItem.target = [NSApplication sharedApplication];
+
+            NSMenu* appMenu = [[NSMenu alloc] initWithTitle:@"AppMenu"];
+
+            menuItem.submenu = appMenu;
+
+            //[appMenu addItem:[NSMenuItem separatorItem]];
+
+            [appMenu addItem:quitItem];
+
             [NSApp setMainMenu:menu];
             [menu release];
         }
