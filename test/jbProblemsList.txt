@@ -1565,6 +1565,9 @@ sun/java2d/OpenGL/CustomCompositeTest.java                                      
 sun/java2d/OpenGL/DrawBufImgOp.java                                                             windows-all
 sun/java2d/OpenGL/DrawHugeImageTest.java                                                        windows-all
 sun/java2d/XRenderBlitsTest.java                                                                windows-all
+java/awt/Robot/HiDPIMouseClick/HiDPIRobotMouseClick.java                                        windows-all
+java/awt/hidpi/properties/HiDPIPropertiesWindowsTest.java                                       windows-all
+java/awt/Graphics2D/ScaledTransform/ScaledTransform.java                                        windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8160536
 com/apple/eawt/DefaultMenuBar/DefaultMenuBarTest.java                                           macosx-all
