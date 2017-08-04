@@ -26,11 +26,14 @@ import java.awt.font.FontRenderContext;
  */
 
 /*
- * Description: The test copies the font 华康彩带t.ttf into the folder containing System fonts. Then it get all fonts
+ * Description: The test copies the font DFCaiDai.ttf into the folder containing System fonts. Then it get all fonts
  * and tries to get <code>getCharWidth</code> for the characters <code>" "</code>, <code>"l"</code> and <code>"W"</code>.
  *
  * Please note if the font was created via <code>Font.createFont(fontFormat, fontFile)</code> then
  * <code>getCharWidth</code> for this font does not reproduce the bug JRE-426.
+ *
+ * The font DFCaiDai.ttf was kindly provided by DynaComware Taiwan Inc (http://www.dynacw.com.tw) and can be used within
+ * this research only.
  *
  */
 public class Font426 {
@@ -46,32 +49,12 @@ public class Font426 {
         return 0;
     }
 
-    private static int getFontWidth(Font font, int mask) {
-        if (mask != Font.PLAIN) {
-            //noinspection MagicConstant
-            font = font.deriveFont(mask ^ font.getStyle());
-            System.out.println("noinspection MagicConstant");
-        }
-        int width_ = getCharWidth(font, ' ');
-        int width_l = getCharWidth(font, 'l');
-        int width_W = getCharWidth(font, 'W');
-        System.out.print("\twidth \" \":" + width_ + " \"l\":" + width_l + " \"W\":" + width_W);
-        return width_ == width_l && width_ == width_W ? width_ : 0;
-    }
-
-    private static void getFontInfo(Font font) {
-        Font derivedFont = font.deriveFont((float) DEFAULT_SIZE);
-        System.out.print("\t" + derivedFont.getFontName() + " - ");
-        getFontWidth(derivedFont, Font.PLAIN);
-
-    }
-
     public static void main(String[] args) throws Exception {
         Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 
         for (Font font : fonts) {
-            getFontInfo(font);
-            System.out.println();
+            if (font.getName().compareTo("DFCaiDai-Bd-HKP-BF") == 0)
+                getCharWidth(font, ' ');
         }
     }
 }
