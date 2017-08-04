@@ -19,24 +19,16 @@
 # @test
 # @summary font426.sh checks the Chinese font 华康彩带 (DFCaiDai)
 # @run shell font426.sh
+# @requires os.family == "mac"
 
-OS=`uname -s`
-case "$OS" in
-  Darwin)
-    echo "Detected OS $OS"
-    FONT_DIR="~/Library/Fonts"
-    ;;
-  * )
-    echo "PASSED: The test is valid for MacOSX"
-    exit 0;
-    ;;
-esac
+FONT_DIR="${HOME}/Library/Fonts"
 
 if [ -z "${TESTSRC}" ]; then
   echo "TESTSRC undefined: set to ."
   TESTSRC=.
 fi
 
+echo "copy ${TESTSRC}/fonts/Font426.ttf to ${FONT_DIR}"
 cp -r ${TESTSRC}/fonts/DFCaiDai.ttf ${FONT_DIR}
 
 if [ -z "${TESTCLASSES}" ]; then
