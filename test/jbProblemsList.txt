@@ -1143,7 +1143,7 @@ javax/swing/JScrollBar/4708809/bug4708809.java                       generic-all
 javax/swing/JScrollBar/bug4202954/bug4202954.java                    windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169960
-javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java windows-all
+javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172539
 javax/swing/JSlider/6348946/bug6348946.java                          windows-all
@@ -1567,7 +1567,8 @@ sun/java2d/OpenGL/DrawHugeImageTest.java                                        
 sun/java2d/XRenderBlitsTest.java                                                                windows-all
 java/awt/Robot/HiDPIMouseClick/HiDPIRobotMouseClick.java                                        windows-all
 java/awt/hidpi/properties/HiDPIPropertiesWindowsTest.java                                       windows-all
-java/awt/Graphics2D/ScaledTransform/ScaledTransform.java                                        windows-all
+java/awt/Graphics2D/ScaledTransform/ScaledTransform.java                                        generic-all
+javax/swing/text/Utilities/8142966/SwingFontMetricsTest.java                                    windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8160536
 com/apple/eawt/DefaultMenuBar/DefaultMenuBarTest.java                                           macosx-all
