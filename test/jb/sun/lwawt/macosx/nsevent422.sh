@@ -46,10 +46,8 @@ cd ${TESTSRC}
 ${TESTJAVA}/bin/javac -d ${TESTCLASSES} NSEvent422.java
 
 ${TESTJAVA}/bin/java -Xmx8M -cp ${TESTCLASSES} NSEvent422 &
-
-
-sleep 1
 pid=$!
+sleep 5
 old_instances=0
 passed=0
 while [ ! -z $pid ]
