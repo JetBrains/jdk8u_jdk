@@ -45,7 +45,7 @@ fi
 cd ${TESTSRC}
 ${TESTJAVA}/bin/javac -d ${TESTCLASSES} NSEvent422.java
 
-${TESTJAVA}/bin/java -Xmx8M -cp ${TESTCLASSES} NSEvent422 &
+${TESTJAVA}/bin/java -Xmx8M -cp ${TESTCLASSES} NSEvent422 1000 &
 pid=$!
 sleep 5
 old_instances=0
