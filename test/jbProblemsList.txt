@@ -1052,7 +1052,7 @@ javax/swing/JFileChooser/8021253/bug8021253.java                     generic-all
 javax/swing/JFileChooser/8062561/bug8062561.java                     generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8170721
-javax/swing/JFrame/4962534/bug4962534.html                           macosx-all
+javax/swing/JFrame/4962534/bug4962534.html                           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169955
 javax/swing/JFrame/8016356/bug8016356.java                           windows-all
@@ -1078,8 +1078,10 @@ javax/swing/JList/6462008/bug6462008.java                            generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8040915
 javax/swing/JMenu/4515762/bug4515762.java                            generic-all
 
-https://bugs.openjdk.java.net/browse/JDK-8171998
-javax/swing/JMenu/4692443/bug4692443.java                            windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8171998
+# according recommendations from Oracle ForegroundLockTimeout = 0
+# in order to check it, the test is being enabled for regular runs
+#javax/swing/JMenu/4692443/bug4692443.java                            windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8142534
 javax/swing/JMenu/8072900/WrongSelectionOnMouseOver.java             generic-all
