@@ -151,9 +151,9 @@ public class Win32GraphicsDevice extends GraphicsDevice implements
     }
 
     /**
-     * Temp, until fractional scale is supported.
+     * Temp, until fractional scale is supported. Don't use this method!
      */
-    void resetScaleFactors() {
+    public void resetScaleFactors() {
         setNativeScale(screen, scaleX = 1f, scaleY = 1f);
     }
 
