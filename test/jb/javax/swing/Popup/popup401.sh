@@ -27,11 +27,11 @@
 
 OS=`uname -s`
 case "$OS" in
-  Darwin)
+  Linux | Darwin)
     echo "Detected OS $OS"
     ;;
   * )
-    echo "PASSED: The test is valid for MacOSX"
+    echo "PASSED: The test is valid for MacOSX, Linux"
     exit 0;
     ;;
 esac
