@@ -34,9 +34,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.LongAdder;
 
 import sun.misc.ObjectInputFilter;
@@ -153,6 +155,11 @@ public class SerialFilterTest implements Serializable {
                 interfaces, (p, m, args) -> p);
 
         Runnable runnable = (Runnable & Serializable) SerialFilterTest::noop;
+
+        List<Class<?>> classList = new ArrayList<>();
+        classList.add(HashSet.class);
+        classList.addAll(Collections.nCopies(21, Map.Entry[].class));
+
         Object[][] objects = {
                 { null, 0, -1, 0, 0, 0,
                         new HashSet<>()},        // no callback, no values
@@ -169,12 +176,16 @@ public class SerialFilterTest implements Serializable {
                 { runnable, 13, 0, 10, 2, 514,
                         new HashSet<>(Arrays.asList(java.lang.invoke.SerializedLambda.class,
                                 SerialFilterTest.class,
-                                objArray.getClass()))},
-                { deepHashSet(10), 48, -1, 49, 11, 619,
-                        new HashSet<>(Arrays.asList(HashSet.class))},
-                { proxy.getClass(), 3, -1, 1, 1, 114,
-                        new HashSet<>(Arrays.asList(Runnable.class,
-                                java.lang.reflect.Proxy.class))},
+                                java.lang.invoke.SerializedLambda.class)},
+                { deepHashSet(10), 69, 4, 50, 11, 619, classList },
+                { proxy.getClass(), 3, -1, 2, 2, 112,
+                        Arrays.asList(Runnable.class,
+                                java.lang.reflect.Proxy.class,
+                                java.lang.reflect.Proxy.class)},
+                { new F(), 6, -1, 6, 6, 202,
+                        Arrays.asList(F.class, E.class, D.class,
+                                C.class, B.class, A.class)},
+
         };
         return objects;
     }
