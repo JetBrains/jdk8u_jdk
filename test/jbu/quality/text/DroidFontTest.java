@@ -36,7 +36,8 @@ public class DroidFontTest {
             throws Exception {
 
         String[] testDataVariant = {
-                "osx_hardware_rendering", "osx_software_rendering", "linux_rendering"};
+                "osx_hardware_rendering", "osx_software_rendering", "osx_sierra_rendering",
+                "linux_rendering"};
 
         String testDataStr = System.getProperty("testdata");
         assertNotNull("testdata property is not set", testDataStr);
@@ -70,7 +71,7 @@ public class DroidFontTest {
 
         if (System.getProperty("gentestdata") == null) {
             boolean failed = true;
-            String failureReason = "";
+            StringBuilder failureReason = new StringBuilder();
             for (String variant : testDataVariant) {
                 File goldenFile = new File(testData, variant + File.separator +
                         gfName);
@@ -80,8 +81,7 @@ public class DroidFontTest {
                 if (resultImage.getWidth() != goldenImage.getWidth() ||
                     resultImage.getHeight() != resultImage.getHeight())
                 {
-                    failureReason += variant +
-                            " : Golden image and result have different sizes\n";
+                    failureReason.append(variant).append(" : Golden image and result have different sizes\n");
                     continue;
                 }
 
@@ -98,9 +98,7 @@ public class DroidFontTest {
                         assertTrue(gArr.length == rArr.length);
                         for (int k = 0; k < gArr.length; k++) {
                             if (gArr[k] != rArr[k]) {
-                                failureReason += variant +
-                                        " : Different pixels found " +
-                                        "at (" + i + "," + j + ")";
+                                failureReason.append(variant).append(" : Different pixels found ").append("at (").append(i).append(",").append(j).append(")");
                                 failed = true;
                                 break scan;
                             }
@@ -111,7 +109,7 @@ public class DroidFontTest {
                 if (!failed) break;
             }
 
-            if (failed) throw new RuntimeException(failureReason);
+            if (failed) throw new RuntimeException(failureReason.toString());
         }
         else {
             ImageIO.write(resultImage, "png", new File(testData, gfName));
