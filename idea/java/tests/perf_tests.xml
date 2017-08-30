@@ -2,7 +2,7 @@
     <description>
         JBRE Performance tests
     </description>
-    <property name="src" location="src"/>
+    <property name="src" location="../../../test/jbu"/>
     <property name="lib" location="lib"/>
     <property name="build" location="build"/>
     <property name="test_jvm" location="../../../jbsdk/jdk/Contents/Home/bin/java"/>
