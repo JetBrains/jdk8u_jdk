@@ -35,7 +35,7 @@ import java.util.Arrays;
 
 /* @test
  * @summary regression test on JRE-392 Tip of the day is not hidden while another modal window is shown
- * @run main/othervm JDialog392
+ * @run main/othervm JDialog392 -verbose
  */
 
 
