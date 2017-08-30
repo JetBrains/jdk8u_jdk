@@ -35,7 +35,7 @@ import java.util.Arrays;
 
 /* @test
  * @summary regression test on JRE-392 Tip of the day is not hidden while another modal window is shown
- * @run main/othervm JDialog392 -verbose
+ * @run main/othervm JDialog392
  */
 
 
@@ -174,8 +174,7 @@ public class JDialog392 implements Runnable {
                     if (verbose)
                         System.out.println();
                 }
-                if (verbose)
-                    ImageIO.write(screenImage, "bmp", new File("test392.bmp"));
+                ImageIO.write(screenImage, "bmp", new File("test392.bmp"));
 
                 if (!passed)
                     throw new RuntimeException("The second dialog window was not on top");
