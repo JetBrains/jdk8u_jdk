@@ -29,7 +29,6 @@
 #import <JavaRuntimeSupport/JavaRuntimeSupport.h>
 #import "jni_util.h"
 
-
 #import "ThreadUtilities.h"
 #import "AWTView.h"
 #import "AWTEvent.h"
@@ -65,12 +64,25 @@ static BOOL shouldUsePressAndHold() {
     return shouldUsePressAndHold;
 }
 
+@implementation TouchBarItem
+- (id) initWithTitle:(NSString*) title stringId:(NSTouchBarCustomizationIdentifier) stringId forRunnable:(jobject) jRunnable{
+    self = [super init];
+    if (self) {
+        self.title = title;
+        self.customizationIdentifier = stringId;
+        runnable = jRunnable;
+    }
+    return self;
+}
+@end
+
 @implementation AWTView
 
 @synthesize _dropTarget;
 @synthesize _dragSource;
 @synthesize cglLayer;
 @synthesize mouseIsOver;
+@synthesize _touchBarItemsDictionary;
 
 // Note: Must be called on main (AppKit) thread only
 - (id) initWithRect: (NSRect) rect
@@ -127,6 +139,8 @@ AWT_ASSERT_APPKIT_THREAD;
         }
 #endif /* REMOTELAYER */
     }
+
+    _touchBarItemsDictionary = [[NSMutableDictionary alloc] init];
 
     return self;
 }
@@ -365,6 +379,46 @@ AWT_ASSERT_APPKIT_THREAD;
 }
 
 static const int COCOA_KEYCODE_US_BACKSLASH = 44;
+
+-(NSTouchBar *)makeTouchBar {
+    NSTouchBar* touchBar = [[NSTouchBar alloc] init];
+    touchBar.delegate = self;
+    touchBar.defaultItemIdentifiers = [_touchBarItemsDictionary allKeys];
+    return touchBar;
+}
+
+- (void) doAction:(id)touchBarButton {
+
+    JNIEnv *env = [ThreadUtilities getJNIEnv];
+
+    NSString * nsStringId = ((TouchBarItem*)[_touchBarItemsDictionary objectForKey:((NSButton*)touchBarButton).tag]).customizationIdentifier;
+
+    jobject identificator = JNFNSToJavaString(env, nsStringId);
+
+    static JNF_CLASS_CACHE(jc_PlatformView, "sun/lwawt/macosx/CPlatformView");
+    static JNF_CLASS_CACHE(jc_Runnable, "java/lang/String");
+    static JNF_MEMBER_CACHE(jm_run, jc_PlatformView, "run", "(Ljava/lang/String;)V");
+
+    jobject jlocal = (*env)->NewLocalRef(env, m_cPlatformView);
+    if (!(*env)->IsSameObject(env, jlocal, NULL)) {
+        JNFCallVoidMethod(env, jlocal, jm_run, identificator);
+        (*env)->DeleteLocalRef(env, jlocal);
+    } else {
+        NSLog(@"jlocal is null");
+    }
+}
+
+-(NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
+    if (_touchBarItemsDictionary.allKeys.count == 0) {
+        return [[NSCustomTouchBarItem alloc] initWithIdentifier:identifier];
+    }
+
+    NSButton * button = [NSButton buttonWithTitle:((TouchBarItem*)[_touchBarItemsDictionary objectForKey:identifier]).title target: self action: @selector(doAction:)];
+    button.tag = identifier;
+    NSCustomTouchBarItem * item = [[NSCustomTouchBarItem alloc] initWithIdentifier:identifier];
+    [item setView:button];
+    return item;
+}
 
 - (BOOL) performKeyEquivalent: (NSEvent *) event {
 
@@ -1688,6 +1742,34 @@ JNF_COCOA_ENTER(env);
 JNF_COCOA_EXIT(env);
     
     return underMouse;
+}
+
+
+/*
+ * Class:     sun_lwawt_macosx_CPlatformView
+ * Method:    nativeAddTouchBarItem
+ * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/Runnable;)V
+ */
+JNIEXPORT void JNICALL Java_sun_lwawt_macosx_CPlatformView_nativeAddTouchBarItem
+  (JNIEnv * env, jclass jClass, jlong jView, jstring jsTitle, jstring jsId, jobject jRunnable) {
+
+  JNF_COCOA_ENTER(env);
+
+  AWTView *view = (AWTView *)jlong_to_ptr(jView);
+
+  NSString* title = JNFJavaToNSString(env, jsTitle);
+
+  NSString* stringId = JNFJavaToNSString(env, jsId);
+
+  jRunnable = JNFNewGlobalRef(env, jRunnable);
+
+  TouchBarItem* item = [[TouchBarItem alloc] initWithTitle:title stringId:stringId forRunnable:jRunnable];
+
+  [view._touchBarItemsDictionary setObject:item forKey:stringId];
+
+  view.touchBar = nil;
+
+  JNF_COCOA_EXIT(env);
 }
 
 

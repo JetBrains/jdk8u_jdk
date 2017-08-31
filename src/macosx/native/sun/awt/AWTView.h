@@ -29,7 +29,16 @@
 #import "CDragSource.h"
 #import "CDropTarget.h"
 
-@interface AWTView : NSView<NSTextInputClient, CDragSourceHolder, CDropTargetHolder> {
+@interface TouchBarItem : NSObject {
+    jobject runnable;
+}
+@property (retain) NSString* title;
+@property (retain) NSTouchBarCustomizationIdentifier customizationIdentifier;
+- (id) initWithTitle:(NSString*) title stringId:(NSTouchBarCustomizationIdentifier) stringId;
+- (void) doAction:(NSString*)action;
+@end
+
+@interface AWTView : NSView<NSTextInputClient, CDragSourceHolder, CDropTargetHolder, NSTouchBarDelegate> {
 @private
     jobject m_cPlatformView;
 
@@ -58,6 +67,7 @@
 
 @property (nonatomic, retain) id cglLayer;
 @property (nonatomic) BOOL mouseIsOver;
+@property (retain) NSMutableDictionary * _touchBarItemsDictionary;
 
 - (id) initWithRect:(NSRect) rect platformView:(jobject)cPlatformView windowLayer:(CALayer*)windowLayer;
 - (void) deliverJavaMouseEvent: (NSEvent *) event;

@@ -24,6 +24,8 @@
  */
 package javax.swing;
 
+import sun.lwawt.LWWindowPeer;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.accessibility.*;
@@ -1216,6 +1218,10 @@ public class JDialog extends Dialog implements WindowConstants,
         ",defaultCloseOperation=" + defaultCloseOperationString +
         ",rootPane=" + rootPaneString +
         ",rootPaneCheckingEnabled=" + rootPaneCheckingEnabledString;
+    }
+
+    public void addTouchBarItem (String title, Runnable toRun) {
+        ((LWWindowPeer)getPeer()).addTouchBarItem(title, toRun);
     }
 
 

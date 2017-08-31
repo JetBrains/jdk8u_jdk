@@ -27,6 +27,7 @@ package sun.lwawt.macosx;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 
 import sun.awt.CGraphicsConfig;
 import sun.awt.CGraphicsEnvironment;
@@ -35,7 +36,7 @@ import sun.lwawt.LWWindowPeer;
 import sun.java2d.SurfaceData;
 import sun.java2d.opengl.CGLLayer;
 import sun.java2d.opengl.CGLSurfaceData;
-import sun.lwawt.PlatformWindow;
+import javax.swing.SwingUtilities;
 
 public class CPlatformView extends CFRetainedResource {
     private native long nativeCreateView(int x, int y, int width, int height, long windowLayerPtr);
@@ -43,6 +44,7 @@ public class CPlatformView extends CFRetainedResource {
     private static native int nativeGetNSViewDisplayID(long awtView);
     private static native Rectangle2D nativeGetLocationOnScreen(long awtView);
     private static native boolean nativeIsViewUnderMouse(long ptr);
+    private static native void nativeAddTouchBarItem(long awtView, String title, String id, Runnable action);
 
     private LWWindowPeer peer;
     private SurfaceData surfaceData;
@@ -64,6 +66,20 @@ public class CPlatformView extends CFRetainedResource {
 
     public CGLLayer createCGLayer() {
         return new CGLLayer(peer);
+    }
+
+    private HashMap<String, Runnable> touchBarIdToRunnable = new HashMap<>();
+
+    public void addTouchBarItem (String title, Runnable toRun) {
+        if (toRun == null) return;
+        if (title == null || title.isEmpty()) return;
+        String idFromTitle = "com.jetbrains.touchBar." + title.replaceAll("\\s+","");
+        touchBarIdToRunnable.put(idFromTitle, toRun);
+        nativeAddTouchBarItem(getAWTView(), title, idFromTitle, toRun);
+    }
+
+    public void run (String id) {
+        SwingUtilities.invokeLater(touchBarIdToRunnable.get(id));
     }
 
     protected void initializeBase(LWWindowPeer peer, CPlatformResponder responder) {

@@ -37,6 +37,7 @@ import sun.java2d.*;
 import sun.java2d.loops.Blit;
 import sun.java2d.loops.CompositeType;
 import sun.java2d.pipe.Region;
+import sun.lwawt.macosx.CPlatformWindow;
 import sun.util.logging.PlatformLogger;
 
 public class LWWindowPeer
@@ -167,6 +168,10 @@ public class LWWindowPeer
         }
 
         warningWindow = warn;
+    }
+
+    public void addTouchBarItem(String title, Runnable toRun) {
+        ((CPlatformWindow)this.platformWindow).getContentView().addTouchBarItem(title, toRun);
     }
 
     @Override
