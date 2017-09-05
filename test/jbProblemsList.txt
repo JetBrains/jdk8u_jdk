@@ -492,6 +492,7 @@ java/awt/Window/GrabSequence/GrabSequence.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8051857
 java/awt/Window/WindowType/WindowType.java                           linux-all
+java/awt/Focus/RequestFocusAndHideTest/RequestFocusAndHideTest.java  linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080982
 java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java    generic-all
