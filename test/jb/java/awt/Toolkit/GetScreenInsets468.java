@@ -16,9 +16,7 @@
 
 import java.awt.Robot;
 import java.awt.Toolkit;
-import java.lang.reflect.InvocationTargetException;
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -33,7 +31,7 @@ import javax.swing.WindowConstants;
  * by <code>ITERATION_NUMBER</code>, by default it equals <code>100</code>.
  */
 
-public class GetScreenInsets468 {
+public class GetScreenInsets468 implements Runnable {
 
     private static Robot robot;
 
@@ -41,72 +39,48 @@ public class GetScreenInsets468 {
     private static final int ROBOT_DELAY = 200;
     private static final int HANG_TIME_FACTOR = 10;
 
-    class FrameCreator implements Runnable {
-        int count;
-        JFrame frame;
+    private long initialDiffTime;
+    private int count = 0;
+    private JFrame frames[];
 
-        FrameCreator(int count) {
-            this.count = count;
-        }
-
-        public void run() {
-            frame = new JFrame("" + count);
-            JTextArea textArea = new JTextArea("Hang getScreenInsets Test  " + count);
-            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            frame.setSize(800, 400);
-            frame.setLocation(20 + count, 20 + count);
-            frame.add(textArea);
-            frame.pack();
-            frame.setVisible(true);
-            Toolkit.getDefaultToolkit().getScreenInsets(frame.getGraphicsConfiguration());
-        }
-
-        void dispose() {
-            frame.setVisible(false);
-            frame.dispose();
-        }
-    }
-
-    private FrameCreator[] frames;
-
-    private void run() {
-
-        frames = new FrameCreator[ITERATION_NUMBER];
-        int count = 0;
-        long diffTime, initialDiffTime = 0;
+    public synchronized void run() {
+        frames = new JFrame[ITERATION_NUMBER];
 
         while (count < ITERATION_NUMBER) {
-            robot.delay(ROBOT_DELAY);
-
             long startTime = System.currentTimeMillis();
 
-            try {
-                frames[count] = new FrameCreator(count);
-                SwingUtilities.invokeAndWait(frames[count]);
+            frames[count] = new JFrame("Hang getScreenInsets Test  " + count);
+            frames[count].setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            frames[count].setSize(350, 250);
+            frames[count].setLocation(20 + count, 20 + count);
 
-                long endTime = System.currentTimeMillis();
-                diffTime = endTime - startTime;
+            frames[count].setVisible(true);
+            robot.delay(ROBOT_DELAY);
 
-                if (count > 1) {
-                    if (initialDiffTime * HANG_TIME_FACTOR < diffTime) {
-                        throw new RuntimeException("The test is near to be hang: iteration count = " + count
-                                + " initial time = " + initialDiffTime
-                                + " current time = " + diffTime);
-                    }
-                } else {
-                    initialDiffTime = diffTime;
+            Toolkit.getDefaultToolkit().getScreenInsets(frames[count].getGraphicsConfiguration());
+
+            long endTime = System.currentTimeMillis();
+            long diffTime = endTime - startTime;
+
+            System.out.println("count = " + count
+                    + " initial time = " + initialDiffTime
+                    + " current time = " + diffTime);
+            if (count > 1) {
+                if (initialDiffTime * HANG_TIME_FACTOR < diffTime) {
+                    throw new RuntimeException("The test is near to be hang: iteration count = " + count
+                            + " initial time = " + initialDiffTime
+                            + " current time = " + diffTime);
                 }
-                robot.delay(ROBOT_DELAY);
-
-            } catch (InterruptedException | InvocationTargetException ex) {
-                ex.printStackTrace();
+            } else {
+                initialDiffTime = diffTime;
             }
             count++;
         }
     }
 
     private void disposeAll() {
-        for (FrameCreator frame : frames) {
+        for (JFrame frame : frames) {
+            frame.setVisible(false);
             frame.dispose();
         }
     }
@@ -119,7 +93,7 @@ public class GetScreenInsets468 {
             GetScreenInsets468.ITERATION_NUMBER = Integer.parseInt(args[0]);
 
         GetScreenInsets468 test = new GetScreenInsets468();
-        test.run();
+        SwingUtilities.invokeAndWait(test);
 
         test.disposeAll();
     }
