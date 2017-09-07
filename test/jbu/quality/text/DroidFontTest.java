@@ -1,12 +1,11 @@
 package quality.text;
 
 import org.junit.Test;
+import quality.util.RenderUtil;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.File;
 
 import static org.junit.Assert.*;
@@ -34,10 +33,6 @@ public class DroidFontTest {
     @SuppressWarnings("SameParameterValue")
     private void doTestFont(String aliasName, String name, int style, int size)
             throws Exception {
-
-        String[] testDataVariant = {
-                "osx_hardware_rendering", "osx_software_rendering", "osx_sierra_rendering",
-                "linux_rendering"};
 
         String testDataStr = System.getProperty("testdata");
         assertNotNull("testdata property is not set", testDataStr);
@@ -68,52 +63,7 @@ public class DroidFontTest {
 
         String gfName = name.toLowerCase().replace(" ", "") +
                 Integer.toString(style) + "_" + Integer.toString(size) + ".png";
-
-        if (System.getProperty("gentestdata") == null) {
-            boolean failed = true;
-            StringBuilder failureReason = new StringBuilder();
-            for (String variant : testDataVariant) {
-                File goldenFile = new File(testData, variant + File.separator +
-                        gfName);
-
-                BufferedImage goldenImage = ImageIO.read(goldenFile);
-                failed = true;
-                if (resultImage.getWidth() != goldenImage.getWidth() ||
-                    resultImage.getHeight() != resultImage.getHeight())
-                {
-                    failureReason.append(variant).append(" : Golden image and result have different sizes\n");
-                    continue;
-                }
-
-                Raster gRaster = goldenImage.getData();
-                Raster rRaster = resultImage.getData();
-                int[] gArr = new int[3];
-                int[] rArr = new int[3];
-                failed = false;
-                scan:
-                for (int i = 0; i < gRaster.getWidth(); i++) {
-                    for (int j = 0; j < gRaster.getHeight(); j++) {
-                        gRaster.getPixel(i, j, gArr);
-                        rRaster.getPixel(i, j, rArr);
-                        assertTrue(gArr.length == rArr.length);
-                        for (int k = 0; k < gArr.length; k++) {
-                            if (gArr[k] != rArr[k]) {
-                                failureReason.append(variant).append(" : Different pixels found ").append("at (").append(i).append(",").append(j).append(")");
-                                failed = true;
-                                break scan;
-                            }
-                        }
-                    }
-                }
-
-                if (!failed) break;
-            }
-
-            if (failed) throw new RuntimeException(failureReason.toString());
-        }
-        else {
-            ImageIO.write(resultImage, "png", new File(testData, gfName));
-        }
+        RenderUtil.checkImage(resultImage, "text", gfName);
     }
 
     private void doTestFont(String name, int style)
