@@ -2219,6 +2219,9 @@ public class StyleSheet extends StyleContext {
             if (font != null) {
                 g.setFont(font);
             }
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
             if (childtype == CSS.Value.SQUARE || childtype == CSS.Value.CIRCLE
                 || childtype == CSS.Value.DISC) {
                 drawShape(g, childtype, (int) x, (int) y,
@@ -2275,17 +2278,17 @@ public class StyleSheet extends StyleContext {
          */
         void drawShape(Graphics g, CSS.Value type, int ax, int ay, int aw,
                        int ah, float align) {
-            // Align to bottom of shape.
-            int gap = isLeftToRight ? - (bulletgap + 8) : (aw + bulletgap);
+            // Center vertically in shape.
+            int size = 6;
+            int gap = isLeftToRight ? - (bulletgap + size) : (aw + bulletgap);
             int x = ax + gap;
-            int y = Math.max(ay, ay + (int)(align * ah) - 8);
-
+            int y = Math.max(ay, ay + (ah - size) / 2);
             if (type == CSS.Value.SQUARE) {
-                g.drawRect(x, y, 8, 8);
+                g.drawRect(x, y, size, size);
             } else if (type == CSS.Value.CIRCLE) {
-                g.drawOval(x, y, 8, 8);
+                g.drawOval(x, y, size, size);
             } else {
-                g.fillOval(x, y, 8, 8);
+                g.fillOval(x, y, size, size);
             }
         }
 
