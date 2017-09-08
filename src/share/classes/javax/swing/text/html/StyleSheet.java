@@ -2279,16 +2279,16 @@ public class StyleSheet extends StyleContext {
         void drawShape(Graphics g, CSS.Value type, int ax, int ay, int aw,
                        int ah, float align) {
             // Center vertically in shape.
-            int size = 6;
-            int gap = isLeftToRight ? - (bulletgap + size) : (aw + bulletgap);
+            final int SIZE = 6;
+            int gap = isLeftToRight ? - (bulletgap + SIZE) : (aw + bulletgap);
             int x = ax + gap;
-            int y = Math.max(ay, ay + (ah - size) / 2);
+            int y = Math.max(ay, ay + (ah - SIZE) / 2);
             if (type == CSS.Value.SQUARE) {
-                g.drawRect(x, y, size, size);
+                g.drawRect(x, y, SIZE, SIZE);
             } else if (type == CSS.Value.CIRCLE) {
-                g.drawOval(x, y, size, size);
+                g.drawOval(x, y, SIZE, SIZE);
             } else {
-                g.fillOval(x, y, size, size);
+                g.fillOval(x, y, SIZE, SIZE);
             }
         }
 
