@@ -845,7 +845,7 @@ public class DataFlavor implements Externalizable, Cloneable {
         Object transferObject = transferable.getTransferData(this);
         if (transferObject == null) {
             throw new IllegalArgumentException
-                ("getTransferData() returned null");
+                ("getTransferData() returned null for " + transferable.getClass());
         }
 
         if (transferObject instanceof Reader) {
