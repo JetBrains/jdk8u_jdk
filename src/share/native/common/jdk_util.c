@@ -36,6 +36,8 @@
    #define JDK_UPDATE_VERSION "00"
 #endif
 
+#define BUILD_NUM_BUF_LEN 6
+
 JNIEXPORT void
 JDK_GetVersionInfo0(jdk_version_info* info, size_t info_size) {
     /* These JDK_* macros are set at Makefile or the command line */
@@ -47,7 +49,7 @@ JDK_GetVersionInfo0(jdk_version_info* info, size_t info_size) {
         (unsigned int) atoi(JDK_MICRO_VERSION);
 
     const char* jdk_build_string = JDK_BUILD_NUMBER;
-    char build_number[6];
+    char build_number[BUILD_NUM_BUF_LEN];
     unsigned int jdk_build_number = 0;
 
     const char* jdk_update_string = JDK_UPDATE_VERSION;
@@ -60,7 +62,9 @@ JDK_GetVersionInfo0(jdk_version_info* info, size_t info_size) {
      * XX is the jdk_build_number.
      */
     int len = strlen(jdk_build_string);
-    if (jdk_build_string[0] == 'b' && len >= 2) {
+    if (jdk_build_string[0] == 'b' && len >= 2 &&
+        len <= BUILD_NUM_BUF_LEN)
+    {
         int i = 0;
         for (i = 1; i < len; i++) {
             if (isdigit(jdk_build_string[i])) {
