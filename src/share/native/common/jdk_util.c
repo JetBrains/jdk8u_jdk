@@ -47,7 +47,7 @@ JDK_GetVersionInfo0(jdk_version_info* info, size_t info_size) {
         (unsigned int) atoi(JDK_MICRO_VERSION);
 
     const char* jdk_build_string = JDK_BUILD_NUMBER;
-    char build_number[4];
+    char build_number[6];
     unsigned int jdk_build_number = 0;
 
     const char* jdk_update_string = JDK_UPDATE_VERSION;
