@@ -9,7 +9,8 @@ if [ -z "${TESTJAVA}" ]; then
   exit 1
 fi
 
-files=$(find ${TESTJAVA} -not -perm -444)
+FIND="/usr/bin/find"
+files=$(${FIND} ${TESTJAVA} -not -perm -444)
 if [[ $? != 0 ]]; then
     echo "Command failed."
     exit 1
