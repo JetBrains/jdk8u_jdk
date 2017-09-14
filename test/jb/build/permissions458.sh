@@ -11,10 +11,10 @@ fi
 
 FIND="/usr/bin/find"
 files=$(${FIND} ${TESTJAVA} -not -perm -444)
-if [[ $? != 0 ]]; then
+if [ $? != 0 ]; then
     echo "Command failed."
     exit 1
-elif [[ $files ]]; then
+elif [ "$files" ]; then
     echo "Files with no readability permissions:"
     ls -l $files
     echo "\nTest failed"
