@@ -1262,8 +1262,7 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
          */
         if (isSimpleWindow()) {
             if (target == XKeyboardFocusManagerPeer.getInstance().getCurrentFocusedWindow()) {
-                Window owner = getDecoratedOwner((Window)target);
-                ((XWindowPeer)AWTAccessor.getComponentAccessor().getPeer(owner)).requestWindowFocus();
+                ((XWindowPeer)AWTAccessor.getComponentAccessor().getPeer((Window)target)).requestWindowFocus();
             }
         }
     }
