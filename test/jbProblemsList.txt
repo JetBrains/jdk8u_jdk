@@ -186,7 +186,7 @@ java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java ge
 java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8015886
-java/awt/Focus/DeiconifiedFrameLoosesFocus/DeiconifiedFrameLoosesFocus.html linux-all
+java/awt/Focus/DeiconifiedFrameLoosesFocus/DeiconifiedFrameLoosesFocus.html generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8169101
 # java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java        windows-all
