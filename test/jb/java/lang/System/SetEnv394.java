@@ -20,7 +20,7 @@ import com.sun.jna.Native;
 
 /* @test
  * @library ../../../lib/jna.jar
- * @summary regression test on JRE-394 System.getenv doesn't return env var set in JNI code
+ * @summary regression test on JRE-394. Actuall behaviour is to cache env on runtime classes loading
  * @run main/othervm SetEnv394
  */
 
@@ -67,6 +67,7 @@ public class SetEnv394 {
     private static final String ENV_VALUE = "VALUE394";
 
     public static void main(String[] args) {
+        System.getenv(ENV_VARIABLE); // Cache environment variables
         System.out.println("Setting env variable");
 
         int result = libc.setenv(ENV_VARIABLE, ENV_VALUE, 1);
@@ -74,9 +75,8 @@ public class SetEnv394 {
             throw new RuntimeException("Setting was unsuccessful. Result: " + result);
 
         String setActualValue = System.getenv(ENV_VARIABLE);
-
-        if (setActualValue == null || ENV_VALUE.compareTo(setActualValue) != 0)
+        if (setActualValue != null)
             throw new RuntimeException("Actual value of the varibale \'" + ENV_VARIABLE + "\' is \'" + setActualValue
-                    + "\', expecting \'" + ENV_VALUE + "\'");
+                    + "\', expecting null");
     }
 }
