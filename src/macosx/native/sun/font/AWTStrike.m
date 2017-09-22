@@ -308,6 +308,41 @@ JNF_COCOA_EXIT(env);
 
 /*
  * Class:     sun_font_CStrike
+ * Method:    getNativeGlyphOutlineBounds
+ * Signature: (JILjava/awt/geom/Rectangle2D/Float;DD)V
+ */
+JNIEXPORT void JNICALL Java_sun_font_CStrike_getNativeGlyphOutlineBounds
+        (JNIEnv *env, jclass clazz, jlong awtStrikePtr, jint glyphCode,
+         jobject result, jdouble xPos, jdouble yPos)
+{
+
+    JNF_COCOA_ENTER(env);
+
+    AWTStrike *awtStrike = (AWTStrike *)jlong_to_ptr(awtStrikePtr);
+    AWTFont *awtfont = awtStrike->fAWTFont;
+
+    // get the right font and glyph for this "Java GlyphCode"
+
+    CGGlyph glyph;
+    const CTFontRef font = CTS_CopyCTFallbackFontAndGlyphForJavaGlyphCode(awtfont, glyphCode, &glyph);
+    CGRect bbox = CTFontGetBoundingRectsForGlyphs(font,
+                                                  kCTFontDefaultOrientation,
+                                                  &glyph, NULL, 1);
+    CFRelease(font);
+    static JNF_CLASS_CACHE(sjc_Rectangle2D_Float,
+                           "java/awt/geom/Rectangle2D$Float");
+    static JNF_MEMBER_CACHE(sjr_Rectangle2DFloat_setRect,
+                            sjc_Rectangle2D_Float, "setRect", "(FFFF)V");
+
+    JNFCallVoidMethod(env, result, sjr_Rectangle2DFloat_setRect,
+                      (jfloat)bbox.origin.x + xPos,
+                      (jfloat)bbox.origin.y + yPos,
+                      (jfloat)bbox.size.width, (jfloat)bbox.size.height);
+
+    JNF_COCOA_EXIT(env);
+}
+/*
+ * Class:     sun_font_CStrike
  * Method:    getGlyphImagePtrsNative
  * Signature: (JJ[J[II)V
  */

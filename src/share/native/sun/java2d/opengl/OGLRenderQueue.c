@@ -86,6 +86,8 @@ Java_sun_java2d_opengl_OGLRenderQueue_flushBuffer
     INIT_PREVIOUS_OP();
     end = b + limit;
 
+    if (b >= end) return;
+
     while (b < end) {
         jint opcode = NEXT_INT(b);
 
