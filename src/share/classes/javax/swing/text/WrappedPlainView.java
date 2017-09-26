@@ -25,8 +25,12 @@
 package javax.swing.text;
 
 import java.awt.*;
+import java.awt.font.FontRenderContext;
 import java.lang.ref.SoftReference;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import javax.swing.event.*;
+import static javax.swing.text.PlainView.isFPMethodOverriden;
 
 /**
  * View of plain text (text with only one font and color)
@@ -100,8 +104,36 @@ public class WrappedPlainView extends BoxView implements TabExpander {
      * @param y the starting Y position &gt;= 0
      * @see #drawUnselectedText
      * @see #drawSelectedText
+     *
+     * @deprecated replaced by
+     *     {@link #drawLine(int, int, Graphics2D, float, float)}
      */
+    @Deprecated
     protected void drawLine(int p0, int p1, Graphics g, int x, int y) {
+        drawLineImpl(p0, p1, g, x, y, false);
+    }
+
+    /**
+     * Renders a line of text, suppressing whitespace at the end
+     * and expanding any tabs.  This is implemented to make calls
+     * to the methods <code>drawUnselectedText</code> and
+     * <code>drawSelectedText</code> so that the way selected and
+     * unselected text are rendered can be customized.
+     *
+     * @param p0 the starting document location to use &gt;= 0
+     * @param p1 the ending document location to use &gt;= p1
+     * @param g the graphics context
+     * @param x the starting X position &gt;= 0
+     * @param y the starting Y position &gt;= 0
+     * @see #drawUnselectedText
+     * @see #drawSelectedText
+     */
+    protected void drawLine(int p0, int p1, Graphics2D g, float x, float y) {
+        drawLineImpl(p0, p1, g, x, y, true);
+    }
+
+    private void drawLineImpl(int p0, int p1, Graphics g, float x, float y,
+                              boolean useFPAPI) {
         Element lineMap = getElement();
         Element line = lineMap.getElement(lineMap.getElementIndex(p0));
         Element elem;
@@ -125,7 +157,10 @@ public class WrappedPlainView extends BoxView implements TabExpander {
         }
     }
 
-    private int drawText(Element elem, int p0, int p1, Graphics g, int x, int y) throws BadLocationException {
+    private float drawText(Element elem, int p0, int p1, Graphics g,
+                           float x, float y)
+            throws BadLocationException
+    {
         p1 = Math.min(getDocument().getLength(), p1);
         AttributeSet attr = elem.getAttributes();
 
@@ -137,23 +172,23 @@ public class WrappedPlainView extends BoxView implements TabExpander {
         } else {
             if (sel0 == sel1 || selected == unselected) {
                 // no selection, or it is invisible
-                x = drawUnselectedText(g, x, y, p0, p1);
+                x = callDrawUnselectedText(g, x, y, p0, p1);
             } else if ((p0 >= sel0 && p0 <= sel1) && (p1 >= sel0 && p1 <= sel1)) {
-                x = drawSelectedText(g, x, y, p0, p1);
+                x = callDrawSelectedText(g, x, y, p0, p1);
             } else if (sel0 >= p0 && sel0 <= p1) {
                 if (sel1 >= p0 && sel1 <= p1) {
-                    x = drawUnselectedText(g, x, y, p0, sel0);
-                    x = drawSelectedText(g, x, y, sel0, sel1);
-                    x = drawUnselectedText(g, x, y, sel1, p1);
+                    x = callDrawUnselectedText(g, x, y, p0, sel0);
+                    x = callDrawSelectedText(g, x, y, sel0, sel1);
+                    x = callDrawUnselectedText(g, x, y, sel1, p1);
                 } else {
-                    x = drawUnselectedText(g, x, y, p0, sel0);
-                    x = drawSelectedText(g, x, y, sel0, p1);
+                    x = callDrawUnselectedText(g, x, y, p0, sel0);
+                    x = callDrawSelectedText(g, x, y, sel0, p1);
                 }
             } else if (sel1 >= p0 && sel1 <= p1) {
-                x = drawSelectedText(g, x, y, p0, sel1);
-                x = drawUnselectedText(g, x, y, sel1, p1);
+                x = callDrawSelectedText(g, x, y, p0, sel1);
+                x = callDrawUnselectedText(g, x, y, sel1, p1);
             } else {
-                x = drawUnselectedText(g, x, y, p0, p1);
+                x = callDrawUnselectedText(g, x, y, p0, p1);
             }
         }
 
@@ -171,14 +206,57 @@ public class WrappedPlainView extends BoxView implements TabExpander {
      * @param p1 the ending position in the model &gt;= p0
      * @return the X location of the end of the range &gt;= 0
      * @exception BadLocationException if the range is invalid
+     *
+     * @deprecated replaced by
+     *     {@link #drawUnselectedText(Graphics2D, float, float, int, int)}
      */
+    @Deprecated
     protected int drawUnselectedText(Graphics g, int x, int y,
-                                     int p0, int p1) throws BadLocationException {
+                                     int p0, int p1) throws BadLocationException
+    {
+        return (int) drawUnselectedTextImpl(g, x, y, p0, p1, false);
+    }
+
+    /**
+     * Renders the given range in the model as normal unselected
+     * text.
+     *
+     * @implSpec This implementation calls
+     * {@link #drawUnselectedText(Graphics, int, int, int, int)
+     * drawUnselectedText((Graphics)g, (int) x, (int) y, p0, p1)}.
+     *
+     * @param g the graphics context
+     * @param x the starting X coordinate &gt;= 0
+     * @param y the starting Y coordinate &gt;= 0
+     * @param p0 the beginning position in the model &gt;= 0
+     * @param p1 the ending position in the model &gt;= p0
+     * @return the X location of the end of the range &gt;= 0
+     * @exception BadLocationException if the range is invalid
+     */
+    protected float drawUnselectedText(Graphics2D g, float x, float y,
+                                       int p0, int p1) throws BadLocationException {
+        return drawUnselectedTextImpl(g, x, y, p0, p1, true);
+    }
+
+    private float callDrawUnselectedText(Graphics g, float x, float y,
+                                         int p0, int p1)
+                                         throws BadLocationException
+    {
+        return drawUnselectedTextOverridden && g instanceof Graphics2D
+                ? drawUnselectedText((Graphics2D) g, x, y, p0, p1)
+                : drawUnselectedText(g, (int) x, (int) y, p0, p1);
+    }
+
+    private float drawUnselectedTextImpl(Graphics g, float x, float y,
+                                         int p0, int p1, boolean useFPAPI)
+            throws BadLocationException
+    {
         g.setColor(unselected);
         Document doc = getDocument();
         Segment segment = SegmentCache.getSharedSegment();
         doc.getText(p0, p1 - p0, segment);
-        int ret = Utilities.drawTabbedText(this, segment, x, y, g, this, p0);
+        float ret = Utilities.drawTabbedText(this, segment, x, y, g, this, p0,
+                                             null, useFPAPI);
         SegmentCache.releaseSharedSegment(segment);
         return ret;
     }
@@ -196,14 +274,56 @@ public class WrappedPlainView extends BoxView implements TabExpander {
      * @param p1 the ending position in the model &gt;= p0
      * @return the location of the end of the range.
      * @exception BadLocationException if the range is invalid
+     *
+     * @deprecated replaced by
+     *     {@link #drawSelectedText(Graphics2D, float, float, int, int)}
      */
-    protected int drawSelectedText(Graphics g, int x,
-                                   int y, int p0, int p1) throws BadLocationException {
+    @Deprecated
+    protected int drawSelectedText(Graphics g, int x, int y, int p0, int p1)
+            throws BadLocationException
+    {
+        return (int) drawSelectedTextImpl(g, x, y, p0, p1, false);
+    }
+
+    /**
+     * Renders the given range in the model as selected text.  This
+     * is implemented to render the text in the color specified in
+     * the hosting component.  It assumes the highlighter will render
+     * the selected background.
+     *
+     * @param g the graphics context
+     * @param x the starting X coordinate &gt;= 0
+     * @param y the starting Y coordinate &gt;= 0
+     * @param p0 the beginning position in the model &gt;= 0
+     * @param p1 the ending position in the model &gt;= p0
+     * @return the location of the end of the range.
+     * @exception BadLocationException if the range is invalid
+     */
+    protected float drawSelectedText(Graphics2D g, float x, float y,
+                                     int p0, int p1) throws BadLocationException {
+        return drawSelectedTextImpl(g, x, y, p0, p1, true);
+    }
+
+    private float callDrawSelectedText(Graphics g, float x, float y,
+                                       int p0, int p1)
+                                       throws BadLocationException
+    {
+        return drawSelectedTextOverridden && g instanceof Graphics2D
+                ? drawSelectedText((Graphics2D) g, x, y, p0, p1)
+                : drawSelectedText(g, (int) x, (int) y, p0, p1);
+    }
+
+    private float drawSelectedTextImpl(Graphics g, float x, float y,
+                                       int p0, int p1,
+                                       boolean useFPAPI)
+            throws BadLocationException
+    {
         g.setColor(selected);
         Document doc = getDocument();
         Segment segment = SegmentCache.getSharedSegment();
         doc.getText(p0, p1 - p0, segment);
-        int ret = Utilities.drawTabbedText(this, segment, x, y, g, this, p0);
+        float ret = Utilities.drawTabbedText(this, segment, x, y, g, this, p0,
+                                             null, useFPAPI);
         SegmentCache.releaseSharedSegment(segment);
         return ret;
     }
@@ -316,7 +436,13 @@ public class WrappedPlainView extends BoxView implements TabExpander {
         Component host = getContainer();
         Font f = host.getFont();
         metrics = host.getFontMetrics(f);
-        tabSize = getTabSize() * metrics.charWidth('m');
+        if (useFloatingPointAPI) {
+            FontRenderContext frc = metrics.getFontRenderContext();
+            float tabWidth = (float) f.getStringBounds("m", frc).getWidth();
+            tabSize = getTabSize() * tabWidth;
+        } else {
+            tabSize = getTabSize() * metrics.charWidth('m');
+        }
     }
 
     // --- TabExpander methods ------------------------------------------
@@ -334,7 +460,7 @@ public class WrappedPlainView extends BoxView implements TabExpander {
     public float nextTabStop(float x, int tabOffset) {
         if (tabSize == 0)
             return x;
-        int ntabs = ((int) x - tabBase) / tabSize;
+        float ntabs = (x - tabBase) / tabSize;
         return tabBase + ((ntabs + 1) * tabSize);
     }
 
@@ -512,7 +638,7 @@ public class WrappedPlainView extends BoxView implements TabExpander {
     Segment lineBuffer;
     boolean widthChanging;
     int tabBase;
-    int tabSize;
+    float tabSize;
     boolean wordWrap;
 
     int sel0;
@@ -589,6 +715,7 @@ public class WrappedPlainView extends BoxView implements TabExpander {
             int end = getEndOffset();
             int p0 = start;
             int[] lineEnds = getLineEnds();
+            boolean useDrawLineFP = drawLineOverridden && g instanceof Graphics2D;
             for (int i = 0; i < lineCount; i++) {
                 int p1 = (lineEnds == null) ? end :
                                              start + lineEnds[i];
@@ -598,8 +725,11 @@ public class WrappedPlainView extends BoxView implements TabExpander {
                                   : p1;
                     dh.paintLayeredHighlights(g, p0, hOffset, a, host, this);
                 }
-                drawLine(p0, p1, g, x, y);
-
+                if (useDrawLineFP) {
+                    drawLine(p0, p1, (Graphics2D) g, (float) x, (float) y);
+                } else {
+                    drawLine(p0, p1, g, x, y);
+                }
                 p0 = p1;
                 y += metrics.getHeight();
             }
@@ -849,5 +979,48 @@ public class WrappedPlainView extends BoxView implements TabExpander {
 
         int lineCount;
         SoftReference<int[]> lineCache = null;
+    }
+
+    private final boolean drawLineOverridden;
+    private final boolean drawSelectedTextOverridden;
+    private final boolean drawUnselectedTextOverridden;
+    private final boolean useFloatingPointAPI;
+
+    {
+        final Class<?> CLS = getClass();
+        final Class<?> INT = Integer.TYPE;
+        final Class<?> FP = Float.TYPE;
+
+        drawLineOverridden = AccessController
+                .doPrivileged(new PrivilegedAction<Boolean>() {
+                    @Override
+                    public Boolean run() {
+                        Class<?>[] intTypes = {INT, INT, Graphics.class, INT, INT};
+                        Class<?>[] fpTypes = {INT, INT, Graphics2D.class, FP, FP};
+                        return isFPMethodOverriden("drawLine", CLS, intTypes, fpTypes);
+                    }
+                });
+
+        drawUnselectedTextOverridden = AccessController
+                .doPrivileged(new PrivilegedAction<Boolean>() {
+                    @Override
+                    public Boolean run() {
+                        Class<?>[] intTypes = {Graphics.class, INT, INT, INT, INT};
+                        Class<?>[] fpTypes = {Graphics2D.class, FP, FP, INT, INT};
+                        return isFPMethodOverriden("drawUnselectedText", CLS, intTypes, fpTypes);
+                    }
+                });
+
+        drawSelectedTextOverridden = AccessController
+                .doPrivileged(new PrivilegedAction<Boolean>() {
+                    @Override
+                    public Boolean run() {
+                        Class<?>[] intTypes = {Graphics.class, INT, INT, INT, INT};
+                        Class<?>[] fpTypes = {Graphics2D.class, FP, FP, INT, INT};
+                        return isFPMethodOverriden("drawSelectedText", CLS, intTypes, fpTypes);
+                    }
+                });
+
+        useFloatingPointAPI = drawUnselectedTextOverridden || drawSelectedTextOverridden;
     }
 }

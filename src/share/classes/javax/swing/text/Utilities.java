@@ -24,24 +24,23 @@
  */
 package javax.swing.text;
 
-import java.lang.reflect.Method;
-
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.FontMetrics;
 import java.awt.Shape;
-import java.awt.Toolkit;
 import java.awt.Graphics2D;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.awt.font.TextAttribute;
+import java.awt.geom.Rectangle2D;
 
 import java.text.*;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.text.ParagraphView.Row;
 import sun.swing.SwingUtilities2;
+import static sun.swing.SwingUtilities2.drawChars;
+import static sun.swing.SwingUtilities2.getFontCharWidth;
+import static sun.swing.SwingUtilities2.getFontCharsWidth;
 
 /**
  * A collection of methods to deal with various text
@@ -78,10 +77,36 @@ public class Utilities {
      *   tabs will be expanded as a space character.
      * @param startOffset starting offset of the text in the document &gt;= 0
      * @return  the X location at the end of the rendered text
+     *
+     * @deprecated replaced by
+     * {@link #drawTabbedText(Segment, float, float, Graphics2D, TabExpander, int)}
      */
+    @Deprecated
     public static final int drawTabbedText(Segment s, int x, int y, Graphics g,
                                            TabExpander e, int startOffset) {
         return drawTabbedText(null, s, x, y, g, e, startOffset);
+    }
+
+    /**
+     * Draws the given text, expanding any tabs that are contained
+     * using the given tab expansion technique.
+     *
+     * @param s  the source of the text
+     * @param x  the X origin {@code >= 0}
+     * @param y  the Y origin {@code >= 0}
+     * @param g  the graphics context
+     * @param e  how to expand the tabs.  If this value is null,
+     *           tabs will be expanded as a space character.
+     * @param startOffset starting offset of the text in the document {@code >= 0}
+     * @return  the X location at the end of the rendered text
+     *
+     */
+    public static final float drawTabbedText(Segment s, float x, float y,
+                                             Graphics2D g,
+                                             TabExpander e,
+                                             int startOffset)
+    {
+        return drawTabbedText(s, (int) x, (int) y, (Graphics) g, e, startOffset);
     }
 
     /**
@@ -99,6 +124,8 @@ public class Utilities {
      *   tabs will be expanded as a space character.
      * @param startOffset starting offset of the text in the document &gt;= 0
      * @return  the X location at the end of the rendered text
+     *
+     * @since 9
      */
     static final int drawTabbedText(View view,
                                 Segment s, int x, int y, Graphics g,
@@ -117,9 +144,19 @@ public class Utilities {
                                 Segment s, int x, int y, Graphics g,
                                 TabExpander e, int startOffset,
                                 int [] justificationData) {
+        return (int) drawTabbedText(view, s, x, y, g, e, startOffset,
+                                    justificationData, false);
+    }
+
+    static final float drawTabbedText(View view,
+                                Segment s, float x, float y, Graphics g,
+                                TabExpander e, int startOffset,
+                                int [] justificationData,
+                                boolean useFPAPI)
+    {
         JComponent component = getJComponent(view);
         FontMetrics metrics = SwingUtilities2.getFontMetrics(component, g);
-        int nextX = x;
+        float nextX = x;
         char[] txt = s.array;
         int txtOffset = s.offset;
         int flushLen = 0;
@@ -153,19 +190,19 @@ public class Utilities {
                     && i <= endJustifiableContent
                     )) {
                 if (flushLen > 0) {
-                    nextX = SwingUtilities2.drawChars(component, g, txt,
-                                                flushIndex, flushLen, x, y);
+                    nextX = drawChars(component, g, txt, flushIndex, flushLen, x, y);
                     flushLen = 0;
                 }
                 flushIndex = i + 1;
                 if (txt[i] == '\t') {
                     if (e != null) {
-                        nextX = (int) e.nextTabStop((float) nextX, startOffset + i - txtOffset);
+                        nextX = e.nextTabStop(nextX, startOffset + i - txtOffset);
                     } else {
-                        nextX += metrics.charWidth(' ');
+                        nextX += getFontCharWidth(' ', metrics, useFPAPI);
                     }
                 } else if (txt[i] == ' ') {
-                    nextX += metrics.charWidth(' ') + spaceAddon;
+                    nextX += getFontCharWidth(' ', metrics, useFPAPI);
+                    nextX += spaceAddon;
                     if (i <= spaceAddonLeftoverEnd) {
                         nextX++;
                     }
@@ -173,8 +210,8 @@ public class Utilities {
                 x = nextX;
             } else if ((txt[i] == '\n') || (txt[i] == '\r')) {
                 if (flushLen > 0) {
-                    nextX = SwingUtilities2.drawChars(component, g, txt,
-                                                flushIndex, flushLen, x, y);
+                    nextX = drawChars(component, g, txt, flushIndex, flushLen,
+                                      x, y, useFPAPI);
                     flushLen = 0;
                 }
                 flushIndex = i + 1;
@@ -184,8 +221,7 @@ public class Utilities {
             }
         }
         if (flushLen > 0) {
-            nextX = SwingUtilities2.drawChars(component, g,txt, flushIndex,
-                                              flushLen, x, y);
+            nextX = drawChars(component, g,txt, flushIndex, flushLen, x, y, useFPAPI);
         }
         return nextX;
     }
@@ -202,12 +238,33 @@ public class Utilities {
      *   tabs will be expanded as a space character.
      * @param startOffset starting offset of the text in the document &gt;= 0
      * @return  the width of the text
+     *
+     * @deprecated replaced by
+     *     {@link #getTabbedTextWidth(Segment, FontMetrics, float, TabExpander, int)}
      */
+    @Deprecated
     public static final int getTabbedTextWidth(Segment s, FontMetrics metrics, int x,
                                                TabExpander e, int startOffset) {
         return getTabbedTextWidth(null, s, metrics, x, e, startOffset, null);
     }
 
+    /**
+     * Determines the width of the given segment of text taking tabs
+     * into consideration.
+     *
+     * @param s  the source of the text
+     * @param metrics the font metrics to use for the calculation
+     * @param x  the X origin {@code >= 0}
+     * @param e  how to expand the tabs.  If this value is null,
+     *   tabs will be expanded as a space character.
+     * @param startOffset starting offset of the text in the document {@code >= 0}
+     * @return  the width of the text
+     */
+    public static final float getTabbedTextWidth(Segment s, FontMetrics metrics,
+                                                 float x, TabExpander e,
+                                                 int startOffset) {
+        return getTabbedTextWidth(null, s, metrics, x, e, startOffset, null);
+    }
 
     // In addition to the previous method it can extend spaces for
     // justification.
@@ -216,10 +273,32 @@ public class Utilities {
     // one:
     // @param justificationData justificationData for the row.
     // if null not justification is needed
-    static final int getTabbedTextWidth(View view, Segment s, FontMetrics metrics, int x,
+    static final int getTabbedTextWidth(View view, Segment s,
+                                        FontMetrics metrics, int x,
                                         TabExpander e, int startOffset,
-                                        int[] justificationData) {
-        int nextX = x;
+                                        int[] justificationData)
+    {
+        return (int) getTabbedTextWidth(view, s, metrics, x, e, startOffset,
+                                        justificationData, false);
+
+    }
+
+    static final float getTabbedTextWidth(View view, Segment s,
+                                        FontMetrics metrics, float x,
+                                        TabExpander e, int startOffset,
+                                        int[] justificationData)
+    {
+        return  getTabbedTextWidth(view, s, metrics, x, e, startOffset,
+                                   justificationData, true);
+
+    }
+
+    static final float getTabbedTextWidth(View view, Segment s,
+                                        FontMetrics metrics, float x,
+                                        TabExpander e, int startOffset,
+                                        int[] justificationData,
+                                        boolean useFPAPI) {
+        float nextX = x;
         char[] txt = s.array;
         int txtOffset = s.offset;
         int n = s.offset + s.count;
@@ -256,13 +335,13 @@ public class Utilities {
                 charCount = 0;
                 if (txt[i] == '\t') {
                     if (e != null) {
-                        nextX = (int) e.nextTabStop((float) nextX,
-                                                    startOffset + i - txtOffset);
+                        nextX = e.nextTabStop(nextX, startOffset + i - txtOffset);
                     } else {
-                        nextX += metrics.charWidth(' ');
+                        nextX += getFontCharWidth(' ', metrics, useFPAPI);
                     }
                 } else if (txt[i] == ' ') {
-                    nextX += metrics.charWidth(' ') + spaceAddon;
+                    float spaceWidth = getFontCharWidth(' ', metrics, useFPAPI);
+                    nextX += spaceWidth + spaceAddon;
                     if (i <= spaceAddonLeftoverEnd) {
                         nextX++;
                     }
@@ -270,13 +349,15 @@ public class Utilities {
             } else if(txt[i] == '\n') {
             // Ignore newlines, they take up space and we shouldn't be
             // counting them.
-                nextX += metrics.charsWidth(txt, i - charCount, charCount);
+                nextX += getFontCharsWidth(txt, i - charCount, charCount,
+                                           metrics, useFPAPI);
                 charCount = 0;
             } else {
                 charCount++;
         }
         }
-        nextX += metrics.charsWidth(txt, n - charCount, charCount);
+        nextX += getFontCharsWidth(txt, n - charCount, charCount,
+                                   metrics, useFPAPI);
         return nextX - x;
     }
 
@@ -296,7 +377,12 @@ public class Utilities {
      *   tabs will be expanded as a space character.
      * @param startOffset starting offset of the text in the document &gt;= 0
      * @return  the offset into the text &gt;= 0
+     *
+     * @deprecated replaced by
+     *     {@link #getTabbedTextOffset(Segment, FontMetrics, float, float,
+     *                                 TabExpander, int, boolean)}
      */
+    @Deprecated
     public static final int getTabbedTextOffset(Segment s, FontMetrics metrics,
                                              int x0, int x, TabExpander e,
                                              int startOffset) {
@@ -308,15 +394,66 @@ public class Utilities {
                                          int startOffset,
                                          int[] justificationData) {
         return getTabbedTextOffset(view, s, metrics, x0, x, e, startOffset, true,
-                                   justificationData);
+                                   justificationData, false);
     }
 
+   /**
+    * Determines the relative offset into the given text that
+    * best represents the given span in the view coordinate
+    * system.
+    *
+    * @param s  the source of the text
+    * @param metrics the font metrics to use for the calculation
+    * @param x0 the starting view location representing the start
+    *   of the given text &gt;= 0.
+    * @param x  the target view location to translate to an
+    *   offset into the text &gt;= 0.
+    * @param e  how to expand the tabs.  If this value is null,
+    *   tabs will be expanded as a space character.
+    * @param startOffset starting offset of the text in the document &gt;= 0
+    * @param round whether or not to round
+    * @return  the offset into the text &gt;= 0
+    *
+    * @deprecated replaced by
+    *     {@link #getTabbedTextOffset(Segment, FontMetrics, float, float,
+    *                                 TabExpander, int, boolean)}
+    */
+    @Deprecated
     public static final int getTabbedTextOffset(Segment s,
                                                 FontMetrics metrics,
                                                 int x0, int x, TabExpander e,
                                                 int startOffset,
                                                 boolean round) {
-        return getTabbedTextOffset(null, s, metrics, x0, x, e, startOffset, round, null);
+        return getTabbedTextOffset(null, s, metrics, x0, x, e, startOffset,
+                                   round, null, false);
+    }
+
+   /**
+    * Determines the relative offset into the given text that
+    * best represents the given span in the view coordinate
+    * system.
+    *
+    * @param s  the source of the text
+    * @param metrics the font metrics to use for the calculation
+    * @param x0 the starting view location representing the start
+    *   of the given text {@code >= 0}.
+    * @param x  the target view location to translate to an
+    *   offset into the text {@code >= 0}.
+    * @param e  how to expand the tabs.  If this value is null,
+    *   tabs will be expanded as a space character.
+    * @param startOffset starting offset of the text in the document {@code >= 0}
+    * @param round whether or not to round
+    * @return  the offset into the text {@code >= 0}
+    */
+    public static final int getTabbedTextOffset(Segment s,
+                                                FontMetrics metrics,
+                                                float x0, float x,
+                                                TabExpander e,
+                                                int startOffset,
+                                                boolean round)
+    {
+        return getTabbedTextOffset(null, s, metrics, x0, x, e,
+                startOffset, round, null, true);
     }
 
     // In addition to the previous method it can extend spaces for
@@ -329,15 +466,16 @@ public class Utilities {
     static final int getTabbedTextOffset(View view,
                                          Segment s,
                                          FontMetrics metrics,
-                                         int x0, int x, TabExpander e,
+                                         float x0, float x, TabExpander e,
                                          int startOffset,
                                          boolean round,
-                                         int[] justificationData) {
+                                         int[] justificationData,
+                                         boolean useFPAPI) {
         if (x0 >= x) {
             // x before x0, return.
             return 0;
         }
-        int nextX = x0;
+        float nextX = x0;
         // s may be a shared segment, so it is copied prior to calling
         // the tab expander
         char[] txt = s.array;
@@ -373,19 +511,19 @@ public class Utilities {
                     )){
                 if (txt[i] == '\t') {
                     if (e != null) {
-                        nextX = (int) e.nextTabStop((float) nextX,
-                                                    startOffset + i - txtOffset);
+                        nextX = e.nextTabStop(nextX, startOffset + i - txtOffset);
                     } else {
-                        nextX += metrics.charWidth(' ');
+                        nextX += getFontCharWidth(' ', metrics, useFPAPI);
                     }
                 } else if (txt[i] == ' ') {
-                    nextX += metrics.charWidth(' ') + spaceAddon;
+                    float spaceWidth = getFontCharWidth(' ', metrics, useFPAPI);
+                    nextX += spaceWidth + spaceAddon;
                     if (i <= spaceAddonLeftoverEnd) {
                         nextX++;
                     }
                 }
             } else {
-                nextX += metrics.charWidth(txt[i]);
+                nextX += getFontCharWidth(txt[i], metrics, useFPAPI);
             }
             if (x < nextX) {
                 // found the hit position... return the appropriate side
@@ -397,12 +535,15 @@ public class Utilities {
                 if (round) {
                     offset = i + 1 - txtOffset;
 
-                    int width = metrics.charsWidth(txt, txtOffset, offset);
-                    int span = x - x0;
+                    float width = getFontCharsWidth(txt, txtOffset, offset,
+                                                    metrics, useFPAPI);
+                    float span = x - x0;
 
                     if (span < width) {
                         while (offset > 0) {
-                            int nextWidth = offset > 1 ? metrics.charsWidth(txt, txtOffset, offset - 1) : 0;
+                            float charsWidth = getFontCharsWidth(txt, txtOffset,
+                                    offset - 1, metrics, useFPAPI);
+                            float nextWidth = offset > 1 ? charsWidth : 0;
 
                             if (span >= nextWidth) {
                                 if (span - nextWidth < width - span) {
@@ -419,7 +560,9 @@ public class Utilities {
                 } else {
                     offset = i - txtOffset;
 
-                    while (offset > 0 && metrics.charsWidth(txt, txtOffset, offset) > (x - x0)) {
+                    while (offset > 0 && getFontCharsWidth(txt, txtOffset, offset,
+                                                           metrics, useFPAPI)
+                            > (x - x0)) {
                         offset--;
                     }
                 }
@@ -445,15 +588,26 @@ public class Utilities {
      *   tabs will be expanded as a space character.
      * @param startOffset starting offset in the document of the text
      * @return  the offset into the given text
+     *
+     * @deprecated replaced by
+     *     {@link #getBreakLocation(Segment, FontMetrics, float, float,
+     *                              TabExpander, int)}
      */
+    @Deprecated
     public static final int getBreakLocation(Segment s, FontMetrics metrics,
                                              int x0, int x, TabExpander e,
                                              int startOffset) {
+        return getBreakLocation(s, metrics, x0, x, e, startOffset, false);
+    }
+
+    static final int getBreakLocation(Segment s, FontMetrics metrics,
+                                      float x0, float x, TabExpander e,
+                                      int startOffset, boolean useFPIAPI) {
         char[] txt = s.array;
         int txtOffset = s.offset;
         int txtCount = s.count;
-        int index = Utilities.getTabbedTextOffset(s, metrics, x0, x,
-                                                  e, startOffset, false);
+        int index = getTabbedTextOffset(null, s, metrics, x0, x, e, startOffset,
+                                        false, null, useFPIAPI);
 
         if (index >= txtCount - 1) {
             return txtCount;
@@ -482,6 +636,27 @@ public class Utilities {
     }
 
     /**
+     * Determine where to break the given text to fit
+     * within the given span. This tries to find a word boundary.
+     * @param s  the source of the text
+     * @param metrics the font metrics to use for the calculation
+     * @param x0 the starting view location representing the start
+     *        of the given text.
+     * @param x  the target view location to translate to an
+     *        offset into the text.
+     * @param e  how to expand the tabs.  If this value is null,
+     *        tabs will be expanded as a space character.
+     * @param startOffset starting offset in the document of the text
+     * @return  the offset into the given text
+     */
+    public static final int getBreakLocation(Segment s, FontMetrics metrics,
+                                             float x0, float x, TabExpander e,
+                                             int startOffset) {
+        return getBreakLocation(s, metrics, x0, x, e, startOffset, false);
+    }
+
+
+    /**
      * Determines the starting row model position of the row that contains
      * the specified model position.  The component given must have a
      * size to compute the result.  If the component doesn't have a size
@@ -492,6 +667,8 @@ public class Utilities {
      * @return the position &gt;= 0 if the request can be computed, otherwise
      *  a value of -1 will be returned.
      * @exception BadLocationException if the offset is out of range
+     *
+     * @since 9
      */
     public static final int getRowStart(JTextComponent c, int offs) throws BadLocationException {
         Rectangle r = c.modelToView(offs);
@@ -522,18 +699,20 @@ public class Utilities {
      * @return the position &gt;= 0 if the request can be computed, otherwise
      *  a value of -1 will be returned.
      * @exception BadLocationException if the offset is out of range
+     *
+     * @since 9
      */
     public static final int getRowEnd(JTextComponent c, int offs) throws BadLocationException {
-        Rectangle r = c.modelToView(offs);
+        Rectangle2D r = c.modelToView2D(offs);
         if (r == null) {
             return -1;
         }
         int n = c.getDocument().getLength();
         int lastOffs = offs;
-        int y = r.y;
-        while ((r != null) && (y == r.y)) {
+        double y = r.getY();
+        while ((r != null) && (y == r.getY())) {
             // Skip invisible elements
-            if (r.height !=0) {
+            if (r.getHeight() !=0) {
                 offs = lastOffs;
             }
             lastOffs += 1;
@@ -554,27 +733,62 @@ public class Utilities {
      * @return the position &gt;= 0 if the request can be computed, otherwise
      *  a value of -1 will be returned.
      * @exception BadLocationException if the offset is out of range
+     *
+     * @deprecated replaced by
+     *     {@link #getPositionBelow(JTextComponent, int, float)}
      */
-    public static final int getPositionAbove(JTextComponent c, int offs, int x) throws BadLocationException {
+    @Deprecated
+    public static final int getPositionAbove(JTextComponent c, int offs, int x)
+            throws BadLocationException
+    {
+        return getPositionAbove(c, offs, x, false);
+    }
+
+    /**
+     * Determines the position in the model that is closest to the given
+     * view location in the row above.  The component given must have a
+     * size to compute the result.  If the component doesn't have a size
+     * a value of -1 will be returned.
+     *
+     * @param c the editor
+     * @param offs the offset in the document {@code >= 0}
+     * @param x the X coordinate {@code >= 0}
+     * @return the position {@code >= 0} if the request can be computed, otherwise
+     *  a value of -1 will be returned.
+     * @exception BadLocationException if the offset is out of range
+     */
+    public static final int getPositionAbove(JTextComponent c, int offs, float x)
+            throws BadLocationException {
+        return getPositionAbove(c, offs, x, true);
+    }
+
+    static final int getPositionAbove(JTextComponent c, int offs, float x,
+                                      boolean useFPAPI) throws BadLocationException
+    {
         int lastOffs = getRowStart(c, offs) - 1;
         if (lastOffs < 0) {
             return -1;
         }
-        int bestSpan = Integer.MAX_VALUE;
-        int y = 0;
-        Rectangle r = null;
+        double bestSpan = Integer.MAX_VALUE;
+        double y = 0;
+        Rectangle2D r = null;
         if (lastOffs >= 0) {
-            r = c.modelToView(lastOffs);
-            y = r.y;
+            r = useFPAPI ? c.modelToView2D(lastOffs) : c.modelToView(lastOffs);
+            y = r.getY();
         }
-        while ((r != null) && (y == r.y)) {
-            int span = Math.abs(r.x - x);
+        while ((r != null) && (y == r.getY())) {
+            double span = Math.abs(r.getX() - x);
             if (span < bestSpan) {
                 offs = lastOffs;
                 bestSpan = span;
             }
             lastOffs -= 1;
-            r = (lastOffs >= 0) ? c.modelToView(lastOffs) : null;
+
+            if ((lastOffs >= 0)) {
+                r = useFPAPI ? c.modelToView2D(lastOffs) : c.modelToView(lastOffs);
+            } else {
+                r = null;
+            }
         }
         return offs;
     }
@@ -591,28 +805,63 @@ public class Utilities {
      * @return the position &gt;= 0 if the request can be computed, otherwise
      *  a value of -1 will be returned.
      * @exception BadLocationException if the offset is out of range
+     *
+     * @deprecated replaced by
+     *     {@link #getPositionAbove(JTextComponent, int, float)}
      */
-    public static final int getPositionBelow(JTextComponent c, int offs, int x) throws BadLocationException {
+    @Deprecated
+    public static final int getPositionBelow(JTextComponent c, int offs, int x)
+            throws BadLocationException
+    {
+        return getPositionBelow(c, offs, x, false);
+    }
+
+    /**
+     * Determines the position in the model that is closest to the given
+     * view location in the row below.  The component given must have a
+     * size to compute the result.  If the component doesn't have a size
+     * a value of -1 will be returned.
+     *
+     * @param c the editor
+     * @param offs the offset in the document {@code >= 0}
+     * @param x the X coordinate {@code >= 0}
+     * @return the position {@code >= 0} if the request can be computed, otherwise
+     *  a value of -1 will be returned.
+     * @exception BadLocationException if the offset is out of range
+     */
+    public static final int getPositionBelow(JTextComponent c, int offs, float x)
+            throws BadLocationException {
+        return getPositionBelow(c, offs, x, true);
+    }
+
+    static final int getPositionBelow(JTextComponent c, int offs, float x,
+                                      boolean useFPAPI) throws BadLocationException
+    {
         int lastOffs = getRowEnd(c, offs) + 1;
         if (lastOffs <= 0) {
             return -1;
         }
-        int bestSpan = Integer.MAX_VALUE;
+        double bestSpan = Integer.MAX_VALUE;
         int n = c.getDocument().getLength();
-        int y = 0;
-        Rectangle r = null;
+        double y = 0;
+        Rectangle2D r = null;
         if (lastOffs <= n) {
-            r = c.modelToView(lastOffs);
-            y = r.y;
+            r = useFPAPI ? c.modelToView2D(lastOffs) : c.modelToView(lastOffs);
+            y = r.getY();
         }
-        while ((r != null) && (y == r.y)) {
-            int span = Math.abs(x - r.x);
+        while ((r != null) && (y == r.getY())) {
+            double span = Math.abs(x - r.getX());
             if (span < bestSpan) {
                 offs = lastOffs;
                 bestSpan = span;
             }
             lastOffs += 1;
-            r = (lastOffs <= n) ? c.modelToView(lastOffs) : null;
+
+            if (lastOffs <= n) {
+                r = useFPAPI ? c.modelToView2D(lastOffs) : c.modelToView(lastOffs);
+            } else {
+                r = null;
+            }
         }
         return offs;
     }
@@ -890,7 +1139,23 @@ public class Utilities {
      */
     static int drawComposedText(View view, AttributeSet attr, Graphics g,
                                 int x, int y, int p0, int p1)
-                                     throws BadLocationException {
+            throws BadLocationException
+    {
+        return (int) drawComposedText(view, attr, g, x, y, p0, p1, false);
+    }
+
+    static float drawComposedText(View view, AttributeSet attr, Graphics g,
+                                  float x, float y, int p0, int p1)
+            throws BadLocationException
+    {
+        return drawComposedText(view, attr, g, x, y, p0, p1, true);
+    }
+
+    static float drawComposedText(View view, AttributeSet attr, Graphics g,
+                                  float x, float y, int p0, int p1,
+                                  boolean useFPAPI)
+            throws BadLocationException
+    {
         Graphics2D g2d = (Graphics2D)g;
         AttributedString as = (AttributedString)attr.getAttribute(
             StyleConstants.ComposedTextAttribute);
@@ -900,8 +1165,7 @@ public class Utilities {
             return x;
 
         AttributedCharacterIterator aci = as.getIterator(null, p0, p1);
-        return x + (int)SwingUtilities2.drawString(
-                             getJComponent(view), g2d,aci,x,y);
+        return x + SwingUtilities2.drawString(getJComponent(view), g2d, aci, x, y);
     }
 
     /**
@@ -973,7 +1237,7 @@ public class Utilities {
      *
      * @param v View to query
      * @param pos the position to convert &gt;= 0
-     * @param a the allocated region to render into
+     * @param b the allocated region to render into
      * @param direction the direction from the current position that can
      *  be thought of as the arrow keys typically found on a keyboard;
      *  this may be one of the following:

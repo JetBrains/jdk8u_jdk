@@ -29,6 +29,8 @@ import javax.swing.BoundedRangeModel;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Insets;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import javax.swing.text.*;
 
 /**
@@ -46,7 +48,11 @@ public abstract class TextUI extends ComponentUI
      * @return the coordinates as a rectangle
      * @exception BadLocationException  if the given position does not
      *   represent a valid location in the associated document
+     *
+     * @deprecated replaced by
+     *     {@link #modelToView2D(JTextComponent, int, Position.Bias)}
      */
+    @Deprecated
     public abstract Rectangle modelToView(JTextComponent t, int pos) throws BadLocationException;
 
     /**
@@ -57,8 +63,23 @@ public abstract class TextUI extends ComponentUI
      * @return the coordinates as a rectangle
      * @exception BadLocationException  if the given position does not
      *   represent a valid location in the associated document
+     *
+     * @deprecated replaced by
+     *     {@link #modelToView2D(JTextComponent, int, Position.Bias)}
      */
+    @Deprecated
     public abstract Rectangle modelToView(JTextComponent t, int pos, Position.Bias bias) throws BadLocationException;
+
+    /**
+     * Converts the given location in the model to a place in
+     * the view coordinate system.
+     *
+     * @param pos  the local location in the model to translate &gt;= 0
+     * @return the coordinates as a rectangle
+     * @exception BadLocationException  if the given position does not
+     *   represent a valid location in the associated document
+     */
+    public abstract Rectangle2D modelToView2D(JTextComponent tc, int pos, Position.Bias bias) throws BadLocationException;
 
     /**
      * Converts the given place in the view coordinate system
@@ -68,7 +89,11 @@ public abstract class TextUI extends ComponentUI
      *   should be in the same coordinate system as the mouse
      *   events.
      * @return the offset from the start of the document &gt;= 0
+     *
+     * @deprecated replaced by
+     *     {@link #viewToModel2D(JTextComponent, Point2D, Position.Bias[])}
      */
+    @Deprecated
     public abstract int viewToModel(JTextComponent t, Point pt);
 
     /**
@@ -85,9 +110,30 @@ public abstract class TextUI extends ComponentUI
      *
      * @return the location within the model that best represents the
      *         given point in the view &gt;= 0
+     *
+     * @deprecated replaced by
+     *     {@link #viewToModel2D(JTextComponent, Point2D, Position.Bias[])}
      */
+    @Deprecated
     public abstract int viewToModel(JTextComponent t, Point pt,
                                     Position.Bias[] biasReturn);
+
+    /**
+     * Provides a mapping from the view coordinate space to the logical
+     * coordinate space of the model.
+     *
+     * @param pt the location in the view to translate.
+     *           This should be in the same coordinate system
+     *           as the mouse events.
+     * @param biasReturn
+     *           filled in by this method to indicate whether
+     *           the point given is closer to the previous or the next
+     *           character in the model
+     *
+     * @return the location within the model that best represents the
+     *         given point in the view &gt;= 0
+     */
+    public abstract int viewToModel2D(JTextComponent tc, Point2D pt, Position.Bias[] biasReturn);
 
     /**
      * Provides a way to determine the next visually represented model
@@ -158,7 +204,11 @@ public abstract class TextUI extends ComponentUI
      *
      * @see javax.swing.text.JTextComponent#getToolTipText
      * @since 1.4
+     *
+     * @deprecated replaced by
+     *     {@link #getToolTipText2D(JTextComponent, Point2D)}
      */
+    @Deprecated
     public String getToolTipText(JTextComponent t, Point pt) {
         return null;
     }

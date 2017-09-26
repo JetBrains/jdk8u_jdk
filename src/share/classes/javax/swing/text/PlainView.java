@@ -24,9 +24,11 @@
  */
 package javax.swing.text;
 
-import java.util.Vector;
-import java.util.Properties;
 import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Objects;
 import javax.swing.event.*;
 
@@ -73,8 +75,34 @@ public class PlainView extends View implements TabExpander {
      * @param y the starting Y position &gt;= 0
      * @see #drawUnselectedText
      * @see #drawSelectedText
+     *
+     * @deprecated replaced by
+     *     {@link #drawLine(int, Graphics2D, float, float)}
      */
+    @Deprecated
     protected void drawLine(int lineIndex, Graphics g, int x, int y) {
+        drawLineImpl(lineIndex, g, x, y);
+    }
+
+    /**
+     * Renders a line of text, suppressing whitespace at the end
+     * and expanding any tabs.  This is implemented to make calls
+     * to the methods {@code drawUnselectedText} and
+     * {@code drawSelectedText} so that the way selected and
+     * unselected text are rendered can be customized.
+     *
+     * @param lineIndex the line to draw {@code >= 0}
+     * @param g the {@code Graphics} context
+     * @param x the starting X position {@code >= 0}
+     * @param y the starting Y position {@code >= 0}
+     * @see #drawUnselectedText
+     * @see #drawSelectedText
+     */
+    protected void drawLine(int lineIndex, Graphics2D g, float x, float y) {
+        drawLineImpl(lineIndex, g, x, y);
+    }
+
+    private void drawLineImpl(int lineIndex, Graphics g, float x, float y) {
         Element line = getElement().getElement(lineIndex);
         Element elem;
 
@@ -94,7 +122,10 @@ public class PlainView extends View implements TabExpander {
         }
     }
 
-    private int drawElement(int lineIndex, Element elem, Graphics g, int x, int y) throws BadLocationException {
+    private float drawElement(int lineIndex, Element elem, Graphics g,
+                              float x, float y)
+                              throws BadLocationException
+    {
         int p0 = elem.getStartOffset();
         int p1 = elem.getEndOffset();
         p1 = Math.min(getDocument().getLength(), p1);
@@ -111,23 +142,23 @@ public class PlainView extends View implements TabExpander {
         } else {
             if (sel0 == sel1 || selected == unselected) {
                 // no selection, or it is invisible
-                x = drawUnselectedText(g, x, y, p0, p1);
+                x = callDrawUnselectedText(g, x, y, p0, p1);
             } else if ((p0 >= sel0 && p0 <= sel1) && (p1 >= sel0 && p1 <= sel1)) {
-                x = drawSelectedText(g, x, y, p0, p1);
+                x = callDrawSelectedText(g, x, y, p0, p1);
             } else if (sel0 >= p0 && sel0 <= p1) {
                 if (sel1 >= p0 && sel1 <= p1) {
-                    x = drawUnselectedText(g, x, y, p0, sel0);
-                    x = drawSelectedText(g, x, y, sel0, sel1);
-                    x = drawUnselectedText(g, x, y, sel1, p1);
+                    x = callDrawUnselectedText(g, x, y, p0, sel0);
+                    x = callDrawSelectedText(g, x, y, sel0, sel1);
+                    x = callDrawUnselectedText(g, x, y, sel1, p1);
                 } else {
-                    x = drawUnselectedText(g, x, y, p0, sel0);
-                    x = drawSelectedText(g, x, y, sel0, p1);
+                    x = callDrawUnselectedText(g, x, y, p0, sel0);
+                    x = callDrawSelectedText(g, x, y, sel0, p1);
                 }
             } else if (sel1 >= p0 && sel1 <= p1) {
-                x = drawSelectedText(g, x, y, p0, sel1);
-                x = drawUnselectedText(g, x, y, sel1, p1);
+                x = callDrawSelectedText(g, x, y, p0, sel1);
+                x = callDrawUnselectedText(g, x, y, sel1, p1);
             } else {
-                x = drawUnselectedText(g, x, y, p0, p1);
+                x = callDrawUnselectedText(g, x, y, p0, p1);
             }
         }
 
@@ -145,16 +176,55 @@ public class PlainView extends View implements TabExpander {
      * @param p1 the ending position in the model &gt;= 0
      * @return the X location of the end of the range &gt;= 0
      * @exception BadLocationException if the range is invalid
+     *
+     * @deprecated replaced by
+     *     {@link #drawUnselectedText(Graphics2D, float, float, int, int)}
      */
+    @Deprecated
     protected int drawUnselectedText(Graphics g, int x, int y,
                                      int p0, int p1) throws BadLocationException {
+        return (int) drawUnselectedTextImpl(g, x, y, p0, p1, false);
+    }
+
+    private float callDrawUnselectedText(Graphics g, float x, float y,
+                                         int p0, int p1)
+            throws BadLocationException
+    {
+        return drawUnselectedTextOverridden && (g instanceof Graphics2D)
+                ? drawUnselectedText((Graphics2D) g, x, y, p0, p1)
+                : drawUnselectedText(g, (int) x, (int) y, p0, p1);
+    }
+
+    private float drawUnselectedTextImpl(Graphics g, float x, float y,
+                                         int p0, int p1,
+                                         boolean useFPAPI)
+            throws BadLocationException
+    {
         g.setColor(unselected);
         Document doc = getDocument();
         Segment s = SegmentCache.getSharedSegment();
         doc.getText(p0, p1 - p0, s);
-        int ret = Utilities.drawTabbedText(this, s, x, y, g, this, p0);
+        float ret = Utilities.drawTabbedText(this, s, x, y, g, this, p0, null,
+                                             useFPAPI);
         SegmentCache.releaseSharedSegment(s);
         return ret;
+    }
+
+    /**
+     * Renders the given range in the model as normal unselected
+     * text.  Uses the foreground or disabled color to render the text.
+     *
+     * @param g the graphics context
+     * @param x the starting X coordinate {@code >= 0}
+     * @param y the starting Y coordinate {@code >= 0}
+     * @param p0 the beginning position in the model {@code >= 0}
+     * @param p1 the ending position in the model {@code >= 0}
+     * @return the X location of the end of the range {@code >= 0}
+     * @exception BadLocationException if the range is invalid
+     */
+    protected float drawUnselectedText(Graphics2D g, float x, float y,
+                                       int p0, int p1) throws BadLocationException {
+        return drawUnselectedTextImpl(g, x, y, p0, p1, true);
     }
 
     /**
@@ -170,16 +240,59 @@ public class PlainView extends View implements TabExpander {
      * @param p1 the ending position in the model &gt;= 0
      * @return the location of the end of the range
      * @exception BadLocationException if the range is invalid
+     *
+     * @deprecated replaced by
+     *     {@link #drawSelectedText(Graphics2D, float, float, int, int)}
      */
+    @Deprecated
     protected int drawSelectedText(Graphics g, int x,
-                                   int y, int p0, int p1) throws BadLocationException {
+                                   int y, int p0, int p1)
+                                   throws BadLocationException
+    {
+        return (int) drawSelectedTextImpl(g, x, y, p0, p1, false);
+    }
+
+    float callDrawSelectedText(Graphics g, float x, float y,
+                               int p0, int p1)
+                               throws BadLocationException
+    {
+        return drawSelectedTextOverridden && g instanceof Graphics2D
+                ? drawSelectedText((Graphics2D) g, x, y, p0, p1)
+                : drawSelectedText(g, (int) x, (int) y, p0, p1);
+    }
+
+    private float drawSelectedTextImpl(Graphics g, float x, float y,
+                                       int p0, int p1,
+                                       boolean useFPAPI)
+            throws BadLocationException
+    {
         g.setColor(selected);
         Document doc = getDocument();
         Segment s = SegmentCache.getSharedSegment();
         doc.getText(p0, p1 - p0, s);
-        int ret = Utilities.drawTabbedText(this, s, x, y, g, this, p0);
+        float ret = Utilities.drawTabbedText(this, s, x, y, g, this, p0, null,
+                                             useFPAPI);
         SegmentCache.releaseSharedSegment(s);
         return ret;
+    }
+
+    /**
+     * Renders the given range in the model as selected text.  This
+     * is implemented to render the text in the color specified in
+     * the hosting component.  It assumes the highlighter will render
+     * the selected background.
+     *
+     * @param g the graphics context
+     * @param x the starting X coordinate {@code >= 0}
+     * @param y the starting Y coordinate {@code >= 0}
+     * @param p0 the beginning position in the model {@code >= 0}
+     * @param p1 the ending position in the model {@code >= 0}
+     * @return the location of the end of the range
+     * @exception BadLocationException if the range is invalid
+     */
+    protected float drawSelectedText(Graphics2D g, float x,
+                                     float y, int p0, int p1) throws BadLocationException {
+        return drawSelectedTextImpl(g, x, y, p0, p1, true);
     }
 
     /**
@@ -209,7 +322,13 @@ public class PlainView extends View implements TabExpander {
             // The font changed, we need to recalculate the
             // longest line.
             calculateLongestLine();
-            tabSize = getTabSize() * metrics.charWidth('m');
+            if (useFloatingPointAPI) {
+                FontRenderContext frc = metrics.getFontRenderContext();
+                float tabWidth = (float) font.getStringBounds("m", frc).getWidth();
+                tabSize = getTabSize() * tabWidth;
+            } else {
+                tabSize = getTabSize() * metrics.charWidth('m');
+            }
         }
     }
 
@@ -279,6 +398,7 @@ public class PlainView extends View implements TabExpander {
             linesBelow = Math.max(0, heightBelow / fontHeight);
             linesAbove = Math.max(0, heightAbove / fontHeight);
             linesTotal = alloc.height / fontHeight;
+            linesTotal = alloc.height / fontHeight;
             if (alloc.height % fontHeight != 0) {
                 linesTotal++;
             }
@@ -310,7 +430,11 @@ public class PlainView extends View implements TabExpander {
                                               originalA, host, this);
                 }
             }
-            drawLine(line, g, x, y);
+            if (drawLineOverridden && (g instanceof Graphics2D)) {
+                drawLine(line, (Graphics2D) g, (float) x, (float) y);
+            } else {
+                drawLine(line, g, x, y);
+            }
             y += fontHeight;
             if (line == 0) {
                 // This should never really happen, in so far as if
@@ -357,6 +481,13 @@ public class PlainView extends View implements TabExpander {
         int p0 = line.getStartOffset();
         Segment s = SegmentCache.getSharedSegment();
         doc.getText(p0, pos - p0, s);
+
+        if (useFloatingPointAPI) {
+            float xOffs = Utilities.getTabbedTextWidth(s, metrics, (float) tabBase, this, p0);
+            SegmentCache.releaseSharedSegment(s);
+            return new Rectangle2D.Float(lineArea.x + xOffs, lineArea.y, 1, metrics.getHeight());
+        }
+
         int xOffs = Utilities.getTabbedTextWidth(s, metrics, tabBase, this,p0);
         SegmentCache.releaseSharedSegment(s);
 
@@ -371,21 +502,20 @@ public class PlainView extends View implements TabExpander {
      * Provides a mapping from the view coordinate space to the logical
      * coordinate space of the model.
      *
-     * @param fx the X coordinate &gt;= 0
-     * @param fy the Y coordinate &gt;= 0
+     * @param x the X coordinate &gt;= 0
+     * @param y the Y coordinate &gt;= 0
      * @param a the allocated region to render into
      * @return the location within the model that best represents the
      *  given point in the view &gt;= 0
      * @see View#viewToModel
      */
-    public int viewToModel(float fx, float fy, Shape a, Position.Bias[] bias) {
+    public int viewToModel(float x, float y, Shape a, Position.Bias[] bias) {
         // PENDING(prinz) properly calculate bias
         bias[0] = Position.Bias.Forward;
 
         Rectangle alloc = a.getBounds();
         Document doc = getDocument();
-        int x = (int) fx;
-        int y = (int) fy;
+
         if (y < alloc.y) {
             // above the area covered by this icon, so the the position
             // is assumed to be the start of the coverage for this view.
@@ -403,7 +533,7 @@ public class PlainView extends View implements TabExpander {
             Element map = doc.getDefaultRootElement();
             int fontHeight = metrics.getHeight();
             int lineIndex = (fontHeight > 0 ?
-                                Math.abs((y - alloc.y) / fontHeight) :
+                                (int)Math.abs((y - alloc.y) / fontHeight) :
                                 map.getElementCount() - 1);
             if (lineIndex >= map.getElementCount()) {
                 return getEndOffset() - 1;
@@ -429,7 +559,7 @@ public class PlainView extends View implements TabExpander {
                     doc.getText(p0, p1 - p0, s);
                     tabBase = alloc.x;
                     int offs = p0 + Utilities.getTabbedTextOffset(s, metrics,
-                                                                  tabBase, x, this, p0);
+                                                                  tabBase, x, this, p0, true);
                     SegmentCache.releaseSharedSegment(s);
                     return offs;
                 } catch (BadLocationException e) {
@@ -508,7 +638,7 @@ public class PlainView extends View implements TabExpander {
         if (tabSize == 0) {
             return x;
         }
-        int ntabs = (((int) x) - tabBase) / tabSize;
+        float ntabs = (x - tabBase) / tabSize;
         return tabBase + ((ntabs + 1) * tabSize);
     }
 
@@ -676,6 +806,27 @@ public class PlainView extends View implements TabExpander {
         return w;
     }
 
+    static boolean isFPMethodOverriden(String method,
+                                       Class<?> cls,
+                                       Class<?>[] intTypes,
+                                       Class<?>[] fpTypes)
+    {
+        while (!PlainView.class.equals(cls)) {
+            try {
+                cls.getDeclaredMethod(method, fpTypes);
+                return true;
+            } catch (Exception e1) {
+                try {
+                    cls.getDeclaredMethod(method, intTypes);
+                    return false;
+                } catch (Exception e2) {
+                    cls = cls.getSuperclass();
+                }
+            }
+        }
+        return true;
+    }
+
     // --- member variables -----------------------------------------------
 
     /**
@@ -698,7 +849,7 @@ public class PlainView extends View implements TabExpander {
     Font font;
 
     Segment lineBuffer;
-    int tabSize;
+    float tabSize;
     int tabBase;
 
     int sel0;
@@ -714,4 +865,46 @@ public class PlainView extends View implements TabExpander {
      */
     int firstLineOffset;
 
+    final boolean drawLineOverridden;
+    final boolean drawSelectedTextOverridden;
+    final boolean drawUnselectedTextOverridden;
+    final boolean useFloatingPointAPI;
+
+    {
+        final Class<?> CLS = getClass();
+        final Class<?> INT = Integer.TYPE;
+        final Class<?> FP = Float.TYPE;
+
+        drawLineOverridden = AccessController
+                .doPrivileged(new PrivilegedAction<Boolean>() {
+                    @Override
+                    public Boolean run() {
+                        Class<?>[] intTypes = {INT, Graphics.class, INT, INT};
+                        Class<?>[] fpTypes = {INT, Graphics2D.class, FP, FP};
+                        return isFPMethodOverriden("drawLine", CLS, intTypes, fpTypes);
+                    }
+                });
+
+        drawUnselectedTextOverridden = AccessController
+                .doPrivileged(new PrivilegedAction<Boolean>() {
+                    @Override
+                    public Boolean run() {
+                        Class<?>[] intTypes = {Graphics.class, INT, INT, INT, INT};
+                        Class<?>[] fpTypes = {Graphics2D.class, FP, FP, INT, INT};
+                        return isFPMethodOverriden("drawUnselectedText", CLS, intTypes, fpTypes);
+                    }
+                });
+
+        drawSelectedTextOverridden = AccessController
+                .doPrivileged(new PrivilegedAction<Boolean>() {
+                    @Override
+                    public Boolean run() {
+                        Class<?>[] intTypes = {Graphics.class, INT, INT, INT, INT};
+                        Class<?>[] fpTypes = {Graphics2D.class, FP, FP, INT, INT};
+                        return isFPMethodOverriden("drawSelectedText", CLS, intTypes, fpTypes);
+                    }
+                });
+
+        useFloatingPointAPI = drawUnselectedTextOverridden || drawSelectedTextOverridden;
+    }
 }

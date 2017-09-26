@@ -38,6 +38,8 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.JComponent;
 import java.awt.Graphics;
 import java.awt.Dimension;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import javax.accessibility.Accessible;
 
 /**
@@ -111,7 +113,12 @@ public class MultiTextUI extends TextUI {
      *
      * @return the value obtained from the first UI, which is
      * the UI obtained from the default <code>LookAndFeel</code>
+     *
+     * @deprecated replaced by
+     *     {@link #modelToView2D(JTextComponent, int, Position.Bias)}
      */
+    @Override
+    @Deprecated
     public Rectangle modelToView(JTextComponent a, int b, Position.Bias c)
             throws BadLocationException {
         Rectangle returnValue =
@@ -127,12 +134,27 @@ public class MultiTextUI extends TextUI {
      *
      * @return the value obtained from the first UI, which is
      * the UI obtained from the default <code>LookAndFeel</code>
+     *
+     * @deprecated replaced by
+     *     {@link #modelToView2D(JTextComponent, int, Position.Bias)}
      */
+    @Override
+    @Deprecated
     public int viewToModel(JTextComponent a, Point b) {
         int returnValue =
             ((TextUI) (uis.elementAt(0))).viewToModel(a,b);
         for (int i = 1; i < uis.size(); i++) {
             ((TextUI) (uis.elementAt(i))).viewToModel(a,b);
+        }
+        return returnValue;
+    }
+
+    @Override
+    public Rectangle2D modelToView2D(JTextComponent a, int b, Position.Bias c) throws BadLocationException {
+        Rectangle2D returnValue =
+            ((TextUI) (uis.elementAt(0))).modelToView2D(a,b,c);
+        for (int i = 1; i < uis.size(); i++) {
+            ((TextUI) (uis.elementAt(i))).modelToView2D(a,b,c);
         }
         return returnValue;
     }
@@ -143,11 +165,22 @@ public class MultiTextUI extends TextUI {
      * @return the value obtained from the first UI, which is
      * the UI obtained from the default <code>LookAndFeel</code>
      */
+    @Override
     public int viewToModel(JTextComponent a, Point b, Position.Bias[] c) {
         int returnValue =
             ((TextUI) (uis.elementAt(0))).viewToModel(a,b,c);
         for (int i = 1; i < uis.size(); i++) {
             ((TextUI) (uis.elementAt(i))).viewToModel(a,b,c);
+        }
+        return returnValue;
+    }
+
+    @Override
+    public int viewToModel2D(JTextComponent a, Point2D b, Position.Bias[] c) {
+        int returnValue =
+            ((TextUI) (uis.elementAt(0))).viewToModel2D(a,b,c);
+        for (int i = 1; i < uis.size(); i++) {
+            ((TextUI) (uis.elementAt(i))).viewToModel2D(a,b,c);
         }
         return returnValue;
     }

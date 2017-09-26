@@ -28,6 +28,8 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.im.InputContext;
 import java.beans.*;
 import java.io.*;
@@ -1018,6 +1020,7 @@ public abstract class BasicTextUI extends TextUI implements ViewFactory {
      *   represent a valid location in the associated document
      * @see TextUI#modelToView
      */
+    @Override
     public Rectangle modelToView(JTextComponent tc, int pos) throws BadLocationException {
         return modelToView(tc, pos, Position.Bias.Forward);
     }
@@ -1034,8 +1037,30 @@ public abstract class BasicTextUI extends TextUI implements ViewFactory {
      * @exception BadLocationException  if the given position does not
      *   represent a valid location in the associated document
      * @see TextUI#modelToView
+     *
+     * @deprecated replaced by
+     *     {@link #modelToView2D(JTextComponent, int, Position.Bias)}
      */
-    public Rectangle modelToView(JTextComponent tc, int pos, Position.Bias bias) throws BadLocationException {
+    @Override
+    @Deprecated
+    public Rectangle modelToView(JTextComponent tc, int pos, Position.Bias bias)
+            throws BadLocationException
+    {
+        return (Rectangle) modelToView(tc, pos, bias, false);
+    }
+
+    @Override
+    public Rectangle2D modelToView2D(JTextComponent tc, int pos,
+                                     Position.Bias bias)
+            throws BadLocationException
+    {
+        return modelToView(tc, pos, bias, true);
+    }
+
+    private Rectangle2D modelToView(JTextComponent tc, int pos,
+                                    Position.Bias bias, boolean useFPAPI)
+            throws BadLocationException
+    {
         Document doc = editor.getDocument();
         if (doc instanceof AbstractDocument) {
             ((AbstractDocument)doc).readLock();
@@ -1046,7 +1071,7 @@ public abstract class BasicTextUI extends TextUI implements ViewFactory {
                 rootView.setSize(alloc.width, alloc.height);
                 Shape s = rootView.modelToView(pos, alloc, bias);
                 if (s != null) {
-                  return s.getBounds();
+                    return useFPAPI ? s.getBounds2D() : s.getBounds();
                 }
             }
         } finally {
@@ -1069,7 +1094,12 @@ public abstract class BasicTextUI extends TextUI implements ViewFactory {
      * @return the offset from the start of the document &gt;= 0,
      *   -1 if not painted
      * @see TextUI#viewToModel
+     *
+     * @deprecated replaced by
+     *     {@link #viewToModel2D(JTextComponent, Point2D, Position.Bias[])}
      */
+    @Override
+    @Deprecated
     public int viewToModel(JTextComponent tc, Point pt) {
         return viewToModel(tc, pt, discardBias);
     }
@@ -1086,9 +1116,25 @@ public abstract class BasicTextUI extends TextUI implements ViewFactory {
      * @return the offset from the start of the document &gt;= 0,
      *   -1 if the component doesn't yet have a positive size.
      * @see TextUI#viewToModel
+     *
+     * @deprecated replaced by
+     *     {@link #viewToModel2D(JTextComponent, Point2D, Position.Bias[])}
      */
+    @Override
+    @Deprecated
     public int viewToModel(JTextComponent tc, Point pt,
                            Position.Bias[] biasReturn) {
+        return viewToModel(tc, pt.x, pt.y, biasReturn);
+    }
+
+    @Override
+    public int viewToModel2D(JTextComponent tc, Point2D pt,
+                             Position.Bias[] biasReturn) {
+        return viewToModel(tc, (float) pt.getX(), (float) pt.getY(), biasReturn);
+    }
+
+    private int viewToModel(JTextComponent tc, float x, float y,
+                            Position.Bias[] biasReturn) {
         int offs = -1;
         Document doc = editor.getDocument();
         if (doc instanceof AbstractDocument) {
@@ -1098,7 +1144,7 @@ public abstract class BasicTextUI extends TextUI implements ViewFactory {
             Rectangle alloc = getVisibleEditorRect();
             if (alloc != null) {
                 rootView.setSize(alloc.width, alloc.height);
-                offs = rootView.viewToModel(pt.x, pt.y, alloc, biasReturn);
+                offs = rootView.viewToModel(x, y, alloc, biasReturn);
             }
         } finally {
             if (doc instanceof AbstractDocument) {
@@ -1689,7 +1735,7 @@ public abstract class BasicTextUI extends TextUI implements ViewFactory {
          *
          * @param axis may be either X_AXIS or Y_AXIS
          * @param len specifies where a break is desired in the span
-         * @param the current allocation of the view
+         * @param a the current allocation of the view
          * @return the fragment of the view that represents the given span
          *   if the view can be broken, otherwise null
          */
