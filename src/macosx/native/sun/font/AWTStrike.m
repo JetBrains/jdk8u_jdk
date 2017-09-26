@@ -315,19 +315,32 @@ JNIEXPORT void JNICALL Java_sun_font_CStrike_getNativeGlyphOutlineBounds
         (JNIEnv *env, jclass clazz, jlong awtStrikePtr, jint glyphCode,
          jobject result, jdouble xPos, jdouble yPos)
 {
-
     JNF_COCOA_ENTER(env);
-
     AWTStrike *awtStrike = (AWTStrike *)jlong_to_ptr(awtStrikePtr);
     AWTFont *awtfont = awtStrike->fAWTFont;
+
+    // inverting the shear order and sign to compensate for the flipped coordinate system
+    CGAffineTransform tx = awtStrike->fTx;
+    tx.tx += xPos;
+    tx.ty += yPos;
 
     // get the right font and glyph for this "Java GlyphCode"
 
     CGGlyph glyph;
     const CTFontRef font = CTS_CopyCTFallbackFontAndGlyphForJavaGlyphCode(awtfont, glyphCode, &glyph);
-    CGRect bbox = CTFontGetBoundingRectsForGlyphs(font,
-                                                  kCTFontDefaultOrientation,
-                                                  &glyph, NULL, 1);
+
+    // get the advance of this glyph
+    // TODO: Use advance in bbox calculation
+    // CGSize advance;
+    // CTFontGetAdvancesForGlyphs(font, kCTFontDefaultOrientation, &glyph, &advance, 1);
+
+    tx = awtStrike->fTx;
+    tx = CGAffineTransformConcat(tx, sInverseTX);
+
+    CGPathRef cgPath = CTFontCreatePathForGlyph((CTFontRef)font, glyph, &tx);
+    CGRect bbox = CGPathGetBoundingBox(cgPath);
+    CGPathRelease(cgPath);
+
     CFRelease(font);
     static JNF_CLASS_CACHE(sjc_Rectangle2D_Float,
                            "java/awt/geom/Rectangle2D$Float");
@@ -335,9 +348,10 @@ JNIEXPORT void JNICALL Java_sun_font_CStrike_getNativeGlyphOutlineBounds
                             sjc_Rectangle2D_Float, "setRect", "(FFFF)V");
 
     JNFCallVoidMethod(env, result, sjr_Rectangle2DFloat_setRect,
-                      (jfloat)bbox.origin.x + xPos,
-                      (jfloat)bbox.origin.y + yPos,
-                      (jfloat)bbox.size.width, (jfloat)bbox.size.height);
+                      (jfloat)(bbox.origin.x + xPos),
+                      (jfloat)(yPos - bbox.size.height),
+                      (jfloat)bbox.size.width,
+                      (jfloat)bbox.size.height);
 
     JNF_COCOA_EXIT(env);
 }
