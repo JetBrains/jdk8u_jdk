@@ -44,6 +44,7 @@ import javax.accessibility.*;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import sun.swing.SwingUtilities2;
 
 /**
  * The "viewport" or "porthole" through which you see the underlying
@@ -1035,9 +1036,16 @@ public class JViewport extends JComponent implements Accessible
     private boolean isBlitting() {
         Component view = getView();
         return (scrollMode == BLIT_SCROLL_MODE) &&
-               (view instanceof JComponent) && view.isOpaque();
+               (view instanceof JComponent) && view.isOpaque() && !isFPScale();
     }
 
+    private boolean isFPScale() {
+        GraphicsConfiguration gc = getGraphicsConfiguration();
+        if (gc != null) {
+            return SwingUtilities2.isFloatingPointScale(gc.getDefaultTransform());
+        }
+        return false;
+    }
 
     /**
      * Returns the <code>JViewport</code>'s one child or <code>null</code>.
