@@ -43,10 +43,9 @@ public class TextMetricsTest {
 
                     FontRenderContext frc = g2.getFontRenderContext();
                     Rectangle2D bnd = font.getStringBounds(s, frc);
-                    TextLayout textLayout = new TextLayout(s, font,
-                            g2.getFontRenderContext());
+                    TextLayout textLayout = new TextLayout(s, font, frc);
                     Rectangle2D bnd1 = textLayout.getBounds();
-                    GlyphVector gv = font.createGlyphVector(g2.getFontRenderContext(),s );
+                    GlyphVector gv = font.createGlyphVector(frc, s);
                     Rectangle2D bnd2 = gv.getGlyphVisualBounds(0).getBounds2D();
 
 
