@@ -98,6 +98,8 @@ public class TransferableProxy implements Transferable {
         return data;
     }
 
+    public Transferable getDelegate() { return transferable; }
+
     protected final Transferable transferable;
     protected final boolean isLocal;
 }
