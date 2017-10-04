@@ -26,6 +26,7 @@
 package java.awt.datatransfer;
 
 import sun.awt.datatransfer.DataTransferer;
+import sun.awt.datatransfer.TransferableProxy;
 import sun.reflect.misc.ReflectUtil;
 
 import java.io.ByteArrayInputStream;
@@ -844,8 +845,10 @@ public class DataFlavor implements Externalizable, Cloneable {
     {
         Object transferObject = transferable.getTransferData(this);
         if (transferObject == null) {
-            throw new IllegalArgumentException
-                ("getTransferData() returned null for " + transferable.getClass());
+            throw new IllegalArgumentException("getTransferData() returned null for " + 
+                    (transferable instanceof TransferableProxy 
+                            ? ("TransferableProxy[" + ((TransferableProxy)transferable).getDelegate().getClass() + "]") 
+                            : transferable.getClass()));
         }
 
         if (transferObject instanceof Reader) {
