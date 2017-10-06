@@ -16,6 +16,7 @@
 
 package quality.text;
 
+import org.junit.Assert;
 import org.junit.Test;
 import quality.util.RenderUtil;
 
@@ -38,6 +39,7 @@ public class TextMetricsTest {
         BufferedImage bi = RenderUtil.capture(120, 120,
                 g2 -> {
                     String s = "A";
+                    String s1 = "q";
 
                     g2.setFont(font);
 
@@ -47,6 +49,8 @@ public class TextMetricsTest {
                     Rectangle2D bnd1 = textLayout.getBounds();
                     GlyphVector gv = font.createGlyphVector(frc, s);
                     Rectangle2D bnd2 = gv.getGlyphVisualBounds(0).getBounds2D();
+                    textLayout = new TextLayout(s1, font, frc);
+                    Rectangle2D bnd3 = textLayout.getBounds();
 
 
                     g2.drawString(s, 5, 50);
@@ -57,16 +61,28 @@ public class TextMetricsTest {
                     g2.draw(new Path2D.Double(bnd1,
                             AffineTransform.getTranslateInstance(30, 50 )));
 
-
                     g2.drawString(s, 50, 50);
                     g2.draw(new Path2D.Double(bnd2,
                             AffineTransform.getTranslateInstance(50, 50 )));
 
+                    g2.drawString(s1, 75, 50);
+                    g2.draw(new Path2D.Double(bnd3,
+                            AffineTransform.getTranslateInstance(75, 50 )));
                 });
 
         RenderUtil.checkImage(bi, "text", "bndtext.png");
 
     }
 
+    @Test
+    public void testSpaceTextBounds() {
+        final Font font = new Font("Menlo", Font.PLAIN, 22);
 
+        GlyphVector gv = font.createGlyphVector(
+                new FontRenderContext(null, false, false), " ");
+        Rectangle2D bnd = gv.getGlyphVisualBounds(0).getBounds2D();
+
+        Assert.assertTrue(bnd.getX() == 0.0 && bnd.getY() == 0.0 &&
+                bnd.getWidth() == 0.0 && bnd.getHeight() == 0.0);
+    }
 }
