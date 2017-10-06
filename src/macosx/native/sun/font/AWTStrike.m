@@ -332,10 +332,18 @@ JNIEXPORT void JNICALL Java_sun_font_CStrike_getNativeGlyphOutlineBounds
 
     CGPathRef cgPath = CTFontCreatePathForGlyph((CTFontRef) font, glyph,
                                                 &tx);
-    CGRect bbox = CGPathGetBoundingBox(cgPath);
+
+    CGRect bbox = CGPathGetPathBoundingBox(cgPath);
+    CFRelease(font);
     CGPathRelease(cgPath);
 
-    CFRelease(font);
+    if (CGRectIsNull(bbox)) {
+        bbox.origin.x = 0;
+        bbox.origin.y = 0;
+        bbox.size.width = 0;
+        bbox.size.height = 0;
+    }
+
     static JNF_CLASS_CACHE(sjc_Rectangle2D_Float,
                            "java/awt/geom/Rectangle2D$Float");
     static JNF_MEMBER_CACHE(sjr_Rectangle2DFloat_setRect,
@@ -343,7 +351,7 @@ JNIEXPORT void JNICALL Java_sun_font_CStrike_getNativeGlyphOutlineBounds
 
     JNFCallVoidMethod(env, result, sjr_Rectangle2DFloat_setRect,
                       (jfloat) (bbox.origin.x + xPos),
-                      (jfloat) (yPos - bbox.size.height),
+                      (jfloat) (yPos - bbox.origin.y - bbox.size.height),
                       (jfloat) bbox.size.width,
                       (jfloat) bbox.size.height);
 
