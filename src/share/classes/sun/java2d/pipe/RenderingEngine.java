@@ -120,9 +120,9 @@ public abstract class RenderingEngine {
         reImpl =
             AccessController.doPrivileged(new PrivilegedAction<RenderingEngine>() {
                 public RenderingEngine run() {
-                    final String ductusREClass = "sun.dc.DuctusRenderingEngine";
+                    final String marlinREClass = "sun.java2d.marlin.MarlinRenderingEngine";
                     String reClass =
-                        System.getProperty("sun.java2d.renderer", ductusREClass);
+                        System.getProperty("sun.java2d.renderer", marlinREClass);
                     try {
                         Class<?> cls = Class.forName(reClass);
                         return (RenderingEngine) cls.newInstance();
