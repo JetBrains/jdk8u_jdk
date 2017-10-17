@@ -1249,10 +1249,13 @@ public class LWWindowPeer
         if (isSimpleWindow()) {
             LWWindowPeer ownerPeer = getOwnerFrameDialog(this);
             if (ownerPeer == null) {
+                focusLog.fine("Owner is null");
                 return false;
             }
+            focusLog.fine("This focusable: [" + focusable + "]; owner focusable : [" + ownerPeer.targetFocusable + "]");
             return focusable && ownerPeer.targetFocusable;
         }
+        focusLog.fine("This focusable: [" + focusable + "]");
         return focusable;
     }
 
