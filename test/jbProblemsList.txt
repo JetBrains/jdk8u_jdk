@@ -174,7 +174,7 @@ java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusToFrontTest.java     generic
 java/awt/Focus/ActualFocusedWindowTest/ActualFocusedWindowRetaining.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169103
-java/awt/Focus/ChoiceFocus/ChoiceFocus.java                              windows-all
+java/awt/Focus/ChoiceFocus/ChoiceFocus.java                              generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8078413
 java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java          generic-all
@@ -283,9 +283,8 @@ java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8016241
 java/awt/FullScreen/SetFSWindow/FSFrame.java                         generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7179526
-#fixed in 8_112
-java/awt/Graphics/LineClipTest*                                  generic-all
+# https://bugs.openjdk.java.net/browse/JDK-8153299
+java/awt/Graphics/CopyScaledArea/CopyScaledAreaTest.java             generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080084
 java/awt/Graphics2D/DrawString/DrawStringCrash.java                  generic-all
@@ -586,7 +585,7 @@ java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_4.java generi
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_3.html generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169475
-java/awt/event/MouseWheelEvent/WheelModifier/WheelModifier.java       windows-all
+java/awt/event/MouseWheelEvent/WheelModifier/WheelModifier.java       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7043170
 java/awt/font/TextLayout/CombiningPerf.java                          generic-all
@@ -1082,7 +1081,8 @@ javax/swing/JMenu/4515762/bug4515762.java                            generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8171998
 # according recommendations from Oracle ForegroundLockTimeout = 0
 # in order to check it, the test is being enabled for regular runs
-#javax/swing/JMenu/4692443/bug4692443.java                            windows-all
+# moreover it should not be executed on virtual machines
+javax/swing/JMenu/4692443/bug4692443.java                            windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8142534
 javax/swing/JMenu/8072900/WrongSelectionOnMouseOver.java             generic-all
@@ -1255,6 +1255,9 @@ javax/swing/plaf/windows/WindowsRootPaneUI/WrongAltProcessing/WrongAltProcessing
 
 # https://bugs.openjdk.java.net/browse/JDK-8130895
 javax/swing/system/6799345/TestShutdown.java                         linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8144188
+javax/swing/text/AbstractDocument/6968363/Test6968363.java           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8003533
 javax/swing/text/CSSBorder/6796710/bug6796710.java                   generic-all
@@ -1550,7 +1553,7 @@ java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                          
 java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                                         windows-all
 java/io/File/SetLastModified.java                                                               generic-all
-javax/swing/JScrollBar/7163696/Test7163696.java                                                 windows-all
+javax/swing/JScrollBar/7163696/Test7163696.java                                                 generic-all
 javax/swing/text/html/CSS/4530474/bug4530474.java                                               windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8065099
 javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                                    generic-all
@@ -1563,7 +1566,7 @@ javax/swing/plaf/nimbus/8041642/ScrollBarThumbVisibleTest.java                  
 javax/swing/text/JTextComponent/5074573/bug5074573.java                                         generic-all
 javax/swing/text/StyledEditorKit/4506788/bug4506788.java                                        windows-all
 sun/java2d/DirectX/OpaqueImageToSurfaceBlitTest/OpaqueImageToSurfaceBlitTest.java               windows-all
-sun/java2d/DrawXORModeTest.java                                                                 windows-all
+sun/java2d/DrawXORModeTest.java                                                                 generic-all
 sun/java2d/OpenGL/CustomCompositeTest.java                                                      windows-all
 sun/java2d/OpenGL/DrawBufImgOp.java                                                             windows-all
 sun/java2d/OpenGL/DrawHugeImageTest.java                                                        windows-all
