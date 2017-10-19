@@ -750,8 +750,8 @@ void AwtWin32GraphicsDevice::InitDesktopScales()
         }
     }
 
-    float scaleX = dpiX / 96;
-    float scaleY = dpiY / 96;
+    int scaleX = (int)round(dpiX / 96);
+    int scaleY = (int)round(dpiY / 96);
     if (scaleX > 0 && scaleY > 0) {
         SetScale(scaleX, scaleY);
     }
