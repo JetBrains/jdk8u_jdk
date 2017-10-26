@@ -1197,9 +1197,14 @@ abstract class XDecoratedPeer extends XWindowPeer {
         Window activeWindow = XWindowPeer.getDecoratedOwner(focusedWindow);
 
         if (focusLog.isLoggable(PlatformLogger.Level.FINER)) {
-            focusLog.finer("Current window is: active={0}, focused={1}",
+            focusLog.finer("Current window is:" +
+                            " active={0}, focused={1}",
                        Boolean.valueOf(target == activeWindow),
                        Boolean.valueOf(target == focusedWindow));
+        }
+
+        if (WindowStateMachine.get().isWaitingForWindowShow()) {
+            return false;
         }
 
         XWindowPeer toFocus = this;

@@ -1369,6 +1369,8 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
     public void handleMapNotifyEvent(XEvent xev) {
         removeStartupNotification();
 
+        WindowStateMachine.get().notify(getWindow());
+
         // See 6480534.
         isUnhiding |= isWMStateNetHidden();
 
@@ -1981,6 +1983,7 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
             this.visible = visible;
             if (visible) {
                 applyWindowType();
+                WindowStateMachine.get().waitForNotifyAfterRaise(getWindow());
                 XlibWrapper.XMapRaised(XToolkit.getDisplay(), getWindow());
             } else {
                 XlibWrapper.XUnmapWindow(XToolkit.getDisplay(), getWindow());
