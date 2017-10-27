@@ -81,8 +81,6 @@ JDK_GetVersionInfo0(jdk_version_info* info, size_t info_size) {
         }
     }
 
-    assert(jdk_build_number >= 0 && jdk_build_number <= 255);
-
     len_update_ver = strlen(jdk_update_string);
     if (len_update_ver >= 2 && len_update_ver <= 4) {
         int update_digits = len_update_ver;
