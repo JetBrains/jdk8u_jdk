@@ -260,6 +260,10 @@ public class LWWindowPeer
                 // Transfer focus to the owner.
                 Window targetOwner = LWWindowPeer.this.getTarget().getOwner();
 
+                while (targetOwner != null && (targetOwner.getOwner() != null && !targetOwner.isFocusableWindow())) {
+                    targetOwner = targetOwner.getOwner();
+                }
+
                 if (targetOwner != null) {
 
                     LWWindowPeer owner = (LWWindowPeer) AWTAccessor.getComponentAccessor().getPeer(targetOwner);
@@ -1182,40 +1186,35 @@ public class LWWindowPeer
 
         // Make the owner active window.
         if (isSimpleWindow()) {
-            focusLog.fine("This is a Simple Window.");
+	    focusLog.fine("This is a Simple Window.");
+            LWWindowPeer owner = getOwnerFrameDialog(this);
 
-            Window ownerTarget = getTarget().getOwner();
-            if (ownerTarget != null) {
-
-                LWWindowPeer owner = (LWWindowPeer) AWTAccessor.getComponentAccessor().getPeer(ownerTarget);
-
-                // If owner is not natively active, request native
-                // activation on it w/o sending events up to java.
-                if (owner != null && !owner.platformWindow.isActive()) {
-                    if (focusLog.isLoggable(PlatformLogger.Level.FINE)) {
-                        focusLog.fine("requesting native focus to the owner " + owner);
-                    }
-                    LWWindowPeer currentActivePeer = currentActive == null ? null :
-                            (LWWindowPeer) AWTAccessor.getComponentAccessor().getPeer(
-                                    currentActive);
-
-                    // Ensure the opposite is natively active and suppress sending events.
-                    if (currentActivePeer != null && currentActivePeer.platformWindow.isActive()) {
-                        if (focusLog.isLoggable(PlatformLogger.Level.FINE)) {
-                            focusLog.fine("the opposite is " + currentActivePeer);
-                        }
-                       // currentActivePeer.skipNextFocusChange = true;
-                    }
-                 //   owner.skipNextFocusChange = true;
-
-                    owner.platformWindow.requestWindowFocus();
+            // If owner is not natively active, request native
+            // activation on it w/o sending events up to java.
+            if (owner != null && !owner.platformWindow.isActive()) {
+                if (focusLog.isLoggable(PlatformLogger.Level.FINE)) {
+                    focusLog.fine("requesting native focus to the owner " + owner);
                 }
+                LWWindowPeer currentActivePeer = currentActive == null ? null :
+                (LWWindowPeer) AWTAccessor.getComponentAccessor().getPeer(
+                        currentActive);
 
-                // DKFM will synthesize all the focus/activation events correctly.
-                changeFocusedWindow(true, opposite);
-                focusLog.fine("DKFM will synthesize all the focus/activation events correctly");
-                return true;
+                // Ensure the opposite is natively active and suppress sending events.
+                if (currentActivePeer != null && currentActivePeer.platformWindow.isActive()) {
+                    if (focusLog.isLoggable(PlatformLogger.Level.FINE)) {
+                        focusLog.fine("the opposite is " + currentActivePeer);
+                    }
+                    currentActivePeer.skipNextFocusChange = true;
+                }
+                owner.skipNextFocusChange = true;
+
+                owner.platformWindow.requestWindowFocus();
             }
+
+            // DKFM will synthesize all the focus/activation events correctly.
+            changeFocusedWindow(true, opposite);
+	    focusLog.fine("DKFM will synthesize all the focus/activation events correctly");
+            return true;
 
         // In case the toplevel is active but not focused, change focus directly,
         // as requesting native focus on it will not have effect.
