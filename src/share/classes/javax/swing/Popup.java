@@ -232,7 +232,7 @@ public class Popup {
         HeavyWeightWindow(Window parent) {
             super(parent);
             setFocusableWindowState(false);
-            setType(Window.Type.POPUP);
+            //setType(Window.Type.POPUP);
 
             // Popups are typically transient and most likely won't benefit
             // from true double buffering.  Turn it off here.
