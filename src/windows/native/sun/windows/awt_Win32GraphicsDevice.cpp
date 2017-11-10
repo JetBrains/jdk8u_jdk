@@ -636,50 +636,50 @@ void AwtWin32GraphicsDevice::SetScale(float sx, float sy)
 
 int AwtWin32GraphicsDevice::ScaleUpX(int x)
 {
-    return (int)ceil(x * scaleX);
+    return (int)round(x * scaleX);
 }
 
 // scale up the delta [x - device.x]
 int AwtWin32GraphicsDevice::ScaleUpDX(int x)
 {
     RECT devBounds = AwtWin32GraphicsConfig::getMonitorBounds(screen);
-    return devBounds.left + (int)ceil((x - devBounds.left) * scaleX);
+    return devBounds.left + (int)round((x - devBounds.left) * scaleX);
 }
 
 int AwtWin32GraphicsDevice::ScaleUpY(int y)
 {
-    return (int)ceil(y * scaleY);
+    return (int)round(y * scaleY);
 }
 
 // scale up the delta [y - device.y]
 int AwtWin32GraphicsDevice::ScaleUpDY(int y)
 {
     RECT devBounds = AwtWin32GraphicsConfig::getMonitorBounds(screen);
-    return devBounds.top + (int)ceil((y - devBounds.top) * scaleY);
+    return devBounds.top + (int)round((y - devBounds.top) * scaleY);
 }
 
 int AwtWin32GraphicsDevice::ScaleDownX(int x)
 {
-    return (int)ceil(x / scaleX);
+    return (int)round(x / scaleX);
 }
 
 // scale down the delta [x - device.x]
 int AwtWin32GraphicsDevice::ScaleDownDX(int x)
 {
     RECT devBounds = AwtWin32GraphicsConfig::getMonitorBounds(screen);
-    return devBounds.left + (int)ceil((x - devBounds.left) / scaleX);
+    return devBounds.left + (int)round((x - devBounds.left) / scaleX);
 }
 
 int AwtWin32GraphicsDevice::ScaleDownY(int y)
 {
-    return (int)ceil(y / scaleY);
+    return (int)round(y / scaleY);
 }
 
 // scale down the delta [y - device.y]
 int AwtWin32GraphicsDevice::ScaleDownDY(int y)
 {
     RECT devBounds = AwtWin32GraphicsConfig::getMonitorBounds(screen);
-    return devBounds.top + (int)ceil((y - devBounds.top) / scaleY);
+    return devBounds.top + (int)round((y - devBounds.top) / scaleY);
 }
 
 // scale down the delta [pt.xy - device.xy]
