@@ -608,7 +608,7 @@ java/awt/geom/AffineTransform/InvalidTransformParameterTest.java     generic-all
 java/awt/grab/EmbeddedFrameTest1/EmbeddedFrameTest1.java             generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169109
-java/awt/grab/GrabOnUnfocusableToplevel/GrabOnUnfocusableToplevel.java windows-all
+java/awt/grab/GrabOnUnfocusableToplevel/GrabOnUnfocusableToplevel.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028000
 java/awt/image/DrawImage/EABlitTest.java                             generic-all
@@ -1547,7 +1547,7 @@ java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java               
 java/awt/Frame/NormalToIconified/NormalToIconifiedTest.java                                     generic-all
 java/awt/Frame/ObscuredFrame/ObscuredFrameTest.java                                             linux-all
 java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                                    windows-all
-java/awt/Mixing/MixingInHwPanel.java                                                            windows-all
+java/awt/Mixing/MixingInHwPanel.java                                                            generic-all
 java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java                          generic-all
 java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                                          windows-all
 java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
