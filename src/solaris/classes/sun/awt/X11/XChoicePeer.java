@@ -1003,6 +1003,7 @@ public class XChoicePeer extends XComponentPeer implements ChoicePeer, ToplevelS
          * ComponentEvents
          */
         public void handleConfigureNotifyEvent(XEvent xev) {}
+        public void handleMapRequestEvent(XEvent xev) {}
         public void handleMapNotifyEvent(XEvent xev) {}
         public void handleUnmapNotifyEvent(XEvent xev) {}
     } //UnfurledChoice

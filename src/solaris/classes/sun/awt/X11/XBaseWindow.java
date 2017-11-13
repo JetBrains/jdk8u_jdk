@@ -911,6 +911,11 @@ public class XBaseWindow {
     }
 
     // -------------- Event handling ----------------
+
+    public void handleMapRequestEvent(XEvent xev) {
+        WindowStateMachine.get().notify(getWindow());
+    }
+
     public void handleMapNotifyEvent(XEvent xev) {
         mapped = true;
     }
@@ -1108,6 +1113,9 @@ public class XBaseWindow {
               break;
           case XConstants.ConfigureNotify:
               handleConfigureNotifyEvent(xev);
+              break;
+          case XConstants.MapRequest:
+              handleMapRequestEvent(xev);
               break;
           case XConstants.MapNotify:
               handleMapNotifyEvent(xev);

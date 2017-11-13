@@ -1366,6 +1366,10 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
         }
     }
 
+    public void handleMapRequestEvent(XEvent xev) {
+        WindowStateMachine.get().notify(getWindow());
+    }
+
     public void handleMapNotifyEvent(XEvent xev) {
         removeStartupNotification();
 

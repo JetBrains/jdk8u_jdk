@@ -1204,6 +1204,7 @@ abstract class XDecoratedPeer extends XWindowPeer {
         }
 
         if (WindowStateMachine.get().isWaitingForWindowShow()) {
+            focusLog.finer("Is waiting for window show : " + WindowStateMachine.get());
             return false;
         }
 

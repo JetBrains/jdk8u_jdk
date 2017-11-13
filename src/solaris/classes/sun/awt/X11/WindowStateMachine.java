@@ -33,4 +33,8 @@ public class WindowStateMachine {
         return !waitingWindows.isEmpty();
     }
 
+    @Override
+    public String toString() {
+        return "Window state machine: " + waitingWindows;
+    }
 }

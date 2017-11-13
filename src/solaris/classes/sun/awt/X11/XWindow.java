@@ -992,6 +992,10 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
 //  }
     }
 
+    public void handleMapRequestEvent(XEvent xev) {
+        super.handleMapRequestEvent(xev);
+    }
+
     public void handleMapNotifyEvent(XEvent xev) {
         super.handleMapNotifyEvent(xev);
         if (log.isLoggable(PlatformLogger.Level.FINE)) {
