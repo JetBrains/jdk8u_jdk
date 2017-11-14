@@ -77,18 +77,15 @@ public class RenderUtil {
                 return cco.filter(result, null);
             }
             return null;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return null;
-        }
-        finally {
+        } finally {
             Foundation.invoke(pool, "release");
         }
     }
 
     public static BufferedImage capture(int width, int height, Consumer<Graphics2D> painter)
-            throws Exception
-    {
+            throws Exception {
         JFrame[] f = new JFrame[1];
         Point[] p = new Point[1];
         SwingUtilities.invokeAndWait(() -> {
@@ -99,11 +96,11 @@ public class RenderUtil {
             f[0].add(c);
             c.setSize(width + 10, height + 10);
             f[0].setSize(width + 100, height + 100); // giving some space
-                                                                 // for frame border effects,
-                                                                 // e.g. rounded frame
+            // for frame border effects,
+            // e.g. rounded frame
             c.setLocation(50, 50);
             f[0].setVisible(true);
-            p[0]= c.getLocationOnScreen();
+            p[0] = c.getLocationOnScreen();
         });
 
         Rectangle screenRect;
@@ -132,7 +129,7 @@ public class RenderUtil {
             g.translate(5, 5);
             Shape savedClip = g.getClip();
             g.clipRect(0, 0, getWidth() - 20, getHeight() - 20);
-            painter.accept((Graphics2D)g);
+            painter.accept((Graphics2D) g);
             g.setClip(savedClip);
             g.setColor(Color.black);
             ((Graphics2D) g).setStroke(new BasicStroke(10));
@@ -163,10 +160,11 @@ public class RenderUtil {
                 if (!goldenFile.exists()) continue;
 
                 BufferedImage goldenImage = ImageIO.read(goldenFile);
+                assertNotNull("no registered ImageReader claims to be able to read the stream: "
+                        + goldenFile, goldenImage);
                 failed = true;
                 if (image.getWidth() != goldenImage.getWidth() ||
-                        image.getHeight() != image.getHeight())
-                {
+                        image.getHeight() != image.getHeight()) {
                     failureReason.append(variant).append(" : Golden image and result have different sizes\n");
                     continue;
                 }
@@ -197,8 +195,7 @@ public class RenderUtil {
             }
 
             if (failed) throw new RuntimeException(failureReason.toString());
-        }
-        else {
+        } else {
             ImageIO.write(image, "png", new File(testData, gfName));
         }
     }
