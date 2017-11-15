@@ -288,10 +288,6 @@ public class XComponentPeer extends XWindow implements ComponentPeer, DropTarget
             return true;
         }
 
-        if (WindowStateMachine.get().isWaitingForWindowShow()) {
-            return false;
-        }
-
         int result = XKeyboardFocusManagerPeer.
             shouldNativelyFocusHeavyweight(target, lightweightChild,
                                            temporary, focusedWindowChangeAllowed,
