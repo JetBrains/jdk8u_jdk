@@ -119,9 +119,13 @@ public class OGLRenderQueue extends RenderQueue {
     }
 
     public void flushNow() {
+        flushNow(true);
+    }
+
+    public void flushNow(boolean sync) {
         // assert lock.isHeldByCurrentThread();
         try {
-            flusher.flushNow();
+            flusher.flushNow(sync);
         } catch (Exception e) {
             System.err.println("exception in flushNow:");
             e.printStackTrace();
@@ -157,6 +161,8 @@ public class OGLRenderQueue extends RenderQueue {
         private boolean needsFlush;
         private Runnable task;
         private Error error;
+        private final long FLUSH_THRESHOLD = 4;
+        private final long DEFAULT_FLUSH_COUNT = 100/FLUSH_THRESHOLD;
 
         public QueueFlusher(ThreadGroup threadGroup) {
             super(threadGroup, "Java2D Queue Flusher");
@@ -166,9 +172,13 @@ public class OGLRenderQueue extends RenderQueue {
         }
 
         public synchronized void flushNow() {
+            flushNow(true);
+        }
+
+        public synchronized void flushNow(boolean sync) {
             // wake up the flusher
             needsFlush = true;
-            notify();
+            if (!sync) return;
 
             // wait for flush to complete
             while (needsFlush) {
@@ -192,24 +202,27 @@ public class OGLRenderQueue extends RenderQueue {
         public synchronized void run() {
             boolean timedOut = false;
             while (true) {
+                int count = 0;
                 while (!needsFlush) {
                     try {
                         timedOut = false;
                         /*
-                         * Wait until we're woken up with a flushNow() call,
-                         * or the timeout period elapses (so that we can
-                         * flush the queue periodically).
+                         * Wait FLUSH_THRESHOLD ms then check if needsFlush is set by
+                         * flushNow() call or we waited DEFAULT_FLUSH_COUNT times.
+                         * If so, flush the queue.
                          */
-                        wait(100);
+                        wait(FLUSH_THRESHOLD);
                         /*
                          * We will automatically flush the queue if the
                          * following conditions apply:
-                         *   - the wait() timed out
+                         *   - the wait() timed out DEFAULT_FLUSH_COUNT times
                          *   - we can lock the queue (without blocking)
                          *   - there is something in the queue to flush
                          * Otherwise, just continue (we'll flush eventually).
                          */
-                        if (!needsFlush && (timedOut = tryLock())) {
+                        if (!needsFlush && count >= DEFAULT_FLUSH_COUNT &&
+                                (timedOut = tryLock()))
+                        {
                             if (buf.position() > 0) {
                                 needsFlush = true;
                             } else {
@@ -218,6 +231,7 @@ public class OGLRenderQueue extends RenderQueue {
                         }
                     } catch (InterruptedException e) {
                     }
+                    count++;
                 }
                 try {
                     // reset the throwable state
