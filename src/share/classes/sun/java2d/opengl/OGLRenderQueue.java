@@ -118,10 +118,7 @@ public class OGLRenderQueue extends RenderQueue {
         return (Thread.currentThread() == getInstance().flusher);
     }
 
-    public void flushNow() {
-        flushNow(true);
-    }
-
+    @Override
     public void flushNow(boolean sync) {
         // assert lock.isHeldByCurrentThread();
         try {
