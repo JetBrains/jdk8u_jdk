@@ -129,6 +129,12 @@ public final class WToolkit extends SunToolkit implements Runnable {
         {
             @Override
             public Void run() {
+                // By default, java.exe & awt.dll contains standard JDK icon resource.
+                // JBRE supports "jbre.win.app.icon.id" property which identifies
+                // the resource id of the icon packed into the executable launcher
+                // other than java.exe, e.g. idea.exe.
+                System.setProperty("jbre.win.app.icon.supported", "true");
+
                 String browserProp = System.getProperty("browser");
                 if (browserProp != null && browserProp.equals("sun.plugin")) {
                     disableCustomPalette();
