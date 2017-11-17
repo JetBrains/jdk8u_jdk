@@ -288,17 +288,19 @@ public class XComponentPeer extends XWindow implements ComponentPeer, DropTarget
             return true;
         }
 
-	boolean toOwnerRequest = false;
+	    boolean toOwnerRequest = false;
 
         Window pW = SunToolkit.getContainingWindow(target);
-	if (pW != null) {
-		Window[] ownedWindows = pW.getOwnedWindows();
+	    if (pW != null) {
+		    Window[] ownedWindows = pW.getOwnedWindows();
 	        toOwnerRequest = ownedWindows.length > 0;	
-	}
+	    }
 
 
         if (WindowStateMachine.get().isWaitingForWindowShow() && toOwnerRequest) {
             return false;
+        } else {
+	        WindowStateMachine.get().clear();
         }
 
         int result = XKeyboardFocusManagerPeer.

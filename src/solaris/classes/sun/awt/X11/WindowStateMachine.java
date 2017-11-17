@@ -33,6 +33,10 @@ public class WindowStateMachine {
         return !waitingWindows.isEmpty();
     }
 
+    public void clear() {
+        waitingWindows.clear();
+    }
+
     @Override
     public String toString() {
         return "Window state machine: " + waitingWindows;
