@@ -288,7 +288,16 @@ public class XComponentPeer extends XWindow implements ComponentPeer, DropTarget
             return true;
         }
 
-        if (WindowStateMachine.get().isWaitingForWindowShow()) {
+	boolean toOwnerRequest = false;
+
+        Window pW = SunToolkit.getContainingWindow(target);
+	if (pW != null) {
+		Window[] ownedWindows = pW.getOwnedWindows();
+	        toOwnerRequest = ownedWindows.length > 0;	
+	}
+
+
+        if (WindowStateMachine.get().isWaitingForWindowShow() && toOwnerRequest) {
             return false;
         }
 
