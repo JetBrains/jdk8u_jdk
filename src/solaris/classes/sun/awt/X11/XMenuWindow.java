@@ -405,6 +405,7 @@ public class XMenuWindow extends XBaseMenuWindow {
         XToolkit.awtLock();
         try {
             reshape(bounds.x, bounds.y, bounds.width, bounds.height);
+            WindowStateMachine.get().waitForNotifyAfterRaise(getWindow());
             xSetVisible(true);
             //Fixed 6267182: PIT: Menu is not visible after
             //showing and disposing a file dialog, XToolkit

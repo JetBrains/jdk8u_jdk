@@ -288,19 +288,8 @@ public class XComponentPeer extends XWindow implements ComponentPeer, DropTarget
             return true;
         }
 
-	    boolean toOwnerRequest = false;
-
-        Window pW = SunToolkit.getContainingWindow(target);
-	    if (pW != null) {
-		    Window[] ownedWindows = pW.getOwnedWindows();
-	        toOwnerRequest = ownedWindows.length > 0;	
-	    }
-
-
-        if (WindowStateMachine.get().isWaitingForWindowShow() && toOwnerRequest) {
+        if (WindowStateMachine.get().isWaitingForWindowShow()) {
             return false;
-        } else {
-	        WindowStateMachine.get().clear();
         }
 
         int result = XKeyboardFocusManagerPeer.
@@ -391,6 +380,15 @@ public class XComponentPeer extends XWindow implements ComponentPeer, DropTarget
 
 
     public void setVisible(boolean b) {
+        if (b) {
+
+            focusLog.fine("A component " + getTarget().getClass().getName()
+                    + " is going to be shown. Put the window on the waiting list: " +
+                    ((Window)XToolkit.windowToXWindow(getWindow()).getToplevelXWindow().getTarget()).getClass().getName() +
+            "; windowId : " + Long.toHexString(getWindow()));
+
+            WindowStateMachine.get().waitForNotifyAfterRaise(getWindow());
+        }
         xSetVisible(b);
     }
 

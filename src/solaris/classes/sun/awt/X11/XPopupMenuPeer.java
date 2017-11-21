@@ -149,6 +149,7 @@ public class XPopupMenuPeer extends XMenuWindow implements PopupMenuPeer {
             //Fix for 6267162: PIT: Popup Menu gets hidden below the screen when opened
             //near the periphery of the screen, XToolkit
             Rectangle bounds = getWindowBounds(pt, dim);
+            WindowStateMachine.get().waitForNotifyAfterRaise(getWindow());
             reshape(bounds);
             xSetVisible(true);
             toFront();
