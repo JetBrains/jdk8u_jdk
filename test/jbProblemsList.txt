@@ -226,7 +226,7 @@ java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                        generic
 java/awt/Focus/TranserFocusToWindow/TranserFocusToWindow.java        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6986253
-java/awt/Focus/TypeAhead/TestFocusFreeze.java                        windows-all
+java/awt/Focus/TypeAhead/TestFocusFreeze.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169100
 java/awt/Focus/WindowInitialFocusTest/WindowInitialFocusTest.html    windows-all
@@ -491,7 +491,7 @@ java/awt/Window/GrabSequence/GrabSequence.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8051857
 java/awt/Window/WindowType/WindowType.java                           linux-all
-java/awt/Focus/RequestFocusAndHideTest/RequestFocusAndHideTest.java  linux-all
+java/awt/Focus/RequestFocusAndHideTest/RequestFocusAndHideTest.java  generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080982
 java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java    generic-all
