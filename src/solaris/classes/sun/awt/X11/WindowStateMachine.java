@@ -1,9 +1,14 @@
 package sun.awt.X11;
 
+import sun.util.logging.PlatformLogger;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class WindowStateMachine {
+
+    private static final PlatformLogger focusLog = PlatformLogger.getLogger("sun.awt.X11.focus.WindowStateMachine");
+
     private static WindowStateMachine machine = new WindowStateMachine();
 
     public static WindowStateMachine get() {
@@ -18,6 +23,7 @@ public class WindowStateMachine {
     private Map<Long, State> waitingWindows = new LinkedHashMap<>();
 
     public void waitForNotifyAfterRaise (Long windowId) {
+        focusLog.finer("Window: " + Long.toHexString(windowId), new Throwable());
         waitingWindows.put(windowId, State.RAISED_AND_WAITING_FOR_MAP_NOTIFY);
     }
 
@@ -39,6 +45,7 @@ public class WindowStateMachine {
 
     @Override
     public String toString() {
-        return "Window state machine: " + waitingWindows;
+        return "Window state machine: " + waitingWindows.entrySet().stream().
+                collect(StringBuilder::new, (sb, e) -> sb.append(Long.toHexString(e.getKey())).append(" : ").append(e.getValue()).append("; "), StringBuilder::append);
     }
 }

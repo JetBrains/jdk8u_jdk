@@ -605,7 +605,7 @@ public class XBaseWindow {
      */
     public void xSetVisible(boolean visible) {
         if (log.isLoggable(PlatformLogger.Level.FINE)) {
-            log.fine("Setting visible on " + this + " to " + visible);
+            log.fine("Setting visible on " + Long.toHexString(getWindow()) + " to " + visible);
         }
         XToolkit.awtLock();
         try {
@@ -692,7 +692,7 @@ public class XBaseWindow {
             throw new IllegalStateException("Attempt to resize uncreated window");
         }
         if (insLog.isLoggable(PlatformLogger.Level.FINE)) {
-            insLog.fine("Setting bounds on " + this + " to (" + x + ", " + y + "), " + width + "x" + height);
+            insLog.fine("Setting bounds on " + Long.toHexString(getWindow()) + " to (" + x + ", " + y + "), " + width + "x" + height);
         }
         width = Math.max(MIN_SIZE, width);
         height = Math.max(MIN_SIZE, height);
@@ -930,6 +930,9 @@ public class XBaseWindow {
     }
     public void handlePropertyNotify(XEvent xev) {
         XPropertyEvent msg = xev.get_xproperty();
+        if (msg.get_atom() == XAtom.XA_WM_HINTS) {
+            WindowStateMachine.get().notify(msg.get_window());
+        }
         if (XPropertyCache.isCachingSupported()) {
             XPropertyCache.clearCache(window, XAtom.get(msg.get_atom()));
         }
@@ -1073,7 +1076,7 @@ public class XBaseWindow {
 
     public void dispatchEvent(XEvent xev) {
         if (eventLog.isLoggable(PlatformLogger.Level.FINEST)) {
-            eventLog.finest(xev.toString());
+            eventLog.finest(XlibWrapper.eventToString[xev.get_type()]);
         }
         int type = xev.get_type();
 
