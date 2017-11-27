@@ -32,10 +32,12 @@ import java.awt.image.ColorConvertOp;
 import java.awt.image.Raster;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class RenderUtil {
@@ -76,12 +78,17 @@ public class RenderUtil {
                 ColorConvertOp cco = new ColorConvertOp(ics, null);
                 return cco.filter(result, null);
             }
-            return null;
-        } catch (Throwable t) {
-            return null;
+            assertNotNull("no registered ImageReader claims to be able to read the stream", result);
+        } catch (IOException e) {
+            e.printStackTrace();
+            assertNull("an error occurs during reading" + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            assertNull("input is null" + e.getMessage(), e);
         } finally {
             Foundation.invoke(pool, "release");
         }
+        return null;
     }
 
     public static BufferedImage capture(int width, int height, Consumer<Graphics2D> painter)
