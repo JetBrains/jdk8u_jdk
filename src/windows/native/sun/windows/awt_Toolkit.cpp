@@ -52,6 +52,8 @@
 #include "debug_trace.h"
 #include "debug_mem.h"
 
+#include "java_rc.h"
+
 #include "ComCtl32Util.h"
 #include "DllUtil.h"
 
@@ -1629,55 +1631,11 @@ AwtObject* AwtToolkit::LookupCmdID(UINT id)
     return m_cmdIDs->Lookup(id);
 }
 
-bool AwtToolkit::GetIntegerProperty(LPTSTR prop, int& value)
-{
-    JNIEnv *env = (JNIEnv *)JNU_GetEnv(jvm, JNI_VERSION_1_2);
-    if (!env) return false;
-
-    static jclass cInteger = env->FindClass("java/lang/Integer");
-    DASSERT(cInteger);
-    static jmethodID mGetInteger = env->GetStaticMethodID(cInteger, "getInteger", "(Ljava/lang/String;)Ljava/lang/Integer;");
-    DASSERT(mGetInteger);
-
-    jstring propStr = JNU_NewStringPlatform(env, prop);
-    jobject jInt = env->CallStaticObjectMethod(cInteger, mGetInteger, propStr);
-    env->DeleteLocalRef(propStr);
-    if (!jInt) return false;
-
-    static jmethodID mIntValue = env->GetMethodID(cInteger, "intValue", "()I");
-    DASSERT(mIntValue);
-
-    value = (int)env->CallIntMethod(jInt, mIntValue);
-    env->DeleteLocalRef(jInt);
-    if (safe_ExceptionOccurred(env)) return false;
-    return true;
-}
-
-static bool GetWinAppIconID(int& id)
-{
-    static CriticalSection lock;
-    CriticalSection::Lock l(lock);
-
-    static bool initialized = false;
-    static int* iconID;
-    if (!initialized) {
-        initialized = true;
-        int v;
-        if (AwtToolkit::GetIntegerProperty(TEXT("jbre.win.app.icon.id"), v)) iconID = new int(v);
-    }
-    if (!iconID) return false;
-    id = *iconID;
-    return true;
-}
-
 HICON AwtToolkit::GetAwtIcon()
 {
-    int iconID;
-    if (GetWinAppIconID(iconID)) {
-        return ::LoadIcon(::GetModuleHandle(NULL), MAKEINTRESOURCE(iconID));
-    } else {
-        return ::LoadIcon(GetModuleHandle(), TEXT("AWT_ICON"));
-    }
+    HICON hIcon = ::LoadIcon(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
+    if (!hIcon) hIcon = ::LoadIcon(GetModuleHandle(), TEXT("AWT_ICON"));
+    return hIcon;
 }
 
 HICON AwtToolkit::GetAwtIconSm()
@@ -1691,11 +1649,8 @@ HICON AwtToolkit::GetAwtIconSm()
 
     // Fixed 6364216: LoadImage() may leak memory
     if (defaultIconSm == NULL || smx != prevSmx || smy != prevSmy) {
-        int iconID;
-        if (GetWinAppIconID(iconID)) {
-            // loads the best fitting resolution icon from the resource
-            defaultIconSm = ::LoadIcon(::GetModuleHandle(NULL), MAKEINTRESOURCE(iconID));
-        } else {
+        defaultIconSm = ::LoadIcon(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
+        if (!defaultIconSm) {
             defaultIconSm = (HICON)LoadImage(GetModuleHandle(), TEXT("AWT_ICON"), IMAGE_ICON, smx, smy, 0);
         }
         prevSmx = smx;

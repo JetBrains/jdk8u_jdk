@@ -375,8 +375,6 @@ public:
 
     static void SetBusy(BOOL busy);
 
-    static bool GetIntegerProperty(LPTSTR prop, int& value);
-
     /* Set and get the default input method Window handler. */
     INLINE void SetInputMethodWindow(HWND inputMethodHWnd) { m_inputMethodHWnd = inputMethodHWnd; }
     INLINE HWND GetInputMethodWindow() { return m_inputMethodHWnd; }
