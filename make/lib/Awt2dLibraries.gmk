@@ -225,7 +225,8 @@ ifeq ($(OPENJDK_TARGET_OS), windows)
   LIBAWT_DIRS += \
       $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/windows \
       $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/java2d/windows \
-      $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/java2d/d3d
+      $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/java2d/d3d \
+      $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/resource
 else ifneq ($(OPENJDK_TARGET_OS), macosx)
   LIBAWT_DIRS += \
       $(JDK_TOPDIR)/src/$(OPENJDK_TARGET_OS_API_DIR)/native/sun/java2d/x11
