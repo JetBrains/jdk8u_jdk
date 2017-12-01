@@ -113,22 +113,21 @@ public class ProgressBarTest extends JDialog {
 
             if (!pb.isIndeterminate()) {
 
-                Runnable request = new Runnable() {
+                Runnable request = () -> {
 
-                    @Override
-                    public void run() {
+                    if (pb.getValue() < pb.getMaximum()) {
 
-                        if (pb.getValue() < pb.getMaximum()) {
+                        Runnable update = () -> pb.setValue(pb.getValue() + 1);
 
-                            Runnable update = () -> pb.setValue(pb.getValue() + 1);
-
-                            SwingUtilities.invokeLater(update);
-                            executor.schedule(this, 100, TimeUnit.MILLISECONDS);
+                        try {
+                            SwingUtilities.invokeAndWait(update);
+                        } catch (InterruptedException | InvocationTargetException e) {
+                            //ignore
                         }
                     }
                 };
 
-                executor.schedule(request, 200, TimeUnit.MILLISECONDS);
+                executor.scheduleAtFixedRate(request, 0, 10, TimeUnit.MILLISECONDS);
             }
         }
     }
