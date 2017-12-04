@@ -930,9 +930,6 @@ public class XBaseWindow {
     }
     public void handlePropertyNotify(XEvent xev) {
         XPropertyEvent msg = xev.get_xproperty();
-        if (msg.get_atom() == XAtom.XA_WM_HINTS) {
-            WindowStateMachine.get().notify(msg.get_window());
-        }
         if (XPropertyCache.isCachingSupported()) {
             XPropertyCache.clearCache(window, XAtom.get(msg.get_atom()));
         }
