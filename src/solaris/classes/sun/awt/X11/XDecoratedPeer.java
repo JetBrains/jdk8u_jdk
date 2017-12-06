@@ -1032,16 +1032,6 @@ abstract class XDecoratedPeer extends XWindowPeer {
         }
     }
 
-    protected void suppressWmTakeFocus(boolean doSuppress) {
-        XAtomList protocols = getWMProtocols();
-        if (doSuppress) {
-            protocols.remove(wm_take_focus);
-        } else {
-            protocols.add(wm_take_focus);
-        }
-        wm_protocols.setAtomListProperty(this, protocols);
-    }
-
     public void dispose() {
         if (content != null) {
             content.destroy();

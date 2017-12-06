@@ -1137,6 +1137,13 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
     }
 
     protected void suppressWmTakeFocus(boolean doSuppress) {
+        XAtomList protocols = getWMProtocols();
+        if (doSuppress) {
+            protocols.remove(wm_take_focus);
+        } else {
+            protocols.add(wm_take_focus);
+        }
+        wm_protocols.setAtomListProperty(this, protocols);
     }
 
     final boolean isSimpleWindow() {

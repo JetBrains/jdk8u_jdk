@@ -242,7 +242,7 @@ final class XNETProtocol extends XProtocol implements XStateProtocol, XLayerProt
     }
 
     public void setLayer(XWindowPeer window, int layer) {
-        setStateHelper(window, XA_NET_WM_STATE_ABOVE, layer == LAYER_ALWAYS_ON_TOP);
+        //setStateHelper(window, XA_NET_WM_STATE_ABOVE, layer == LAYER_ALWAYS_ON_TOP);
     }
 
     /* New "netwm" spec from www.freedesktop.org */
