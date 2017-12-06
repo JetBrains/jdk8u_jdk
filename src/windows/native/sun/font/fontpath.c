@@ -755,3 +755,80 @@ Java_sun_awt_Win32FontManager_populateFontFileNameMap0
     ReleaseDC(NULL, screenDC);
     screenDC = NULL;
 }
+
+typedef struct SupportedCharsetsInfo {
+    JNIEnv *env;
+    jobject supportedCharsets;
+    jclass byteClassID;
+    jmethodID valueOfMID;
+    jmethodID putIfAbsentMID;
+} SupportedCharsetsInfo;
+
+static int CALLBACK StoreSupportedCharset(ENUMLOGFONTEXW *lpelfe, NEWTEXTMETRICEX *lpntme, int FontType, LPARAM lParam)
+{
+    SupportedCharsetsInfo* info = (SupportedCharsetsInfo*) lParam;
+    JNIEnv *env = info->env;
+    jstring fullName;
+    jobject charset;
+
+    fullName = (*env)->NewString(env, lpelfe->elfFullName, (jsize)wcslen((LPWSTR)lpelfe->elfFullName));
+    if (fullName == NULL) {
+        return 1;
+    }
+
+    charset = (*env)->CallStaticObjectMethod(env, info->byteClassID, info->valueOfMID,
+                                             (jbyte)(lpelfe->elfLogFont.lfCharSet));
+    (*env)->CallObjectMethod(env, info->supportedCharsets, info->putIfAbsentMID, fullName, charset);
+
+    return 1;
+}
+
+JNIEXPORT void JNICALL
+Java_sun_font_TrueTypeFont_getSupportedCharsetsForFamily
+(JNIEnv *env, jclass obj, jstring familyName, jobject supportedCharsets)
+{
+    int nameLen;
+    LOGFONTW lfw;
+    HDC screenDC;
+    SupportedCharsetsInfo info;
+    jclass mapClassID;
+
+    info.byteClassID = (*env)->FindClass(env, "java/lang/Byte");
+    if (info.byteClassID == NULL) {
+        return;
+    }
+    info.valueOfMID = (*env)->GetStaticMethodID(env, info.byteClassID, "valueOf", "(B)Ljava/lang/Byte;");
+    if (info.valueOfMID == NULL) {
+        return;
+    }
+    mapClassID = (*env)->FindClass(env, "java/util/Map");
+    if (mapClassID == NULL) {
+        return;
+    }
+    info.putIfAbsentMID = (*env)->GetMethodID(env, mapClassID, "putIfAbsent", 
+                                              "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    if (info.putIfAbsentMID == NULL) {
+        return;
+    }
+
+    info.env = env;
+    info.supportedCharsets = supportedCharsets;
+
+    memset(&lfw, 0, sizeof(lfw));
+    lfw.lfCharSet = DEFAULT_CHARSET;
+    nameLen = (*env)->GetStringLength(env, familyName);
+    if (nameLen >= (sizeof(lfw.lfFaceName) / sizeof(lfw.lfFaceName[0]))) {
+        return;
+    }
+    (*env)->GetStringRegion(env, familyName, 0, nameLen, lfw.lfFaceName);
+    lfw.lfFaceName[nameLen] = '\0';
+    
+    screenDC = GetDC(NULL);
+    if (screenDC == NULL) {
+        return;
+    }
+
+    EnumFontFamiliesExW(screenDC, &lfw, (FONTENUMPROCW)StoreSupportedCharset, (LPARAM)(&info), 0L);
+
+    ReleaseDC(NULL, screenDC);
+}
