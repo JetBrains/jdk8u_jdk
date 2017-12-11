@@ -759,10 +759,11 @@ Java_sun_awt_Win32FontManager_populateFontFileNameMap0
 typedef struct SupportedCharsetsInfo {
     JNIEnv *env;
     jobject supportedCharsets;
-    jclass byteClassID;
-    jmethodID valueOfMID;
-    jmethodID putIfAbsentMID;
 } SupportedCharsetsInfo;
+
+static jclass byteClassID = NULL;
+static jmethodID valueOfMID = NULL;
+static jmethodID putIfAbsentMID = NULL;
 
 static int CALLBACK StoreSupportedCharset(ENUMLOGFONTEXW *lpelfe, NEWTEXTMETRICEX *lpntme, int FontType, LPARAM lParam)
 {
@@ -776,9 +777,8 @@ static int CALLBACK StoreSupportedCharset(ENUMLOGFONTEXW *lpelfe, NEWTEXTMETRICE
         return 1;
     }
 
-    charset = (*env)->CallStaticObjectMethod(env, info->byteClassID, info->valueOfMID,
-                                             (jbyte)(lpelfe->elfLogFont.lfCharSet));
-    (*env)->CallObjectMethod(env, info->supportedCharsets, info->putIfAbsentMID, fullName, charset);
+    charset = (*env)->CallStaticObjectMethod(env, byteClassID, valueOfMID, (jbyte)(lpelfe->elfLogFont.lfCharSet));
+    (*env)->CallObjectMethod(env, info->supportedCharsets, putIfAbsentMID, fullName, charset);
 
     return 1;
 }
@@ -791,24 +791,34 @@ Java_sun_font_TrueTypeFont_getSupportedCharsetsForFamily
     LOGFONTW lfw;
     HDC screenDC;
     SupportedCharsetsInfo info;
-    jclass mapClassID;
+    jclass byteClassIDLocal, mapClassIDLocal;
 
-    info.byteClassID = (*env)->FindClass(env, "java/lang/Byte");
-    if (info.byteClassID == NULL) {
-        return;
+    if (byteClassID == NULL) {
+        byteClassIDLocal = (*env)->FindClass(env, "java/lang/Byte");
+        if (byteClassIDLocal == NULL) {
+            return;
+        }
+        byteClassID = (*env)->NewGlobalRef(env, byteClassIDLocal);
+        if (byteClassID == NULL) {
+            return;
+        }
     }
-    info.valueOfMID = (*env)->GetStaticMethodID(env, info.byteClassID, "valueOf", "(B)Ljava/lang/Byte;");
-    if (info.valueOfMID == NULL) {
-        return;
+    if (valueOfMID == NULL) {
+        valueOfMID = (*env)->GetStaticMethodID(env, byteClassID, "valueOf", "(B)Ljava/lang/Byte;");
+        if (valueOfMID == NULL) {
+            return;
+        }
     }
-    mapClassID = (*env)->FindClass(env, "java/util/Map");
-    if (mapClassID == NULL) {
-        return;
-    }
-    info.putIfAbsentMID = (*env)->GetMethodID(env, mapClassID, "putIfAbsent", 
-                                              "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    if (info.putIfAbsentMID == NULL) {
-        return;
+    if (putIfAbsentMID == NULL) {
+        mapClassIDLocal = (*env)->FindClass(env, "java/util/Map");
+        if (mapClassIDLocal == NULL) {
+            return;
+        }
+        putIfAbsentMID = (*env)->GetMethodID(env, mapClassIDLocal, "putIfAbsent", 
+                                             "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+        if (putIfAbsentMID == NULL) {
+            return;
+        }
     }
 
     info.env = env;
