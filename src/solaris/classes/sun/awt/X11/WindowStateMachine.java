@@ -50,22 +50,23 @@ public class WindowStateMachine {
                 collect(Collectors.toList());
         focusLog.finer("Remove " + windows.size() + "windows");
         windows.forEach(wId -> waitingWindows.remove(wId));
+    }
+
+    public boolean isWaitingForWindowShow () {
 
         double timeout = 3 * 1E9;
 
         List<WindowInfo> windows2 = waitingWindows.entrySet().stream().
-                filter(windowInfoStateEntry -> {
-                    long timeKept = System.nanoTime() - windowInfoStateEntry.getKey().time;
-                    focusLog.finer("Window has been kept " + timeKept);
-                    return timeKept > timeout;
-                }).
-                map(Map.Entry::getKey).
-                collect(Collectors.toList());
+          filter(windowInfoStateEntry -> {
+              long timeKept = System.nanoTime() - windowInfoStateEntry.getKey().time;
+              focusLog.finer("Window has been kept " + timeKept);
+              return timeKept > timeout;
+          }).
+          map(Map.Entry::getKey).
+          collect(Collectors.toList());
         focusLog.finer("Remove " + windows2.size() + "windows by timout");
         windows2.forEach(wId -> waitingWindows.remove(wId));
-    }
 
-    public boolean isWaitingForWindowShow () {
         return !waitingWindows.isEmpty();
     }
 
