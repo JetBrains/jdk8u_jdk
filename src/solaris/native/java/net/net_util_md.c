@@ -96,11 +96,14 @@ void setDefaultScopeID(JNIEnv *env, struct sockaddr *him)
     }
     int defaultIndex;
     struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)him;
-    if (sin6->sin6_family == AF_INET6 && (sin6->sin6_scope_id == 0)) {
-        defaultIndex = (*env)->GetStaticIntField(env, ni_class,
-                                                 ni_defaultIndexID);
-        sin6->sin6_scope_id = defaultIndex;
-    }
+
+//    Do not initialize scope_id for AF_INET6
+//
+//    if (sin6->sin6_family == AF_INET6 && (sin6->sin6_scope_id == 0)) {
+//        defaultIndex = (*env)->GetStaticIntField(env, ni_class,
+//                                                 ni_defaultIndexID);
+//        sin6->sin6_scope_id = defaultIndex;
+//    }
 #endif
 }
 
