@@ -7646,7 +7646,7 @@ public abstract class Component implements ImageObserver, MenuContainer,
             // 2) Sanity check: if the mouse event component source belongs to the same containing window.
             Component source = ((MouseEvent)currentEvent).getComponent();
             if (source == null || source.getContainingWindow() == getContainingWindow()) {
-                focusLog.finest("requesting focus by mouse event \"in window\"");
+                focusLog.finest("requesting focus by mouse event \"in window\"", new Throwable());
 
                 // If both the conditions are fulfilled the focus request should be strictly
                 // bounded by the toplevel window. It's assumed that the mouse event activates
