@@ -1019,7 +1019,7 @@ javax/swing/JComboBox/8033069/bug8033069NoScrollBar.java             generic-all
 javax/swing/JComboBox/8033069/bug8033069ScrollBar.java               generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169953
-javax/swing/JComboBox/8057893/bug8057893.java                        windows-all
+javax/swing/JComboBox/8057893/bug8057893.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8136998
 javax/swing/JComboBox/8136998/bug8136998.java                        generic-all
@@ -1032,9 +1032,6 @@ javax/swing/JComponent/6683775/bug6683775.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7190978
 javax/swing/JComponent/7154030/bug7154030.java                       generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8016559
-javax/swing/JEditorPane/6917744/bug6917744.java                      windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8042380
 javax/swing/JFileChooser/4524490/bug4524490.java                     generic-all
@@ -1094,7 +1091,7 @@ javax/swing/JMenuBar/4750590/bug4750590.java                         windows-all
 javax/swing/JMenuItem/4171437/bug4171437.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172536
-javax/swing/JMenuItem/4654927/bug4654927.java                        windows-all
+javax/swing/JMenuItem/4654927/bug4654927.java                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8025083
 javax/swing/JMenuItem/6209975/bug6209975.java                        generic-all
@@ -1143,13 +1140,13 @@ javax/swing/JScrollBar/4708809/bug4708809.java                       generic-all
 #javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8028618
-javax/swing/JScrollBar/bug4202954/bug4202954.java                    windows-all
+javax/swing/JScrollBar/bug4202954/bug4202954.java                    generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169960
 javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172539
-javax/swing/JSlider/6348946/bug6348946.java                          windows-all
+javax/swing/JSlider/6348946/bug6348946.java                          generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8172408
 javax/swing/JSpinner/4973721/bug4973721.java                         generic-all
