@@ -85,6 +85,8 @@ final class HelloExtensions {
                         new SupportedEllipticPointFormatsExtension(s, extlen);
             } else if (extType == ExtensionType.EXT_RENEGOTIATION_INFO) {
                 extension = new RenegotiationInfoExtension(s, extlen);
+            } else if (extType == ExtensionType.EXT_EXTENDED_MASTER_SECRET) {
+                extension = new ExtendedMasterSecretExtension(s, extlen);
             } else {
                 extension = new UnknownExtension(s, extlen, extType);
             }
