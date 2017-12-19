@@ -27,7 +27,7 @@ import javax.swing.plaf.FontUIResource;
 
 /* @test
  * @summary regression test on JRE-269
- * @run main/othervm -Djavax.swing.rebaseCssSizeMap=true JLabel269
+ * @run main/othervm -Djavax.swing.rebaseCssSizeMap=true JLabel269 -verbose
  */
 public class JLabel269 {
 
