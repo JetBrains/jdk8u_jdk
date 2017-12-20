@@ -387,7 +387,7 @@ public class XComponentPeer extends XWindow implements ComponentPeer, DropTarget
                     ((Window)XToolkit.windowToXWindow(getWindow()).getToplevelXWindow().getTarget()).getClass().getName() +
             "; windowId : " + Long.toHexString(getWindow()));
 
-            if (getTarget() instanceof Window) {
+            if (getTarget() instanceof javax.swing.Popup) {
                 WindowStateMachine.get().waitForNotifyAfterRaise(getWindow());
             }
         }
