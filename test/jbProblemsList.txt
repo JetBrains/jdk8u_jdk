@@ -489,6 +489,9 @@ java/awt/Window/Grab/GrabTest.java                                   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-6848409
 java/awt/Window/GrabSequence/GrabSequence.java                       generic-all
 
+https://bugs.openjdk.java.net/browse/JDK-8028486
+java/awt/Window/WindowsLeak/WindowsLeak.java                         macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8051857
 java/awt/Window/WindowType/WindowType.java                           linux-all
 java/awt/Focus/RequestFocusAndHideTest/RequestFocusAndHideTest.java  generic-all
@@ -1152,7 +1155,8 @@ javax/swing/JSlider/6348946/bug6348946.java                          generic-all
 javax/swing/JSpinner/4973721/bug4973721.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169958
-javax/swing/JSpinner/5012888/bug5012888.java                         windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8159902
+javax/swing/JSpinner/5012888/bug5012888.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8019935
 javax/swing/JSplitPane/4885629/bug4885629.java                       generic-all
