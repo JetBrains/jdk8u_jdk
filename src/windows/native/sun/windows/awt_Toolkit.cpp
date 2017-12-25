@@ -1618,7 +1618,7 @@ HICON AwtToolkit::GetAwtIcon()
     return hIcon;
 }
 
-HICON AwtToolkit::GetAwtIconSm()
+HICON AwtToolkit::GetAwtIconSm(void* pAwtWindow)
 {
     static HICON defaultIconSm = NULL;
     static int prevSmx = 0;
@@ -1627,9 +1627,19 @@ HICON AwtToolkit::GetAwtIconSm()
     int smx = GetSystemMetrics(SM_CXSMICON);
     int smy = GetSystemMetrics(SM_CYSMICON);
 
+    if (AwtWin32GraphicsDevice::IsUIScaleEnabled() && pAwtWindow != NULL) {
+        AwtWindow *wnd = reinterpret_cast<AwtWindow*>(pAwtWindow);
+        Devices::InstanceAccess devices;
+        AwtWin32GraphicsDevice* device = devices->GetDevice(AwtWin32GraphicsDevice::DeviceIndexForWindow(wnd->GetHWnd()));
+        if (device) {
+            smx = 16 * device->GetScaleX();
+            smy = 16 * device->GetScaleY();
+        }
+    }
+
     // Fixed 6364216: LoadImage() may leak memory
     if (defaultIconSm == NULL || smx != prevSmx || smy != prevSmy) {
-        defaultIconSm = ::LoadIcon(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
+        defaultIconSm = (HICON)LoadImage(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON), IMAGE_ICON, smx, smy, 0);
         if (!defaultIconSm) {
             defaultIconSm = (HICON)LoadImage(GetModuleHandle(), TEXT("AWT_ICON"), IMAGE_ICON, smx, smy, 0);
         }
