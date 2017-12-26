@@ -524,8 +524,8 @@ public class Win32GraphicsDevice extends GraphicsDevice implements
         defaultConfig = null;
         configs = null;
         // pass on to all top-level windows on this display
-        topLevels.notifyListeners();
         initScaleFactors();
+        topLevels.notifyListeners();
     }
 
     /**
