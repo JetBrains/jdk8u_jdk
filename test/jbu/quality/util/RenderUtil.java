@@ -199,6 +199,7 @@ public class RenderUtil {
                 }
 
                 if (!failed) break;
+                ImageIO.write(image, "png", new File(testData, gfName + "_" + variant));
             }
 
             if (failed) throw new RuntimeException(failureReason.toString());
