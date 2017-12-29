@@ -91,6 +91,8 @@ public class RenderUtil {
         return null;
     }
 
+    static BufferedImage result;
+
     public static BufferedImage capture(int width, int height, Consumer<Graphics2D> painter)
             throws Exception {
         JFrame[] f = new JFrame[1];
@@ -117,8 +119,12 @@ public class RenderUtil {
         }
         screenRect = new Rectangle(p[0].x + 5, p[0].y + 5, width, height);
 
-        BufferedImage result = SystemUtils.IS_OS_MAC ?
-                captureScreen(f[0], screenRect) : r.createScreenCapture(screenRect);
+        if (SystemUtils.IS_OS_MAC)
+            result = captureScreen(f[0], screenRect);
+        else
+            SwingUtilities.invokeAndWait(() -> {
+                result = r.createScreenCapture(screenRect);
+            });
         SwingUtilities.invokeAndWait(f[0]::dispose);
         return result;
     }
@@ -199,8 +205,8 @@ public class RenderUtil {
                     }
                 }
 
-                ImageIO.write(image, "png", new File(testData, gfName + "_" + variant +".png"));
-                ImageIO.write(goldenImage, "png", new File(testData, gfName + "_golden_" + variant +".png"));
+                ImageIO.write(image, "png", new File(testData, gfName + "_" + variant + ".png"));
+                ImageIO.write(goldenImage, "png", new File(testData, gfName + "_golden_" + variant + ".png"));
                 if (!failed) break;
             }
 
