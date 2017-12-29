@@ -430,6 +430,10 @@ java/awt/MouseInfo/JContainerMousePositionTest.java                  generic-all
 # https://bugs.openjdk.java.net/browse/JDK-7124230
 java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java macosx-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8077686
+java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java   linux-all
+java/awt/event/TextEvent/TextEventSequenceTest/TextEventSequenceTest.java linux-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8139581
 java/awt/Paint/ComponentIsNotDrawnAfterRemoveAddTest/ComponentIsNotDrawnAfterRemoveAddTest.java generic-all
 
@@ -734,6 +738,9 @@ java/io/SystemInAvailable.java                                       generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8029891
 java/lang/ClassLoader/deadlock/GetResource.java                      generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8168517
+java/lang/ProcessBuilder/Basic.java                                  generic-all
+
 # Test ignored: This test has huge memory requirements
 java/lang/StringBuilder/HugeCapacity.java                            generic-all
 
@@ -974,6 +981,9 @@ com/sun/security/sasl/gsskerb/AuthOnly.java                     generic-all
 # 7157786
 sun/security/pkcs11/ec/TestKeyFactory.java                      generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8171496
+sun/security/krb5/auto/SSL.java                                 generic-all
+
 # 7164518: no PortUnreachableException on Mac
 sun/security/krb5/auto/Unreachable.java                         macosx-all
 
@@ -1100,6 +1110,9 @@ javax/swing/JMenu/8072900/WrongSelectionOnMouseOver.java             generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8158496
 javax/swing/JMenuBar/4750590/bug4750590.java                         windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8076178
+javax/swing/JMenuBar/4750590/bug4750590.java                         macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8040916
 javax/swing/JMenuItem/4171437/bug4171437.java                        generic-all
