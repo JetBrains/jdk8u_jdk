@@ -150,7 +150,7 @@ public class RenderUtil {
         String[] testDataVariant = {
                 "osx_hardware_rendering", "osx_software_rendering",
                 "osx_sierra_rendering", "osx_lowres_rendering",
-                "linux_rendering", "windows_rendering"};
+                "linux_rendering", "windows_rendering", "windows7_rendering"};
 
         String testDataStr = System.getProperty("testdata");
         assertNotNull("testdata property is not set", testDataStr);
@@ -199,7 +199,6 @@ public class RenderUtil {
                 }
 
                 if (!failed) break;
-                ImageIO.write(image, "png", new File(testData, gfName + "_" + variant));
             }
 
             if (failed) throw new RuntimeException(failureReason.toString());
