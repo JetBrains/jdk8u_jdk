@@ -190,7 +190,8 @@ public class RenderUtil {
                         for (int k = 0; k < gArr.length; k++) {
                             if (gArr[k] != rArr[k]) {
                                 failureReason.append(variant).append(" : Different pixels found ").
-                                        append("at (").append(i).append(",").append(j).append(")");
+                                        append("at (").append(i).append(",").append(j).append(")").
+                                        append("  gArr(" + k + ")=" + gArr[k] + "rArr(" + k + ")=" + rArr[k]);
                                 failed = true;
                                 break scan;
                             }
@@ -198,6 +199,8 @@ public class RenderUtil {
                     }
                 }
 
+                ImageIO.write(image, "png", new File(testData, gfName + "_" + variant +".png"));
+                ImageIO.write(goldenImage, "png", new File(testData, gfName + "_golden_" + variant +".png"));
                 if (!failed) break;
             }
 
