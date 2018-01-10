@@ -91,8 +91,6 @@ public class RenderUtil {
         return null;
     }
 
-    static BufferedImage result;
-
     public static BufferedImage capture(int width, int height, Consumer<Graphics2D> painter)
             throws Exception {
         JFrame[] f = new JFrame[1];
@@ -119,12 +117,8 @@ public class RenderUtil {
         }
         screenRect = new Rectangle(p[0].x + 5, p[0].y + 5, width, height);
 
-        if (SystemUtils.IS_OS_MAC)
-            result = captureScreen(f[0], screenRect);
-        else
-            SwingUtilities.invokeAndWait(() -> {
-                result = r.createScreenCapture(screenRect);
-            });
+        BufferedImage result = SystemUtils.IS_OS_MAC ?
+                captureScreen(f[0], screenRect) : r.createScreenCapture(screenRect);
         SwingUtilities.invokeAndWait(f[0]::dispose);
         return result;
     }
@@ -197,7 +191,7 @@ public class RenderUtil {
                             if (gArr[k] != rArr[k]) {
                                 failureReason.append(variant).append(" : Different pixels found ").
                                         append("at (").append(i).append(",").append(j).append(")").
-                                        append("  gArr(" + k + ")=" + gArr[k] + "rArr(" + k + ")=" + rArr[k]);
+                                        append("  gArr(" + k + ")=" + gArr[k] + " rArr(" + k + ")=" + rArr[k]);
                                 failed = true;
                                 break scan;
                             }
@@ -205,10 +199,9 @@ public class RenderUtil {
                     }
                 }
 
-                ImageIO.write(image, "png", new File(testData, gfName + "_" + variant + ".png"));
-                ImageIO.write(goldenImage, "png", new File(testData, gfName + "_golden_" + variant + ".png"));
                 if (!failed) break;
             }
+            ImageIO.write(image, "png", new File(testData, gfName + "_actual.png"));
 
             if (failed) throw new RuntimeException(failureReason.toString());
         } else {
