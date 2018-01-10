@@ -97,9 +97,9 @@ NSString *GetJavaRoot(NSDictionary *jvmInfoDict) {
     if (obj == nil) return nil;
     if ([obj isKindOfClass:[NSArray class]]) return obj;
     if (![obj isKindOfClass:[NSString class]]) {
-        [NSException raise:@kArgsFailure format:@"%@", [NSString stringWithFormat:@"Failed to find '%@' array in JVMInfo Info.plist"]];
+        [NSException raise:@kArgsFailure format:@"%@", [NSString stringWithFormat:@"Failed to find '%@' array in JVMInfo Info.plist", key]];
     }
-
+	
     // split
     return [(NSString *)obj componentsSeparatedByString:delimiter];
 }
@@ -194,7 +194,7 @@ NSString *GetJavaRoot(NSDictionary *jvmInfoDict) {
     // Sum up all the classpath entries into one big JVM arg
     NSMutableString *classpathOption = [NSMutableString stringWithString:@"-Djava.class.path="];
     [classpath enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if (idx > 1) [classpathOption appendString:@":"];
+        if (idx > 0) [classpathOption appendString:@":"];
         [classpathOption appendString:obj];
     }];
 
