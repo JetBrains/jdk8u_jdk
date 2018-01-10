@@ -1188,6 +1188,7 @@ javax/swing/JSplitPane/4885629/bug4885629.java                       generic-all
 # https://bugs.openjdk.java.net/browse/JDK-7033533
 javax/swing/JComboBox/4199622/bug4199622.java                        linux-all
 javax/swing/JInternalFrame/Test6802868.java                          linux-all
+javax/swing/JOptionPane/7138665/bug7138665.java                      linux-all
 javax/swing/JPopupMenu/6495920/bug6495920.java                       linux-all
 javax/swing/JTable/4220171/bug4220171.java                           linux-all
 javax/swing/Security/6657138/ComponentTest.java                      linux-all
