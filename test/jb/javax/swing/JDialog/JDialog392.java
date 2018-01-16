@@ -156,7 +156,7 @@ public class JDialog392 implements Runnable {
                 int expectedRGB = screenImage.getRGB((int) (shotSize.getWidth() / 2), (int) (shotSize.getHeight() / 2)) & 0x00FFFFFF;
 
                 for (int col = 1; col < shotSize.getWidth(); col++) {
-                    for (int row = 1; row < shotSize.getHeight(); row++) {
+                    for (int row = 1; row < shotSize.getHeight()/2; row++) {
                         try {
                             // remove transparance
                             rgb = screenImage.getRGB(col, row) & 0x00FFFFFF;
