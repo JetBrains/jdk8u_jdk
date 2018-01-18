@@ -1426,7 +1426,7 @@ public abstract class LWComponentPeer<T extends Component, D extends JComponent>
         final OGLRenderQueue rq = OGLRenderQueue.getInstance();
         rq.lock();
         try {
-            rq.flushNow(false);
+            rq.flushNow();
         } finally {
             rq.unlock();
         }
