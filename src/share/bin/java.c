@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1995, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -650,9 +650,35 @@ static void
 SetJvmEnvironment(int argc, char **argv) {
 
     static const char*  NMT_Env_Name    = "NMT_LEVEL_";
-
     int i;
     for (i = 0; i < argc; i++) {
+        char *arg = argv[i];
+        /*
+         * Since this must be a VM flag we stop processing once we see
+         * an argument the launcher would not have processed beyond (such
+         * as -version or -h), or an argument that indicates the following
+         * arguments are for the application (i.e. the main class name, or
+         * the -jar argument).
+         */
+        if (i > 0) {
+            char *prev = argv[i - 1];
+            // skip non-dash arg preceded by class path specifiers
+            if (*arg != '-' &&
+                    ((JLI_StrCmp(prev, "-cp") == 0
+                    || JLI_StrCmp(prev, "-classpath") == 0))) {
+                continue;
+            }
+
+            if (*arg != '-'
+                    || JLI_StrCmp(arg, "-version") == 0
+                    || JLI_StrCmp(arg, "-fullversion") == 0
+                    || JLI_StrCmp(arg, "-help") == 0
+                    || JLI_StrCmp(arg, "-?") == 0
+                    || JLI_StrCmp(arg, "-jar") == 0
+                    || JLI_StrCmp(arg, "-X") == 0) {
+                return;
+            }
+        }
         /*
          * The following case checks for "-XX:NativeMemoryTracking=value".
          * If value is non null, an environmental variable set to this value
@@ -660,7 +686,6 @@ SetJvmEnvironment(int argc, char **argv) {
          * The argument is passed to the JVM, which will check validity.
          * The JVM is responsible for removing the env variable.
          */
-        char *arg = argv[i];
         if (JLI_StrCCmp(arg, "-XX:NativeMemoryTracking=") == 0) {
             int retval;
             // get what follows this parameter, include "="

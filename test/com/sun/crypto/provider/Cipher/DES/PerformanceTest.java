@@ -66,7 +66,7 @@ public class PerformanceTest {
 
     // The codemgrtool won't let me checkin this line, so I had to break it up.
 
-    /* Smilla decides to embark upon her own investigations but soon finds  herself running up against a brick wall. Isaiah's mother, Juliane, mistrusts her and the authorities also make life difficult for Smilla. But she won't let go. Then there's this mechanic ­ a reticent, inscrutable sort of guy ­ who lives in the same apartment building. He also knew the boy and even constructed a workbench for him in his cellar workshop. The mechanic tells Smilla that he'd like to help her, but then again, he may just be one of those who seem to want to dog her heels. End ".getBytes();*/
+    /* Smilla decides to embark upon her own investigations but soon finds  herself running up against a brick wall. Isaiah's mother, Juliane, mistrusts her and the authorities also make life difficult for Smilla. But she won't let go. Then there's this mechanic ï¿½ a reticent, inscrutable sort of guy ï¿½ who lives in the same apartment building. He also knew the boy and even constructed a workbench for him in his cellar workshop. The mechanic tells Smilla that he'd like to help her, but then again, he may just be one of those who seem to want to dog her heels. End ".getBytes();*/
 
     static int[] dataSizes = {1024, 8192};
     static String[] crypts = {"DES", "DESede"};
