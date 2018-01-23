@@ -44,6 +44,7 @@ import sun.awt.AWTAccessor.ComponentAccessor;
 import sun.awt.AWTAccessor.WindowAccessor;
 import sun.java2d.SurfaceData;
 import sun.java2d.opengl.CGLSurfaceData;
+import sun.lwawt.LWLightweightFramePeer;
 import sun.lwawt.*;
 import sun.util.logging.PlatformLogger;
 
@@ -576,6 +577,64 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
 
         boolean wasMaximized = isMaximized();
 
+        // Actually show or hide the window
+        LWWindowPeer blocker = (peer == null)? null : peer.getBlocker();
+        if (blocker == null || !visible) {
+            // If it ain't blocked, or is being hidden, go regular way
+            if (visible) {
+                contentView.execute(viewPtr -> {
+                    execute(ptr -> CWrapper.NSWindow.makeFirstResponder(ptr,
+                                                                        viewPtr));
+                });
+
+                boolean isPopup = (target.getType() == Window.Type.POPUP);
+                execute(ptr -> {
+                    if (isPopup) {
+                        // Popups in applets don't activate applet's process
+                        CWrapper.NSWindow.orderFrontRegardless(ptr);
+                    } else {
+                        CWrapper.NSWindow.orderFront(ptr);
+                    }
+
+                    boolean isKeyWindow = CWrapper.NSWindow.isKeyWindow(ptr);
+                    if (!isKeyWindow) {
+                        CWrapper.NSWindow.makeKeyWindow(ptr);
+                    }
+
+                    if (owner != null
+                            && owner.getPeer() instanceof LWLightweightFramePeer) {
+                        LWLightweightFramePeer peer =
+                                (LWLightweightFramePeer) owner.getPeer();
+
+                        long ownerWindowPtr = peer.getOverriddenWindowHandle();
+                        if (ownerWindowPtr != 0) {
+                            //Place window above JavaFX stage
+                            CWrapper.NSWindow.addChildWindow(
+                                    ownerWindowPtr, ptr,
+                                    CWrapper.NSWindow.NSWindowAbove);
+                        }
+                    }
+                });
+            } else {
+                execute(ptr->{
+                    // immediately hide the window
+                    CWrapper.NSWindow.orderOut(ptr);
+                    // process the close
+                    CWrapper.NSWindow.close(ptr);
+                });
+            }
+        } else {
+            // otherwise, put it in a proper z-order
+            CPlatformWindow bw
+                    = (CPlatformWindow) blocker.getPlatformWindow();
+            bw.execute(blockerPtr -> {
+                execute(ptr -> {
+                    CWrapper.NSWindow.orderWindow(ptr,
+                                                  CWrapper.NSWindow.NSWindowBelow,
+                                                  blockerPtr);
+                });
+            });
+        }
         this.visible = visible;
 
         // Manage the extended state when showing
