@@ -674,20 +674,18 @@ class VirtualMachineImpl extends MirrorImpl
             versionInfo().jdwpMinor >= 6;
     }
     public boolean canGetInstanceInfo() {
-        if (versionInfo().jdwpMajor < 1 ||
-            versionInfo().jdwpMinor < 6) {
+        if (versionInfo().jdwpMajor > 1 ||
+            versionInfo().jdwpMinor >= 6) {
+            validateVM();
+            return hasNewCapabilities() &&
+                capabilitiesNew().canGetInstanceInfo;
+        } else {
             return false;
         }
-        validateVM();
-        return hasNewCapabilities() &&
-            capabilitiesNew().canGetInstanceInfo;
     }
     public boolean canUseSourceNameFilters() {
-        if (versionInfo().jdwpMajor < 1 ||
-            versionInfo().jdwpMinor < 6) {
-            return false;
-        }
-        return true;
+        return versionInfo().jdwpMajor > 1 ||
+            versionInfo().jdwpMinor >= 6;
     }
     public boolean canForceEarlyReturn() {
         validateVM();
@@ -703,12 +701,8 @@ class VirtualMachineImpl extends MirrorImpl
             capabilitiesNew().canGetSourceDebugExtension;
     }
     public boolean canGetClassFileVersion() {
-        if ( versionInfo().jdwpMajor < 1 &&
-             versionInfo().jdwpMinor  < 6) {
-            return false;
-        } else {
-            return true;
-        }
+        return versionInfo().jdwpMajor > 1 ||
+            versionInfo().jdwpMinor >= 6;
     }
     public boolean canGetConstantPool() {
         validateVM();
