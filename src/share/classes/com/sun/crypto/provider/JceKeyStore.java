@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -899,5 +899,37 @@ public final class JceKeyStore extends KeyStoreSpi {
             passwdBytes[i] = 0;
         md.update("Mighty Aphrodite".getBytes("UTF8"));
         return md;
+    }
+
+    /*
+     * An ObjectInputFilter that checks the format of the secret key being
+     * deserialized.
+     */
+    private static class DeserializationChecker implements ObjectInputFilter {
+        private static final int MAX_NESTED_DEPTH = 2;
+
+        @Override
+        public ObjectInputFilter.Status
+            checkInput(ObjectInputFilter.FilterInfo info) {
+
+            // First run a custom filter
+            long nestedDepth = info.depth();
+            if ((nestedDepth == 1 &&
+                        info.serialClass() != SealedObjectForKeyProtector.class) ||
+                    (nestedDepth > MAX_NESTED_DEPTH &&
+                        info.serialClass() != null &&
+                        info.serialClass() != Object.class)) {
+                return Status.REJECTED;
+            }
+
+            // Next run the default filter, if available
+            ObjectInputFilter defaultFilter =
+                ObjectInputFilter.Config.getSerialFilter();
+            if (defaultFilter != null) {
+                return defaultFilter.checkInput(info);
+            }
+
+            return Status.UNDECIDED;
+        }
     }
 }
