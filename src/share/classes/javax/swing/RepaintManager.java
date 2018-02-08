@@ -338,6 +338,10 @@ public class RepaintManager
 
     private void displayChanged() {
         clearImages();
+
+        // Reset buffer maximum size to get valid size from updated graphics
+        // environment in getDoubleBufferMaximumSize()
+        setDoubleBufferMaximumSize(null);
     }
 
     /**
