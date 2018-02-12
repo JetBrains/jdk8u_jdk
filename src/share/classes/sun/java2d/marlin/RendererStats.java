@@ -25,42 +25,42 @@
 
 package sun.java2d.marlin;
 
+import java.lang.ref.PhantomReference;
+import java.lang.ref.ReferenceQueue;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import sun.java2d.marlin.ArrayCacheConst.CacheStats;
 import static sun.java2d.marlin.MarlinUtils.logInfo;
 import sun.java2d.marlin.stats.Histogram;
 import sun.java2d.marlin.stats.Monitor;
 import sun.java2d.marlin.stats.StatLong;
-import sun.misc.ThreadGroupUtils;
+//import sun.awt.util.ThreadGroupUtils;
 
 /**
  * This class gathers global rendering statistics for debugging purposes only
  */
 public final class RendererStats implements MarlinConst {
 
-    // singleton
-    private static volatile RendererStats SINGLETON = null;
+    static RendererStats createInstance(final Object parent, final String name)
+    {
+        final RendererStats stats = new RendererStats(name);
 
-    static RendererStats getInstance() {
-        if (SINGLETON == null) {
-            SINGLETON = new RendererStats();
-        }
-        return SINGLETON;
+        // Keep a strong reference to dump it later:
+        RendererStatsHolder.getInstance().add(parent, stats);
+
+        return stats;
     }
 
     public static void dumpStats() {
-        if (SINGLETON != null) {
-            SINGLETON.dump();
-        }
+        RendererStatsHolder.dumpStats();
     }
 
-    /* RendererContext collection as hard references
-       (only used for debugging purposes) */
-    static final ConcurrentLinkedQueue<RendererContext> ALL_CONTEXTS
-        = new ConcurrentLinkedQueue<RendererContext>();
+    // context name (debugging purposes)
+    final String name;
     // stats
     final StatLong stat_cache_rowAA
         = new StatLong("cache.rowAA");
@@ -68,10 +68,6 @@ public final class RendererStats implements MarlinConst {
         = new StatLong("cache.rowAAChunk");
     final StatLong stat_cache_tiles
         = new StatLong("cache.tiles");
-    final StatLong stat_rdr_poly_stack_curves
-        = new StatLong("renderer.poly.stack.curves");
-    final StatLong stat_rdr_poly_stack_types
-        = new StatLong("renderer.poly.stack.types");
     final StatLong stat_rdr_addLine
         = new StatLong("renderer.addLine");
     final StatLong stat_rdr_addLine_skip
@@ -108,17 +104,23 @@ public final class RendererStats implements MarlinConst {
         = new StatLong("renderer.crossings.bsearch");
     final StatLong stat_rdr_crossings_msorts
         = new StatLong("renderer.crossings.msorts");
+    final StatLong stat_str_polystack_curves
+        = new StatLong("stroker.polystack.curves");
+    final StatLong stat_str_polystack_types
+        = new StatLong("stroker.polystack.types");
+    final StatLong stat_cpd_polystack_curves
+        = new StatLong("closedPathDetector.polystack.curves");
+    final StatLong stat_cpd_polystack_types
+        = new StatLong("closedPathDetector.polystack.types");
+    final StatLong stat_pcf_idxstack_indices
+        = new StatLong("pathClipFilter.stack.indices");
     // growable arrays
     final StatLong stat_array_dasher_dasher
         = new StatLong("array.dasher.dasher.d_float");
     final StatLong stat_array_dasher_firstSegmentsBuffer
         = new StatLong("array.dasher.firstSegmentsBuffer.d_float");
-    final StatLong stat_array_stroker_polystack_curves
-        = new StatLong("array.stroker.polystack.curves.d_float");
-    final StatLong stat_array_stroker_polystack_curveTypes
-        = new StatLong("array.stroker.polystack.curveTypes.d_byte");
     final StatLong stat_array_marlincache_rowAAChunk
-        = new StatLong("array.marlincache.rowAAChunk.d_byte");
+        = new StatLong("array.marlincache.rowAAChunk.resize");
     final StatLong stat_array_marlincache_touchedTile
         = new StatLong("array.marlincache.touchedTile.int");
     final StatLong stat_array_renderer_alphaline
@@ -135,7 +137,19 @@ public final class RendererStats implements MarlinConst {
         = new StatLong("array.renderer.edgePtrs.int");
     final StatLong stat_array_renderer_aux_edgePtrs
         = new StatLong("array.renderer.aux_edgePtrs.int");
+    final StatLong stat_array_str_polystack_curves
+        = new StatLong("array.stroker.polystack.curves.d_float");
+    final StatLong stat_array_str_polystack_types
+        = new StatLong("array.stroker.polystack.curveTypes.d_byte");
+    final StatLong stat_array_cpd_polystack_curves
+        = new StatLong("array.closedPathDetector.polystack.curves.d_float");
+    final StatLong stat_array_cpd_polystack_types
+        = new StatLong("array.closedPathDetector.polystack.curveTypes.d_byte");
+    final StatLong stat_array_pcf_idxstack_indices
+        = new StatLong("array.pathClipFilter.stack.indices.d_int");
     // histograms
+    final Histogram hist_rdr_edges_count
+        = new Histogram("renderer.edges.count");
     final Histogram hist_rdr_crossings
         = new Histogram("renderer.crossings");
     final Histogram hist_rdr_crossings_ratio
@@ -146,6 +160,8 @@ public final class RendererStats implements MarlinConst {
         = new Histogram("renderer.crossings.msorts");
     final Histogram hist_rdr_crossings_msorts_adds
         = new Histogram("renderer.crossings.msorts.adds");
+    final Histogram hist_str_polystack_curves
+        = new Histogram("stroker.polystack.curves");
     final Histogram hist_tile_generator_alpha
         = new Histogram("tile_generator.alpha");
     final Histogram hist_tile_generator_encoding
@@ -156,13 +172,15 @@ public final class RendererStats implements MarlinConst {
         = new Histogram("tile_generator.encoding.ratio");
     final Histogram hist_tile_generator_encoding_runLen
         = new Histogram("tile_generator.encoding.runLen");
+    final Histogram hist_cpd_polystack_curves
+        = new Histogram("closedPathDetector.polystack.curves");
+    final Histogram hist_pcf_idxstack_indices
+        = new Histogram("pathClipFilter.stack.indices");
     // all stats
     final StatLong[] statistics = new StatLong[]{
         stat_cache_rowAA,
         stat_cache_rowAAChunk,
         stat_cache_tiles,
-        stat_rdr_poly_stack_types,
-        stat_rdr_poly_stack_curves,
         stat_rdr_addLine,
         stat_rdr_addLine_skip,
         stat_rdr_curveBreak,
@@ -181,6 +199,12 @@ public final class RendererStats implements MarlinConst {
         stat_rdr_crossings_sorts,
         stat_rdr_crossings_bsearch,
         stat_rdr_crossings_msorts,
+        stat_str_polystack_types,
+        stat_str_polystack_curves,
+        stat_cpd_polystack_curves,
+        stat_cpd_polystack_types,
+        stat_pcf_idxstack_indices,
+        hist_rdr_edges_count,
         hist_rdr_crossings,
         hist_rdr_crossings_ratio,
         hist_rdr_crossings_adds,
@@ -191,10 +215,11 @@ public final class RendererStats implements MarlinConst {
         hist_tile_generator_encoding_dist,
         hist_tile_generator_encoding_ratio,
         hist_tile_generator_encoding_runLen,
+        hist_str_polystack_curves,
+        hist_cpd_polystack_curves,
+        hist_pcf_idxstack_indices,
         stat_array_dasher_dasher,
         stat_array_dasher_firstSegmentsBuffer,
-        stat_array_stroker_polystack_curves,
-        stat_array_stroker_polystack_curveTypes,
         stat_array_marlincache_rowAAChunk,
         stat_array_marlincache_touchedTile,
         stat_array_renderer_alphaline,
@@ -203,7 +228,12 @@ public final class RendererStats implements MarlinConst {
         stat_array_renderer_edgeBuckets,
         stat_array_renderer_edgeBucketCounts,
         stat_array_renderer_edgePtrs,
-        stat_array_renderer_aux_edgePtrs
+        stat_array_renderer_aux_edgePtrs,
+        stat_array_str_polystack_curves,
+        stat_array_str_polystack_types,
+        stat_array_cpd_polystack_curves,
+        stat_array_cpd_polystack_types,
+        stat_array_pcf_idxstack_indices
     };
     // monitors
     final Monitor mon_pre_getAATileGenerator
@@ -233,94 +263,216 @@ public final class RendererStats implements MarlinConst {
         mon_ptg_getAlpha,
         mon_debug
     };
+    // offheap stats
+    long totalOffHeapInitial = 0L;
+     // live accumulator
+    long totalOffHeap = 0L;
+    long totalOffHeapMax = 0L;
+    // cache stats
+    CacheStats[] cacheStats = null;
 
-    private RendererStats() {
-        super();
-
-        AccessController.doPrivileged(
-            (PrivilegedAction<Void>) () -> {
-                final Thread hook = new Thread(
-                    ThreadGroupUtils.getRootThreadGroup(),
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            dump();
-                        }
-                    },
-                    "MarlinStatsHook"
-                );
-                hook.setContextClassLoader(null);
-                Runtime.getRuntime().addShutdownHook(hook);
-
-                if (USE_DUMP_THREAD) {
-                    final Timer statTimer = new Timer("RendererStats");
-                    statTimer.scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            dump();
-                        }
-                    }, DUMP_INTERVAL, DUMP_INTERVAL);
-                }
-                return null;
-            }
-        );
+    private RendererStats(final String name) {
+        this.name = name;
     }
 
     void dump() {
-        if (DO_STATS) {
-            ArrayCache.dumpStats();
-        }
-        for (RendererContext rdrCtx : ALL_CONTEXTS) {
-            logInfo("RendererContext: " + rdrCtx.name);
+        logInfo("RendererContext: " + name);
 
-            if (DO_MONITORS) {
+        if (DO_MONITORS) {
+            for (Monitor monitor : monitors) {
+                if (monitor.count != 0) {
+                    logInfo(monitor.toString());
+                }
+            }
+            // As getAATileGenerator percents:
+            final long total = mon_pre_getAATileGenerator.sum;
+            if (total != 0L) {
                 for (Monitor monitor : monitors) {
-                    if (monitor.count != 0) {
-                        logInfo(monitor.toString());
-                    }
+                    logInfo(monitor.name + " : "
+                            + ((100d * monitor.sum) / total) + " %");
                 }
-                // As getAATileGenerator percents:
-                final long total = mon_pre_getAATileGenerator.sum;
-                if (total != 0L) {
-                    for (Monitor monitor : monitors) {
-                        logInfo(monitor.name + " : "
-                                + ((100d * monitor.sum) / total) + " %");
-                    }
+            }
+            if (DO_FLUSH_MONITORS) {
+                for (Monitor m : monitors) {
+                    m.reset();
                 }
-                if (DO_FLUSH_MONITORS) {
-                    for (Monitor m : monitors) {
-                        m.reset();
+            }
+        }
+
+        if (DO_STATS) {
+            for (StatLong stat : statistics) {
+                if (stat.count != 0) {
+                    logInfo(stat.toString());
+                    if (DO_FLUSH_STATS) {
+                        stat.reset();
                     }
                 }
             }
 
-            if (DO_STATS) {
-                for (StatLong stat : statistics) {
-                    if (stat.count != 0) {
-                        logInfo(stat.toString());
+            logInfo("OffHeap footprint: initial: " + totalOffHeapInitial
+                + " bytes - max: " + totalOffHeapMax + " bytes");
+            if (DO_FLUSH_STATS) {
+                totalOffHeapMax = 0L;
+            }
+
+            logInfo("Array caches for RendererContext: " + name);
+
+            long totalInitialBytes = totalOffHeapInitial;
+            long totalCacheBytes   = 0L;
+
+            if (cacheStats != null) {
+                for (CacheStats stat : cacheStats) {
+                    totalCacheBytes   += stat.dumpStats();
+                    totalInitialBytes += stat.getTotalInitialBytes();
+                    if (DO_FLUSH_STATS) {
                         stat.reset();
                     }
                 }
-                // IntArrayCaches stats:
-                final RendererContext.ArrayCachesHolder holder
-                    = rdrCtx.getArrayCachesHolder();
+            }
+            logInfo("Heap footprint: initial: " + totalInitialBytes
+                    + " bytes - cache: " + totalCacheBytes + " bytes");
+        }
+    }
 
-                logInfo("Array caches for thread: " + rdrCtx.name);
+    static final class RendererStatsHolder {
 
-                for (IntArrayCache cache : holder.intArrayCaches) {
-                    cache.dumpStats();
+        // singleton
+        private static volatile RendererStatsHolder SINGLETON = null;
+
+        static synchronized RendererStatsHolder getInstance() {
+            if (SINGLETON == null) {
+                SINGLETON = new RendererStatsHolder();
+            }
+            return SINGLETON;
+        }
+
+        static void dumpStats() {
+            if (SINGLETON != null) {
+                SINGLETON.dump();
+            }
+        }
+
+        /* RendererStats collection as hard references
+           (only used for debugging purposes) */
+        private final ConcurrentLinkedQueue<RendererStats> allStats
+            = new ConcurrentLinkedQueue<RendererStats>();
+
+        private RendererStatsHolder() {
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+
+                @Override
+                public Void run() {
+                    final Thread hook = new Thread(
+                        MarlinUtils.getRootThreadGroup(),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                dump();
+                            }
+                        },
+                        "MarlinStatsHook"
+                    );
+                    hook.setContextClassLoader(null);
+                    Runtime.getRuntime().addShutdownHook(hook);
+
+                    if (USE_DUMP_THREAD) {
+                        final Timer statTimer = new Timer("RendererStats");
+                        statTimer.scheduleAtFixedRate(new TimerTask() {
+                            @Override
+                            public void run() {
+                                dump();
+                            }
+                        }, DUMP_INTERVAL, DUMP_INTERVAL);
+                    }
+                    return null;
                 }
+            });
 
-                logInfo("Dirty Array caches for thread: " + rdrCtx.name);
+            // Mimics Java2D Disposer:
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
-                for (IntArrayCache cache : holder.dirtyIntArrayCaches) {
-                    cache.dumpStats();
+                @Override
+                public Void run() {
+                    /*
+                     * The thread must be a member of a thread group
+                     * which will not get GCed before VM exit.
+                     * Make its parent the top-level thread group.
+                     */
+                    final ThreadGroup rootTG
+//                        = ThreadGroupUtils.getRootThreadGroup();
+                        = MarlinUtils.getRootThreadGroup();
+                    final Thread t = new Thread(rootTG, new RendererStatsDisposer(),
+                        "MarlinRenderer Disposer");
+                    t.setContextClassLoader(null);
+                    t.setDaemon(true);
+                    t.setPriority(Thread.MAX_PRIORITY - 2);
+                    t.start();
+                    return null;
                 }
-                for (FloatArrayCache cache : holder.dirtyFloatArrayCaches) {
-                    cache.dumpStats();
-                }
-                for (ByteArrayCache cache : holder.dirtyByteArrayCaches) {
-                    cache.dumpStats();
+            });
+        }
+
+        void add(final Object parent, final RendererStats stats) {
+            allStats.add(stats);
+
+            // Create the phantom reference to ensure removing dead entries:
+            REF_LIST.add(new RendererStatsReference(parent, stats));
+        }
+
+        void remove(final RendererStats stats) {
+            stats.dump(); // dump anyway
+            allStats.remove(stats);
+        }
+
+        void dump() {
+            for (RendererStats stats : allStats) {
+                stats.dump();
+            }
+        }
+
+
+        // Custom disposer (replaced by jdk9 Cleaner)
+
+        // Parent reference queue
+        private static final ReferenceQueue<Object> REF_QUEUE
+            = new ReferenceQueue<Object>();
+        // reference list
+        private static final Vector<RendererStatsReference> REF_LIST
+            = new Vector<RendererStatsReference>(32);
+
+        static final class RendererStatsReference extends PhantomReference<Object> {
+
+            private final RendererStats stats;
+
+            RendererStatsReference(final Object parent, final RendererStats stats) {
+                super(parent, REF_QUEUE);
+                this.stats = stats;
+            }
+
+            void dispose() {
+                // remove stats from allRdrStats
+                RendererStatsHolder.getInstance().remove(this.stats);
+            }
+        }
+
+        static final class RendererStatsDisposer implements Runnable {
+            @Override
+            public void run() {
+                final Thread currentThread = Thread.currentThread();
+                RendererStatsReference ref;
+
+                // check interrupted:
+                for (; !currentThread.isInterrupted();) {
+                    try {
+                        ref = (RendererStatsReference)REF_QUEUE.remove();
+                        ref.dispose();
+
+                        REF_LIST.remove(ref);
+
+                    } catch (InterruptedException ie) {
+                        MarlinUtils.logException("RendererStatsDisposer interrupted:",
+                                                 ie);
+                    }
                 }
             }
         }
