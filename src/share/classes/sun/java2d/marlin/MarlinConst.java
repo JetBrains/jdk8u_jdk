@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -62,6 +62,8 @@ interface MarlinConst {
     // enable traces
     static final boolean DO_TRACE = ENABLE_LOGS && false;
 
+    // do flush stats
+    static final boolean DO_FLUSH_STATS = true;
     // do flush monitors
     static final boolean DO_FLUSH_MONITORS = true;
     // use one polling thread to dump statistics/monitors
@@ -72,28 +74,42 @@ interface MarlinConst {
     // do clean dirty array
     static final boolean DO_CLEAN_DIRTY = false;
 
-    // flag to use line simplifier
+    // flag to use collinear simplifier
     static final boolean USE_SIMPLIFIER = MarlinProperties.isUseSimplifier();
+
+    // flag to use path simplifier
+    static final boolean USE_PATH_SIMPLIFIER = MarlinProperties.isUsePathSimplifier();
+
+    static final boolean DO_CLIP_SUBDIVIDER = MarlinProperties.isDoClipSubdivider();
 
     // flag to enable logs related bounds checks
     static final boolean DO_LOG_BOUNDS = ENABLE_LOGS && false;
 
-    // Initial Array sizing (initial context capacity) ~ 350K
+    // flag to enable float precision correction
+    static final boolean DO_FIX_FLOAT_PREC = true;
 
-    // 2048 pixel (width x height) for initial capacity
-    static final int INITIAL_PIXEL_DIM
-        = MarlinProperties.getInitialImageSize();
+    // Initial Array sizing (initial context capacity) ~ 450K
+
+    // 4096 pixels (width) for initial capacity
+    static final int INITIAL_PIXEL_WIDTH
+        = MarlinProperties.getInitialPixelWidth();
+    // 2176 pixels (height) for initial capacity
+    static final int INITIAL_PIXEL_HEIGHT
+        = MarlinProperties.getInitialPixelHeight();
 
     // typical array sizes: only odd numbers allowed below
     static final int INITIAL_ARRAY        = 256;
-    static final int INITIAL_SMALL_ARRAY  = 1024;
-    static final int INITIAL_MEDIUM_ARRAY = 4096;
-    static final int INITIAL_LARGE_ARRAY  = 8192;
-    // alpha row dimension
-    static final int INITIAL_AA_ARRAY     = INITIAL_PIXEL_DIM;
 
-    // initial edges (24 bytes) = 24K [ints] = 96K
-    static final int INITIAL_EDGES_CAPACITY = 4096 * 24; // 6 ints per edges
+    // alpha row dimension
+    static final int INITIAL_AA_ARRAY     = INITIAL_PIXEL_WIDTH;
+
+    // 4096 edges for initial capacity
+    static final int INITIAL_EDGES_COUNT = MarlinProperties.getInitialEdges();
+
+    // initial edges = edges count (4096)
+    // 6 ints per edges = 24 bytes
+    // edges capacity = 24 x initial edges = 24 * edges count (4096) = 96K
+    static final int INITIAL_EDGES_CAPACITY = INITIAL_EDGES_COUNT * 24;
 
     // zero value as byte
     static final byte BYTE_0 = (byte) 0;
@@ -104,20 +120,67 @@ interface MarlinConst {
     public static final int SUBPIXEL_LG_POSITIONS_Y
         = MarlinProperties.getSubPixel_Log2_Y();
 
+    public static final int MIN_SUBPIXEL_LG_POSITIONS
+        = Math.min(SUBPIXEL_LG_POSITIONS_X, SUBPIXEL_LG_POSITIONS_Y);
+
     // number of subpixels
     public static final int SUBPIXEL_POSITIONS_X = 1 << (SUBPIXEL_LG_POSITIONS_X);
     public static final int SUBPIXEL_POSITIONS_Y = 1 << (SUBPIXEL_LG_POSITIONS_Y);
 
-    public static final float NORM_SUBPIXELS
-        = (float)Math.sqrt(( SUBPIXEL_POSITIONS_X * SUBPIXEL_POSITIONS_X
-                           + SUBPIXEL_POSITIONS_Y * SUBPIXEL_POSITIONS_Y)/2.0);
+    public static final float MIN_SUBPIXELS = 1 << MIN_SUBPIXEL_LG_POSITIONS;
 
     public static final int MAX_AA_ALPHA
-        = SUBPIXEL_POSITIONS_X * SUBPIXEL_POSITIONS_Y;
+        = (SUBPIXEL_POSITIONS_X * SUBPIXEL_POSITIONS_Y);
 
-    public static final int TILE_SIZE_LG = MarlinProperties.getTileSize_Log2();
-    public static final int TILE_SIZE = 1 << TILE_SIZE_LG; // 32 by default
+    public static final int TILE_H_LG = MarlinProperties.getTileSize_Log2();
+    public static final int TILE_H = 1 << TILE_H_LG; // 32 by default
+
+    public static final int TILE_W_LG = MarlinProperties.getTileWidth_Log2();
+    public static final int TILE_W = 1 << TILE_W_LG; // 32 by default
 
     public static final int BLOCK_SIZE_LG = MarlinProperties.getBlockSize_Log2();
     public static final int BLOCK_SIZE    = 1 << BLOCK_SIZE_LG;
+
+    // Constants
+    public static final int WIND_EVEN_ODD = 0;
+    public static final int WIND_NON_ZERO = 1;
+
+    /**
+     * Constant value for join style.
+     */
+    public static final int JOIN_MITER = 0;
+
+    /**
+     * Constant value for join style.
+     */
+    public static final int JOIN_ROUND = 1;
+
+    /**
+     * Constant value for join style.
+     */
+    public static final int JOIN_BEVEL = 2;
+
+    /**
+     * Constant value for end cap style.
+     */
+    public static final int CAP_BUTT = 0;
+
+    /**
+     * Constant value for end cap style.
+     */
+    public static final int CAP_ROUND = 1;
+
+    /**
+     * Constant value for end cap style.
+     */
+    public static final int CAP_SQUARE = 2;
+
+    // Out codes
+    static final int OUTCODE_TOP      = 1;
+    static final int OUTCODE_BOTTOM   = 2;
+    static final int OUTCODE_LEFT     = 4;
+    static final int OUTCODE_RIGHT    = 8;
+    static final int OUTCODE_MASK_T_B = OUTCODE_TOP  | OUTCODE_BOTTOM;
+    static final int OUTCODE_MASK_L_R = OUTCODE_LEFT | OUTCODE_RIGHT;
+    static final int OUTCODE_MASK_T_B_L_R = OUTCODE_MASK_T_B | OUTCODE_MASK_L_R;
 }

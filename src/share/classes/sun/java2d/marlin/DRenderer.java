@@ -25,12 +25,11 @@
 
 package sun.java2d.marlin;
 
-import sun.awt.geom.PathConsumer2D;
 import static sun.java2d.marlin.OffHeapArray.SIZE_INT;
 //import jdk.internal.misc.Unsafe;
 import sun.misc.Unsafe;
 
-final class Renderer implements PathConsumer2D, MarlinRenderer {
+final class DRenderer implements DPathConsumer2D, MarlinRenderer {
 
     static final boolean DISABLE_RENDER = false;
 
@@ -42,14 +41,14 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
 
     private static final double POWER_2_TO_32 = 0x1.0p32d;
 
-    // use float to make tosubpix methods faster (no int to float conversion)
-    static final float SUBPIXEL_SCALE_X = (float) SUBPIXEL_POSITIONS_X;
-    static final float SUBPIXEL_SCALE_Y = (float) SUBPIXEL_POSITIONS_Y;
+    // use double to make tosubpix methods faster (no int to double conversion)
+    static final double SUBPIXEL_SCALE_X = SUBPIXEL_POSITIONS_X;
+    static final double SUBPIXEL_SCALE_Y = SUBPIXEL_POSITIONS_Y;
     static final int SUBPIXEL_MASK_X = SUBPIXEL_POSITIONS_X - 1;
     static final int SUBPIXEL_MASK_Y = SUBPIXEL_POSITIONS_Y - 1;
 
-    static final float RDR_OFFSET_X = 0.5f / SUBPIXEL_SCALE_X;
-    static final float RDR_OFFSET_Y = 0.5f / SUBPIXEL_SCALE_Y;
+    static final double RDR_OFFSET_X = 0.5d / SUBPIXEL_SCALE_X;
+    static final double RDR_OFFSET_Y = 0.5d / SUBPIXEL_SCALE_Y;
 
     // number of subpixels corresponding to a tile line
     private static final int SUBPIXEL_TILE
@@ -77,13 +76,13 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
 
     // curve break into lines
     // cubic error in subpixels to decrement step
-    private static final float CUB_DEC_ERR_SUBPIX
-        = MarlinProperties.getCubicDecD2() * (SUBPIXEL_POSITIONS_X / 8.0f); // 1.0 / 8th pixel
+    private static final double CUB_DEC_ERR_SUBPIX
+        = MarlinProperties.getCubicDecD2() * (SUBPIXEL_POSITIONS_X / 8.0d); // 1.0 / 8th pixel
     // cubic error in subpixels to increment step
-    private static final float CUB_INC_ERR_SUBPIX
-        = MarlinProperties.getCubicIncD1() * (SUBPIXEL_POSITIONS_X / 8.0f); // 0.4 / 8th pixel
+    private static final double CUB_INC_ERR_SUBPIX
+        = MarlinProperties.getCubicIncD1() * (SUBPIXEL_POSITIONS_X / 8.0d); // 0.4 / 8th pixel
     // scale factor for Y-axis contribution to quad / cubic errors:
-    public static final float SCALE_DY = ((float) SUBPIXEL_POSITIONS_X) / SUBPIXEL_POSITIONS_Y;
+    public static final double SCALE_DY = ((double) SUBPIXEL_POSITIONS_X) / SUBPIXEL_POSITIONS_Y;
 
     // TestNonAARasterization (JDK-8170879): cubics
     // bad paths (59294/100000 == 59,29%, 94335 bad pixels (avg = 1,59), 3966 warnings (avg = 0,07)
@@ -91,11 +90,11 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     // 1.0 / 0.2: bad paths (67194/100000 == 67,19%, 117394 bad pixels (avg = 1,75 - max =  9), 4042 warnings (avg = 0,06)
 
     // cubic bind length to decrement step
-    public static final float CUB_DEC_BND
-        = 8.0f * CUB_DEC_ERR_SUBPIX;
+    public static final double CUB_DEC_BND
+        = 8.0d * CUB_DEC_ERR_SUBPIX;
     // cubic bind length to increment step
-    public static final float CUB_INC_BND
-        = 8.0f * CUB_INC_ERR_SUBPIX;
+    public static final double CUB_INC_BND
+        = 8.0d * CUB_INC_ERR_SUBPIX;
 
     // cubic countlg
     public static final int CUB_COUNT_LG = 2;
@@ -106,16 +105,16 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     // cubic count^3 = 8^countlg
     private static final int CUB_COUNT_3 = 1 << (3 * CUB_COUNT_LG);
     // cubic dt = 1 / count
-    private static final float CUB_INV_COUNT = 1.0f / CUB_COUNT;
+    private static final double CUB_INV_COUNT = 1.0d / CUB_COUNT;
     // cubic dt^2 = 1 / count^2 = 1 / 4^countlg
-    private static final float CUB_INV_COUNT_2 = 1.0f / CUB_COUNT_2;
+    private static final double CUB_INV_COUNT_2 = 1.0d / CUB_COUNT_2;
     // cubic dt^3 = 1 / count^3 = 1 / 8^countlg
-    private static final float CUB_INV_COUNT_3 = 1.0f / CUB_COUNT_3;
+    private static final double CUB_INV_COUNT_3 = 1.0d / CUB_COUNT_3;
 
     // quad break into lines
     // quadratic error in subpixels
-    private static final float QUAD_DEC_ERR_SUBPIX
-        = MarlinProperties.getQuadDecD2() * (SUBPIXEL_POSITIONS_X / 8.0f); // 0.5 / 8th pixel
+    private static final double QUAD_DEC_ERR_SUBPIX
+        = MarlinProperties.getQuadDecD2() * (SUBPIXEL_POSITIONS_X / 8.0d); // 0.5 / 8th pixel
 
     // TestNonAARasterization (JDK-8170879): quads
     // bad paths (62916/100000 == 62,92%, 103818 bad pixels (avg = 1,65), 6514 warnings (avg = 0,10)
@@ -123,8 +122,8 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     // 0.50px  = bad paths (62915/100000 == 62,92%, 103810 bad pixels (avg = 1,65), 6512 warnings (avg = 0,10)
 
     // quadratic bind length to decrement step
-    public static final float QUAD_DEC_BND
-        = 8.0f * QUAD_DEC_ERR_SUBPIX;
+    public static final double QUAD_DEC_BND
+        = 8.0d * QUAD_DEC_ERR_SUBPIX;
 
 //////////////////////////////////////////////////////////////////////////////
 //  SCAN LINE
@@ -160,8 +159,8 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
 //////////////////////////////////////////////////////////////////////////////
     private int edgeMinY = Integer.MAX_VALUE;
     private int edgeMaxY = Integer.MIN_VALUE;
-    private float edgeMinX = Float.POSITIVE_INFINITY;
-    private float edgeMaxX = Float.NEGATIVE_INFINITY;
+    private double edgeMinX = Double.POSITIVE_INFINITY;
+    private double edgeMaxX = Double.NEGATIVE_INFINITY;
 
     // edges [ints] stored in off-heap memory
     private final OffHeapArray edges;
@@ -180,20 +179,20 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     // Flattens using adaptive forward differencing. This only carries out
     // one iteration of the AFD loop. All it does is update AFD variables (i.e.
     // X0, Y0, D*[X|Y], COUNT; not variables used for computing scanline crossings).
-    private void quadBreakIntoLinesAndAdd(float x0, float y0,
-                                          final Curve c,
-                                          final float x2, final float y2)
+    private void quadBreakIntoLinesAndAdd(double x0, double y0,
+                                          final DCurve c,
+                                          final double x2, final double y2)
     {
         int count = 1; // dt = 1 / count
 
         // maximum(ddX|Y) = norm(dbx, dby) * dt^2 (= 1)
-        float maxDD = Math.abs(c.dbx) + Math.abs(c.dby) * SCALE_DY;
+        double maxDD = Math.abs(c.dbx) + Math.abs(c.dby) * SCALE_DY;
 
-        final float _DEC_BND = QUAD_DEC_BND;
+        final double _DEC_BND = QUAD_DEC_BND;
 
         while (maxDD >= _DEC_BND) {
             // divide step by half:
-            maxDD /= 4.0f; // error divided by 2^2 = 4
+            maxDD /= 4.0d; // error divided by 2^2 = 4
 
             count <<= 1;
             if (DO_STATS) {
@@ -204,16 +203,16 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
         final int nL = count; // line count
 
         if (count > 1) {
-            final float icount = 1.0f / count; // dt
-            final float icount2 = icount * icount; // dt^2
+            final double icount = 1.0d / count; // dt
+            final double icount2 = icount * icount; // dt^2
 
-            final float ddx = c.dbx * icount2;
-            final float ddy = c.dby * icount2;
-            float dx = c.bx * icount2 + c.cx * icount;
-            float dy = c.by * icount2 + c.cy * icount;
+            final double ddx = c.dbx * icount2;
+            final double ddy = c.dby * icount2;
+            double dx = c.bx * icount2 + c.cx * icount;
+            double dy = c.by * icount2 + c.cy * icount;
 
             // we use x0, y0 to walk the line
-            for (float x1 = x0, y1 = y0; --count > 0; dx += ddx, dy += ddy) {
+            for (double x1 = x0, y1 = y0; --count > 0; dx += ddx, dy += ddy) {
                 x1 += dx;
                 y1 += dy;
 
@@ -234,20 +233,20 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     // numerical errors, and our callers already have the exact values.
     // Another alternative would be to pass all the control points, and call
     // c.set here, but then too many numbers are passed around.
-    private void curveBreakIntoLinesAndAdd(float x0, float y0,
-                                           final Curve c,
-                                           final float x3, final float y3)
+    private void curveBreakIntoLinesAndAdd(double x0, double y0,
+                                           final DCurve c,
+                                           final double x3, final double y3)
     {
-        int count           = CUB_COUNT;
-        final float icount  = CUB_INV_COUNT;   // dt
-        final float icount2 = CUB_INV_COUNT_2; // dt^2
-        final float icount3 = CUB_INV_COUNT_3; // dt^3
+        int count            = CUB_COUNT;
+        final double icount  = CUB_INV_COUNT;   // dt
+        final double icount2 = CUB_INV_COUNT_2; // dt^2
+        final double icount3 = CUB_INV_COUNT_3; // dt^3
 
         // the dx and dy refer to forward differencing variables, not the last
         // coefficients of the "points" polynomial
-        float dddx, dddy, ddx, ddy, dx, dy;
-        dddx = 2.0f * c.dax * icount3;
-        dddy = 2.0f * c.day * icount3;
+        double dddx, dddy, ddx, ddy, dx, dy;
+        dddx = 2.0d * c.dax * icount3;
+        dddy = 2.0d * c.day * icount3;
         ddx = dddx + c.dbx * icount2;
         ddy = dddy + c.dby * icount2;
         dx = c.ax * icount3 + c.bx * icount2 + c.cx * icount;
@@ -255,26 +254,26 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
 
         int nL = 0; // line count
 
-        final float _DEC_BND = CUB_DEC_BND;
-        final float _INC_BND = CUB_INC_BND;
-        final float _SCALE_DY = SCALE_DY;
+        final double _DEC_BND = CUB_DEC_BND;
+        final double _INC_BND = CUB_INC_BND;
+        final double _SCALE_DY = SCALE_DY;
 
         // we use x0, y0 to walk the line
-        for (float x1 = x0, y1 = y0; count > 0; ) {
+        for (double x1 = x0, y1 = y0; count > 0; ) {
             // inc / dec => ratio ~ 5 to minimize upscale / downscale but minimize edges
 
-            // float step:
+            // double step:
             // can only do this on even "count" values, because we must divide count by 2
             while ((count % 2 == 0)
                     && ((Math.abs(ddx) + Math.abs(ddy) * _SCALE_DY) <= _INC_BND
 //                     && (Math.abs(ddx + dddx) + Math.abs(ddy + dddy) * _SCALE_DY) <= _INC_BND
                   )) {
-                dx = 2.0f * dx + ddx;
-                dy = 2.0f * dy + ddy;
-                ddx = 4.0f * (ddx + dddx);
-                ddy = 4.0f * (ddy + dddy);
-                dddx *= 8.0f;
-                dddy *= 8.0f;
+                dx = 2.0d * dx + ddx;
+                dy = 2.0d * dy + ddy;
+                ddx = 4.0d * (ddx + dddx);
+                ddy = 4.0d * (ddy + dddy);
+                dddx *= 8.0d;
+                dddy *= 8.0d;
 
                 count >>= 1;
                 if (DO_STATS) {
@@ -286,12 +285,12 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
             while ((Math.abs(ddx) + Math.abs(ddy) * _SCALE_DY) >= _DEC_BND
 //                || (Math.abs(ddx + dddx) + Math.abs(ddy + dddy) * _SCALE_DY) >= _DEC_BND
                   ) {
-                dddx /= 8.0f;
-                dddy /= 8.0f;
-                ddx = ddx / 4.0f - dddx;
-                ddy = ddy / 4.0f - dddy;
-                dx = (dx - ddx) / 2.0f;
-                dy = (dy - ddy) / 2.0f;
+                dddx /= 8.0d;
+                dddy /= 8.0d;
+                ddx = ddx / 4.0d - dddx;
+                ddy = ddy / 4.0d - dddy;
+                dx = (dx - ddx) / 2.0d;
+                dy = (dy - ddy) / 2.0d;
 
                 count <<= 1;
                 if (DO_STATS) {
@@ -320,7 +319,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
         }
     }
 
-    private void addLine(float x1, float y1, float x2, float y2) {
+    private void addLine(double x1, double y1, double x2, double y2) {
         if (DO_MONITORS) {
             rdrCtx.stats.mon_rdr_addLine.start();
         }
@@ -330,7 +329,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
         int or = 1; // orientation of the line. 1 if y increases, 0 otherwise.
         if (y2 < y1) {
             or = 0;
-            float tmp = y2;
+            double tmp = y2;
             y2 = y1;
             y1 = tmp;
             tmp = x2;
@@ -338,7 +337,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
             x1 = tmp;
         }
 
-        // convert subpixel coordinates [float] into pixel positions [int]
+        // convert subpixel coordinates [double] into pixel positions [int]
 
         // The index of the pixel that holds the next HPC is at ceil(trueY - 0.5)
         // Since y1 and y2 are biased by -0.5 in tosubpixy(), this is simply
@@ -372,10 +371,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
             edgeMaxY = lastCrossing;
         }
 
-        // Use double-precision for improved accuracy:
-        final double x1d   = x1;
-        final double y1d   = y1;
-        final double slope = (x1d - x2) / (y1d - y2);
+        final double slope = (x1 - x2) / (y1 - y2);
 
         if (slope >= 0.0d) { // <==> x1 < x2
             if (x1 < edgeMinX) {
@@ -442,7 +438,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
         //                 = fixed_floor(x1_fixed + 2^31 - 1)
         //                 = fixed_floor(x1_fixed + 0x7FFFFFFF)
         // and error       = fixed_fract(x1_fixed + 0x7FFFFFFF)
-        final double x1_intercept = x1d + (firstCrossing - y1d) * slope;
+        final double x1_intercept = x1 + (firstCrossing - y1) * slope;
 
         // inlined scalb(x1_intercept, 32):
         final long x1_fixed_biased = ((long) (POWER_2_TO_32 * x1_intercept))
@@ -506,15 +502,15 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     private int windingRule;
 
     // Current drawing position, i.e., final point of last segment
-    private float x0, y0;
+    private double x0, y0;
 
     // Position of most recent 'moveTo' command
-    private float sx0, sy0;
+    private double sx0, sy0;
 
     // per-thread renderer context
-    final RendererContext rdrCtx;
+    final DRendererContext rdrCtx;
     // dirty curve
-    private final Curve curve;
+    private final DCurve curve;
 
     // clean alpha array (zero filled)
     private int[] alphaLine;
@@ -531,7 +527,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     // blkFlags ref (clean)
     private final IntArrayCache.Reference blkFlags_ref;
 
-    Renderer(final RendererContext rdrCtx) {
+    DRenderer(final DRendererContext rdrCtx) {
         this.rdrCtx = rdrCtx;
         this.curve = rdrCtx.curve;
         this.cache = rdrCtx.cache;
@@ -562,7 +558,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
         blkFlags     = blkFlags_ref.initial;
     }
 
-    Renderer init(final int pix_boundsX, final int pix_boundsY,
+    DRenderer init(final int pix_boundsX, final int pix_boundsY,
                   final int pix_boundsWidth, final int pix_boundsHeight,
                   final int windingRule)
     {
@@ -599,8 +595,8 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
 
         edgeMinY = Integer.MAX_VALUE;
         edgeMaxY = Integer.MIN_VALUE;
-        edgeMinX = Float.POSITIVE_INFINITY;
-        edgeMaxX = Float.NEGATIVE_INFINITY;
+        edgeMinX = Double.POSITIVE_INFINITY;
+        edgeMaxX = Double.NEGATIVE_INFINITY;
 
         // reset used mark:
         edgeCount = 0;
@@ -664,23 +660,23 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
             rdrCtx.stats.mon_rdr_endRendering.stop();
         }
         // recycle the RendererContext instance
-        MarlinRenderingEngine.returnRendererContext(rdrCtx);
+        DMarlinRenderingEngine.returnRendererContext(rdrCtx);
     }
 
-    private static float tosubpixx(final float pix_x) {
+    private static double tosubpixx(final double pix_x) {
         return SUBPIXEL_SCALE_X * pix_x;
     }
 
-    private static float tosubpixy(final float pix_y) {
+    private static double tosubpixy(final double pix_y) {
         // shift y by -0.5 for fast ceil(y - 0.5):
-        return SUBPIXEL_SCALE_Y * pix_y - 0.5f;
+        return SUBPIXEL_SCALE_Y * pix_y - 0.5d;
     }
 
     @Override
-    public void moveTo(final float pix_x0, final float pix_y0) {
+    public void moveTo(final double pix_x0, final double pix_y0) {
         closePath();
-        final float sx = tosubpixx(pix_x0);
-        final float sy = tosubpixy(pix_y0);
+        final double sx = tosubpixx(pix_x0);
+        final double sy = tosubpixy(pix_y0);
         this.sx0 = sx;
         this.sy0 = sy;
         this.x0 = sx;
@@ -688,21 +684,21 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     }
 
     @Override
-    public void lineTo(final float pix_x1, final float pix_y1) {
-        final float x1 = tosubpixx(pix_x1);
-        final float y1 = tosubpixy(pix_y1);
+    public void lineTo(final double pix_x1, final double pix_y1) {
+        final double x1 = tosubpixx(pix_x1);
+        final double y1 = tosubpixy(pix_y1);
         addLine(x0, y0, x1, y1);
         x0 = x1;
         y0 = y1;
     }
 
     @Override
-    public void curveTo(final float pix_x1, final float pix_y1,
-                        final float pix_x2, final float pix_y2,
-                        final float pix_x3, final float pix_y3)
+    public void curveTo(final double pix_x1, final double pix_y1,
+                        final double pix_x2, final double pix_y2,
+                        final double pix_x3, final double pix_y3)
     {
-        final float xe = tosubpixx(pix_x3);
-        final float ye = tosubpixy(pix_y3);
+        final double xe = tosubpixx(pix_x3);
+        final double ye = tosubpixy(pix_y3);
         curve.set(x0, y0,
                 tosubpixx(pix_x1), tosubpixy(pix_y1),
                 tosubpixx(pix_x2), tosubpixy(pix_y2),
@@ -713,11 +709,11 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
     }
 
     @Override
-    public void quadTo(final float pix_x1, final float pix_y1,
-                       final float pix_x2, final float pix_y2)
+    public void quadTo(final double pix_x1, final double pix_y1,
+                       final double pix_x2, final double pix_y2)
     {
-        final float xe = tosubpixx(pix_x2);
-        final float ye = tosubpixy(pix_y2);
+        final double xe = tosubpixx(pix_x2);
+        final double ye = tosubpixy(pix_y2);
         curve.set(x0, y0,
                 tosubpixx(pix_x1), tosubpixy(pix_y1),
                 xe, ye);
@@ -1404,8 +1400,8 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
         }
 
         // bounds as half-open intervals
-        final int spminX = FloatMath.max(FloatMath.ceil_int(edgeMinX - 0.5f), boundsMinX);
-        final int spmaxX = FloatMath.min(FloatMath.ceil_int(edgeMaxX - 0.5f), boundsMaxX);
+        final int spminX = FloatMath.max(FloatMath.ceil_int(edgeMinX - 0.5d), boundsMinX);
+        final int spmaxX = FloatMath.min(FloatMath.ceil_int(edgeMaxX - 0.5d), boundsMaxX);
 
         // edge Min/Max Y are already rounded to subpixels within bounds:
         final int spminY = edgeMinY;
