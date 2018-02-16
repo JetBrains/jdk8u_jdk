@@ -459,7 +459,7 @@ java/awt/SplashScreen/FullscreenAfterSplash/FullScreenAfterSplash.java generic-a
 java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169533
-java/awt/TextField/SelectionInvisibleTest/SelectionInvisibleTest.java windows-all
+java/awt/TextField/SelectionInvisibleTest/SelectionInvisibleTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6734341
 java/awt/TextArea/UsingWithMouse/SelectionAutoscrollTest.html        generic-all
@@ -917,6 +917,9 @@ java/nio/channels/FileChannel/Transfer.java                     macosx-all
 # 7132677
 java/nio/channels/Selector/OutOfBand.java                       macosx-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8030795
+java/nio/file/Files/probeContentType/ParallelProbes.java
+
 # 7158947, Solaris 11
 java/nio/file/WatchService/Basic.java				solaris-all
 java/nio/file/WatchService/LotsOfEvents.java			solaris-all
@@ -957,6 +960,9 @@ java/rmi/transport/checkLeaseInfoLeak/CheckLeaseLeak.java       generic-all
 
 # 7195095
 sun/rmi/transport/proxy/EagerHttpFallback.java                  generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8073080
+sun/rmi/transport/tcp/DeadCachedConnection.java                 windows-all
 
 ############################################################################
 
@@ -1100,10 +1106,9 @@ javax/swing/JMenu/4515762/bug4515762.java                            generic-all
 # according recommendations from Oracle ForegroundLockTimeout = 0
 # in order to check it, the test is being enabled for regular runs
 # moreover it should not be executed on virtual machines
-javax/swing/JMenu/4692443/bug4692443.java                            windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8076178
-javax/swing/JMenu/4692443/bug4692443.java                            macosx-all
+javax/swing/JMenu/4692443/bug4692443.java                            generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8142534
 javax/swing/JMenu/8072900/WrongSelectionOnMouseOver.java             generic-all
@@ -1192,7 +1197,10 @@ javax/swing/JOptionPane/7138665/bug7138665.java                      linux-all
 javax/swing/JPopupMenu/6495920/bug6495920.java                       linux-all
 javax/swing/JTable/4220171/bug4220171.java                           linux-all
 javax/swing/Security/6657138/ComponentTest.java                      linux-all
-javax/swing/text/html/CSS/4530474/bug4530474.java                    linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-7033533
+# https://bugs.openjdk.java.net/browse/JDK-8194941
+javax/swing/text/html/CSS/4530474/bug4530474.java                    generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169959
 javax/swing/JTable/6263446/bug6263446.java                           generic-all
@@ -1477,10 +1485,8 @@ sun/security/provider/PolicyParser/PrincipalExpansionError.java      generic-all
 sun/security/tools/keytool/i18n.sh                                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8130151
-sun/security/provider/SecureRandom/StrongSecureRandom.java           macosx-all
-
-## https://bugs.openjdk.java.net/browse/JDK-7083664
-#sun/security/tools/jarsigner/diffend.sh                              windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8157344
+sun/security/provider/SecureRandom/StrongSecureRandom.java           windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8011134
 sun/security/ssl/com/sun/net/ssl/internal/ssl/X509TrustManagerImpl/ClientServer.java generic-all
@@ -1527,6 +1533,9 @@ java/awt/image/MultiResolutionImage/NSImageToMultiResolutionImageTest.java      
 java/awt/image/MultiResolutionImageCommonTest.java                                              generic-all
 java/awt/image/MultiResolutionImageTest.java                                                    generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8173145
+com/sun/java/swing/plaf/windows/Test8173145.java                                                windows-all
+
 # ignored
 com/sun/crypto/provider/Cipher/DES/PerformanceTest.java                                         generic-all
 com/sun/jdi/PopAndInvokeTest.java                                                               generic-all
@@ -1536,10 +1545,21 @@ com/sun/tracing/BasicFunctionality.java                                         
 # Uses certutil.exe that isn't guaranteed to be installed
 sun/security/mscapi/nonUniqueAliases/NonUniqueAliases.sh                                        generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8146858
+sun/security/mscapi/PublicKeyInterop.sh                                                         windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8023546
+sun/security/mscapi/ShortRSAKey1024.sh                                                          windows-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8144559
+sun/security/mscapi/SignUsingNONEwithRSA.sh                                                     windows-all
+sun/security/mscapi/SignUsingSHA2withRSA.sh                                                     windows-all
+
 ## https://bugs.openjdk.java.net/browse/JDK-8150070
 # https://bugs.openjdk.java.net/browse/JDK-8145552
 com/sun/jdi/ArrayLengthDumpTest.sh                                                              windows-all
 com/sun/jdi/BreakpointWithFullGC.sh                                                             windows-all
+com/sun/jdi/CatchCaughtTest.sh                                                                  windows-all
 com/sun/jdi/CatchCaughtTest.sh                                                                  windows-all
 com/sun/jdi/CatchPatternTest.sh                                                                 windows-all
 com/sun/jdi/GetLocalVariables3Test.sh                                                           windows-all

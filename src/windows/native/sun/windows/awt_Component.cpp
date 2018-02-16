@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -3866,15 +3866,13 @@ void AwtComponent::OpenCandidateWindow(int x, int y)
     HWND hWnd = GetHWnd();
     HWND hTop = GetTopLevelParentForWindow(hWnd);
     ::ClientToScreen(hTop, &p);
-
+    if (!m_bitsCandType) {
+        SetCandidateWindow(m_bitsCandType, x - p.x, y - p.y);
+        return;
+    }
     for (int iCandType=0; iCandType<32; iCandType++, bits<<=1) {
         if ( m_bitsCandType & bits )
             SetCandidateWindow(iCandType, x - p.x, y - p.y);
-    }
-    if (m_bitsCandType != 0) {
-        // REMIND: is there any chance GetProxyFocusOwner() returns NULL here?
-        ::DefWindowProc(ImmGetHWnd(),
-                        WM_IME_NOTIFY, IMN_OPENCANDIDATE, m_bitsCandType);
     }
 }
 
@@ -3882,14 +3880,30 @@ void AwtComponent::SetCandidateWindow(int iCandType, int x, int y)
 {
     HWND hwnd = ImmGetHWnd();
     HIMC hIMC = ImmGetContext(hwnd);
-    CANDIDATEFORM cf;
-    cf.dwIndex = iCandType;
-    cf.dwStyle = CFS_CANDIDATEPOS;
-    cf.ptCurrentPos.x = x;
-    cf.ptCurrentPos.y = y;
-
-    ImmSetCandidateWindow(hIMC, &cf);
-    ImmReleaseContext(hwnd, hIMC);
+    if (hIMC) {
+        CANDIDATEFORM cf;
+        cf.dwStyle = CFS_POINT;
+        ImmGetCandidateWindow(hIMC, 0, &cf);
+        if (x != cf.ptCurrentPos.x || y != cf.ptCurrentPos.y) {
+            cf.dwIndex = iCandType;
+            cf.dwStyle = CFS_POINT;
+            cf.ptCurrentPos.x = x;
+            cf.ptCurrentPos.y = y;
+            cf.rcArea.left = cf.rcArea.top = cf.rcArea.right = cf.rcArea.bottom = 0;
+            ImmSetCandidateWindow(hIMC, &cf);
+        }
+        COMPOSITIONFORM cfr;
+        cfr.dwStyle = CFS_POINT;
+        ImmGetCompositionWindow(hIMC, &cfr);
+        if (x != cfr.ptCurrentPos.x || y != cfr.ptCurrentPos.y) {
+            cfr.dwStyle = CFS_POINT;
+            cfr.ptCurrentPos.x = x;
+            cfr.ptCurrentPos.y = y;
+            cfr.rcArea.left = cfr.rcArea.top = cfr.rcArea.right = cfr.rcArea.bottom = 0;
+            ImmSetCompositionWindow(hIMC, &cfr);
+        }
+        ImmReleaseContext(hwnd, hIMC);
+    }
 }
 
 MsgRouting AwtComponent::WmImeSetContext(BOOL fSet, LPARAM *lplParam)
@@ -3916,10 +3930,15 @@ MsgRouting AwtComponent::WmImeSetContext(BOOL fSet, LPARAM *lplParam)
 
 MsgRouting AwtComponent::WmImeNotify(WPARAM subMsg, LPARAM bitsCandType)
 {
-    if (!m_useNativeCompWindow && subMsg == IMN_OPENCANDIDATE) {
-        m_bitsCandType = bitsCandType;
-        InquireCandidatePosition();
-        return mrConsume;
+    if (!m_useNativeCompWindow) {
+        if (subMsg == IMN_OPENCANDIDATE || subMsg == IMN_CHANGECANDIDATE) {
+            m_bitsCandType = bitsCandType;
+            InquireCandidatePosition();
+        } else if (subMsg == IMN_OPENSTATUSWINDOW ||
+                   subMsg == WM_IME_STARTCOMPOSITION ||
+                   subMsg == IMN_SETCANDIDATEPOS) {
+            InquireCandidatePosition();
+        }
     }
     return mrDoDefault;
 }
@@ -4178,14 +4197,14 @@ HWND AwtComponent::GetProxyFocusOwner()
     return (HWND)NULL;
 }
 
-/* Call DefWindowProc for the focus proxy, if any */
+/* Redirects message to the focus proxy, if any */
 void AwtComponent::CallProxyDefWindowProc(UINT message, WPARAM wParam,
     LPARAM lParam, LRESULT &retVal, MsgRouting &mr)
 {
     if (mr != mrConsume)  {
         HWND proxy = GetProxyFocusOwner();
         if (proxy != NULL && ::IsWindowEnabled(proxy)) {
-            retVal = ComCtl32Util::GetInstance().DefWindowProc(NULL, proxy, message, wParam, lParam);
+            retVal = ::DefWindowProc(proxy, message, wParam, lParam);
             mr = mrConsume;
         }
     }
