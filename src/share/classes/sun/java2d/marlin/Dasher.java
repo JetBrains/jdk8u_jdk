@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -303,15 +303,7 @@ final class Dasher implements PathConsumer2D, MarlinConst {
         final int index = off + type;
         final float x = pts[index - 4];
         final float y = pts[index - 3];
-/*
-        if (type == 8) {
-            System.out.println("seg["+on+"] len: "
-                    +Helpers.curvelen(pts[off - 2], pts[off - 1],
-                            pts[off    ], pts[off + 1],
-                        pts[off + 2], pts[off + 3],
-                        pts[off + 4], pts[off + 5]));
-        }
-*/
+
         if (on) {
             if (starting) {
                 goTo_starting(pts, off, type);
@@ -922,11 +914,6 @@ final class Dasher implements PathConsumer2D, MarlinConst {
             final float lineLen = Helpers.linelen(curve[0], curve[1], x0, y0);
 
             if ((polyLen - lineLen) < CURVE_LEN_ERR || recLevel == REC_LIMIT) {
-/*
-                if (recLevel == REC_LIMIT) {
-                    System.out.println("REC_LIMIT[" + recLevel + "] reached !");
-                }
-*/
                 return (polyLen + lineLen) / 2.0f;
             }
             return -1.0f;
@@ -998,9 +985,6 @@ final class Dasher implements PathConsumer2D, MarlinConst {
         final float[] mid = monotonizer.middle;
 
         for (int i = 0, off = 0; i <= nSplits; i++, off += 6) {
-/*
-            System.out.println("Part Curve "+Arrays.toString(Arrays.copyOfRange(mid, off, off + 8)));
-*/
             // optimize arraycopy (8 values faster than 6 = type):
             System.arraycopy(mid, off, _curCurvepts, 0, 8);
 

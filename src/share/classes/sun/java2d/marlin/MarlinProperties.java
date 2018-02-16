@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -110,7 +110,7 @@ public final class MarlinProperties {
     /**
      * Return the log(2) corresponding to the tile width in pixels
      *
-     * @return 3 (8 pixels) < tile width < 8 (1024 pixels)
+     * @return 3 (8 pixels) < tile width < 10 (1024 pixels)
      * (7 by default ie 128x64 pixels)
      */
     public static int getTileWidth_Log2() {
