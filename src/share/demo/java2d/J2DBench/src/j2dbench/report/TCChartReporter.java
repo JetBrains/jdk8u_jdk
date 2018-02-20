@@ -141,7 +141,7 @@ public class TCChartReporter {
                             System.err.println("\treferenceValue=" + refValue);
                             System.err.println("\t   actualValue=" + value);
                             System.err.println("\t          diff:" + ((value / refValue - 1) * 100));
-                            testFailed = true;
+                            testFailed = (value < refValue);
                         }
                     }
                 }
