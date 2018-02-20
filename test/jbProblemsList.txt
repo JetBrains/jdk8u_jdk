@@ -145,6 +145,9 @@ java/awt/Focus/6981400/Test1.java                                        generic
 # https://bugs.openjdk.java.net/browse/JDK-8173264
 java/awt/Focus/6981400/Test3.java                                        generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8196186
+java/awt/FullScreen/BufferStrategyExceptionTest/BufferStrategyExceptionTest.java macosx-all
+
 ## https://bugs.openjdk.java.net/browse/JDK-8013611
 # https://bugs.openjdk.java.net/browse/JDK-8175366
 java/awt/Focus/8013611/JDK8013611.java                                   generic-all
@@ -352,7 +355,8 @@ java/awt/Mixing/MixingOnShrinkingHWButton.java                       generic-all
 java/awt/Mixing/NonOpaqueInternalFrame.java                          macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169457
-java/awt/Mixing/OpaqueTest.java                                      windows-all
+# https://bugs.openjdk.java.net/browse/JDK-7124549
+java/awt/Mixing/OpaqueTest.java                                      generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7124549
 java/awt/Mixing/OverlappingButtons.java                              generic-all
@@ -461,6 +465,9 @@ java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java gener
 # https://bugs.openjdk.java.net/browse/JDK-8169533
 java/awt/TextField/SelectionInvisibleTest/SelectionInvisibleTest.java generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8198234
+java/awt/TextArea/Mixing/TextAreaMixing.java                         macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-6734341
 java/awt/TextArea/UsingWithMouse/SelectionAutoscrollTest.html        generic-all
 
@@ -482,7 +489,8 @@ java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java  generic-all
 java/awt/Window/AlwaysOnTop/AlwaysOnTopFieldTest.java                macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169530
-java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java           windows-all
+# https://bugs.openjdk.java.net/browse/JDK-8032450
+java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8142536
 java/awt/Window/BackgroundIsNotUpdated/BackgroundIsNotUpdated.java   generic-all
@@ -493,12 +501,19 @@ java/awt/Window/Grab/GrabTest.java                                   generic-all
 # https://bugs.openjdk.java.net/browse/JDK-6848409
 java/awt/Window/GrabSequence/GrabSequence.java                       generic-all
 
+#
+java/awt/Window/OwnedWindowsLeak/OwnedWindowsLeak.java
+
 https://bugs.openjdk.java.net/browse/JDK-8028486
 java/awt/Window/WindowsLeak/WindowsLeak.java                         macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8051857
 java/awt/Window/WindowType/WindowType.java                           linux-all
 java/awt/Focus/RequestFocusAndHideTest/RequestFocusAndHideTest.java  generic-all
+java/awt/List/SetBackgroundTest/SetBackgroundTest.java               linux-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8196367
+java/awt/List/SingleModeDeselect/SingleModeDeselect.java             linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8080982
 java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java    generic-all
