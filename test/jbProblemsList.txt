@@ -146,7 +146,7 @@ java/awt/Focus/6981400/Test1.java                                        generic
 java/awt/Focus/6981400/Test3.java                                        generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8196186
-java/awt/FullScreen/BufferStrategyExceptionTest/BufferStrategyExceptionTest.java macosx-all
+java/awt/FullScreen/BufferStrategyExceptionTest/BufferStrategyExceptionTest.java generic-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-8013611
 # https://bugs.openjdk.java.net/browse/JDK-8175366
@@ -1074,6 +1074,9 @@ javax/swing/JComponent/6683775/bug6683775.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7190978
 javax/swing/JComponent/7154030/bug7154030.java                       generic-all
+
+# https://bugs.openjdk.java.net/browse/JDK-8194767
+javax/swing/JEditorPane/6917744/bug6917744.java                      generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8042380
 javax/swing/JFileChooser/4524490/bug4524490.java                     generic-all
