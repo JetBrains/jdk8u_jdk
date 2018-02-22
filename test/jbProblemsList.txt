@@ -120,6 +120,10 @@ java/awt/Component/TreeLockDeadlock/TreeLockDeadlock.java                generic
 # the fix was integrated
 #java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html         generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8171909
+# https://bugs.openjdk.java.net/browse/JDK-8169589
+java/awt/Dialog/DialogAboveFrame/DialogAboveFrameTest.java               generic-all
+
 ## https://bugs.openjdk.java.net/browse/JDK-8081469
 # https://bugs.openjdk.java.net/browse/JDK-7054586
 java/awt/Dialog/MakeWindowAlwaysOnTop/MakeWindowAlwaysOnTop.java         generic-all
@@ -437,6 +441,7 @@ java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java macosx-a
 # https://bugs.openjdk.java.net/browse/JDK-8077686
 java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java   linux-all
 java/awt/event/TextEvent/TextEventSequenceTest/TextEventSequenceTest.java linux-all
+javax/swing/JComboBox/8015300/Test8015300.java                            linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8139581
 java/awt/Paint/ComponentIsNotDrawnAfterRemoveAddTest/ComponentIsNotDrawnAfterRemoveAddTest.java generic-all
@@ -466,7 +471,7 @@ java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java gener
 java/awt/TextField/SelectionInvisibleTest/SelectionInvisibleTest.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8198234
-java/awt/TextArea/Mixing/TextAreaMixing.java                         macosx-all
+java/awt/TextArea/Mixing/TextAreaMixing.java                         generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6734341
 java/awt/TextArea/UsingWithMouse/SelectionAutoscrollTest.html        generic-all
