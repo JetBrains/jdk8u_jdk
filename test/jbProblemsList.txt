@@ -1509,7 +1509,7 @@ sun/security/tools/keytool/i18n.sh                                   generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8130151
 # https://bugs.openjdk.java.net/browse/JDK-8157344
-sun/security/provider/SecureRandom/StrongSecureRandom.java           windows-all
+sun/security/provider/SecureRandom/StrongSecureRandom.java           generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8011134
 sun/security/ssl/com/sun/net/ssl/internal/ssl/X509TrustManagerImpl/ClientServer.java generic-all
