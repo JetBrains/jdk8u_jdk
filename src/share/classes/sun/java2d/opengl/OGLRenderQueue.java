@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -41,9 +41,10 @@ import java.security.PrivilegedAction;
 public class OGLRenderQueue extends RenderQueue {
 
     private static OGLRenderQueue theInstance;
-    private final QueueFlusher flusher;
+    final QueueFlusher flusher;
 
     private OGLRenderQueue() {
+        super();
         /*
          * The thread must be a member of a thread group
          * which will not get GCed before VM exit.
@@ -61,6 +62,7 @@ public class OGLRenderQueue extends RenderQueue {
     public static synchronized OGLRenderQueue getInstance() {
         if (theInstance == null) {
             theInstance = new OGLRenderQueue();
+            theInstance.flusher.start();
         }
         return theInstance;
     }
@@ -129,6 +131,7 @@ public class OGLRenderQueue extends RenderQueue {
         }
     }
 
+    @Override
     public void flushAndInvokeNow(Runnable r) {
         // assert lock.isHeldByCurrentThread();
         try {
@@ -148,24 +151,23 @@ public class OGLRenderQueue extends RenderQueue {
             // process the queue
             flushBuffer(buf.getAddress(), limit);
         }
-        // reset the buffer position
-        buf.clear();
-        // clear the set of references, since we no longer need them
-        refList.clear();
+        // reset the queue
+        clear();
     }
 
-    private class QueueFlusher extends Thread {
-        private boolean needsFlush;
+    private final class QueueFlusher extends Thread {
+        private final static long LATENCY = 100;
+        private final static long FLUSH_THRESHOLD = 10; // was 4 in jb jdk8u
+        private final static long DEFAULT_FLUSH_COUNT = LATENCY / FLUSH_THRESHOLD;
+
+        private boolean needsFlush = false;
         private Runnable task;
         private Error error;
-        private final long FLUSH_THRESHOLD = 4;
-        private final long DEFAULT_FLUSH_COUNT = 100/FLUSH_THRESHOLD;
 
-        public QueueFlusher(ThreadGroup threadGroup) {
+        QueueFlusher(ThreadGroup threadGroup) {
             super(threadGroup, "Java2D Queue Flusher");
             setDaemon(true);
             setPriority(Thread.MAX_PRIORITY);
-            start();
         }
 
         public synchronized void flushNow() {
@@ -175,13 +177,18 @@ public class OGLRenderQueue extends RenderQueue {
         public synchronized void flushNow(boolean sync) {
             // wake up the flusher
             needsFlush = true;
-            if (!sync) return;
+            if (!sync) {
+// TODO: check possible bug who has the AWT lock ?
+                return;
+            }
 
+            notify();
             // wait for flush to complete
             while (needsFlush) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
+                    // ignored
                 }
             }
 
@@ -196,13 +203,16 @@ public class OGLRenderQueue extends RenderQueue {
             flushNow();
         }
 
+        @Override
         public synchronized void run() {
-            boolean timedOut = false;
+            boolean locked = false;
+            int count;
+
             while (true) {
-                int count = 0;
+                
                 while (!needsFlush) {
+                    count = 0;
                     try {
-                        timedOut = false;
                         /*
                          * Wait FLUSH_THRESHOLD ms then check if needsFlush is set by
                          * flushNow() call or we waited DEFAULT_FLUSH_COUNT times.
@@ -217,38 +227,45 @@ public class OGLRenderQueue extends RenderQueue {
                          *   - there is something in the queue to flush
                          * Otherwise, just continue (we'll flush eventually).
                          */
-                        if (!needsFlush && count >= DEFAULT_FLUSH_COUNT &&
-                                (timedOut = tryLock()))
+                        if (!needsFlush && (count >= DEFAULT_FLUSH_COUNT) &&
+                                (locked = tryLock()))
                         {
                             if (buf.position() > 0) {
                                 needsFlush = true;
                             } else {
+                                locked = false;
                                 unlock();
                             }
                         }
                     } catch (InterruptedException e) {
+                        // ignored
                     }
                     count++;
                 }
+                // locked by either this thread (see locked flag) or by waiting thread:
+                // TODO: check lock is always acquired when needsFlush = true ?
                 try {
                     // reset the throwable state
                     error = null;
+                    
                     // flush the buffer now
                     flushBuffer();
+                    
                     // if there's a task, invoke that now as well
                     if (task != null) {
                         task.run();
+                        task = null;
                     }
                 } catch (Error e) {
                     error = e;
-                } catch (Exception x) {
+                } catch (Exception ex) {
                     System.err.println("exception in QueueFlusher:");
-                    x.printStackTrace();
+                    ex.printStackTrace();
                 } finally {
-                    if (timedOut) {
+                    if (locked) {
+                        locked = false;
                         unlock();
                     }
-                    task = null;
                     // allow the waiting thread to continue
                     needsFlush = false;
                     notify();

@@ -72,20 +72,27 @@ import sun.awt.SunToolkit;
 public abstract class RenderQueue {
 
     /** The size of the underlying buffer, in bytes. */
-    private static final int BUFFER_SIZE = 6400000;
+    private static final int BUFFER_SIZE = 6*1024*1024;
 
     /** The underlying buffer for this queue. */
-    protected RenderBuffer buf;
+    protected final RenderBuffer buf;
 
     /**
      * A Set containing hard references to Objects that must stay alive until
      * the queue has been completely flushed.
      */
-    protected ArrayList refList;
+    protected final ArrayList<Object> refList;
 
     protected RenderQueue() {
-        refList = new ArrayList();
+        refList = new ArrayList<Object>(1024); // large enough (LBO) ?
         buf = RenderBuffer.allocate(BUFFER_SIZE);
+    }
+    
+    protected final void clear() {
+        // reset the buffer position
+        buf.clear();
+        // clear the set of references, since we no longer need them
+        refList.clear();
     }
 
     /**
