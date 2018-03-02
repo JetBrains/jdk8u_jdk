@@ -326,14 +326,18 @@ public class UnicastServerRef extends UnicastRef
 
             // unmarshal parameters
             Object[] params = null;
-
             try {
                 unmarshalCustomCallData(in);
                 params = unmarshalParameters(obj, method, marshalStream);
-            } catch (java.io.IOException e) {
-                throw new UnmarshalException(
-                    "error unmarshalling arguments", e);
-            } catch (ClassNotFoundException e) {
+
+            } catch (AccessException aex) {
+                // For compatibility, AccessException is not wrapped in UnmarshalException
+                // disable saving any refs in the inputStream for GC
+                ((StreamRemoteCall) call).discardPendingRefs();
+                throw aex;
+            } catch (java.io.IOException | ClassNotFoundException e) {
+                // disable saving any refs in the inputStream for GC
+                ((StreamRemoteCall) call).discardPendingRefs();
                 throw new UnmarshalException(
                     "error unmarshalling arguments", e);
             } finally {
