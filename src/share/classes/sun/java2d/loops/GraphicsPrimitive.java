@@ -320,6 +320,7 @@ public abstract class GraphicsPrimitive {
 
     public static int traceflags;
     public static String tracefile;
+    public static String pname;
     public static PrintStream traceout;
     public static long treshold = 0;
     public static boolean verbose = false;
@@ -328,6 +329,7 @@ public abstract class GraphicsPrimitive {
     public static final int TRACETIMESTAMP = 2;
     public static final int TRACECOUNTS = 4;
     public static final int TRACEPTIME = 8;
+    public static final int TRACEPNAME = 16;
 
     static void showTraceUsage() {
         System.err.println("usage: -Dsun.java2d.trace="+
@@ -351,6 +353,9 @@ public abstract class GraphicsPrimitive {
                     traceflags |= GraphicsPrimitive.TRACETIMESTAMP;
                 } else if (tok.equalsIgnoreCase("ptime")) {
                     traceflags |=GraphicsPrimitive.TRACEPTIME;
+                } else if (tok.regionMatches(true, 0, "name:", 0, 5)) {
+                    traceflags |=GraphicsPrimitive.TRACEPNAME;
+                    pname = tok.substring(6);
                 } else if (tok.equalsIgnoreCase("verbose")) {
                     verbose = true;
                 } else if (tok.regionMatches(true, 0, "out:", 0, 4)) {
@@ -467,6 +472,10 @@ public abstract class GraphicsPrimitive {
     }
 
     public synchronized static void tracePrimitive(Object prim) {
+        if ((traceflags & TRACEPNAME) != 0) {
+            if (!prim.toString().contains(pname)) return;
+        }
+
         if ((traceflags & TRACECOUNTS) != 0) {
             if (traceMap == null) {
                 traceMap = new HashMap();
@@ -489,6 +498,9 @@ public abstract class GraphicsPrimitive {
     }
 
     public synchronized static void tracePrimitiveTime(Object prim, long time) {
+        if ((traceflags & TRACEPNAME) != 0) {
+            if (!prim.toString().contains(pname)) return;
+        }
         if (time > treshold && (traceflags & TRACEPTIME) != 0  && (traceflags & TRACELOG) != 0) {
             PrintStream ps = getTraceOutputFile();
             ps.println(prim + " time: " + time);
