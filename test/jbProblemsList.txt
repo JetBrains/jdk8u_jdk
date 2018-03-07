@@ -493,6 +493,9 @@ java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java  generic-all
 # fixed in 8_112
 java/awt/Window/AlwaysOnTop/AlwaysOnTopFieldTest.java                macosx-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8198739
+ava/awt/Window/AlwaysOnTop/SyncAlwaysOnTopFieldTest.java             windows-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8169530
 # https://bugs.openjdk.java.net/browse/JDK-8032450
 java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java           generic-all
@@ -1089,6 +1092,9 @@ javax/swing/JFileChooser/4524490/bug4524490.java                     generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8058231
 javax/swing/JFileChooser/6396844/TwentyThousandTest.java             generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-8198735
+javax/swing/JFileChooser/6489130/bug6489130.java                     macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8087110
 javax/swing/JFileChooser/8002077/bug8002077.java                     generic-all
 
@@ -1602,6 +1608,9 @@ com/sun/jdi/ConstantPoolInfoGC.java                                             
 # https://bugs.openjdk.java.net/browse/JDK-8054066
 com/sun/jdi/DoubleAgentTest.java                                                                generic-all
 
+# https://bugs.openjdk.java.net/browse/JDK-6648858
+com/sun/jdi/InvokeHangTest.java                                                                 generic-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8151887
 com/sun/jdi/RedefineClearBreakpoint.sh                                                          generic-all
 
@@ -1625,11 +1634,11 @@ java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                    
 java/awt/Mixing/MixingInHwPanel.java                                                            generic-all
 java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java                          generic-all
 java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                                          windows-all
-java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
+#java/awt/TextArea/Mixing/TextAreaMixing.java                                                    windows-all
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                                         windows-all
 java/io/File/SetLastModified.java                                                               generic-all
 javax/swing/JScrollBar/7163696/Test7163696.java                                                 generic-all
-javax/swing/text/html/CSS/4530474/bug4530474.java                                               windows-all
+#javax/swing/text/html/CSS/4530474/bug4530474.java                                               windows-all
 # https://bugs.openjdk.java.net/browse/JDK-8065099
 javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                                    generic-all
 javax/swing/dnd/7171812/bug7171812.java                                                         windows-all
