@@ -373,6 +373,9 @@ public abstract class GraphicsPrimitive {
                     showTraceUsage();
                 }
             }
+
+            GraphicsPrimitiveMgr.setTraceFlags(traceflags);
+
             if (verbose) {
                 System.err.print("GraphicsPrimitive logging ");
                 if ((traceflags & GraphicsPrimitive.TRACELOG) != 0) {
