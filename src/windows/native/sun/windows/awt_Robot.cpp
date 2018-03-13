@@ -65,6 +65,12 @@ void AwtRobot::MouseMove( jint x, jint y)
       newAccel[2] = 0;
       newSpeed = 10;
 
+      // On x64, SPI_GETMOUSESPEED returns 32-bit value (which sets only 32 bits 
+      // of oldSpeed variable), while SPI_SETMOUSESPEED requires 64-bit value.
+      // As oldSpeed is 64-bit variable, initialize it to 0 to avoid passing
+      // uninitialized memory in SPI_SETMOUSESPEED call.
+      oldSpeed = 0;
+
       // Save the Current Mouse Acceleration Constants
       bResult = SystemParametersInfo(SPI_GETMOUSE,0,oldAccel,0);
       bResult = SystemParametersInfo(SPI_GETMOUSESPEED, 0, &oldSpeed,0);
