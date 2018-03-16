@@ -1384,7 +1384,7 @@ tools/pack200/UnpackerMemoryTest.java                           linux-all
 tools/launcher/FXLauncherTest.java                              generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8180478
-tools/launcher/MultipleJRE.sh                                   windows_all
+tools/launcher/MultipleJRE.sh                                   windows-all
 
 ############################################################################
 
