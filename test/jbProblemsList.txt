@@ -801,8 +801,8 @@ java/rmi/activation/CommandEnvironment/SetChildEnv.java                    gener
 java/rmi/activation/Activatable/restartCrashedService/RestartCrashedService.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8019538
-java/rmi/activation/rmidViaInheritedChannel/RmidViaInheritedChannel.java         generic-all
-java/rmi/activation/rmidViaInheritedChannel/InheritedChannelNotServerSocket.java 8170562 generic-al
+java/rmi/activation/rmidViaInheritedChannel/RmidViaInheritedChannel.java                 generic-all
+java/rmi/activation/rmidViaInheritedChannel/InheritedChannelNotServerSocket.java 8170562 generic-all
 
 java/rmi/server/Unreferenced/finiteGCLatency/FiniteGCLatency.java   7140992 generic-all
 
@@ -1170,14 +1170,9 @@ javax/swing/JTextArea/4697612/bug4697612.java                        linux-all
 
 tools/pack200/CommandLineTests.java                     8059906 generic-all
 tools/pack200/Pack200Test.java                                  solaris-all, macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8140611
-tools/pack200/UnpackerMemoryTest.java                           linux-all
-
+tools/pack200/UnpackerMemoryTest.java                   8140611 linux-all
 tools/launcher/FXLauncherTest.java                      8068049 linux-all,macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8180478
-tools/launcher/MultipleJRE.sh                                   windows_all
+tools/launcher/MultipleJRE.sh                           8180478 windows-all
 
 ############################################################################
 
