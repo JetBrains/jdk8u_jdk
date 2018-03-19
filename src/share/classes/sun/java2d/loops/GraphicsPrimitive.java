@@ -333,7 +333,7 @@ public abstract class GraphicsPrimitive {
 
     static void showTraceUsage() {
         System.err.println("usage: -Dsun.java2d.trace="+
-                "[log[,timestamp]],[count],[ptime],"+
+                "[log[,timestamp]],[count],[ptime],[name:<substr pattern>],"+
                 "[out:<filename>],[td=<treshold>],[help],[verbose]");
     }
 
