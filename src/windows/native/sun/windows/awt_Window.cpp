@@ -1360,7 +1360,7 @@ void AwtWindow::Show()
             if (nCmdShow == SW_SHOWNA) {
                 flags |= SWP_NOACTIVATE;
             }
-            ::SetWindowPos(GetHWnd(), HWND_TOPMOST, 0, 0, 0, 0, flags);
+            ::SetWindowPos(GetHWnd(), HWND_TOP, 0, 0, 0, 0, flags);
         } else {
             ::ShowWindow(GetHWnd(), nCmdShow);
         }
