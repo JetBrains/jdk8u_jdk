@@ -435,11 +435,11 @@ java/awt/MouseInfo/GetPointerInfoTest.java                           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8028484
 java/awt/MouseInfo/JContainerMousePositionTest.java                  generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-7124230
-java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java macosx-all
+java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java   7124230 macosx-all
+java/awt/Multiscreen/MultiScreenInsetsTest/MultiScreenInsetsTest.java     8134669 linux-all
+java/awt/Multiscreen/MultiScreenLocationTest/MultiScreenLocationTest.java 8155744 linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8077686
-java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java   linux-all
 java/awt/event/TextEvent/TextEventSequenceTest/TextEventSequenceTest.java linux-all
 javax/swing/JComboBox/8015300/Test8015300.java                            linux-all
 
