@@ -570,83 +570,40 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
     public void setVisible(boolean visible) {
         final long nsWindowPtr = getNSWindowPtr();
 
-        // Configure stuff
+        if (owner != null) {
+            if (!visible) {
+                CWrapper.NSWindow.removeChildWindow(owner.getNSWindowPtr(), nsWindowPtr);
+            }
+        }
+
         updateIconImages();
         updateFocusabilityForAutoRequestFocus(false);
 
-        boolean wasMaximized = isMaximized();
-
-        this.visible = visible;
-
-        // Manage the extended state when showing
-        if (visible) {
-            // Apply the extended state as expected in shared code
-            if (target instanceof Frame) {
-                if (!wasMaximized && isMaximized()) {
-                    // setVisible could have changed the native maximized state
-                    deliverZoom(true);
-                } else {
-                    int frameState = ((Frame)target).getExtendedState();
-                    if ((frameState & Frame.ICONIFIED) != 0) {
-                        // Treat all state bit masks with ICONIFIED bit as ICONIFIED state.
-                        frameState = Frame.ICONIFIED;
-                    }
-                    switch (frameState) {
-                        case Frame.ICONIFIED:
-                            CWrapper.NSWindow.miniaturize(nsWindowPtr);
-                            break;
-                        case Frame.MAXIMIZED_BOTH:
-                            maximize();
-                            break;
-                        default: // NORMAL
-                            unmaximize(); // in case it was maximized, otherwise this is a no-op
-                            break;
-                    }
-                }
+        if (!visible) {
+            // Cancel out the current native state of the window
+            switch (peer.getState()) {
+                case Frame.ICONIFIED:
+                    CWrapper.NSWindow.deminiaturize(nsWindowPtr);
+                    break;
+                case Frame.MAXIMIZED_BOTH:
+                    CWrapper.NSWindow.zoom(nsWindowPtr);
+                    break;
             }
         }
 
-        nativeSynthesizeMouseEnteredExitedEvents();
-
-        // Configure stuff #2
-        updateFocusabilityForAutoRequestFocus(true);
-
-        // Manage parent-child relationship when showing
-        if (visible) {
-            // Order myself above my parent
-            if (owner != null && owner.isVisible()) {
-                CWrapper.NSWindow.orderWindow(nsWindowPtr, CWrapper.NSWindow.NSWindowAbove, owner.getNSWindowPtr());
-                applyWindowLevel(target);
-            }
-        }
-
-
-        // Actually show or hide the window
-        LWWindowPeer blocker = (peer == null)? null : peer.getBlocker();
+        LWWindowPeer blocker = peer.getBlocker();
         if (blocker == null || !visible) {
-
             // If it ain't blocked, or is being hidden, go regular way
             if (visible) {
-
                 CWrapper.NSWindow.makeFirstResponder(nsWindowPtr, contentView.getAWTView());
-
-                boolean isPopup = (target.getType() == Window.Type.POPUP);
-                if (isPopup) {
-                    // Popups in applets don't activate applet's process
-                    CWrapper.NSWindow.orderFrontRegardless(nsWindowPtr);
+                boolean isKeyWindow = CWrapper.NSWindow.isKeyWindow(nsWindowPtr);
+                if (!isKeyWindow) {
+                    CWrapper.NSWindow.makeKeyAndOrderFront(nsWindowPtr);
                 } else {
                     CWrapper.NSWindow.orderFront(nsWindowPtr);
                 }
-
-                boolean isKeyWindow = CWrapper.NSWindow.isKeyWindow(nsWindowPtr);
-                if (!isKeyWindow) {
-                    CWrapper.NSWindow.makeKeyWindow(nsWindowPtr);
-                }
             } else {
-                // immediately hide the window
                 CWrapper.NSWindow.orderOut(nsWindowPtr);
-                // process the close
-                CWrapper.NSWindow.close(nsWindowPtr);
             }
         } else {
             // otherwise, put it in a proper z-order
@@ -654,8 +611,31 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
                     ((CPlatformWindow)blocker.getPlatformWindow()).getNSWindowPtr());
         }
 
-            // Order my own children above myself
-        // Deal with the blocker of the window being shown
+        if (visible) {
+            // Re-apply the extended state as expected in shared code
+            if (target instanceof Frame) {
+                switch (((Frame)target).getExtendedState()) {
+                    case Frame.ICONIFIED:
+                        CWrapper.NSWindow.miniaturize(nsWindowPtr);
+                        break;
+                    case Frame.MAXIMIZED_BOTH:
+                        CWrapper.NSWindow.zoom(nsWindowPtr);
+                        break;
+                }
+            }
+        }
+
+        updateFocusabilityForAutoRequestFocus(true);
+
+        if (owner != null) {
+            if (visible) {
+                CWrapper.NSWindow.addChildWindow(owner.getNSWindowPtr(), nsWindowPtr, CWrapper.NSWindow.NSWindowAbove);
+                if (target.isAlwaysOnTop()) {
+                    CWrapper.NSWindow.setLevel(nsWindowPtr, CWrapper.NSWindow.NSFloatingWindowLevel);
+                }
+            }
+        }
+
         if (blocker != null && visible) {
             // Make sure the blocker is above its siblings
             ((CPlatformWindow)blocker.getPlatformWindow()).orderAboveSiblings();
