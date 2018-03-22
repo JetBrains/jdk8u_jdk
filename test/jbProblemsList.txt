@@ -373,7 +373,7 @@ java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java 80612
 java/awt/TextField/SelectionInvisibleTest/SelectionInvisibleTest.java 8169533 generic-all
 java/awt/TextArea/Mixing/TextAreaMixing.java                          8198234 generic-all
 java/awt/TextArea/UsingWithMouse/SelectionAutoscrollTest.html         6734341 generic-all
-java/awt/Toolkit/ScreenInsetsTest/ScreenInsetsTest.java               6829250 windows-all
+java/awt/Toolkit/ScreenInsetsTest/ScreenInsetsTest.java               6829250 windows-all,macosx-all
 
 ## https://bugs.openjdk.java.net/browse/JDK-6829267
 # https://bugs.openjdk.java.net/browse/JDK-6847163
@@ -459,7 +459,7 @@ java/awt/event/MouseEvent/MouseClickTest/MouseClickTest.html              816838
 java/awt/event/MouseEvent/SpuriousExitEnter/SpuriousExitEnter_3.java      6854300 generic-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion.java   8060176 windows-all,macosx-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_1.java 8060176 windows-all,macosx-all
-java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_2.html 8060176 windows-all,macosx-all
+java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_2.html 8060176 windows-all,macosx-all,linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6956646
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_4.java generic-all
