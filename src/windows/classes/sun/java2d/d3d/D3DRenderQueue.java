@@ -132,7 +132,7 @@ public class D3DRenderQueue extends RenderQueue {
         }
     }
 
-    public void flushNow(QueueSyncType sync) {
+    public void flushNow(boolean sync) {
         // assert lock.isHeldByCurrentThread();
         flushBuffer(null);
     }

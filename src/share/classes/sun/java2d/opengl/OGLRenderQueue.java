@@ -119,7 +119,7 @@ public class OGLRenderQueue extends RenderQueue {
     }
 
     @Override
-    public void flushNow(QueueSyncType sync) {
+    public void flushNow(boolean sync) {
         // assert lock.isHeldByCurrentThread();
         try {
             flusher.flushNow(sync);
@@ -169,16 +169,13 @@ public class OGLRenderQueue extends RenderQueue {
         }
 
         public synchronized void flushNow() {
-            flushNow(QueueSyncType.SYNC);
+            flushNow(true);
         }
 
-        public synchronized void flushNow(QueueSyncType sync) {
+        public synchronized void flushNow(boolean latency) {
             // wake up the flusher
             needsFlush = true;
-            switch (sync) {
-                case NO_SYNC: return;
-                case SYNC_NOW: notify();
-            }
+            if (!latency) notify();
 
             // wait for flush to complete
             while (needsFlush) {

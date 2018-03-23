@@ -71,10 +71,6 @@ import sun.awt.SunToolkit;
  */
 public abstract class RenderQueue {
 
-    public enum QueueSyncType {
-        NO_SYNC, SYNC, SYNC_NOW
-    }
-
     /** The size of the underlying buffer, in bytes. */
     private static final int BUFFER_SIZE = 6400000;
 
@@ -206,7 +202,7 @@ public abstract class RenderQueue {
      * queue lock must be acquired before calling this method.
      */
     public void flushNow() {
-        flushNow(QueueSyncType.SYNC);
+        flushNow(true);
     }
 
     /**
@@ -215,7 +211,7 @@ public abstract class RenderQueue {
      * queue lock must be acquired before calling this method.
      * @param sync true, process the operations immediately
      */
-    public abstract void flushNow(QueueSyncType sync);
+    public abstract void flushNow(boolean sync);
 
 
     /**
