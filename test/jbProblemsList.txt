@@ -176,7 +176,7 @@ java/awt/Focus/DeiconifiedFrameLoosesFocus/DeiconifiedFrameLoosesFocus.html gene
 
 java/awt/Focus/FocusOwnerFrameOnClick/FocusOwnerFrameOnClick.java                     8081489 generic-all
 java/awt/Focus/IconifiedFrameFocusChangeTest/IconifiedFrameFocusChangeTest.java       6849364 generic-all
-java/awt/Focus/KeyEventForBadFocusOwnerTest/KeyEventForBadFocusOwnerTest.java         8198621 macosx-all
+java/awt/Focus/KeyEventForBadFocusOwnerTest/KeyEventForBadFocusOwnerTest.java         8198621 macosx-all,windows-all
 java/awt/Focus/NoAutotransferToDisabledCompTest/NoAutotransferToDisabledCompTest.java 7152980 macosx-all,windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8151979
@@ -236,7 +236,7 @@ java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java       7019055 windows
 java/awt/FullScreen/NoResizeEventOnDMChangeTest/NoResizeEventOnDMChangeTest.java windows-all
 
 java/awt/Frame/MaximizedToIconified/MaximizedToIconified.java 8012224 generic-all
-java/awt/Frame/ShapeNotSetSometimes/ShapeNotSetSometimes.java 8144030 macosx-all,windows-all
+java/awt/Frame/ShapeNotSetSometimes/ShapeNotSetSometimes.java 8144030 macosx-all,windows-all,linux-all
 java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java    7019055 generic-all
 java/awt/FullScreen/SetFSWindow/FSFrame.java                  8016241 generic-all
 java/awt/Graphics/CopyScaledArea/CopyScaledAreaTest.java      8153299 generic-all
@@ -368,7 +368,7 @@ java/awt/ScrollPane/bug8077409Test.java                              generic-all
 java/awt/SplashScreen/FullscreenAfterSplash/FullScreenAfterSplash.java generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8159592
-java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java 8061235 macosx-all,windows-all
+java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java 8061235 macosx-all,windows-all,linux-all
 
 java/awt/TextField/SelectionInvisibleTest/SelectionInvisibleTest.java 8169533 generic-all
 java/awt/TextArea/Mixing/TextAreaMixing.java                          8198234 generic-all
@@ -398,7 +398,7 @@ java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java           generic-all
 
 java/awt/Window/BackgroundIsNotUpdated/BackgroundIsNotUpdated.java  8142536 generic-all
 java/awt/Window/Grab/GrabTest.java                                  8047703 generic-all
-java/awt/Window/GrabSequence/GrabSequence.java                      6848409 macosx-all,windows-all
+java/awt/Window/GrabSequence/GrabSequence.java                      6848409 macosx-all,windows-all,linux-all
 java/awt/Window/WindowsLeak/WindowsLeak.java                        8028486 macosx-all
 java/awt/Window/WindowType/WindowType.java                          8051857 linux-all
 java/awt/Focus/RequestFocusAndHideTest/RequestFocusAndHideTest.java 8051857 generic-all
