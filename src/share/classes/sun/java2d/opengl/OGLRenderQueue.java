@@ -177,12 +177,11 @@ public class OGLRenderQueue extends RenderQueue {
         public synchronized void flushNow(boolean sync) {
             // wake up the flusher
             needsFlush = true;
-            if (!sync) {
-// TODO: check possible bug who has the AWT lock ?
-                return;
+
+            if (sync) {
+                notify();
             }
 
-            notify();
             // wait for flush to complete
             while (needsFlush) {
                 try {
