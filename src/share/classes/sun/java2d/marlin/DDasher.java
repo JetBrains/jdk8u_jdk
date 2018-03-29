@@ -810,7 +810,6 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
                 // and our quadratic root finder doesn't filter, so it's just a
                 // matter of convenience.
                 final int n = DHelpers.cubicRootsInAB(a, b, c, d, nextRoots, 0, 0.0d, 1.0d);
-// TODO: check NaN is impossible
                 if (n == 1 && !Double.isNaN(nextRoots[0])) {
                     t = nextRoots[0];
                 }

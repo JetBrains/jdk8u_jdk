@@ -106,12 +106,10 @@ final class DCurve {
         cy = dy21;
         dx = x1;                // D = P1
         dy = y1;
-        if (false) {
-            dax = 0.0d;
-            day = 0.0d;
-            dbx = 0.0d;
-            dby = 0.0d;
-        }
+        dax = 0.0d;
+        day = 0.0d;
+        dbx = 0.0d;
+        dby = 0.0d;
     }
 
     int dxRoots(final double[] roots, final int off) {

@@ -101,20 +101,20 @@ public final class MarlinProperties {
      * Return the log(2) corresponding to the square tile size in pixels
      *
      * @return 3 (8x8 pixels) < tile size < 10 (1024x1024 pixels)
-     * (6 by default ie 128x64 pixels)
+     * (5 by default ie 32x32 pixels)
      */
     public static int getTileSize_Log2() {
-        return getInteger("sun.java2d.renderer.tileSize_log2", 6, 3, 10);
+        return getInteger("sun.java2d.renderer.tileSize_log2", 5, 3, 10);
     }
 
     /**
      * Return the log(2) corresponding to the tile width in pixels
      *
      * @return 3 (8 pixels) < tile width < 10 (1024 pixels)
-     * (7 by default ie 128x64 pixels)
+     * (5 by default ie 32x32 pixels)
      */
     public static int getTileWidth_Log2() {
-        return getInteger("sun.java2d.renderer.tileWidth_log2", 7, 3, 10);
+        return getInteger("sun.java2d.renderer.tileWidth_log2", 5, 3, 10);
     }
 
     /**

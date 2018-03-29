@@ -265,9 +265,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
             // float step:
             // can only do this on even "count" values, because we must divide count by 2
             while ((count % 2 == 0)
-                    && ((Math.abs(ddx) + Math.abs(ddy) * _SCALE_DY) <= _INC_BND
-//                     && (Math.abs(ddx + dddx) + Math.abs(ddy + dddy) * _SCALE_DY) <= _INC_BND
-                  )) {
+                    && ((Math.abs(ddx) + Math.abs(ddy) * _SCALE_DY) <= _INC_BND)) {
                 dx = 2.0f * dx + ddx;
                 dy = 2.0f * dy + ddy;
                 ddx = 4.0f * (ddx + dddx);
@@ -282,9 +280,7 @@ final class Renderer implements PathConsumer2D, MarlinRenderer {
             }
 
             // divide step by half:
-            while ((Math.abs(ddx) + Math.abs(ddy) * _SCALE_DY) >= _DEC_BND
-//                || (Math.abs(ddx + dddx) + Math.abs(ddy + dddy) * _SCALE_DY) >= _DEC_BND
-                  ) {
+            while ((Math.abs(ddx) + Math.abs(ddy) * _SCALE_DY) >= _DEC_BND) {
                 dddx /= 8.0f;
                 dddy /= 8.0f;
                 ddx = ddx / 4.0f - dddx;

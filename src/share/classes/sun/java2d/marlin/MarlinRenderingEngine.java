@@ -870,8 +870,6 @@ public final class MarlinRenderingEngine extends RenderingEngine
                     // trace Input:
                     pc2d = rdrCtx.transformerPC2D.traceInput(pc2d);
                 }
-
-                // TODO: subdivide quad/cubic curves into monotonic curves ?
                 pathTo(rdrCtx, pi, pc2d);
 
             } else {
