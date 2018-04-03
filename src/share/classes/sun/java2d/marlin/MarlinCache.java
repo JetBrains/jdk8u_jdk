@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,7 +25,6 @@
 
 package sun.java2d.marlin;
 
-//import jdk.internal.misc.Unsafe;
 import sun.misc.Unsafe;
 
 /**
@@ -293,11 +292,11 @@ public final class MarlinCache implements MarlinConst {
             // ensure values are in [0; MAX_AA_ALPHA] range
             if (DO_AA_RANGE_CHECK) {
                 if (val < 0) {
-                    System.out.println("Invalid coverage = " + val);
+                    MarlinUtils.logInfo("Invalid coverage = " + val);
                     val = 0;
                 }
                 if (val > MAX_AA_ALPHA) {
-                    System.out.println("Invalid coverage = " + val);
+                    MarlinUtils.logInfo("Invalid coverage = " + val);
                     val = MAX_AA_ALPHA;
                 }
             }
@@ -461,11 +460,11 @@ public final class MarlinCache implements MarlinConst {
                         // ensure values are in [0; MAX_AA_ALPHA] range
                         if (DO_AA_RANGE_CHECK) {
                             if (val < 0) {
-                                System.out.println("Invalid coverage = " + val);
+                                MarlinUtils.logInfo("Invalid coverage = " + val);
                                 val = 0;
                             }
                             if (val > MAX_AA_ALPHA) {
-                                System.out.println("Invalid coverage = " + val);
+                                MarlinUtils.logInfo("Invalid coverage = " + val);
                                 val = MAX_AA_ALPHA;
                             }
                         }
@@ -631,8 +630,6 @@ public final class MarlinCache implements MarlinConst {
         final int halfmaxalpha = maxalpha >> 2;
         for (int i = 0; i <= maxalpha; i++) {
             alMap[i] = (byte) ((i * 255 + halfmaxalpha) / maxalpha);
-//            System.out.println("alphaMap[" + i + "] = "
-//                               + Byte.toUnsignedInt(alMap[i]));
         }
         return alMap;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -38,7 +38,6 @@ import static sun.java2d.marlin.MarlinUtils.logInfo;
 import sun.java2d.marlin.stats.Histogram;
 import sun.java2d.marlin.stats.Monitor;
 import sun.java2d.marlin.stats.StatLong;
-//import sun.awt.util.ThreadGroupUtils;
 
 /**
  * This class gathers global rendering statistics for debugging purposes only
@@ -398,11 +397,10 @@ public final class RendererStats implements MarlinConst {
                      * which will not get GCed before VM exit.
                      * Make its parent the top-level thread group.
                      */
-                    final ThreadGroup rootTG
-//                        = ThreadGroupUtils.getRootThreadGroup();
-                        = MarlinUtils.getRootThreadGroup();
-                    final Thread t = new Thread(rootTG, new RendererStatsDisposer(),
-                        "MarlinRenderer Disposer");
+                    final Thread t = new Thread(
+                                        MarlinUtils.getRootThreadGroup(), 
+                                        new RendererStatsDisposer(),
+                                        "MarlinRenderer Disposer");
                     t.setContextClassLoader(null);
                     t.setDaemon(true);
                     t.setPriority(Thread.MAX_PRIORITY - 2);
