@@ -25,6 +25,7 @@
 
 package java.awt.peer;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -124,4 +125,21 @@ public interface WindowPeer extends ContainerPeer {
      * @return the system insets or null
      */
     default Insets getSysInsets() { return null; }
+
+    static boolean isLightweightDialog(Window window) {
+        if (window instanceof RootPaneContainer) {
+            RootPaneContainer rootPaneContainer = (RootPaneContainer) window;
+            JRootPane rootPane = rootPaneContainer.getRootPane();
+            if (rootPane != null) {
+                Object property = rootPane.getClientProperty("SIMPLE_WINDOW");
+                if (property instanceof Boolean) {
+                    Boolean isLightweightDialog = (Boolean)property;
+                    if (isLightweightDialog) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
