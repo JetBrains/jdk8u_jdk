@@ -1069,8 +1069,13 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
     jboolean hasLCDGlyphs = JNI_FALSE;
     jboolean lcdOpened = JNI_FALSE;
     jint ox1 = INT_MIN;
+    jlong time;
 
     J2dTraceLn(J2D_TRACE_INFO, "OGLTR_DrawGlyphList");
+    if (graphicsPrimitive_traceflags & J2D_PTRACE_TIME) {
+        J2dTracePrimitive("OGLTR_DrawGlyphList");
+        time = J2dTraceNanoTime();
+    }
 
     RETURN_IF_NULL(oglc);
     RETURN_IF_NULL(dstOps);
@@ -1215,6 +1220,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
     if (lcdOpened) {
         j2d_glEnd();
     }
+    J2dTracePrimitiveTime("OGLTR_DrawGlyphList", time);
 }
 
 JNIEXPORT void JNICALL
