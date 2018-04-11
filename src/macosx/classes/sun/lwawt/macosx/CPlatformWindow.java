@@ -615,7 +615,6 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
         if (visible) {
             // Order myself above my parent
             if (owner != null && owner.isVisible()) {
-                CWrapper.NSWindow.orderWindow(nsWindowPtr, CWrapper.NSWindow.NSWindowAbove, owner.getNSWindowPtr());
                 applyWindowLevel(target);
             }
         }
