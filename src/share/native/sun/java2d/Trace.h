@@ -186,10 +186,11 @@ J2dTraceInit();
         if (graphicsPrimitive_traceflags && jvm) { \
             JNIEnv *env; \
             jstring jstr; \
-            (*jvm)->AttachCurrentThreadAsDaemon(jvm, &env, NULL); \
+            (*jvm)->AttachCurrentThreadAsDaemon(jvm, (void**)&env, NULL); \
             jstr = (*env)->NewStringUTF(env, string); \
-            JNU_CallStaticMethodByName(env, NULL, "sun/java2d/loops/GraphicsPrimitive", \
-                                       "tracePrimitive", "(Ljava/lang/Object;)V", jstr); \
+            JNU_CallStaticMethodByName( \
+                    env, NULL, "sun/java2d/loops/GraphicsPrimitive", \
+                    "tracePrimitive", "(Ljava/lang/Object;)V", jstr); \
             (*env)->DeleteLocalRef(env, jstr); \
         } \
     }

@@ -721,7 +721,6 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps, GlyphInfo *ginfo,
     jfloat dtx1, dty1, dtx2, dty2;
 
     if (glyphMode != MODE_USE_CACHE_LCD) {
-        OGLMTVertexCache_disable(oglc);
         OGLTR_DisableGlyphModeState();
         CHECK_PREVIOUS_OP(GL_TEXTURE_2D);
         j2d_glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -805,7 +804,10 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps, GlyphInfo *ginfo,
     }
 
     // render composed texture to the destination surface
-    OGLMTVertexCache_enable(oglc, dstTextureID != 0);
+    if (!OGLMTVertexCache_enable(oglc, dstTextureID != 0)) {
+        J2dTracePrimitive("OGLMTVertexCache_enable_failed");
+        return JNI_FALSE;
+    }
     OGLMTVertexCache_addGlyphQuad(oglc, dx1, dy1, dx2, dy2,
                                   cell->tx1, cell->ty1, cell->tx2, cell->ty2,
                                   dtx1, dty1, dtx2, dty2);
@@ -1114,7 +1116,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
         }
 
         if (ginfo->rowBytes == ginfo->width) {
-            OGLMTVertexCache_disable(oglc);
+            OGLMTVertexCache_disable();
             // grayscale or monochrome glyph data
             if (ginfo->width <= OGLTR_CACHE_CELL_WIDTH &&
                 ginfo->height <= OGLTR_CACHE_CELL_HEIGHT)
@@ -1124,7 +1126,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
                 ok = OGLTR_DrawGrayscaleGlyphNoCache(oglc, ginfo, x, y);
             }
         } else if (ginfo->rowBytes == ginfo->width * 4) {
-            OGLMTVertexCache_disable(oglc);
+            OGLMTVertexCache_disable();
             // color glyph data
             ok = OGLTR_DrawColorGlyphNoCache(oglc, ginfo, x, y);
         } else {
@@ -1148,7 +1150,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
                                                 rgbOrder, lcdContrast,
                                                 dstTextureID);
             } else {
-                OGLMTVertexCache_disable(oglc);
+                OGLMTVertexCache_disable();
                 ok = OGLTR_DrawLCDGlyphNoCache(oglc, dstOps,
                                                ginfo, x, y,
                                                rowBytesOffset,
@@ -1160,7 +1162,7 @@ OGLTR_DrawGlyphList(JNIEnv *env, OGLContext *oglc, OGLSDOps *dstOps,
             break;
         }
     }
-    OGLMTVertexCache_disable(oglc);
+    OGLMTVertexCache_disable();
     J2dTracePrimitiveTime("OGLTR_DrawGlyphList", time);
 }
 

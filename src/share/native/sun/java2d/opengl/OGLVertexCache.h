@@ -89,7 +89,6 @@ void OGLVertexCache_AddGlyphQuad(OGLContext *oglc,
                                  jfloat dx2, jfloat dy2);
 
 jboolean OGLMTVertexCache_enable(OGLContext *oglc, jboolean useTxtBarrier);
-void OGLMTVertexCache_flush(OGLContext *oglc, jint mask);
 void OGLMTVertexCache_addGlyphQuad(OGLContext *oglc,
                                    jfloat dx1, jfloat dy1,
                                    jfloat dx2, jfloat dy2,
@@ -97,7 +96,7 @@ void OGLMTVertexCache_addGlyphQuad(OGLContext *oglc,
                                    jfloat tx2, jfloat ty2,
                                    jfloat dtx1, jfloat dty1,
                                    jfloat dtx2, jfloat dty2);
-void OGLMTVertexCache_disable(OGLContext *oglc);
+void OGLMTVertexCache_disable();
 
 
 #endif /* OGLVertexCache_h_Included */

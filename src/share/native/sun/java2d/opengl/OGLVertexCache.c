@@ -59,6 +59,7 @@ static jint lcdGlyphInd = 0;
 
 static GLuint maskCacheTexID = 0;
 static jint maskCacheIndex = 0;
+static void OGLMTVertexCache_flush(jint mask);
 
 #define OGLVC_ADD_VERTEX(TX, TY, R, G, B, A, DX, DY) \
     do { \
@@ -324,7 +325,7 @@ OGLVertexCache_AddGlyphQuad(OGLContext *oglc,
 jboolean OGLMTVertexCache_enable(OGLContext *oglc, jboolean useTxtBarrier) {
      mtUseTxtBarrier = useTxtBarrier;
     if (mtVertexCache == NULL) {
-        mtVertexCache = (J2DVertex *)malloc(OGLMTVC_MAX_INDEX * sizeof(J2DMTVertex));
+        mtVertexCache = (J2DMTVertex *)malloc(OGLMTVC_MAX_INDEX * sizeof(J2DMTVertex));
         if (mtVertexCache == NULL) {
             return JNI_FALSE;
         }
@@ -347,31 +348,36 @@ jboolean OGLMTVertexCache_enable(OGLContext *oglc, jboolean useTxtBarrier) {
         lcdGlyphInd = 0;
     }
 
+    return JNI_TRUE;
 }
-void OGLMTVertexCache_disable(OGLContext *oglc) {
+void OGLMTVertexCache_disable() {
     if (mtVertexCacheEnabled) {
-        OGLMTVertexCache_flush(oglc, OGLMTVC_FLUSH_ALL);
+        OGLMTVertexCache_flush(OGLMTVC_FLUSH_ALL);
         mtVertexCacheEnabled = JNI_FALSE;
     }
 }
 
-void OGLMTVertexCache_flush(OGLContext *oglc, jint mask) {
+void OGLMTVertexCache_flush(jint mask) {
     if (mtVertexCacheEnabled) {
         if ((mask & OGLMTVC_FLUSH_EVEN) && evenLCDGlyphInd > 0) {
-            j2d_glDrawArrays(GL_QUADS, 0, evenLCDGlyphInd);
-            evenLCDGlyphInd = 0;
             if (mtUseTxtBarrier) {
+                // TextureBarrierNV() will guarantee that writes have completed
+                // and caches have been invalidated before subsequent Draws are
+                // executed
                 j2d_glTextureBarrierNV();
             }
+            j2d_glDrawArrays(GL_QUADS, 0, evenLCDGlyphInd);
+            evenLCDGlyphInd = 0;
         }
 
         if ((mask & OGLMTVC_FLUSH_ODD) && oddLCDGlyphInd > ODD_LCD_GLYPHS_OFFSET) {
+            if (mtUseTxtBarrier) {
+                // See the comment above
+                j2d_glTextureBarrierNV();
+            }
             j2d_glDrawArrays(GL_QUADS, ODD_LCD_GLYPHS_OFFSET,
                              oddLCDGlyphInd - ODD_LCD_GLYPHS_OFFSET);
             oddLCDGlyphInd = ODD_LCD_GLYPHS_OFFSET;
-            if (mtUseTxtBarrier) {
-                j2d_glTextureBarrierNV();
-            }
         }
     }
 }
@@ -387,12 +393,12 @@ void OGLMTVertexCache_addGlyphQuad(OGLContext *oglc,
     jint* ind;
     if (lcdGlyphInd & 0x1) {
         if (oddLCDGlyphInd >= OGLMTVC_MAX_INDEX) {
-            OGLMTVertexCache_flush(oglc, OGLMTVC_FLUSH_ODD);
+            OGLMTVertexCache_flush(OGLMTVC_FLUSH_ODD);
         }
         ind = &oddLCDGlyphInd;
     } else {
         if (evenLCDGlyphInd >= ODD_LCD_GLYPHS_OFFSET) {
-            OGLMTVertexCache_flush(oglc, OGLMTVC_FLUSH_EVEN);
+            OGLMTVertexCache_flush(OGLMTVC_FLUSH_EVEN);
         }
         ind = &evenLCDGlyphInd;
     }
