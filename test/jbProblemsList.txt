@@ -89,10 +89,8 @@
 
 # jdk_awt
 
-# https://bugs.openjdk.java.net/browse/JDK-8169106
-java/awt/Choice/ChoiceKeyEventReaction/ChoiceKeyEventReaction.html 6849922 windows-all,macosx-all
-
-java/awt/Choice/ChoiceMouseWheelTest/ChoiceMouseWheelTest.java   7100044 windows-all,macosx-all
+java/awt/Choice/ChoiceKeyEventReaction/ChoiceKeyEventReaction.html 8169106 windows-all,macosx-all
+java/awt/Choice/ChoiceMouseWheelTest/ChoiceMouseWheelTest.java     7100044 windows-all,macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169108
 java/awt/Choice/ItemStateChangeTest/ItemStateChangeTest.java             windows-all
@@ -198,7 +196,7 @@ java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                        generic
 # https://bugs.openjdk.java.net/browse/JDK-7035459
 java/awt/Focus/TranserFocusToWindow/TranserFocusToWindow.java        generic-all
 
-java/awt/Focus/TypeAhead/TestFocusFreeze.java                8198622 macosx-all,windows-all
+java/awt/Focus/TypeAhead/TestFocusFreeze.java                8198622 macosx-all,windows-all,linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169100
 java/awt/Focus/WindowInitialFocusTest/WindowInitialFocusTest.html    windows-all
@@ -932,7 +930,7 @@ javax/swing/JInternalFrame/8020708/bug8020708.java                   generic-all
 javax/swing/JInternalFrame/Test6325652.java                  8196467 linux-all,macosx-all,windows-all
 
 javax/swing/JInternalFrame/Test6505027.java                  8172535 generic-all
-javax/swing/JLabel/6596966/bug6596966.java                   8040914 macosx-all,windows-all
+javax/swing/JLabel/6596966/bug6596966.java                   8040914 linux-all,macosx-all,windows-all
 javax/swing/JList/6462008/bug6462008.java                    7156347 generic-all
 javax/swing/JMenu/4515762/bug4515762.java                    8040915 generic-all
 

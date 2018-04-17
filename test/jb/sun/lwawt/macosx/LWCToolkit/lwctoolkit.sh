@@ -66,10 +66,19 @@ echo "Running workload"
 ${TESTJAVA}/bin/java -XX:+ExtendedDTraceProbes -cp ${TESTCLASSES} LWCToolkit ${ITERATIONS} &
 TEST_PID=$!
 
-DTRACE_OUTPUT=$(echo ${BUPWD} | sudo -S ${DTRACE} -q -p${TEST_PID} -s ${TESTSRC}/lwctoolkit.d | grep "LWCToolkit" | grep " invokeAndWait")
+DTRACE_OUTPUT=$(echo ${BUPWD} | sudo -S ${DTRACE} -p${TEST_PID} -s ${TESTSRC}/lwctoolkit.d)
+echo "=dtrace output==========================="
 echo $DTRACE_OUTPUT
+echo "========================================="
 
-count=$(echo ${DTRACE_OUTPUT} | awk {'print $3'})
+METHOD_LINE=$(echo ${DTRACE_OUTPUT} | grep "LWCToolkit" | grep " invokeAndWait")
+
+if [ -z "${METHOD_LINE}" ]; then
+  echo "LWCToolkit.invokeAndWait is not contained in dtrace's output"
+  count=0
+else
+  count=$(echo ${METHOD_LINE} | awk {'print $3'})
+fi
 
 if [ "${count}" -lt "100" ]; then
     echo "Test PASSED"

@@ -44,14 +44,18 @@
 
 extern COLORREF DesktopColor2RGB(int colorIndex);
 
-#ifndef _WIN32_WINNT_WINBLUE
+
+//#ifndef _WIN32_WINNT_WINBLUE
+// TODO: What is about ShellScalingAPI.h
 typedef enum _PROCESS_DPI_AWARENESS {
     PROCESS_DPI_UNAWARE            = 0,
     PROCESS_SYSTEM_DPI_AWARE       = 1,
     PROCESS_PER_MONITOR_DPI_AWARE  = 2
 } PROCESS_DPI_AWARENESS;
-#endif
+//#endif
 
+
+/*
 #ifndef _WIN32_WINNT_WIN10
 typedef enum _DPI_AWARENESS {
     DPI_AWARENESS_INVALID            = -1,
@@ -59,12 +63,14 @@ typedef enum _DPI_AWARENESS {
     DPI_AWARENESS_SYSTEM_AWARE       = 1,
     DPI_AWARENESS_PER_MONITOR_AWARE  = 2
 } DPI_AWARENESS;
-
+*/
 typedef BOOL(EnableNonClientDpiScalingFunc)(HWND);
-#endif
+//#endif
 
 // val >= 0 todo [tav] until switch to VS'12
+#if (_MSC_VER < 1700)
 #define round(val) floor(val + 0.5)
+#endif
 
 class AwtObject;
 typedef AwtObject* PDATA;
