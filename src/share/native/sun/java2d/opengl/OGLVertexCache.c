@@ -336,10 +336,10 @@ jboolean OGLMTVertexCache_enable(OGLContext *oglc, jboolean useTxtBarrier) {
 
         j2d_glVertexPointer(2, GL_FLOAT, sizeof(J2DMTVertex), &mtVertexCache[0].dx);
         j2d_glEnableClientState(GL_VERTEX_ARRAY);
-        j2d_glClientActiveTextureARB(GL_TEXTURE1_ARB);
+        j2d_glClientActiveTexture(GL_TEXTURE1_ARB);
         j2d_glTexCoordPointer(2, GL_FLOAT, sizeof(J2DMTVertex), &mtVertexCache[0].tx1);
         j2d_glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        j2d_glClientActiveTextureARB(GL_TEXTURE0_ARB);
+        j2d_glClientActiveTexture(GL_TEXTURE0_ARB);
         j2d_glTexCoordPointer(2, GL_FLOAT, sizeof(J2DMTVertex), &mtVertexCache[0].tx0);
         j2d_glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         mtVertexCacheEnabled = JNI_TRUE;
