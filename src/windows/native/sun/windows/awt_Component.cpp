@@ -3865,13 +3865,14 @@ void AwtComponent::OpenCandidateWindow(int x, int y)
 {
     UINT bits = 1;
     POINT p = {0, 0}; // upper left corner of the client area
-    HWND hWnd = GetHWnd();
+    HWND hWnd = ImmGetHWnd();
     HWND hTop = GetTopLevelParentForWindow(hWnd);
     ::ClientToScreen(hTop, &p);
-
+    int sx = ScaleUpDX(x) - p.x;
+    int sy = ScaleUpDY(y) - p.y;
     for (int iCandType=0; iCandType<32; iCandType++, bits<<=1) {
         if ( m_bitsCandType & bits )
-            SetCandidateWindow(iCandType, x - p.x, y - p.y);
+            SetCandidateWindow(iCandType, sx, sy);
     }
     if (m_bitsCandType != 0) {
         // REMIND: is there any chance GetProxyFocusOwner() returns NULL here?
