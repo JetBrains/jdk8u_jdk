@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 #include "sun_java2d_SunGraphics2D.h"
 
@@ -56,6 +57,8 @@ static jboolean mtUseTxtBarrier = JNI_FALSE;
 static jint evenLCDGlyphInd = 0;
 static jint oddLCDGlyphInd = ODD_LCD_GLYPHS_OFFSET;
 static jint lcdGlyphInd = 0;
+static jfloat evenOx2 = FLT_MIN;
+static jfloat oddOx2 = FLT_MIN;
 
 static GLuint maskCacheTexID = 0;
 static jint maskCacheIndex = 0;
@@ -365,6 +368,7 @@ void OGLMTVertexCache_flush(jint mask) {
                 // and caches have been invalidated before subsequent Draws are
                 // executed
                 j2d_glTextureBarrierNV();
+                evenOx2 = FLT_MIN;
             }
             j2d_glDrawArrays(GL_QUADS, 0, evenLCDGlyphInd);
             evenLCDGlyphInd = 0;
@@ -374,6 +378,7 @@ void OGLMTVertexCache_flush(jint mask) {
             if (mtUseTxtBarrier) {
                 // See the comment above
                 j2d_glTextureBarrierNV();
+                oddOx2 = FLT_MIN;
             }
             j2d_glDrawArrays(GL_QUADS, ODD_LCD_GLYPHS_OFFSET,
                              oddLCDGlyphInd - ODD_LCD_GLYPHS_OFFSET);
@@ -382,8 +387,7 @@ void OGLMTVertexCache_flush(jint mask) {
     }
 }
 
-void OGLMTVertexCache_addGlyphQuad(OGLContext *oglc,
-                                   jfloat dx1, jfloat dy1,
+void OGLMTVertexCache_addGlyphQuad(jfloat dx1, jfloat dy1,
                                    jfloat dx2, jfloat dy2,
                                    jfloat tx1, jfloat ty1,
                                    jfloat tx2, jfloat ty2,
@@ -392,13 +396,21 @@ void OGLMTVertexCache_addGlyphQuad(OGLContext *oglc,
 {
     jint* ind;
     if (lcdGlyphInd & 0x1) {
-        if (oddLCDGlyphInd >= OGLMTVC_MAX_INDEX) {
+        if (oddLCDGlyphInd >= OGLMTVC_MAX_INDEX ||
+            (mtUseTxtBarrier && oddOx2 >= dx1))
+        {
             OGLMTVertexCache_flush(OGLMTVC_FLUSH_ODD);
+        } else if (mtUseTxtBarrier) {
+            oddOx2 = dx2;
         }
         ind = &oddLCDGlyphInd;
     } else {
-        if (evenLCDGlyphInd >= ODD_LCD_GLYPHS_OFFSET) {
+        if (evenLCDGlyphInd >= ODD_LCD_GLYPHS_OFFSET ||
+            (mtUseTxtBarrier && evenOx2 >= dx1))
+        {
             OGLMTVertexCache_flush(OGLMTVC_FLUSH_EVEN);
+        } else if (mtUseTxtBarrier) {
+            evenOx2 = dx2;
         }
         ind = &evenLCDGlyphInd;
     }
