@@ -808,9 +808,8 @@ OGLTR_DrawLCDGlyphViaCache(OGLContext *oglc, OGLSDOps *dstOps, GlyphInfo *ginfo,
         J2dTracePrimitive("OGLMTVertexCache_enable_failed");
         return JNI_FALSE;
     }
-    OGLMTVertexCache_addGlyphQuad(oglc, dx1, dy1, dx2, dy2,
-                                  cell->tx1, cell->ty1, cell->tx2, cell->ty2,
-                                  dtx1, dty1, dtx2, dty2);
+    OGLMTVertexCache_addGlyphQuad(dx1, dy1, dx2, dy2, cell->tx1, cell->ty1,
+                                  cell->tx2, cell->ty2, dtx1, dty1, dtx2, dty2);
 
     return JNI_TRUE;
 }
