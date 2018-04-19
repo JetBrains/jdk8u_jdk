@@ -228,6 +228,7 @@ java/awt/FullScreen/8013581/bug8013581.java                          generic-all
 
 java/awt/FullScreen/AltTabCrashTest/AltTabCrashTest.java         8047218 generic-all
 java/awt/FullScreen/DisplayChangeVITest/DisplayChangeVITest.java 8169469 windows-all
+java/awt/FullScreen/DisplayChangeVITest/DisplayChangeVITest.java 7179818 linux-all,macosx-all
 java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java       7019055 windows-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169468
@@ -283,10 +284,8 @@ java/awt/Mixing/LWPopupMenu.java                                     generic-all
 # https://bugs.openjdk.java.net/browse/JDK-4049668
 java/awt/Mixing/MixingOnDialog.java                                  generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8169460
-java/awt/Mixing/MixingOnShrinkingHWButton.java                       generic-all
-
-java/awt/Mixing/NonOpaqueInternalFrame.java 7124549 macosx-all
+java/awt/Mixing/MixingOnShrinkingHWButton.java               8169460 linux-all, windows-all
+java/awt/Mixing/NonOpaqueInternalFrame.java                  7124549 macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169457
 # https://bugs.openjdk.java.net/browse/JDK-7124549
@@ -426,6 +425,7 @@ java/awt/dnd/ImageTransferTest/ImageTransferTest.java 8176556 generic-all
 # https://bugs.openjdk.java.net/browse/JDK-7124379
 java/awt/dnd/FileListBetweenJVMsTest/FileListBetweenJVMsTest.html    generic-all
 java/awt/dnd/URIListBetweenJVMsTest/URIListBetweenJVMsTest.html      8171510 macosx-all
+java/awt/dnd/URIListBetweenJVMsTest/URIListBetweenJVMsTest.html      8201284 linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8030121
 java/awt/dnd/MissingDragExitEventTest/MissingDragExitEventTest.java  generic-all
@@ -787,35 +787,26 @@ java/nio/file/WatchService/DeleteInterference.java              generic-all
 
 # jdk_rmi
 
-# https://bugs.openjdk.java.net/browse/JDK-8085192
-java/rmi/activation/Activatable/checkRegisterInLog/CheckRegisterInLog.java generic-all
-java/rmi/activation/Activatable/forceLogSnapshot/ForceLogSnapshot.java     generic-all
-java/rmi/activation/Activatable/inactiveGroup/InactiveGroup.java           generic-all
-java/rmi/activation/Activatable/lookupActivationSystem/LookupActivationSystem.java generic-all
-java/rmi/activation/Activatable/restartService/RestartService.java         generic-all
-java/rmi/activation/CommandEnvironment/SetChildEnv.java                    generic-all
+java/rmi/activation/Activatable/checkRegisterInLog/CheckRegisterInLog.java 8085192 generic-all
+java/rmi/activation/Activatable/forceLogSnapshot/ForceLogSnapshot.java     8085192 generic-all
+java/rmi/activation/Activatable/inactiveGroup/InactiveGroup.java           8085192 generic-all
+java/rmi/activation/Activatable/lookupActivationSystem/LookupActivationSystem.java 8085192 generic-all
+java/rmi/activation/Activatable/restartService/RestartService.java         8085192 generic-all
+java/rmi/activation/CommandEnvironment/SetChildEnv.java                    8085192 generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8085192
-java/rmi/activation/Activatable/restartCrashedService/RestartCrashedService.java generic-all
+java/rmi/activation/Activatable/restartCrashedService/RestartCrashedService.java 8085192 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8019538
 java/rmi/activation/rmidViaInheritedChannel/RmidViaInheritedChannel.java                 generic-all
 java/rmi/activation/rmidViaInheritedChannel/InheritedChannelNotServerSocket.java 8170562 generic-all
 
 java/rmi/server/Unreferenced/finiteGCLatency/FiniteGCLatency.java   7140992 generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8029360
-java/rmi/transport/dgcDeadLock/DGCDeadLock.java                 generic-all
-
+java/rmi/registry/readTest/readTest.sh                              8139407 windows-all
+java/rmi/transport/dgcDeadLock/DGCDeadLock.java                     8029360 generic-all
 java/rmi/transport/rapidExportUnexport/RapidExportUnexport.java	    7146541 linux-all
-
 java/rmi/transport/checkLeaseInfoLeak/CheckLeaseLeak.java           7191877 generic-all
-
-# 7195095
-sun/rmi/transport/proxy/EagerHttpFallback.java                  generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8073080
-sun/rmi/transport/tcp/DeadCachedConnection.java                 windows-all
+sun/rmi/transport/proxy/EagerHttpFallback.java                      7195095 generic-all
+sun/rmi/transport/tcp/DeadCachedConnection.java                     8073080 windows-all
 
 ############################################################################
 
@@ -831,6 +822,8 @@ javax/security/auth/kerberos/KerberosTixDateTest.java                generic-all
 # Test ignored: run these by hand
 com/sun/security/auth/callback/TextCallbackHandler/Password.java     generic-all
 com/sun/security/auth/callback/TextCallbackHandler/Default.java      generic-all
+
+sun/security/rsa/SpecTest.java                          8075565 macosx-all
 
 # Test ignored: see runwjaas.csh for instructions for how to run this test
 com/sun/security/sasl/gsskerb/NoSecurityLayer.java              generic-all
@@ -874,57 +867,29 @@ sun/security/krb5/auto/tools/KinitConfPlusProps.java                       windo
 
 javax/swing/AbstractButton/6711682/bug6711682.java           8060765 windows-all,macosx-all
 javax/swing/JColorChooser/Test6541987.java                   8143021 windows-all,linux-all,macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8076178
-javax/swing/JColorChooser/Test7194184.java                           generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8171302
-javax/swing/JComboBox/4743225/bug4743225.java                        generic-all
-
+javax/swing/JColorChooser/Test7194184.java                   8076178 generic-all
+javax/swing/JComboBox/4743225/bug4743225.java                8171302 generic-all
 javax/swing/JComboBox/6236162/bug6236162.java                8028707 windows-all,macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8040797
-javax/swing/JComboBox/8032878/bug8032878.java                        generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8033069
-javax/swing/JComboBox/8033069/bug8033069NoScrollBar.java             generic-all
-
+javax/swing/JComboBox/8032878/bug8032878.java                8040797 generic-all
+javax/swing/JComboBox/8033069/bug8033069NoScrollBar.java     8033069 generic-all
 javax/swing/JComboBox/8033069/bug8033069ScrollBar.java       8163367 generic-all
 javax/swing/JComboBox/8057893/bug8057893.java                8169953 windows-all,macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8136998
-javax/swing/JComboBox/8136998/bug8136998.java                        generic-all
-
+javax/swing/JComboBox/8136998/bug8136998.java                8136998 generic-all
 javax/swing/JComboBox/ConsumedKeyTest/ConsumedKeyTest.java   8067986 generic-all
 javax/swing/JComponent/6683775/bug6683775.java               8172337 generic-all
 javax/swing/JComponent/7154030/bug7154030.java               7190978 generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8194767
-javax/swing/JEditorPane/6917744/bug6917744.java                      generic-all
-
+javax/swing/JEditorPane/6917744/bug6917744.java              8194767 generic-all
 javax/swing/JFileChooser/4524490/bug4524490.java             8042380 generic-all
-javax/swing/JFileChooser/6396844/TwentyThousandTest.java     8058231 macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8198735
-javax/swing/JFileChooser/6489130/bug6489130.java                     macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8087110
-javax/swing/JFileChooser/8002077/bug8002077.java                     generic-all
-
+javax/swing/JFileChooser/6396844/TwentyThousandTest.java     8058231 windows-all,linux-all,macosx-all
+javax/swing/JFileChooser/6489130/bug6489130.java             8198735 macosx-all
+javax/swing/JFileChooser/6868611/bug6868611.java             7059834 windows-all
+javax/swing/JFileChooser/8002077/bug8002077.java             8087110 generic-all
 javax/swing/JFileChooser/8021253/bug8021253.java             8169954 windows-all,linux-all,macosx-all
 javax/swing/JFileChooser/8062561/bug8062561.java             8196466 linux-all,macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8170721
-javax/swing/JFrame/4962534/bug4962534.html                           generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8169955
-javax/swing/JFrame/8016356/bug8016356.java                           windows-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8007719
-javax/swing/JInternalFrame/5066752/bug5066752.java                   generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8032568
-javax/swing/JInternalFrame/8020708/bug8020708.java                   generic-all
+javax/swing/JFrame/4962534/bug4962534.html                   8170721 generic-all
+javax/swing/JFrame/8016356/bug8016356.java                   8169955 windows-all
+javax/swing/JInternalFrame/5066752/bug5066752.java           8007719 generic-all
+javax/swing/JInternalFrame/8020708/bug8020708.java           8032568 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8160880
 javax/swing/JInternalFrame/Test6325652.java                  8196467 linux-all,macosx-all,windows-all
@@ -979,71 +944,45 @@ javax/swing/JPopupMenu/6800513/bug6800513.java               8080868 macosx-all,
 # https://bugs.openjdk.java.net/browse/JDK-8156460
 javax/swing/JPopupMenu/6827786/bug6827786.java                       generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8169956
-javax/swing/JPopupMenu/6987844/bug6987844.java                       generic-all
+javax/swing/JPopupMenu/6987844/bug6987844.java               8169956 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7185563
 # https://bugs.openjdk.java.net/browse/JDK-8171381
 javax/swing/JPopupMenu/7156657/bug7156657.java                       generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8064920
-javax/swing/JRadioButton/8033699/bug8033699.java                     generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8136371
-javax/swing/JRadioButton/8075609/bug8075609.java                     generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8042381
-javax/swing/JRootPane/4670486/bug4670486.java                        generic-all
+javax/swing/JRadioButton/8033699/bug8033699.java             8064920 generic-all
+javax/swing/JRadioButton/8075609/bug8075609.java             8136371 generic-all
+javax/swing/JRootPane/4670486/bug4670486.java                8042381 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8145647                   linux
 # https://bugs.openjdk.java.net/browse/JDK-8169957
 javax/swing/JScrollBar/4708809/bug4708809.java                       generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8024407
-#javax/swing/JScrollBar/7163696/Test7163696.java                      macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8028618
-javax/swing/JScrollBar/bug4202954/bug4202954.java                    generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8169960
-javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8172539
-javax/swing/JSlider/6348946/bug6348946.java                          generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8172408
-javax/swing/JSpinner/4973721/bug4973721.java                         generic-all
+javax/swing/JScrollBar/bug4202954/bug4202954.java            8028618 generic-all
+javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelOnShiftPressed.java 8169960 generic-all
+javax/swing/JSlider/6348946/bug6348946.java                  8172539 generic-all
+javax/swing/JSpinner/4973721/bug4973721.java                 8172408 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8169958
 # https://bugs.openjdk.java.net/browse/JDK-8159902
 javax/swing/JSpinner/5012888/bug5012888.java                         generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8019935
-javax/swing/JSplitPane/4885629/bug4885629.java                       generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-7033533
-javax/swing/JComboBox/4199622/bug4199622.java                        linux-all
-javax/swing/JInternalFrame/Test6802868.java                          linux-all
-javax/swing/JOptionPane/7138665/bug7138665.java                      linux-all
-javax/swing/JPopupMenu/6495920/bug6495920.java                       linux-all
-javax/swing/JTable/4220171/bug4220171.java                           linux-all
-javax/swing/Security/6657138/ComponentTest.java                      linux-all
+javax/swing/JSplitPane/4885629/bug4885629.java               8019935 generic-all
+javax/swing/JComboBox/4199622/bug4199622.java                7033533 linux-all
+javax/swing/JInternalFrame/Test6802868.java                  7033533 linux-all
+javax/swing/JOptionPane/7138665/bug7138665.java              7033533 linux-all
+javax/swing/JPopupMenu/6495920/bug6495920.java               7033533 linux-all
+javax/swing/JTable/4220171/bug4220171.java                   7033533 linux-all
+javax/swing/Security/6657138/ComponentTest.java              7033533 linux-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7033533
 # https://bugs.openjdk.java.net/browse/JDK-8194941
 javax/swing/text/html/CSS/4530474/bug4530474.java                    generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8169959
-javax/swing/JTable/6263446/bug6263446.java                           generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8169952
-javax/swing/JTableHeader/6884066/bug6884066.java                     generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-7179842
-javax/swing/JTableHeader/6889007/bug6889007.java                     generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8170260
-javax/swing/JTabbedPane/4361477/bug4361477.java                      generic-all
+javax/swing/JTable/6263446/bug6263446.java                   8169959 generic-all
+javax/swing/JTableHeader/6884066/bug6884066.java             8169952 generic-all
+javax/swing/JTableHeader/6889007/bug6889007.java             7179842 generic-all
+javax/swing/JTabbedPane/4361477/bug4361477.java              8170260 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8064922
 # https://bugs.openjdk.java.net/browse/JDK-8171997
@@ -1051,108 +990,43 @@ javax/swing/JTabbedPane/4624207/bug4624207.java                      generic-all
 
 javax/swing/JTabbedPane/7024235/Test7024235.java             8028281 macosx-all
 javax/swing/JTabbedPane/8007563/Test8007563.java             8051591 generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8145645
-javax/swing/JTextField/8036819/bug8036819.java                       generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8172407
-javax/swing/JToolTip/4846413/bug4846413.java                         generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8029682
-javax/swing/JTree/4330357/bug4330357.java                            generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8172065
-javax/swing/JTree/4908142/bug4908142.java                            generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8172063
-javax/swing/JTree/4927934/bug4927934.java                            generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8003839
-javax/swing/JTree/6263446/bug6263446.java                            generic-all
-
+javax/swing/JTextField/8036819/bug8036819.java               8145645 generic-all
+javax/swing/JToolTip/4846413/bug4846413.java                 8172407 generic-all
+javax/swing/JTree/4330357/bug4330357.java                    8029682 generic-all
+javax/swing/JTree/4908142/bug4908142.java                    8172065 generic-all
+javax/swing/JTree/4927934/bug4927934.java                    8172063 generic-all
+javax/swing/JTree/6263446/bug6263446.java                    8003839 generic-all
 javax/swing/JTree/8003400/Test8003400.java                   8011259 generic-all
 javax/swing/MultiUIDefaults/4300666/bug4300666.java          7105119 macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8165854
-javax/swing/Popup/TaskbarPositionTest.java                           macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8065099
-javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java         macosx-all
-
-# http://bugs.java.com/view_bug.do?bug_id=8008119
-javax/swing/RepaintManager/IconifyTest/IconifyTest.java              generic-all
-
+javax/swing/Popup/TaskbarPositionTest.java                   8165854 macosx-all
+javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java 8065099 macosx-all
+javax/swing/RepaintManager/IconifyTest/IconifyTest.java      8008119 generic-all
 javax/swing/SpringLayout/4726194/bug4726194.java             8198399 generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8172064
-javax/swing/SwingUtilities/4917669/bug4917669.java                   generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8072110
-javax/swing/SwingUtilities/7088744/bug7088744.java                   generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8079253
-javax/swing/SwingUtilities/TestBadBreak/TestBadBreak.java            linux-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8167009
-javax/swing/ToolTipManager/Test6256140.java                          generic-all
-
-javax/swing/plaf/basic/BasicMenuUI/4983388/bug4983388.java   8042383 macosx-all,windows-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8137101
-javax/swing/plaf/basic/BasicHTML/4251579/bug4251579.java             generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8140237
-javax/swing/plaf/nimbus/8041642/bug8041642.java                      generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8160438
-javax/swing/plaf/nimbus/8057791/bug8057791.java                      macosx-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8170722
-javax/swing/plaf/synth/7158712/bug7158712.java                       generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8081478
-javax/swing/plaf/synth/SynthButtonUI/6276188/bug6276188.java         generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8172071
-javax/swing/plaf/windows/WindowsRootPaneUI/WrongAltProcessing/WrongAltProcessing.java windows-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8130895
-javax/swing/system/6799345/TestShutdown.java                         linux-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8144188
-javax/swing/text/AbstractDocument/6968363/Test6968363.java           generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8003533
-javax/swing/text/CSSBorder/6796710/bug6796710.java                   generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8063107
-javax/swing/text/DefaultEditorKit/4278839/bug4278839.java            generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8050988
-javax/swing/text/GlyphPainter2/6427244/bug6427244.java               generic-all
-
-## https://bugs.openjdk.java.net/browse/JDK-7147408
-#javax/swing/text/StyledEditorKit/4506788/bug4506788.java             generic-all
-
-https://bugs.openjdk.java.net/browse/JDK-8145644
-javax/swing/text/View/8048110/bug8048110.java                        generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8041944
-javax/swing/text/View/8014863/bug8014863.java                        generic-all
-
-# http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8076178
-javax/swing/text/html/HTMLEditorKit/5043626/bug5043626.java          generic-all
-
+javax/swing/SwingUtilities/4917669/bug4917669.java           8172064 generic-all
+javax/swing/SwingUtilities/7088744/bug7088744.java           8072110 generic-all
+javax/swing/SwingUtilities/TestBadBreak/TestBadBreak.java    8079253 linux-all
+javax/swing/ToolTipManager/Test6256140.java                  8167009 generic-all
+javax/swing/plaf/basic/BasicMenuUI/4983388/bug4983388.java   8042383 macosx-all,linux-all,windows-all
+javax/swing/plaf/basic/BasicHTML/4251579/bug4251579.java     8137101 generic-all
+javax/swing/plaf/nimbus/8041642/bug8041642.java              8140237 generic-all
+javax/swing/plaf/nimbus/8057791/bug8057791.java              8160438 macosx-all
+javax/swing/plaf/synth/7158712/bug7158712.java               8170722 generic-all
+javax/swing/plaf/synth/SynthButtonUI/6276188/bug6276188.java 8081478generic-all
+javax/swing/plaf/windows/WindowsRootPaneUI/WrongAltProcessing/WrongAltProcessing.java 8172071 windows-all
+javax/swing/system/6799345/TestShutdown.java                 8130895 linux-all
+javax/swing/text/AbstractDocument/6968363/Test6968363.java   8144188 generic-all
+javax/swing/text/CSSBorder/6796710/bug6796710.java           8003533 generic-all
+javax/swing/text/DefaultEditorKit/4278839/bug4278839.java    8063107 generic-all
+javax/swing/text/GlyphPainter2/6427244/bug6427244.java       8050988 generic-all
+javax/swing/text/View/8048110/bug8048110.java                8145644 generic-all
+javax/swing/text/View/8014863/bug8014863.java                8041944 generic-all
+javax/swing/text/html/HTMLEditorKit/5043626/bug5043626.java  8076178 generic-all
 javax/swing/text/html/parser/Test8017492.java                8022535 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-6962725
 javax/swing/JFileChooser/6738668/bug6738668.java             8194946 generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8049313
-javax/swing/JTable/7068740/bug7068740.java                           generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8032895
-javax/swing/JTextArea/4697612/bug4697612.java                        linux-all
+javax/swing/JTable/7068740/bug7068740.java                   8049313 generic-all
+javax/swing/JTextArea/4697612/bug4697612.java                8032895 linux-all
 
 ############################################################################
 
@@ -1180,41 +1054,24 @@ tools/launcher/MultipleJRE.sh                           8180478 windows-all
 
 # jdk_util
 
-# Filed 6772009
-java/util/concurrent/locks/ReentrantLock/CancelledLockLoops.java generic-all
+java/util/concurrent/locks/ReentrantLock/CancelledLockLoops.java 6772009 generic-all
 
 # Test ignored: Bug fix temporarily removed as it uncovered other bugs (4992226)
-java/util/AbstractList/CheckForComodification.java                   generic-all
+java/util/AbstractList/CheckForComodification.java                       generic-all
 
-## https://bugs.openjdk.java.net/browse/JDK-8060093
-# java/util/Currency/CurrencyTest.java                                 generic-all
-# java/util/Currency/ValidateISO4217.java                              generic-all
-
-# Test ignored: until 6842022 is resolved
-java/util/ResourceBundle/RestrictedBundleTest.java                   generic-all
-
-#Test ignored: 6876961
-java/util/ResourceBundle/Test4300693.java                            generic-all
-
-#Test ignored: until 6842353 is resolved
-# https://bugs.openjdk.java.net/browse/JDK-6842353
-java/util/WeakHashMap/GCDuringIteration.java                         generic-all
+java/util/Locale/LocaleProviders.sh                              8150432 windows-all
+java/util/WeakHashMap/GCDuringIteration.java                     6842353 generic-all
 
 # Test ignored: runs for hours and eats up 7 Gigabytes of disk space
-java/util/zip/3GBZipFiles.sh                                         generic-all
+java/util/zip/3GBZipFiles.sh                                             generic-all
 
 ############################################################################
 
 # svc_tools
 
-# 8031482
-sun/tools/jcmd/TestJcmdSanity.java				windows-all
-
-# 6456333
-sun/tools/jps/TestJpsJarRelative.java				generic-all
-
-# https://bugs.openjdk.java.net/browse/JDK-8165727
-sun/tools/jstatd/TestJstatdExternalRegistry.java                     generic-all
+sun/tools/jcmd/TestJcmdSanity.java				                 8031482 windows-all
+sun/tools/jps/TestJpsJarRelative.java			                 6456333 generic-all
+sun/tools/jstatd/TestJstatdExternalRegistry.java                 8165727 generic-all
 
 ############################################################################
 
@@ -1445,3 +1302,19 @@ com/apple/eawt/DefaultMenuBar/DefaultMenuBarTest.java                           
 
 # https://bugs.openjdk.java.net/browse/JDK-8180821
 com/apple/laf/ScreenMenu/ScreenMenuMemoryLeakTest.java                                          macosx-all
+
+https://youtrack.jetbrains.com/issue/JRE-720
+java/awt/security/Permissions.java	java.util.ConcurrentModificationException	linux-all, macosx-all
+javax/swing/JScrollPane/Test6526631.java                                        macosx-all
+java/awt/Robot/RobotExtraButton/RobotExtraButton.java                           linux-all, windows-all
+javax/swing/JComboBox/6607130/bug6607130.java                                   windows-all
+java/awt/Frame/MaximizedNormalBoundsUndecoratedTest/MaximizedNormalBoundsUndecoratedTest.java macosx-all
+java/awt/Mixing/NonOpaqueInternalFrame.java                                     windows-all
+javax/swing/ToolTipManager/7123767/bug7123767.java                              linux-all
+java/security/KeyPairGenerator/FinalizeHalf.java                                windows-all
+sun/security/mscapi/CastError.java                 	                            windows-all
+sun/security/mscapi/SignatureOffsets.java          	                            windows-all
+sun/security/mscapi/SmallPrimeExponentP.java       	                            windows-all
+
+https://youtrack.jetbrains.com/issue/JRE-738
+sun/tools/native2ascii/Native2AsciiTests.sh                                     windows-all
