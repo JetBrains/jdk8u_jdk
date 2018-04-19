@@ -335,7 +335,7 @@ public class XComponentPeer extends XWindow implements ComponentPeer, DropTarget
               }
               // If parent window can be made focused and has been made focused(synchronously)
               // then we can proceed with children, otherwise we retreat.
-              if (!res) {
+              if (!(res && parentWindow.isFocused())) {
                   return rejectFocusRequestHelper("Waiting for asynchronous processing of the request");
               }
               return XKeyboardFocusManagerPeer.deliverFocus(lightweightChild,
