@@ -83,7 +83,7 @@ public class JDialog741 extends Applet {
             int count = stream.available();
             if (count > 0) {
                 byte[] b = new byte[count];
-                stream.read(b)
+                stream.read(b);
                 System.out.println("========= " + msg + " ========");
                 result = new String(b);
                 System.out.print(result);
