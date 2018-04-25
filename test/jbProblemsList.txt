@@ -145,8 +145,7 @@ java/awt/Frame/UnfocusableMaximizedFrameResizablity/UnfocusableMaximizedFrameRes
 java/awt/Frame/WindowDragTest/WindowDragTest.java                                   8169470 generic-all
 java/awt/FullScreen/8013581/bug8013581.java                                         8169471 generic-all
 java/awt/FullScreen/AltTabCrashTest/AltTabCrashTest.java                            8047218 generic-all
-java/awt/FullScreen/DisplayChangeVITest/DisplayChangeVITest.java                    8169469 windows-all
-java/awt/FullScreen/DisplayChangeVITest/DisplayChangeVITest.java                    7179818 linux-all,macosx-all
+java/awt/FullScreen/DisplayChangeVITest/DisplayChangeVITest.java                    7179818,8169469 windows-all,linux-all,macosx-all
 java/awt/FullScreen/FullScreenInsets/FullScreenInsets.java                          7019055 windows-all
 java/awt/FullScreen/NoResizeEventOnDMChangeTest/NoResizeEventOnDMChangeTest.java    8169468 windows-all
 java/awt/Frame/MaximizedToIconified/MaximizedToIconified.java                       8012224 generic-all
@@ -172,7 +171,7 @@ java/awt/Menu/OpensWithNoGrab/OpensWithNoGrab.java                              
 java/awt/Mixing/HWDisappear.java                                                    8068305 generic-all
 java/awt/Mixing/LWPopupMenu.java                                                    8143295 generic-all
 java/awt/Mixing/MixingOnDialog.java                                                 4049668 generic-all
-java/awt/Mixing/MixingOnShrinkingHWButton.java                                      8169460 linux-all,windows-all
+java/awt/Mixing/MixingOnShrinkingHWButton.java                                      8169460 linux-all,windows-all,macosx-all
 java/awt/Mixing/NonOpaqueInternalFrame.java                                         7124549,JRE-720 macosx-all,windows-all
 java/awt/Mixing/OpaqueTest.java                                                     7124549,8169457 generic-all
 java/awt/Mixing/OverlappingButtons.java                                             7124549 generic-all
@@ -251,8 +250,7 @@ java/awt/dnd/DropTargetEnterExitTest/ExtraDragEnterTest.java                    
 java/awt/dnd/DropTargetEnterExitTest/MissedDragExitTest.java                        8029680 generic-all
 java/awt/dnd/ImageTransferTest/ImageTransferTest.java                               8176556 generic-all
 java/awt/dnd/FileListBetweenJVMsTest/FileListBetweenJVMsTest.html                   7124379 generic-all
-java/awt/dnd/URIListBetweenJVMsTest/URIListBetweenJVMsTest.html                     7124379,8171510 macosx-all
-java/awt/dnd/URIListBetweenJVMsTest/URIListBetweenJVMsTest.html                     7124379,8201284 linux-all
+java/awt/dnd/URIListBetweenJVMsTest/URIListBetweenJVMsTest.html                     7124379,8171510,8201284 macosx-all,linux-all linux:7124379,8201284-macosx:7124379,8171510
 java/awt/dnd/MissingDragExitEventTest/MissingDragExitEventTest.java                 8030121 generic-all
 java/awt/dnd/MissingEventsOnModalDialog/MissingEventsOnModalDialogTest.java         8164464 linux-all,macosx-all,windows-all
 java/awt/dnd/ImageDecoratedDnDNegative/ImageDecoratedDnDNegative.html               8072088 generic-all
@@ -659,7 +657,7 @@ javax/swing/plaf/basic/BasicHTML/4251579/bug4251579.java                        
 javax/swing/plaf/nimbus/8041642/bug8041642.java                                       8140237 generic-all
 javax/swing/plaf/nimbus/8057791/bug8057791.java                                       8160438 macosx-all
 javax/swing/plaf/synth/7158712/bug7158712.java                                        8170722 generic-all
-javax/swing/plaf/synth/SynthButtonUI/6276188/bug6276188.java                          8081478generic-all
+javax/swing/plaf/synth/SynthButtonUI/6276188/bug6276188.java                          8081478 generic-all
 javax/swing/plaf/windows/WindowsRootPaneUI/WrongAltProcessing/WrongAltProcessing.java 8172071 windows-all
 javax/swing/system/6799345/TestShutdown.java                                          8130895 linux-all
 javax/swing/text/AbstractDocument/6968363/Test6968363.java                            8144188 generic-all
