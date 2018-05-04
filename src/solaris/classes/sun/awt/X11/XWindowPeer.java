@@ -1398,7 +1398,11 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
              */
             XToolkit.awtLock();
             try {
-                XlibWrapper.XRaiseWindow(XToolkit.getDisplay(), getWindow());
+                if (Boolean.parseBoolean(System.getProperty("com.jetbrains.suppressWindowRaise", "false"))) {
+                    XlibWrapper.XLowerWindow(XToolkit.getDisplay(), getWindow());
+                } else {
+                    XlibWrapper.XRaiseWindow(XToolkit.getDisplay(), getWindow());
+                }
             } finally {
                 XToolkit.awtUnlock();
             }
@@ -2013,7 +2017,11 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
             this.visible = visible;
             if (visible) {
                 applyWindowType();
-                XlibWrapper.XMapRaised(XToolkit.getDisplay(), getWindow());
+                if (Boolean.parseBoolean(System.getProperty("com.jetbrains.suppressWindowRaise", "false"))) {
+                    XlibWrapper.XMapWindow(XToolkit.getDisplay(), getWindow());
+                } else {
+                    XlibWrapper.XMapRaised(XToolkit.getDisplay(), getWindow());
+                }
             } else {
                 XlibWrapper.XUnmapWindow(XToolkit.getDisplay(), getWindow());
             }
