@@ -89,7 +89,7 @@
 
 # jdk_awt
 
-java/awt/Choice/ChoiceKeyEventReaction/ChoiceKeyEventReaction.html                  8169106 windows-all,macosx-all
+java/awt/Choice/ChoiceKeyEventReaction/ChoiceKeyEventReaction.html                  8169106 windows-all,macosx-all,linux-all
 java/awt/Choice/ChoiceMouseWheelTest/ChoiceMouseWheelTest.java                      7100044 windows-all,macosx-all
 java/awt/Choice/ItemStateChangeTest/ItemStateChangeTest.java                        8169108 windows-all
 java/awt/Choice/RemoveAllShrinkTest/RemoveAllShrinkTest.java                        8047703 generic-all
