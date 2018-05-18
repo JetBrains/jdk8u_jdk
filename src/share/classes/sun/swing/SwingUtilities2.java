@@ -173,10 +173,6 @@ public class SwingUtilities2 {
             if (aaHint == null) {
                 throw new InternalError("null not allowed here");
             }
-            if (aaHint == VALUE_TEXT_ANTIALIAS_OFF ||
-                aaHint == VALUE_TEXT_ANTIALIAS_DEFAULT) {
-                throw new InternalError("AA must be on");
-            }
             this.aaHint = aaHint;
             this.lcdContrastHint = lcdContrastHint;
         }
