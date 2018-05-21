@@ -140,9 +140,7 @@ public class SwingUtilities2 {
             Object aaHint   = hints.get(KEY_TEXT_ANTIALIASING);
             Object contHint = hints.get(KEY_TEXT_LCD_CONTRAST);
 
-            if (aaHint == null ||
-                aaHint == VALUE_TEXT_ANTIALIAS_OFF ||
-                aaHint == VALUE_TEXT_ANTIALIAS_DEFAULT) {
+            if (aaHint == null) {
                 return null;
             } else {
                 return new AATextInfo(aaHint, (Integer)contHint);
