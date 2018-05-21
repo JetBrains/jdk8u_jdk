@@ -103,7 +103,7 @@ java/awt/Dialog/MakeWindowAlwaysOnTop/MakeWindowAlwaysOnTop.java                
 java/awt/EventDispatchThread/HandleExceptionOnEDT/HandleExceptionOnEDT.java         6990210 generic-all
 java/awt/EventDispatchThread/LoopRobustness/LoopRobustness.html                     8168390 generic-all
 java/awt/EventDispatchThread/PreserveDispathThread/PreserveDispatchThread.java      8168390 generic-all
-java/awt/EventQueue/6980209/bug6980209.java                                         8198615 windows-all,macosx-all
+java/awt/EventQueue/6980209/bug6980209.java                                         8198615,8131670 generic-all
 java/awt/FileDialog/FilenameFilterTest/FilenameFilterTest.html                      7149081 generic-all
 java/awt/Focus/6981400/Test1.java                                                   8029675 windows-all,macosx-all
 java/awt/Focus/6981400/Test3.java                                                   8173264 generic-all
@@ -194,12 +194,13 @@ java/awt/Mouse/MouseDragEvent/MouseDraggedTest.java                             
 java/awt/Mouse/MouseModifiersUnitTest/ExtraButtonDrag.java                          8013428 generic-all
 java/awt/Mouse/MouseModifiersUnitTest/MouseModifiersUnitTest_Extra.java             8130471 linux-all
 java/awt/Mouse/MouseModifiersUnitTest/MouseModifiersUnitTest_Standard.java          7124407 macosx-all
-java/awt/Mouse/RemovedComponentMouseListener/RemovedComponentMouseListener.java     8157170 macosx-all,windows-all
+java/awt/Mouse/RemovedComponentMouseListener/RemovedComponentMouseListener.java     8157170 generic-all
 java/awt/Mouse/TitleBarDoubleClick/TitleBarDoubleClick.html                         8148041 generic-all
 java/awt/MouseAdapter/MouseAdapterUnitTest/MouseAdapterUnitTest.java                8012577 generic-all
 java/awt/MouseInfo/GetPointerInfoTest.java                                          8130741,8158798 generic-all
 java/awt/MouseInfo/JContainerMousePositionTest.java                                 8028484 generic-all
 java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java             7124230 macosx-all
+java/awt/Multiscreen/MouseEventTest/MouseEventTest.java                             8155744 linux-all
 java/awt/Multiscreen/MultiScreenInsetsTest/MultiScreenInsetsTest.java               8134669 linux-all
 java/awt/Multiscreen/MultiScreenLocationTest/MultiScreenLocationTest.java           8155744 linux-all
 java/awt/event/TextEvent/TextEventSequenceTest/TextEventSequenceTest.java           8077686 linux-all
@@ -208,9 +209,7 @@ java/awt/Paint/ComponentIsNotDrawnAfterRemoveAddTest/ComponentIsNotDrawnAfterRem
 java/awt/Paint/ExposeOnEDT.java                                                     8169104 windows-all
 java/awt/Paint/PaintNativeOnUpdate.java                                             8028000 generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8031422
-#the test fails with the applied fix
-#java/awt/Paint/bug8024864.java                                       generic-all
+java/awt/Paint/bug8024864.java                                                      8031422,8176512 generic-all
 
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
@@ -222,7 +221,7 @@ java/awt/SplashScreen/MultiResolutionSplash/MultiResolutionSplashTest.java      
 java/awt/TextField/SelectionInvisibleTest/SelectionInvisibleTest.java               8169533 generic-all
 java/awt/TextArea/Mixing/TextAreaMixing.java                                        8198234 generic-all
 java/awt/TextArea/UsingWithMouse/SelectionAutoscrollTest.html                       6734341 generic-all
-java/awt/Toolkit/ScreenInsetsTest/ScreenInsetsTest.java                             6829250 windows-all,macosx-all
+java/awt/Toolkit/ScreenInsetsTest/ScreenInsetsTest.java                             6829250 generic-all
 java/awt/Toolkit/ToolkitPropertyTest/ToolkitPropertyTest_Enable.java                6847163 generic-all
 java/awt/TrayIcon/PopupMenuLeakTest/PopupMenuLeakTest.java                          8039081 generic-all
 java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java                 7107528 generic-all
@@ -607,7 +606,7 @@ javax/swing/JMenuItem/ActionListenerCalledTwice/ActionListenerCalledTwiceTest.ja
 javax/swing/JOptionPane/6464022/bug6464022.java                                       7124548 macosx-all
 javax/swing/JPopupMenu/4458079/bug4458079.java                                        8040917 generic-all
 javax/swing/JPopupMenu/4966112/bug4966112.java                                        8064915,8074385 generic-all
-javax/swing/JPopupMenu/6800513/bug6800513.java                                        8080868 macosx-all,windows-all
+javax/swing/JPopupMenu/6800513/bug6800513.java                                        8080868 generic-all
 javax/swing/JPopupMenu/6827786/bug6827786.java                                        8042378,8042378 generic-all
 javax/swing/JPopupMenu/6987844/bug6987844.java                                        8169956 generic-all
 javax/swing/JPopupMenu/7156657/bug7156657.java                                        7185563 generic-all
