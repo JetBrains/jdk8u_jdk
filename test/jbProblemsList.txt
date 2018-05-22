@@ -161,7 +161,7 @@ java/awt/Graphics2D/FlipDrawImage/FlipDrawImage.java                            
 java/awt/Graphics2D/MTGraphicsAccessTest/MTGraphicsAccessTest.java                  8145808 generic-all
 java/awt/Graphics2D/WhiteTextColorTest.java                                         8054638 generic-all
 java/awt/GridLayout/LayoutExtraGaps/LayoutExtraGaps.java                            8000171 windows-all
-java/awt/JAWT/JAWT.sh                                                               8197798 windows-all
+java/awt/JAWT/JAWT.sh                                                               8197798,8170729 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html        8158380,8198624 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/TestDialogTypeAhead.html                    8198626,8074807 generic-all
 java/awt/LightweightDispatcher/LWDispatcherMemoryLeakTest.java                      8163261 generic-all
@@ -620,6 +620,7 @@ javax/swing/JScrollPane/HorizontalMouseWheelOnShiftPressed/HorizontalMouseWheelO
 javax/swing/JSlider/6348946/bug6348946.java                                           8172539 generic-all
 javax/swing/JSpinner/4973721/bug4973721.java                                          8172408 generic-all
 javax/swing/JSpinner/5012888/bug5012888.java                                          8169958,8159902 generic-all
+javax/swing/JSplitPane/4816114/bug4816114.java                                        windows-all
 javax/swing/JSplitPane/4885629/bug4885629.java                                        8019935 generic-all
 javax/swing/JComboBox/4199622/bug4199622.java                                         7033533 linux-all
 javax/swing/JInternalFrame/Test6802868.java                                           7033533 linux-all
@@ -703,6 +704,13 @@ java/util/concurrent/locks/ReentrantLock/CancelledLockLoops.java 6772009 generic
 java/util/AbstractList/CheckForComodification.java                       generic-all
 
 java/util/Locale/LocaleProviders.sh                              8150432 windows-all
+
+# Test ignored: until 6842022 is resolved, test was removed in JDK9
+java/util/ResourceBundle/RestrictedBundleTest.java                   generic-all
+# Test ignored: 6876961, test was removed in JDK9
+java/util/ResourceBundle/Test4300693.java                            generic-all
+
+
 java/util/WeakHashMap/GCDuringIteration.java                     6842353 generic-all
 
 # Test ignored: runs for hours and eats up 7 Gigabytes of disk space
