@@ -955,8 +955,17 @@ MsgRouting AwtWindow::WmDPIChanged(UINT xDPI, UINT yDPI, RECT* bounds) {
         // may diverge with Component::Reshape in this state
         return mrDoDefault;
     }
-    // set the new bounds for async update
-    ::CopyRect(&m_boundsOnDPIChange, bounds);
+    if (IsInMoveResizeLoop()) {
+        // Dragged with mouse to new screen. In this case the new bounds must be set immediately
+        // or otherwise OS will reset it back to the previous values.
+        ::SetWindowPos(GetHWnd(), NULL,
+                           bounds->left, bounds->top,
+                           bounds->right - bounds->left, bounds->bottom - bounds->top,
+                           SWP_NOZORDER | SWP_NOACTIVATE);
+    } else {
+        // DPI of this screen changed. Store the new bounds for async update.
+        ::CopyRect(&m_boundsOnDPIChange, bounds);
+    }
     return mrConsume;
 }
 
@@ -1360,7 +1369,20 @@ void AwtWindow::Show()
             if (nCmdShow == SW_SHOWNA) {
                 flags |= SWP_NOACTIVATE;
             }
-            ::SetWindowPos(GetHWnd(), HWND_TOP, 0, 0, 0, 0, flags);
+
+            // This flag allows the toplevel to be bellow other process toplevels.
+            // This behaviour is preferable for popups, but it is not appropriate
+            // for menus
+            BOOL isLightweightDialog = TRUE;
+            jclass windowPeerClass = env->FindClass("java/awt/peer/WindowPeer");
+            if (windowPeerClass != NULL) {
+                jmethodID isLightweightDialogMID = env->GetStaticMethodID(windowPeerClass, "isLightweightDialog", "(Ljava/awt/Window;)Z");
+                if (isLightweightDialogMID != NULL) {
+                    isLightweightDialog = env->CallStaticBooleanMethod(windowPeerClass, isLightweightDialogMID, target);
+                }
+            }
+
+            ::SetWindowPos(GetHWnd(), isLightweightDialog ? HWND_TOP : HWND_TOPMOST, 0, 0, 0, 0, flags);
         } else {
             ::ShowWindow(GetHWnd(), nCmdShow);
         }

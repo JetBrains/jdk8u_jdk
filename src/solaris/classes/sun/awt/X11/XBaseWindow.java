@@ -562,7 +562,11 @@ public class XBaseWindow {
     public void toFront() {
         XToolkit.awtLock();
         try {
-            XlibWrapper.XRaiseWindow(XToolkit.getDisplay(), getWindow());
+            if (Boolean.parseBoolean(System.getProperty("com.jetbrains.suppressWindowRaise", "false"))) {
+                XlibWrapper.XLowerWindow(XToolkit.getDisplay(), getWindow());
+            } else {
+                XlibWrapper.XRaiseWindow(XToolkit.getDisplay(), getWindow());
+            }
         } finally {
             XToolkit.awtUnlock();
         }

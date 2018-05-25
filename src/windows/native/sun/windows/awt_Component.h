@@ -728,6 +728,8 @@ public:
     int ScaleUpDY(int y);
     int ScaleDownDX(int x);
     int ScaleDownDY(int y);
+    void ScaleDownRect(RECT& r);
+    //void ScaleDownDRect(RECT& r);
 
 protected:
     static AwtComponent* GetComponentImpl(HWND hWnd);
@@ -741,6 +743,8 @@ protected:
 
     static BOOL sm_suppressFocusAndActivation;
     static BOOL sm_restoreFocusAndActivation;
+
+    INLINE BOOL IsInMoveResizeLoop() { return m_inMoveResizeLoop; }
 
     /*
      * The function sets the focus-restore flag ON/OFF.
@@ -833,6 +837,8 @@ private:
     // 6524352: support finer-resolution
     int m_wheelRotationAmountX;
     int m_wheelRotationAmountY;
+
+    BOOL m_inMoveResizeLoop;
 
     BOOL deadKeyActive;
 

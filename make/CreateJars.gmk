@@ -265,7 +265,7 @@ $(IMAGES_OUTPUTDIR)/lib$(PROFILE)/_the.jars.contents: $(BUILD_TOOLS) $(IMAGES_OU
 $(IMAGES_OUTPUTDIR)/lib$(PROFILE)/_the.rt.jar.contents: $(IMAGES_OUTPUTDIR)/lib$(PROFILE)/_the.jars.contents
 	$(MKDIR) -p $(@D)
 	$(RM) $@ $@.tmp
-	$(GREP) -e '\.class$$' $(IMAGES_OUTPUTDIR)/lib$(PROFILE)/_the.jars.contents > $@.tmp
+	$(CAT) $(IMAGES_OUTPUTDIR)/lib$(PROFILE)/_the.jars.contents | $(TR) -d '\r' |  $(GREP) -e '\.class$$' > $@.tmp
         ifneq ($(PROFILE), )
           ifneq ($(strip $(RT_JAR_INCLUDE_TYPES)), )
            # Add back classes from excluded packages (fixing the $ substitution in the process)

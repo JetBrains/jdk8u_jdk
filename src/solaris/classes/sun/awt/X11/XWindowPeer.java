@@ -57,6 +57,8 @@ import sun.awt.IconInfo;
 
 import sun.java2d.pipe.Region;
 
+import javax.swing.*;
+
 class XWindowPeer extends XPanelPeer implements WindowPeer,
                                                 DisplayChangedListener {
 
@@ -108,10 +110,10 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
      * The type is supposed to be immutable while the peer object exists.
      * The value gets initialized in the preInit() method.
      */
-    private Window.Type windowType = Window.Type.NORMAL;
+    private Window.Type windowType = getWindowType();
 
-    public final Window.Type getWindowType() {
-        return windowType;
+    final Window.Type getWindowType() {
+        return windowType == null ? Window.Type.NORMAL : windowType;
     }
 
     // It need to be accessed from XFramePeer.
@@ -1229,7 +1231,8 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
 
     boolean isOverrideRedirect() {
         return XWM.getWMID() == XWM.OPENLOOK_WM ||
-            Window.Type.POPUP.equals(getWindowType());
+            (Window.Type.POPUP.equals(getWindowType()) &&
+            !isDialogLikePopup(getTarget()));
     }
 
     final boolean isOLWMDecorBug() {
@@ -1395,7 +1398,11 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
              */
             XToolkit.awtLock();
             try {
-                XlibWrapper.XRaiseWindow(XToolkit.getDisplay(), getWindow());
+                if (Boolean.parseBoolean(System.getProperty("com.jetbrains.suppressWindowRaise", "false"))) {
+                    XlibWrapper.XLowerWindow(XToolkit.getDisplay(), getWindow());
+                } else {
+                    XlibWrapper.XRaiseWindow(XToolkit.getDisplay(), getWindow());
+                }
             } finally {
                 XToolkit.awtUnlock();
             }
@@ -1969,7 +1976,9 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
                 typeAtom = protocol.XA_NET_WM_WINDOW_TYPE_UTILITY;
                 break;
             case POPUP:
-                typeAtom = protocol.XA_NET_WM_WINDOW_TYPE_POPUP_MENU;
+                typeAtom = isDialogLikePopup(getTarget()) ?
+                  protocol.XA_NET_WM_WINDOW_TYPE_NORMAL :
+                  protocol.XA_NET_WM_WINDOW_TYPE_POPUP_MENU;
                 break;
         }
 
@@ -1984,6 +1993,20 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
         }
     }
 
+    boolean isDialogLikePopup (Object t) {
+        if (t instanceof JWindow) {
+            final JWindow target = (JWindow) getTarget();
+            final JRootPane rootPane = target.getRootPane();
+            if (rootPane != null) {
+                final Object value = rootPane.getClientProperty("SIMPLE_WINDOW");
+                if (value != null && (Boolean)value) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public void xSetVisible(boolean visible) {
         if (log.isLoggable(PlatformLogger.Level.FINE)) {
@@ -1994,7 +2017,11 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
             this.visible = visible;
             if (visible) {
                 applyWindowType();
-                XlibWrapper.XMapRaised(XToolkit.getDisplay(), getWindow());
+                if (Boolean.parseBoolean(System.getProperty("com.jetbrains.suppressWindowRaise", "false"))) {
+                    XlibWrapper.XMapWindow(XToolkit.getDisplay(), getWindow());
+                } else {
+                    XlibWrapper.XMapRaised(XToolkit.getDisplay(), getWindow());
+                }
             } else {
                 XlibWrapper.XUnmapWindow(XToolkit.getDisplay(), getWindow());
             }

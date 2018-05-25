@@ -52,6 +52,7 @@
 #include <Region.h>
 
 #include <jawt.h>
+#include <math.h>
 
 #include <java_awt_Toolkit.h>
 #include <java_awt_FontMetrics.h>
@@ -1558,6 +1559,12 @@ LRESULT AwtComponent::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
           SetCompositionWindow(r);
           break;
       }
+      case WM_ENTERSIZEMOVE:
+      {
+          m_inMoveResizeLoop = TRUE;
+          mr = mrDoDefault;
+          break;
+      }
       case WM_SIZING:
           mr = WmSizing();
           break;
@@ -1569,6 +1576,7 @@ LRESULT AwtComponent::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
                             GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
           break;
       case WM_EXITSIZEMOVE:
+          m_inMoveResizeLoop = FALSE;
           mr = WmExitSizeMove();
           break;
       // Bug #4039858 (Selecting menu item causes bogus mouse click event)
@@ -2290,8 +2298,8 @@ void AwtComponent::PaintUpdateRgn(const RECT *insets)
          */
         RECT* r = (RECT*)(buffer + rgndata->rdh.dwSize);
         RECT* un[2] = {0, 0};
-    DWORD i;
-    for (i = 0; i < rgndata->rdh.nCount; i++, r++) {
+        DWORD i;
+        for (i = 0; i < rgndata->rdh.nCount; i++, r++) {
             int width = r->right-r->left;
             int height = r->bottom-r->top;
             if (width > 0 && height > 0) {
@@ -2305,11 +2313,12 @@ void AwtComponent::PaintUpdateRgn(const RECT *insets)
         }
         for(i = 0; i < 2; i++) {
             if (un[i] != 0) {
+                ScaleDownRect(*un[i]);
                 DoCallback("handleExpose", "(IIII)V",
-                           ScaleDownX(un[i]->left),
-                           ScaleDownY(un[i]->top),
-                           ScaleDownX(un[i]->right - un[i]->left),
-                           ScaleDownY(un[i]->bottom - un[i]->top));
+                           un[i]->left,
+                           un[i]->top,
+                           un[i]->right - un[i]->left,
+                           un[i]->bottom - un[i]->top);
             }
         }
         delete [] buffer;
@@ -3864,16 +3873,18 @@ void AwtComponent::OpenCandidateWindow(int x, int y)
 {
     UINT bits = 1;
     POINT p = {0, 0}; // upper left corner of the client area
-    HWND hWnd = GetHWnd();
+    HWND hWnd = ImmGetHWnd();
     HWND hTop = GetTopLevelParentForWindow(hWnd);
     ::ClientToScreen(hTop, &p);
+    int sx = ScaleUpDX(x) - p.x;
+    int sy = ScaleUpDY(y) - p.y;
     if (!m_bitsCandType) {
-        SetCandidateWindow(m_bitsCandType, x - p.x, y - p.y);
+        SetCandidateWindow(m_bitsCandType, sx, sy);
         return;
     }
     for (int iCandType=0; iCandType<32; iCandType++, bits<<=1) {
         if ( m_bitsCandType & bits )
-            SetCandidateWindow(iCandType, x - p.x, y - p.y);
+            SetCandidateWindow(iCandType, sx, sy);
     }
 }
 
@@ -4796,6 +4807,16 @@ int AwtComponent::ScaleDownDY(int y) {
     Devices::InstanceAccess devices;
     AwtWin32GraphicsDevice* device = devices->GetDevice(screen);
     return device == NULL ? y : device->ScaleDownDY(y);
+}
+
+void AwtComponent::ScaleDownRect(RECT& r) {
+    int screen = AwtWin32GraphicsDevice::DeviceIndexForWindow(GetHWnd());
+    Devices::InstanceAccess devices;
+    AwtWin32GraphicsDevice* device = devices->GetDevice(screen);
+    if (device == NULL) return;
+    float sx = device->GetScaleX();
+    float sy = device->GetScaleY();
+    ::SetRect(&r, floor(r.left / sx), floor(r.top / sy), ceil(r.right / sx), ceil(r.bottom / sy));
 }
 
 jintArray AwtComponent::CreatePrintedPixels(SIZE &loc, SIZE &size, int alpha) {
