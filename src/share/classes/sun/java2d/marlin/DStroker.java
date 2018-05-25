@@ -304,13 +304,9 @@ final class DStroker implements DPathConsumer2D, MarlinConst {
         // If it is >=0, we know that abs(ext) is <= 90 degrees, so we only
         // need 1 curve to approximate the circle section that joins omx,omy
         // and mx,my.
-        final int numCurves = (cosext >= 0.0d) ? 1 : 2;
-
-        switch (numCurves) {
-        case 1:
+        if (cosext >= 0.0d) {
             drawBezApproxForArc(cx, cy, omx, omy, mx, my, rev);
-            break;
-        case 2:
+        } else {
             // we need to split the arc into 2 arcs spanning the same angle.
             // The point we want will be one of the 2 intersections of the
             // perpendicular bisector of the chord (omx,omy)->(mx,my) and the
@@ -339,8 +335,6 @@ final class DStroker implements DPathConsumer2D, MarlinConst {
             }
             drawBezApproxForArc(cx, cy, omx, omy, mmx, mmy, rev);
             drawBezApproxForArc(cx, cy, mmx, mmy, mx, my, rev);
-            break;
-        default:
         }
     }
 

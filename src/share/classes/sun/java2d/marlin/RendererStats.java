@@ -398,7 +398,7 @@ public final class RendererStats implements MarlinConst {
                      * Make its parent the top-level thread group.
                      */
                     final Thread t = new Thread(
-                                        MarlinUtils.getRootThreadGroup(), 
+                                        MarlinUtils.getRootThreadGroup(),
                                         new RendererStatsDisposer(),
                                         "MarlinRenderer Disposer");
                     t.setContextClassLoader(null);

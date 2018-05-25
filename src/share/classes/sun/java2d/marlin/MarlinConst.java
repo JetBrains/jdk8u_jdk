@@ -85,9 +85,6 @@ interface MarlinConst {
     // flag to enable logs related bounds checks
     static final boolean DO_LOG_BOUNDS = ENABLE_LOGS && false;
 
-    // flag to enable float precision correction
-    static final boolean DO_FIX_FLOAT_PREC = true;
-
     // Initial Array sizing (initial context capacity) ~ 450K
 
     // 4096 pixels (width) for initial capacity

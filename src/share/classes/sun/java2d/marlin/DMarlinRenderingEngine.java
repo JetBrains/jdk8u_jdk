@@ -374,7 +374,7 @@ public final class DMarlinRenderingEngine extends RenderingEngine
             // a*b == -c*d && a*a+c*c == b*b+d*d. In the actual check below, we
             // leave a bit of room for error.
             if (nearZero(a*b + c*d) && nearZero(a*a + c*c - (b*b + d*d))) {
-                scale =  Math.sqrt(a*a + c*c);
+                scale = Math.sqrt(a*a + c*c);
 
                 if (dashesD != null) {
                     for (int i = 0; i < dashLen; i++) {
@@ -1095,6 +1095,10 @@ public final class DMarlinRenderingEngine extends RenderingEngine
                 + MarlinConst.INITIAL_PIXEL_WIDTH);
         logInfo("sun.java2d.renderer.pixelHeight      = "
                 + MarlinConst.INITIAL_PIXEL_HEIGHT);
+
+        logInfo("sun.java2d.renderer.profile          = "
+                + (MarlinProperties.isProfileQuality() ?
+                    "quality" : "speed"));
 
         logInfo("sun.java2d.renderer.subPixel_log2_X  = "
                 + MarlinConst.SUBPIXEL_LG_POSITIONS_X);

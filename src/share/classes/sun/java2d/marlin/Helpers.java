@@ -772,16 +772,16 @@ final class Helpers implements MarlinConst {
                     io.lineTo(_curves[e], _curves[e+1]);
                     e += 2;
                     continue;
-                case TYPE_QUADTO:
-                    io.quadTo(_curves[e],   _curves[e+1],
-                              _curves[e+2], _curves[e+3]);
-                    e += 4;
-                    continue;
                 case TYPE_CUBICTO:
                     io.curveTo(_curves[e],   _curves[e+1],
                                _curves[e+2], _curves[e+3],
                                _curves[e+4], _curves[e+5]);
                     e += 6;
+                    continue;
+                case TYPE_QUADTO:
+                    io.quadTo(_curves[e],   _curves[e+1],
+                              _curves[e+2], _curves[e+3]);
+                    e += 4;
                     continue;
                 default:
                 }
@@ -814,16 +814,16 @@ final class Helpers implements MarlinConst {
                     e -= 2;
                     io.lineTo(_curves[e], _curves[e+1]);
                     continue;
-                case TYPE_QUADTO:
-                    e -= 4;
-                    io.quadTo(_curves[e],   _curves[e+1],
-                              _curves[e+2], _curves[e+3]);
-                    continue;
                 case TYPE_CUBICTO:
                     e -= 6;
                     io.curveTo(_curves[e],   _curves[e+1],
                                _curves[e+2], _curves[e+3],
                                _curves[e+4], _curves[e+5]);
+                    continue;
+                case TYPE_QUADTO:
+                    e -= 4;
+                    io.quadTo(_curves[e],   _curves[e+1],
+                              _curves[e+2], _curves[e+3]);
                     continue;
                 default:
                 }

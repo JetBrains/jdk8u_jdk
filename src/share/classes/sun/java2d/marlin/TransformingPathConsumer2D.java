@@ -993,7 +993,7 @@ final class TransformingPathConsumer2D {
 
             if (TRACE) {
                 MarlinUtils.logInfo("nSplits: "+ nSplits);
-                MarlinUtils.logInfo("subTs: "+Arrays.toString(Arrays.copyOfRange(subTs, 0, nSplits)));
+                MarlinUtils.logInfo("subTs: " + Arrays.toString(Arrays.copyOfRange(subTs, 0, nSplits)));
             }
             if (nSplits == 0) {
                 // only curve support shortcut
@@ -1011,7 +1011,7 @@ final class TransformingPathConsumer2D {
 
             for (int i = 0, off = 0; i <= nSplits; i++, off += type) {
                 if (TRACE) {
-                    MarlinUtils.logInfo("Part Curve "+Arrays.toString(Arrays.copyOfRange(mid, off, off + type)));
+                    MarlinUtils.logInfo("Part Curve " + Arrays.toString(Arrays.copyOfRange(mid, off, off + type)));
                 }
                 emitCurrent(type, mid, off, out);
             }
