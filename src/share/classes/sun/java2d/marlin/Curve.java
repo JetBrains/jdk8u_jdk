@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -106,13 +106,10 @@ final class Curve {
         cy = dy21;
         dx = x1;                // D = P1
         dy = y1;
-        // useless derivatives for lines
-        if (false) {
-            dax = 0.0f;
-            day = 0.0f;
-            dbx = 0.0f;
-            dby = 0.0f;
-        }
+        dax = 0.0f;
+        day = 0.0f;
+        dbx = 0.0f;
+        dby = 0.0f;
     }
 
     int dxRoots(final float[] roots, final int off) {

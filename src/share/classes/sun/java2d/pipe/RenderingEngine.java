@@ -120,7 +120,7 @@ public abstract class RenderingEngine {
         reImpl =
             AccessController.doPrivileged(new PrivilegedAction<RenderingEngine>() {
                 public RenderingEngine run() {
-                    final String marlinREClass = "sun.java2d.marlin.MarlinRenderingEngine";
+                    final String marlinREClass = "sun.java2d.marlin.DMarlinRenderingEngine";
                     String reClass =
                         System.getProperty("sun.java2d.renderer", marlinREClass);
                     try {

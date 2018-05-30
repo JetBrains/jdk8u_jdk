@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -40,15 +40,15 @@ final class DHelpers implements MarlinConst {
         return (d <= err && d >= -err);
     }
 
-    public static double evalCubic(final double a, final double b,
-                                   final double c, final double d,
-                                   final double t)
+    static double evalCubic(final double a, final double b,
+                            final double c, final double d,
+                            final double t)
     {
         return t * (t * (t * a + b) + c) + d;
     }
 
-    public static double evalQuad(final double a, final double b,
-                                  final double c, final double t)
+    static double evalQuad(final double a, final double b,
+                           final double c, final double t)
     {
         return t * (t * a + b) + c;
     }
@@ -327,14 +327,11 @@ final class DHelpers implements MarlinConst {
                           final int type)
     {
         switch(type) {
-        case 4:
-            subdivideLine(src, left, right);
+        case 8:
+            subdivideCubic(src, left, right);
             return;
         case 6:
             subdivideQuad(src, left, right);
-            return;
-        case 8:
-            subdivideCubic(src, left, right);
             return;
         default:
             throw new InternalError("Unsupported curve type");
@@ -473,31 +470,6 @@ final class DHelpers implements MarlinConst {
         pts[offR + 3] = cy2;
         pts[offR + 4] = x2;
         pts[offR + 5] = y2;
-    }
-
-    static void subdivideLine(final double[] src,
-                              final double[] left,
-                              final double[] right)
-    {
-        double x1 = src[0];
-        double y1 = src[1];
-        double x2 = src[2];
-        double y2 = src[3];
-
-        left[0]  = x1;
-        left[1]  = y1;
-
-        right[2] = x2;
-        right[3] = y2;
-
-        double cx = (x1 + x2) / 2.0d;
-        double cy = (y1 + y2) / 2.0d;
-
-        left[2] = cx;
-        left[3] = cy;
-
-        right[0] = cx;
-        right[1] = cy;
     }
 
     static void subdivideQuad(final double[] src,
@@ -792,16 +764,16 @@ final class DHelpers implements MarlinConst {
                     io.lineTo(_curves[e], _curves[e+1]);
                     e += 2;
                     continue;
-                case TYPE_QUADTO:
-                    io.quadTo(_curves[e],   _curves[e+1],
-                              _curves[e+2], _curves[e+3]);
-                    e += 4;
-                    continue;
                 case TYPE_CUBICTO:
                     io.curveTo(_curves[e],   _curves[e+1],
                                _curves[e+2], _curves[e+3],
                                _curves[e+4], _curves[e+5]);
                     e += 6;
+                    continue;
+                case TYPE_QUADTO:
+                    io.quadTo(_curves[e],   _curves[e+1],
+                              _curves[e+2], _curves[e+3]);
+                    e += 4;
                     continue;
                 default:
                 }
@@ -834,16 +806,16 @@ final class DHelpers implements MarlinConst {
                     e -= 2;
                     io.lineTo(_curves[e], _curves[e+1]);
                     continue;
-                case TYPE_QUADTO:
-                    e -= 4;
-                    io.quadTo(_curves[e],   _curves[e+1],
-                              _curves[e+2], _curves[e+3]);
-                    continue;
                 case TYPE_CUBICTO:
                     e -= 6;
                     io.curveTo(_curves[e],   _curves[e+1],
                                _curves[e+2], _curves[e+3],
                                _curves[e+4], _curves[e+5]);
+                    continue;
+                case TYPE_QUADTO:
+                    e -= 4;
+                    io.quadTo(_curves[e],   _curves[e+1],
+                              _curves[e+2], _curves[e+3]);
                     continue;
                 default:
                 }

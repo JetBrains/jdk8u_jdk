@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -137,8 +137,8 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
      * @param recycleDashes true to indicate to recycle the given dash array
      * @return this instance
      */
-    DDasher init(final DPathConsumer2D out, double[] dash, int dashLen,
-                double phase, boolean recycleDashes)
+    DDasher init(final DPathConsumer2D out, final double[] dash, final int dashLen,
+                double phase, final boolean recycleDashes)
     {
         this.out = out;
 
@@ -146,9 +146,10 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
         int sidx = 0;
         dashOn = true;
 
+        // note: BasicStroke constructor checks dash elements and sum > 0
         double sum = 0.0d;
-        for (double d : dash) {
-            sum += d;
+        for (int i = 0; i < dashLen; i++) {
+            sum += dash[i];
         }
         this.cycleLen = sum;
 
@@ -158,13 +159,13 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
                 phase = 0.0d;
             } else {
                 int fullcycles = FloatMath.floor_int(-cycles);
-                if ((fullcycles & dash.length & 1) != 0) {
+                if ((fullcycles & dashLen & 1) != 0) {
                     dashOn = !dashOn;
                 }
                 phase += fullcycles * sum;
                 while (phase < 0.0d) {
                     if (--sidx < 0) {
-                        sidx = dash.length - 1;
+                        sidx = dashLen - 1;
                     }
                     phase += dash[sidx];
                     dashOn = !dashOn;
@@ -175,14 +176,14 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
                 phase = 0.0d;
             } else {
                 int fullcycles = FloatMath.floor_int(cycles);
-                if ((fullcycles & dash.length & 1) != 0) {
+                if ((fullcycles & dashLen & 1) != 0) {
                     dashOn = !dashOn;
                 }
                 phase -= fullcycles * sum;
                 double d;
                 while (phase >= (d = dash[sidx])) {
                     phase -= d;
-                    sidx = (sidx + 1) % dash.length;
+                    sidx = (sidx + 1) % dashLen;
                     dashOn = !dashOn;
                 }
             }
@@ -268,6 +269,9 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
 
     private void emitSeg(double[] buf, int off, int type) {
         switch (type) {
+        case 4:
+            out.lineTo(buf[off], buf[off + 1]);
+            return;
         case 8:
             out.curveTo(buf[off    ], buf[off + 1],
                         buf[off + 2], buf[off + 3],
@@ -276,9 +280,6 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
         case 6:
             out.quadTo(buf[off    ], buf[off + 1],
                        buf[off + 2], buf[off + 3]);
-            return;
-        case 4:
-            out.lineTo(buf[off], buf[off + 1]);
             return;
         default:
         }
@@ -302,15 +303,7 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
         final int index = off + type;
         final double x = pts[index - 4];
         final double y = pts[index - 3];
-/*
-        if (type == 8) {
-            System.out.println("seg["+on+"] len: "
-                    +DHelpers.curvelen(pts[off - 2], pts[off - 1],
-                            pts[off    ], pts[off + 1],
-                        pts[off + 2], pts[off + 3],
-                        pts[off + 4], pts[off + 5]));
-        }
-*/
+
         if (on) {
             if (starting) {
                 goTo_starting(pts, off, type);
@@ -818,7 +811,6 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
                 // and our quadratic root finder doesn't filter, so it's just a
                 // matter of convenience.
                 final int n = DHelpers.cubicRootsInAB(a, b, c, d, nextRoots, 0, 0.0d, 1.0d);
-// TODO: check NaN is impossible
                 if (n == 1 && !Double.isNaN(nextRoots[0])) {
                     t = nextRoots[0];
                 }
@@ -921,11 +913,6 @@ final class DDasher implements DPathConsumer2D, MarlinConst {
             final double lineLen = DHelpers.linelen(curve[0], curve[1], x0, y0);
 
             if ((polyLen - lineLen) < CURVE_LEN_ERR || recLevel == REC_LIMIT) {
-/*
-                if (recLevel == REC_LIMIT) {
-                    System.out.println("REC_LIMIT[" + recLevel + "] reached !");
-                }
-*/
                 return (polyLen + lineLen) / 2.0d;
             }
             return -1.0d;
