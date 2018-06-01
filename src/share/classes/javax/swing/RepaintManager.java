@@ -842,24 +842,27 @@ public class RepaintManager
                                                            localBoundsW,
                                                            localBoundsH,
                                                            rect);
-                        if (dirtyComponent instanceof JComponent) {
-                            ((JComponent)dirtyComponent).paintImmediately(
-                                rect.x,rect.y,rect.width, rect.height);
-                        }
-                        else if (dirtyComponent.isShowing()) {
-                            Graphics g = JComponent.safelyGetGraphics(
-                                    dirtyComponent, dirtyComponent);
-                            // If the Graphics goes away, it means someone disposed of
-                            // the window, don't do anything.
-                            if (g != null) {
-                                g.setClip(rect.x, rect.y, rect.width, rect.height);
-                                try {
-                                    dirtyComponent.paint(g);
-                                } finally {
-                                    g.dispose();
+
+                        if (!rect.isEmpty()) {
+                            if (dirtyComponent instanceof JComponent) {
+                                ((JComponent) dirtyComponent).paintImmediately(
+                                        rect.x, rect.y, rect.width, rect.height);
+                            } else if (dirtyComponent.isShowing()) {
+                                Graphics g = JComponent.safelyGetGraphics(
+                                        dirtyComponent, dirtyComponent);
+                                // If the Graphics goes away, it means someone disposed of
+                                // the window, don't do anything.
+                                if (g != null) {
+                                    g.setClip(rect.x, rect.y, rect.width, rect.height);
+                                    try {
+                                        dirtyComponent.paint(g);
+                                    } finally {
+                                        g.dispose();
+                                    }
                                 }
                             }
                         }
+
                         // If the repaintRoot has been set, service it now and
                         // remove any components that are children of repaintRoot.
                         if (repaintRoot != null) {
