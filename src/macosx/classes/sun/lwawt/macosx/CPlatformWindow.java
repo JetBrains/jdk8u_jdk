@@ -1116,6 +1116,9 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
                     WindowPeer.isLightweightDialog(target) ?
                             CWrapper.NSWindow.NSNormalWindowLevel :
                             CWrapper.NSWindow.NSPopUpMenuWindowLevel);
+        } else if (target.getType() == Window.Type.UTILITY) {
+            CWrapper.NSWindow.setLevel(getNSWindowPtr(),
+                    CWrapper.NSWindow.NSPopUpMenuWindowLevel);
         }
     }
 
