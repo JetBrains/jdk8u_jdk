@@ -129,7 +129,7 @@ java/awt/Focus/NoAutotransferToDisabledCompTest/NoAutotransferToDisabledCompTest
 java/awt/Focus/NonFocusableWindowTest/NonfocusableOwnerTest.java                    8151979 generic-all
 java/awt/Focus/OwnedWindowFocusIMECrashTest/OwnedWindowFocusIMECrashTest.java       8169110 generic-all
 java/awt/Focus/ResetMostRecentFocusOwnerTest/ResetMostRecentFocusOwnerTest.java     8168294 generic-all
-java/awt/Focus/ShowFrameCheckForegroundTest/ShowFrameCheckForegroundTest.java       8028701 macosx-all,windows-all
+java/awt/Focus/ShowFrameCheckForegroundTest/ShowFrameCheckForegroundTest.java       8028701 macosx-all,windows-all,linux-all
 java/awt/Focus/SimpleWindowActivationTest/SimpleWindowActivationTest.java           8159599 macosx-all,windows-all
 java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                                   7156130 generic-all
 java/awt/Focus/TranserFocusToWindow/TranserFocusToWindow.java                       7035459,6848810 generic-all
@@ -285,7 +285,7 @@ java/awt/font/TextLayout/VisibleAdvance.java                                    
 #affects runs (on OSX, causes the reopen dialog)
 java/awt/geom/AffineTransform/InvalidTransformParameterTest.java                   8158356 generic-all
 
-java/awt/grab/EmbeddedFrameTest1/EmbeddedFrameTest1.java                           7080150 macosx-all
+java/awt/grab/EmbeddedFrameTest1/EmbeddedFrameTest1.java                           7080150,8203918 macosx-all,linux-all,windows-all
 java/awt/grab/GrabOnUnfocusableToplevel/GrabOnUnfocusableToplevel.java             8169109 generic-all
 java/awt/image/DrawImage/EABlitTest.java                                           8028000 generic-all
 java/awt/image/DrawImage/IncorrectAlphaSurface2SW.java                             8056077 generic-all
