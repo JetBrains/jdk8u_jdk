@@ -630,7 +630,11 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
     public void handleWindowFocusInSync(long serial) {
         WindowEvent we = new WindowEvent((Window)target, WindowEvent.WINDOW_GAINED_FOCUS);
         XKeyboardFocusManagerPeer.getInstance().setCurrentFocusedWindow((Window) target);
-        sendEvent(we);
+        if (EventQueue.isDispatchThread()) {
+            ((Component)we.getSource()).dispatchEvent(we);
+        } else {
+            sendEvent(we);
+        }
     }
     // NOTE: This method may be called by privileged threads.
     //       DO NOT INVOKE CLIENT CODE ON THIS THREAD!
@@ -1398,7 +1402,9 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
              */
             XToolkit.awtLock();
             try {
-                if (Boolean.parseBoolean(System.getProperty("com.jetbrains.suppressWindowRaise", "false"))) {
+                System.err.println("Everything has changed");
+                if (XlibUtil.isRaiseAllowed())
+                {
                     XlibWrapper.XLowerWindow(XToolkit.getDisplay(), getWindow());
                 } else {
                     XlibWrapper.XRaiseWindow(XToolkit.getDisplay(), getWindow());
@@ -2017,7 +2023,7 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
             this.visible = visible;
             if (visible) {
                 applyWindowType();
-                if (Boolean.parseBoolean(System.getProperty("com.jetbrains.suppressWindowRaise", "false"))) {
+                if (XlibUtil.isRaiseAllowed()) {
                     XlibWrapper.XMapWindow(XToolkit.getDisplay(), getWindow());
                 } else {
                     XlibWrapper.XMapRaised(XToolkit.getDisplay(), getWindow());
