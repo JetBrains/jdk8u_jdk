@@ -30,6 +30,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -405,5 +407,11 @@ public class XlibUtil
         } else {
             return 1 << (7 + button);
         }
+    }
+
+
+    static Boolean isRaiseAllowed() {
+        return AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
+                Boolean.parseBoolean(System.getProperty("com.jetbrains.suppressWindowRaise", "false")));
     }
 }
