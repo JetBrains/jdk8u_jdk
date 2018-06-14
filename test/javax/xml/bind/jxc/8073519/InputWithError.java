@@ -28,3 +28,4 @@ public class InputWithError {
      int compile-error;
 }
 
+2
