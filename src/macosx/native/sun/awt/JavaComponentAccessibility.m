@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -622,6 +622,9 @@ static NSObject *sAttributeNamesLOCK = nil;
         }
         // The above set of attributes is immutable per role, but some objects, if
         // they are the child of a list, need to add the selected and index attributes.
+        if ([self accessibilityIsIgnored]) {
+            return names;
+        }
         id myParent = [self accessibilityParentAttribute];
         if ([myParent isKindOfClass:[JavaComponentAccessibility class]]) {
             NSString *parentRole = [(JavaComponentAccessibility *)myParent javaRole];
@@ -895,16 +898,7 @@ static NSObject *sAttributeNamesLOCK = nil;
 // Element containing current element (id)
 - (id)accessibilityParentAttribute
 {
-    // NSAccessibilityUnignoredAncestor may cause a chain of recursive calls with
-    // accessibilityAttributeNames method involved, that leads to a noticeable performance delay.
-    // return NSAccessibilityUnignoredAncestor([self parent]);
-
-    // In order to manually test whether an element is ignored there's "accessibilityIsIgnored" method,
-    // though deprecated, so its suggested replacement - "accessibilityElement" method - should be used.
-    // According to the spec, the method returns "true" by default for an element adopting NSAccessibility
-    // protocol. So the only we should test is whether the java target of the element is accessible.
-    // But we already have such method  - "parent". It returns a native JCA wrapper over accessible parent.
-    return [self parent];
+    return NSAccessibilityUnignoredAncestor([self parent]);
 }
 
 - (BOOL)accessibilityIsParentAttributeSettable
