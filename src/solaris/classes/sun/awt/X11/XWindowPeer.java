@@ -1402,7 +1402,6 @@ class XWindowPeer extends XPanelPeer implements WindowPeer,
              */
             XToolkit.awtLock();
             try {
-                System.err.println("Everything has changed");
                 if (XlibUtil.isRaiseAllowed())
                 {
                     XlibWrapper.XLowerWindow(XToolkit.getDisplay(), getWindow());
