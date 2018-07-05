@@ -182,9 +182,11 @@ canChooseDirectories:(BOOL)inChooseDirectories
                         fURLs = [NSArray array];
                     }
                     [fURLs retain];
-                    [NSApp stopModal];
-                }
-            ];
+
+                    [ThreadUtilities performOnMainThreadWaiting:NO block:^(){
+                        [NSApp stopModal];
+                    }];
+            }];
 
             [NSApp runModalForWindow:thePanel];
         }
