@@ -33,6 +33,7 @@ import java.awt.image.ColorModel;
 import java.lang.ref.WeakReference;
 
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 import sun.util.logging.PlatformLogger;
 
@@ -42,6 +43,8 @@ import sun.awt.image.PixelConverter;
 
 import sun.java2d.SunGraphics2D;
 import sun.java2d.SurfaceData;
+
+import javax.swing.*;
 
 class XWindow extends XBaseWindow implements X11ComponentPeer {
     private static PlatformLogger log = PlatformLogger.getLogger("sun.awt.X11.XWindow");
@@ -391,13 +394,14 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
     }
 
     static Method m_sendMessage;
-    static void sendEvent(final AWTEvent e) {
+    static void sendEvent(final AWTEvent e, Runnable lightweigtRequestRunnable) {
         // The uses of this method imply that the incoming event is system-generated
         SunToolkit.setSystemGenerated(e);
         PeerEvent pe = new PeerEvent(Toolkit.getDefaultToolkit(), new Runnable() {
                 public void run() {
                     AWTAccessor.getAWTEventAccessor().setPosted(e);
                     ((Component)e.getSource()).dispatchEvent(e);
+                    lightweigtRequestRunnable.run();
                 }
             }, PeerEvent.ULTIMATE_PRIORITY_EVENT);
         if (focusLog.isLoggable(PlatformLogger.Level.FINER) && (e instanceof FocusEvent)) {
@@ -406,6 +410,9 @@ class XWindow extends XBaseWindow implements X11ComponentPeer {
         XToolkit.postEvent(XToolkit.targetToAppContext(e.getSource()), pe);
     }
 
+    static void sendEvent(final AWTEvent e) {
+        sendEvent(e, () -> {});
+    }
 
 /*
  * Post an event to the event queue.
