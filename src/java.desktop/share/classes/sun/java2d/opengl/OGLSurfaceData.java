@@ -581,7 +581,7 @@ public abstract class OGLSurfaceData extends SurfaceData
      * also pass a reference to the native GLX/WGLGraphicsConfigInfo
      * (pConfigInfo) for the purposes of making a context current.
      */
-    static void dispose(long pData, long pConfigInfo) {
+    public static void dispose(long pData, long pConfigInfo) {
         OGLRenderQueue rq = OGLRenderQueue.getInstance();
         rq.lock();
         try {
@@ -648,7 +648,7 @@ public abstract class OGLSurfaceData extends SurfaceData
      *
      * Needed by Mac OS X port.
      */
-    boolean isOnScreen() {
+    public boolean isOnScreen() {
         return getType() == WINDOW;
     }
 }
