@@ -1389,7 +1389,15 @@ public abstract class ResourceBundle {
             bundle = baseBundle;
         }
 
+        keepAlive(loader);
         return bundle;
+    }
+
+    /**
+     * Keeps the argument ClassLoader alive.
+     */
+    private static void keepAlive(ClassLoader loader){
+        // Do nothing.
     }
 
     /**
