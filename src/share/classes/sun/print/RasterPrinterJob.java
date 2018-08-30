@@ -843,12 +843,44 @@ public abstract class RasterPrinterJob extends PrinterJob {
         }
    }
 
-   protected PageFormat getPageFormatFromAttributes() {
-       if (attributes == null || attributes.isEmpty()) {
+    protected PageFormat getPageFormatFromAttributes() {
+        Pageable pageable = null;
+        if (attributes == null || attributes.isEmpty() ||
+            !((pageable = getPageable()) instanceof OpenBook)) {
             return null;
         }
-        return attributeToPageFormat(getPrintService(), this.attributes);
-   }
+
+        PageFormat newPf = attributeToPageFormat(
+            getPrintService(), attributes);
+        PageFormat oldPf = null;
+        if ((oldPf = pageable.getPageFormat(0)) != null) {
+            // If orientation, media, imageable area attributes are not in
+            // "attributes" set, then use respective values of the existing
+            // page format "oldPf".
+            if (attributes.get(OrientationRequested.class) == null) {
+                newPf.setOrientation(oldPf.getOrientation());
+            }
+
+            Paper newPaper = newPf.getPaper();
+            Paper oldPaper = oldPf.getPaper();
+            boolean oldPaperValWasSet = false;
+            if (attributes.get(MediaSizeName.class) == null) {
+                newPaper.setSize(oldPaper.getWidth(), oldPaper.getHeight());
+                oldPaperValWasSet = true;
+            }
+            if (attributes.get(MediaPrintableArea.class) == null) {
+                newPaper.setImageableArea(
+                    oldPaper.getImageableX(), oldPaper.getImageableY(),
+                    oldPaper.getImageableWidth(),
+                    oldPaper.getImageableHeight());
+                oldPaperValWasSet = true;
+            }
+            if (oldPaperValWasSet) {
+                newPf.setPaper(newPaper);
+            }
+        }
+        return newPf;
+    }
 
 
    /**
