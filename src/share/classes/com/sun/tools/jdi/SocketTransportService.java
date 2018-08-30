@@ -194,29 +194,15 @@ public class SocketTransportService extends TransportService {
             throw new IllegalArgumentException("timeout is negative");
         }
 
+        InetSocketAddress sa;
         int splitIndex = address.indexOf(':');
-        String host;
-        String portStr;
         if (splitIndex < 0) {
-            host = InetAddress.getLocalHost().getHostName();
-            portStr = address;
+            sa = new InetSocketAddress(InetAddress.getLoopbackAddress(), parsePort(address));
         } else {
-            host = address.substring(0, splitIndex);
-            portStr = address.substring(splitIndex+1);
+            sa = new InetSocketAddress(address.substring(0, splitIndex), parsePort(address.substring(splitIndex+1)));
         }
-
-        int port;
-        try {
-            port = Integer.decode(portStr).intValue();
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                "unable to parse port number in address");
-        }
-
 
         // open TCP connection to VM
-
-        InetSocketAddress sa = new InetSocketAddress(host, port);
         Socket s = new Socket();
         try {
             s.connect(sa, (int)attachTimeout);
@@ -238,6 +224,14 @@ public class SocketTransportService extends TransportService {
         }
 
         return new SocketConnection(s);
+    }
+
+    private static int parsePort(String portStr) {
+        try {
+            return Integer.decode(portStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("unable to parse port number in address");
+        }
     }
 
     /*
@@ -272,15 +266,7 @@ public class SocketTransportService extends TransportService {
             address = address.substring(splitIndex+1);
         }
 
-        int port;
-        try {
-            port = Integer.decode(address).intValue();
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                    "unable to parse port number in address");
-        }
-
-        return startListening(localaddr, port);
+        return startListening(localaddr, parsePort(address));
     }
 
     /**
