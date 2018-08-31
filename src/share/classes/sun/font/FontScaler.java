@@ -94,11 +94,7 @@ public abstract class FontScaler implements DisposerRecord {
         boolean.class, int.class};
 
         try {
-            if (FontUtilities.isOpenJDK) {
-                scalerClass = Class.forName("sun.font.FreetypeFontScaler");
-            } else {
-                scalerClass = Class.forName("sun.font.T2KFontScaler");
-            }
+            scalerClass = Class.forName("sun.font.FreetypeFontScaler");
         } catch (ClassNotFoundException e) {
                 scalerClass = NullFontScaler.class;
         }
