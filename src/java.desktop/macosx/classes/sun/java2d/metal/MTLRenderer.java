@@ -109,13 +109,13 @@ class MTLRenderer extends BufferedRenderPipe {
     }
 
     private class Tracer extends MTLRenderer {
-        private MTLRenderer oglr;
-        Tracer(MTLRenderer oglr) {
-            super(oglr.rq);
-            this.oglr = oglr;
+        private MTLRenderer mtlr;
+        Tracer(MTLRenderer mtlr) {
+            super(mtlr.rq);
+            this.mtlr = mtlr;
         }
         public ParallelogramPipe getAAParallelogramPipe() {
-            final ParallelogramPipe realpipe = oglr.getAAParallelogramPipe();
+            final ParallelogramPipe realpipe = mtlr.getAAParallelogramPipe();
             return new ParallelogramPipe() {
                 public void fillParallelogram(SunGraphics2D sg2d,
                                               double ux1, double uy1,
@@ -124,7 +124,7 @@ class MTLRenderer extends BufferedRenderPipe {
                                               double dx1, double dy1,
                                               double dx2, double dy2)
                 {
-                    GraphicsPrimitive.tracePrimitive("OGLFillAAParallelogram");
+                    GraphicsPrimitive.tracePrimitive("MTLFillAAParallelogram");
                     realpipe.fillParallelogram(sg2d,
                                                ux1, uy1, ux2, uy2,
                                                x, y, dx1, dy1, dx2, dy2);
@@ -137,7 +137,7 @@ class MTLRenderer extends BufferedRenderPipe {
                                               double dx2, double dy2,
                                               double lw1, double lw2)
                 {
-                    GraphicsPrimitive.tracePrimitive("OGLDrawAAParallelogram");
+                    GraphicsPrimitive.tracePrimitive("MTLDrawAAParallelogram");
                     realpipe.drawParallelogram(sg2d,
                                                ux1, uy1, ux2, uy2,
                                                x, y, dx1, dy1, dx2, dy2,
@@ -146,46 +146,46 @@ class MTLRenderer extends BufferedRenderPipe {
             };
         }
         protected void validateContext(SunGraphics2D sg2d) {
-            oglr.validateContext(sg2d);
+            mtlr.validateContext(sg2d);
         }
         public void drawLine(SunGraphics2D sg2d,
                              int x1, int y1, int x2, int y2)
         {
-            GraphicsPrimitive.tracePrimitive("OGLDrawLine");
-            oglr.drawLine(sg2d, x1, y1, x2, y2);
+            GraphicsPrimitive.tracePrimitive("MTLDrawLine");
+            mtlr.drawLine(sg2d, x1, y1, x2, y2);
         }
         public void drawRect(SunGraphics2D sg2d, int x, int y, int w, int h) {
-            GraphicsPrimitive.tracePrimitive("OGLDrawRect");
-            oglr.drawRect(sg2d, x, y, w, h);
+            GraphicsPrimitive.tracePrimitive("MTLDrawRect");
+            mtlr.drawRect(sg2d, x, y, w, h);
         }
         protected void drawPoly(SunGraphics2D sg2d,
                                 int[] xPoints, int[] yPoints,
                                 int nPoints, boolean isClosed)
         {
-            GraphicsPrimitive.tracePrimitive("OGLDrawPoly");
-            oglr.drawPoly(sg2d, xPoints, yPoints, nPoints, isClosed);
+            GraphicsPrimitive.tracePrimitive("MTLDrawPoly");
+            mtlr.drawPoly(sg2d, xPoints, yPoints, nPoints, isClosed);
         }
         public void fillRect(SunGraphics2D sg2d, int x, int y, int w, int h) {
-            GraphicsPrimitive.tracePrimitive("OGLFillRect");
-            oglr.fillRect(sg2d, x, y, w, h);
+            GraphicsPrimitive.tracePrimitive("MTLFillRect");
+            mtlr.fillRect(sg2d, x, y, w, h);
         }
         protected void drawPath(SunGraphics2D sg2d,
                                 Path2D.Float p2df, int transx, int transy)
         {
-            GraphicsPrimitive.tracePrimitive("OGLDrawPath");
-            oglr.drawPath(sg2d, p2df, transx, transy);
+            GraphicsPrimitive.tracePrimitive("MTLDrawPath");
+            mtlr.drawPath(sg2d, p2df, transx, transy);
         }
         protected void fillPath(SunGraphics2D sg2d,
                                 Path2D.Float p2df, int transx, int transy)
         {
-            GraphicsPrimitive.tracePrimitive("OGLFillPath");
-            oglr.fillPath(sg2d, p2df, transx, transy);
+            GraphicsPrimitive.tracePrimitive("MTLFillPath");
+            mtlr.fillPath(sg2d, p2df, transx, transy);
         }
         protected void fillSpans(SunGraphics2D sg2d, SpanIterator si,
                                  int transx, int transy)
         {
-            GraphicsPrimitive.tracePrimitive("OGLFillSpans");
-            oglr.fillSpans(sg2d, si, transx, transy);
+            GraphicsPrimitive.tracePrimitive("MTLFillSpans");
+            mtlr.fillSpans(sg2d, si, transx, transy);
         }
         public void fillParallelogram(SunGraphics2D sg2d,
                                       double ux1, double uy1,
@@ -194,8 +194,8 @@ class MTLRenderer extends BufferedRenderPipe {
                                       double dx1, double dy1,
                                       double dx2, double dy2)
         {
-            GraphicsPrimitive.tracePrimitive("OGLFillParallelogram");
-            oglr.fillParallelogram(sg2d,
+            GraphicsPrimitive.tracePrimitive("MTLFillParallelogram");
+            mtlr.fillParallelogram(sg2d,
                                    ux1, uy1, ux2, uy2,
                                    x, y, dx1, dy1, dx2, dy2);
         }
@@ -207,16 +207,16 @@ class MTLRenderer extends BufferedRenderPipe {
                                       double dx2, double dy2,
                                       double lw1, double lw2)
         {
-            GraphicsPrimitive.tracePrimitive("OGLDrawParallelogram");
-            oglr.drawParallelogram(sg2d,
+            GraphicsPrimitive.tracePrimitive("MTLDrawParallelogram");
+            mtlr.drawParallelogram(sg2d,
                                    ux1, uy1, ux2, uy2,
                                    x, y, dx1, dy1, dx2, dy2, lw1, lw2);
         }
         public void copyArea(SunGraphics2D sg2d,
                              int x, int y, int w, int h, int dx, int dy)
         {
-            GraphicsPrimitive.tracePrimitive("OGLCopyArea");
-            oglr.copyArea(sg2d, x, y, w, h, dx, dy);
+            GraphicsPrimitive.tracePrimitive("MTLCopyArea");
+            mtlr.copyArea(sg2d, x, y, w, h, dx, dy);
         }
     }
 }

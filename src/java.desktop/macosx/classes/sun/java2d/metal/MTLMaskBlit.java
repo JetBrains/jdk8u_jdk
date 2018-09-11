@@ -55,7 +55,7 @@ class MTLMaskBlit extends BufferedMaskBlit {
                         CompositeType compType)
     {
         super(MTLRenderQueue.getInstance(),
-              srcType, compType, MTLSurfaceDataBase.OpenGLSurface);
+              srcType, compType, MTLSurfaceDataBase.MTLSurface);
     }
 
     @Override

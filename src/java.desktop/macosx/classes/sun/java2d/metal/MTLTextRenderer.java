@@ -59,11 +59,11 @@ class MTLTextRenderer extends BufferedTextPipe {
     }
 
     private static class Tracer extends MTLTextRenderer {
-        Tracer(MTLTextRenderer ogltr) {
-            super(ogltr.rq);
+        Tracer(MTLTextRenderer mtltr) {
+            super(mtltr.rq);
         }
         protected void drawGlyphList(SunGraphics2D sg2d, GlyphList gl) {
-            GraphicsPrimitive.tracePrimitive("OGLDrawGlyphs");
+            GraphicsPrimitive.tracePrimitive("MTLDrawGlyphs");
             super.drawGlyphList(sg2d, gl);
         }
     }

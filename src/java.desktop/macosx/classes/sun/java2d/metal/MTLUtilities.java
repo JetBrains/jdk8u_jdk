@@ -31,13 +31,9 @@ import java.awt.*;
 
 /**
  * This class contains a number of static utility methods that may be
- * called (via reflection) by a third-party library, such as JOGL, in order
- * to interoperate with the OGL-based Java 2D pipeline.
+ * called (via reflection) by a third-party library in order
+ * to interoperate with the metal-based Java 2D pipeline.
  *
- * WARNING: These methods are being made available as a temporary measure
- * until we offer a more complete, public solution.  Like any sun.* class,
- * this class is not an officially supported public API; it may be modified
- * at will or removed completely in a future release.
  */
 class MTLUtilities {
 
@@ -63,18 +59,12 @@ class MTLUtilities {
     }
 
     /**
-     * Invokes the given Runnable on the OGL QueueFlusher thread with the
-     * OpenGL context corresponding to the given Graphics object made
-     * current.  It is legal for OpenGL code executed in the given
-     * Runnable to change the current OpenGL context; it will be reset
+     * Invokes the given Runnable on the MTL QueueFlusher thread with the
+     * MTL context corresponding to the given Graphics object made
+     * current.  It is legal for MTL code executed in the given
+     * Runnable to change the current MTL context; it will be reset
      * once the Runnable completes.  No guarantees are made as to the
-     * state of the OpenGL context of the Graphics object; for
-     * example, calling code must set the scissor box using the return
-     * value from {@link #getOGLScissorBox} to avoid drawing
-     * over other Swing components, and must typically set the OpenGL
-     * viewport using the return value from {@link #getOGLViewport} to
-     * make the client's OpenGL rendering appear in the correct place
-     * relative to the scissor region.
+     * state of the MTL context of the Graphics object; for
      *
      * In order to avoid deadlock, it is important that the given Runnable
      * does not attempt to acquire the AWT lock, as that will be handled
@@ -88,7 +78,7 @@ class MTLUtilities {
      * there was any problem making a context current to the surface
      * associated with the given Graphics object
      */
-    public static boolean invokeWithOGLContextCurrent(Graphics g, Runnable r) {
+    public static boolean invokeWithMTLContextCurrent(Graphics g, Runnable r) {
         MTLRenderQueue rq = MTLRenderQueue.getInstance();
         rq.lock();
         try {
@@ -119,8 +109,8 @@ class MTLUtilities {
     }
 
     /**
-     * Invokes the given Runnable on the OGL QueueFlusher thread with the
-     * "shared" OpenGL context (corresponding to the given
+     * Invokes the given Runnable on the MTL QueueFlusher thread with the
+     * "shared" MTL context (corresponding to the given
      * GraphicsConfiguration object) made current.  This method is typically
      * used when the Runnable needs a current context to complete its
      * operation, but does not require that the context be made current to
@@ -135,15 +125,15 @@ class MTLUtilities {
      *
      * @param config the GraphicsConfiguration object whose "shared"
      * context will be made current during this operation; if this value is
-     * null or if OpenGL is not enabled for the GraphicsConfiguration, this
+     * null or if MTL is not enabled for the GraphicsConfiguration, this
      * method will return false
      * @param r the action to be performed on the QFT; cannot be null
      * @return true if the operation completed successfully, or false if
      * there was any problem making the shared context current
      */
     public static boolean
-        invokeWithOGLSharedContextCurrent(GraphicsConfiguration config,
-                                          Runnable r)
+    invokeWithMTLSharedContextCurrent(GraphicsConfiguration config,
+                                      Runnable r)
     {
         if (!(config instanceof MTLGraphicsConfigBase)) {
             return false;
@@ -169,12 +159,12 @@ class MTLUtilities {
     }
 
     /**
-     * Returns the Rectangle describing the OpenGL viewport on the
+     * Returns the Rectangle describing the MTL viewport on the
      * Java 2D surface associated with the given Graphics object and
      * component width and height. When a third-party library is
-     * performing OpenGL rendering directly into the visible region of
+     * performing MTL rendering directly into the visible region of
      * the associated surface, this viewport helps the application
-     * position the OpenGL output correctly on that surface.
+     * position the MTL output correctly on that surface.
      *
      * Note that the x/y values in the returned Rectangle object represent
      * the lower-left corner of the viewport region, relative to the
@@ -184,11 +174,11 @@ class MTLUtilities {
      * cannot be null
      * @param componentWidth width of the component to be painted
      * @param componentHeight height of the component to be painted
-     * @return a Rectangle describing the OpenGL viewport for the given
+     * @return a Rectangle describing the MTL viewport for the given
      * destination surface and component dimensions, or null if the given
      * Graphics object is invalid
      */
-    public static Rectangle getOGLViewport(Graphics g,
+    public static Rectangle getMTLViewport(Graphics g,
                                            int componentWidth,
                                            int componentHeight)
     {
@@ -216,9 +206,9 @@ class MTLUtilities {
     }
 
     /**
-     * Returns the Rectangle describing the OpenGL scissor box on the
+     * Returns the Rectangle describing the MTL scissor box on the
      * Java 2D surface associated with the given Graphics object.  When a
-     * third-party library is performing OpenGL rendering directly
+     * third-party library is performing MTL rendering directly
      * into the visible region of the associated surface, this scissor box
      * must be set to avoid drawing over existing rendering results.
      *
@@ -228,7 +218,7 @@ class MTLUtilities {
      *
      * @param g the Graphics object for the corresponding destination surface;
      * cannot be null
-     * @return a Rectangle describing the OpenGL scissor box for the given
+     * @return a Rectangle describing the MTL scissor box for the given
      * Graphics object and corresponding destination surface, or null if the
      * given Graphics object is invalid or the clip region is non-rectangular
      */
@@ -269,7 +259,7 @@ class MTLUtilities {
      * Returns an Object identifier for the Java 2D surface associated with
      * the given Graphics object.  This identifier may be used to determine
      * whether the surface has changed since the last invocation of this
-     * operation, and thereby whether the OpenGL state corresponding to the
+     * operation, and thereby whether the MTL state corresponding to the
      * old surface must be destroyed and recreated.
      *
      * @param g the Graphics object for the corresponding destination surface;
@@ -277,7 +267,7 @@ class MTLUtilities {
      * @return an identifier for the surface associated with the given
      * Graphics object, or null if the given Graphics object is invalid
      */
-    public static Object getOGLSurfaceIdentifier(Graphics g) {
+    public static Object getMTLSurfaceIdentifier(Graphics g) {
         if (!(g instanceof SunGraphics2D)) {
             return null;
         }
@@ -285,7 +275,7 @@ class MTLUtilities {
     }
 
     /**
-     * Returns one of the OGL-specific surface type constants (defined in
+     * Returns one of the MTL-specific surface type constants (defined in
      * this class), which describes the surface associated with the given
      * Graphics object.
      *
@@ -296,7 +286,7 @@ class MTLUtilities {
      * is not associated with an OpenGL surface) this method will return
      * {@code MTLUtilities.UNDEFINED}
      */
-    public static int getOGLSurfaceType(Graphics g) {
+    public static int getMTLSurfaceType(Graphics g) {
         if (!(g instanceof SunGraphics2D)) {
             return UNDEFINED;
         }
@@ -308,20 +298,20 @@ class MTLUtilities {
     }
 
     /**
-     * Returns the OpenGL texture target constant (either GL_TEXTURE_2D
+     * Returns the MTL texture target constant (either GL_TEXTURE_2D
      * or GL_TEXTURE_RECTANGLE_ARB) for the surface associated with the
      * given Graphics object.  This method is only useful for those surface
-     * types that are backed by an OpenGL texture, namely {@code TEXTURE},
+     * types that are backed by an MTL texture, namely {@code TEXTURE},
      * {@code FBOBJECT}, and (on Windows only) {@code PBUFFER}.
      *
      * @param g the Graphics object for the corresponding destination surface;
      * cannot be null
      * @return the texture target constant for the surface associated with the
      * given Graphics object; if the given Graphics object is invalid (i.e.
-     * is not associated with an OpenGL surface), or the associated surface
+     * is not associated with an MTL surface), or the associated surface
      * is not backed by an OpenGL texture, this method will return zero.
      */
-    public static int getOGLTextureType(Graphics g) {
+    public static int getMTLTextureType(Graphics g) {
         if (!(g instanceof SunGraphics2D)) {
             return 0;
         }

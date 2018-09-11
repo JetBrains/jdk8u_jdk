@@ -53,30 +53,30 @@ import static sun.java2d.pipe.BufferedOpCodes.*;
  *
  *                               Any
  *                             /     \
- *                 OpenGLSurface     OpenGLTexture
+ *                 MTLSurface     MTLTexture
  *                      |
- *               OpenGLSurfaceRTT
+ *               MTLSurfaceRTT
  *
- * OpenGLSurface
+ * MTLSurface
  * This kind of surface can be rendered to using OpenGL APIs.  It is also
- * possible to copy an OpenGLSurface to another OpenGLSurface (or to itself).
+ * possible to copy an MTLSurface to another MTLSurface (or to itself).
  * This is typically accomplished by calling MakeContextCurrent(dstSD, srcSD)
  * and then calling glCopyPixels() (although there are other techniques to
  * achieve the same goal).
  *
- * OpenGLTexture
+ * MTLTexture
  * This kind of surface cannot be rendered to using OpenGL (in the same sense
- * as in OpenGLSurface).  However, it is possible to upload a region of pixels
- * to an OpenGLTexture object via glTexSubImage2D().  One can also copy a
- * surface of type OpenGLTexture to an OpenGLSurface by binding the texture
+ * as in MTLSurface).  However, it is possible to upload a region of pixels
+ * to an MTLTexture object via glTexSubImage2D().  One can also copy a
+ * surface of type MTLTexture to an MTLSurface by binding the texture
  * to a quad and then rendering it to the destination surface (this process
  * is known as "texture mapping").
  *
- * OpenGLSurfaceRTT
+ * MTLSurfaceRTT
  * This kind of surface can be thought of as a sort of hybrid between
- * OpenGLSurface and OpenGLTexture, in that one can render to this kind of
- * surface as if it were of type OpenGLSurface, but the process of copying
- * this kind of surface to another is more like an OpenGLTexture.  (Note that
+ * MTLSurface and MTLTexture, in that one can render to this kind of
+ * surface as if it were of type MTLSurface, but the process of copying
+ * this kind of surface to another is more like an MTLTexture.  (Note that
  * "RTT" stands for "render-to-texture".)
  *
  * In addition to these SurfaceType variants, we have also defined some
@@ -86,10 +86,10 @@ import static sun.java2d.pipe.BufferedOpCodes.*;
  *
  * OGL Type          Corresponding SurfaceType
  * --------          -------------------------
- * WINDOW            OpenGLSurface
- * TEXTURE           OpenGLTexture
- * FLIP_BACKBUFFER   OpenGLSurface
- * FBOBJECT          OpenGLSurfaceRTT
+ * WINDOW            MTLSurface
+ * TEXTURE           MTLTexture
+ * FLIP_BACKBUFFER   MTLSurface
+ * FBOBJECT          MTLSurfaceRTT
  */
 public abstract class MTLSurfaceDataBase extends SurfaceData
     implements AccelSurface {
@@ -120,18 +120,18 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
     /**
      * SurfaceTypes
      */
-    private static final String DESC_OPENGL_SURFACE = "OpenGL Surface";
-    private static final String DESC_OPENGL_SURFACE_RTT =
-        "OpenGL Surface (render-to-texture)";
-    private static final String DESC_OPENGL_TEXTURE = "OpenGL Texture";
+    private static final String DESC_MTL_SURFACE = "MTL Surface";
+    private static final String DESC_MTL_SURFACE_RTT =
+        "MTL Surface (render-to-texture)";
+    private static final String DESC_MTL_TEXTURE = "MTL Texture";
 
-    static final SurfaceType OpenGLSurface =
-        SurfaceType.Any.deriveSubType(DESC_OPENGL_SURFACE,
+    static final SurfaceType MTLSurface =
+        SurfaceType.Any.deriveSubType(DESC_MTL_SURFACE,
                                       PixelConverter.ArgbPre.instance);
-    static final SurfaceType OpenGLSurfaceRTT =
-        OpenGLSurface.deriveSubType(DESC_OPENGL_SURFACE_RTT);
-    static final SurfaceType OpenGLTexture =
-        SurfaceType.Any.deriveSubType(DESC_OPENGL_TEXTURE);
+    static final SurfaceType MTLSurfaceRTT =
+        MTLSurface.deriveSubType(DESC_MTL_SURFACE_RTT);
+    static final SurfaceType MTLTexture =
+        SurfaceType.Any.deriveSubType(DESC_MTL_TEXTURE);
 
     /** This will be true if the fbobject system property has been enabled. */
     private static boolean isFBObjectEnabled;
@@ -151,11 +151,11 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
     // initialized
     private int nativeWidth, nativeHeight;
 
-    protected static MTLRenderer oglRenderPipe;
-    protected static PixelToParallelogramConverter oglTxRenderPipe;
-    protected static ParallelogramPipe oglAAPgramPipe;
-    protected static MTLTextRenderer oglTextPipe;
-    protected static MTLDrawImage oglImagePipe;
+    protected static MTLRenderer mtlRenderPipe;
+    protected static PixelToParallelogramConverter mtlTxRenderPipe;
+    protected static ParallelogramPipe mtlAAPgramPipe;
+    protected static MTLTextRenderer mtlTextPipe;
+    protected static MTLDrawImage mtlImagePipe;
 
     protected native boolean initTexture(long pData,
                                          boolean isOpaque, boolean texNonPow2,
@@ -175,40 +175,40 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
             // fbobject currently enabled by default; use "false" to disable
             String fbo = java.security.AccessController.doPrivileged(
                 new sun.security.action.GetPropertyAction(
-                    "sun.java2d.opengl.fbobject"));
+                    "java2d.metal.fbobject"));
             isFBObjectEnabled = !"false".equals(fbo);
 
             // lcdshader currently enabled by default; use "false" to disable
             String lcd = java.security.AccessController.doPrivileged(
                 new sun.security.action.GetPropertyAction(
-                    "sun.java2d.opengl.lcdshader"));
+                    "java2d.metal.lcdshader"));
             isLCDShaderEnabled = !"false".equals(lcd);
 
             // biopshader currently enabled by default; use "false" to disable
             String biop = java.security.AccessController.doPrivileged(
                 new sun.security.action.GetPropertyAction(
-                    "sun.java2d.opengl.biopshader"));
+                    "java2d.metal.biopshader"));
             isBIOpShaderEnabled = !"false".equals(biop);
 
             // gradshader currently enabled by default; use "false" to disable
             String grad = java.security.AccessController.doPrivileged(
                 new sun.security.action.GetPropertyAction(
-                    "sun.java2d.opengl.gradshader"));
+                    "java2d.metal.gradshader"));
             isGradShaderEnabled = !"false".equals(grad);
 
             MTLRenderQueue rq = MTLRenderQueue.getInstance();
-            oglImagePipe = new MTLDrawImage();
-            oglTextPipe = new MTLTextRenderer(rq);
-            oglRenderPipe = new MTLRenderer(rq);
+            mtlImagePipe = new MTLDrawImage();
+            mtlTextPipe = new MTLTextRenderer(rq);
+            mtlRenderPipe = new MTLRenderer(rq);
             if (GraphicsPrimitive.tracingEnabled()) {
-                oglTextPipe = oglTextPipe.traceWrap();
-                //The wrapped oglRenderPipe will wrap the AA pipe as well...
-                //oglAAPgramPipe = oglRenderPipe.traceWrap();
+                mtlTextPipe = mtlTextPipe.traceWrap();
+                //The wrapped mtlRenderPipe will wrap the AA pipe as well...
+                //mtlAAPgramPipe = mtlRenderPipe.traceWrap();
             }
-            oglAAPgramPipe = oglRenderPipe.getAAParallelogramPipe();
-            oglTxRenderPipe =
-                new PixelToParallelogramConverter(oglRenderPipe,
-                                                  oglRenderPipe,
+            mtlAAPgramPipe = mtlRenderPipe.getAAParallelogramPipe();
+            mtlTxRenderPipe =
+                new PixelToParallelogramConverter(mtlRenderPipe,
+                        mtlRenderPipe,
                                                   1.0, 0.25, true);
 
             MTLBlitLoops.register();
@@ -233,16 +233,16 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
 
     /**
      * Returns the appropriate SurfaceType corresponding to the given OpenGL
-     * surface type constant (e.g. TEXTURE -> OpenGLTexture).
+     * surface type constant (e.g. TEXTURE -> MTLTexture).
      */
     private static SurfaceType getCustomSurfaceType(int oglType) {
         switch (oglType) {
         case TEXTURE:
-            return OpenGLTexture;
+            return MTLTexture;
         case FBOBJECT:
-            return OpenGLSurfaceRTT;
+            return MTLSurfaceRTT;
         default:
-            return OpenGLSurface;
+            return MTLSurface;
         }
     }
 
@@ -323,7 +323,7 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
     /**
      * Returns the MTLGraphicsConfigBase associated with this surface.
      */
-    final MTLGraphicsConfigBase getOGLGraphicsConfig() {
+    final MTLGraphicsConfigBase getMTLGraphicsConfig() {
         return graphicsConfig;
     }
 
@@ -434,7 +434,7 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
             (sg2d.compositeState == SunGraphics2D.COMP_XOR &&
              sg2d.paintState <= SunGraphics2D.PAINT_ALPHACOLOR))
         {
-            textpipe = oglTextPipe;
+            textpipe = mtlTextPipe;
         } else {
             // do this to initialize textpipe correctly; we will attempt
             // to override the non-text pipes below
@@ -449,13 +449,13 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
         if (sg2d.antialiasHint != SunHints.INTVAL_ANTIALIAS_ON) {
             if (sg2d.paintState <= SunGraphics2D.PAINT_ALPHACOLOR) {
                 if (sg2d.compositeState <= SunGraphics2D.COMP_XOR) {
-                    txPipe = oglTxRenderPipe;
-                    nonTxPipe = oglRenderPipe;
+                    txPipe = mtlTxRenderPipe;
+                    nonTxPipe = mtlRenderPipe;
                 }
             } else if (sg2d.compositeState <= SunGraphics2D.COMP_ALPHA) {
                 if (MTLPaints.isValid(sg2d)) {
-                    txPipe = oglTxRenderPipe;
-                    nonTxPipe = oglRenderPipe;
+                    txPipe = mtlTxRenderPipe;
+                    nonTxPipe = mtlRenderPipe;
                 }
                 // custom paints handled by super.validatePipe() below
             }
@@ -471,7 +471,7 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
                     }
                     PixelToParallelogramConverter aaConverter =
                         new PixelToParallelogramConverter(sg2d.shapepipe,
-                                                          oglAAPgramPipe,
+                                mtlAAPgramPipe,
                                                           1.0/8.0, 0.499,
                                                           false);
                     sg2d.drawpipe = aaConverter;
@@ -479,8 +479,8 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
                     sg2d.shapepipe = aaConverter;
                 } else if (sg2d.compositeState == SunGraphics2D.COMP_XOR) {
                     // install the solid pipes when AA and XOR are both enabled
-                    txPipe = oglTxRenderPipe;
-                    nonTxPipe = oglRenderPipe;
+                    txPipe = mtlTxRenderPipe;
+                    nonTxPipe = mtlRenderPipe;
                 }
             }
             // other cases handled by super.validatePipe() below
@@ -512,7 +512,7 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
         sg2d.textpipe = textpipe;
 
         // always override the image pipe with the specialized OGL pipe
-        sg2d.imagepipe = oglImagePipe;
+        sg2d.imagepipe = mtlImagePipe;
     }
 
     @Override
@@ -544,7 +544,7 @@ public abstract class MTLSurfaceDataBase extends SurfaceData
         if (sg2d.compositeState >= SunGraphics2D.COMP_XOR) {
             return false;
         }
-        oglRenderPipe.copyArea(sg2d, x, y, w, h, dx, dy);
+        mtlRenderPipe.copyArea(sg2d, x, y, w, h, dx, dy);
         return true;
     }
 

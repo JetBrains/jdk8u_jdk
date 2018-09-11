@@ -60,7 +60,7 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
     // RuntimeOptions.getCurrentOptions().OpenGLSwapInterval;
     private static final int kOpenGLSwapInterval = 0; // TODO
     private static boolean mtlAvailable;
-    private static ImageCapabilities imageCaps = new CGLImageCaps();
+    private static ImageCapabilities imageCaps = new MTLImageCaps();
 
     private static final String mtlShadersLib = AccessController.doPrivileged(
             (PrivilegedAction<String>) () ->
@@ -71,7 +71,7 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
     private int pixfmt;
     private BufferCapabilities bufferCaps;
     private long pConfigInfo;
-    private ContextCapabilities oglCaps;
+    private ContextCapabilities mtlCaps;
     private MTLContext context;
     private final Object disposerReferent = new Object();
     private final int maxTextureSize;
@@ -96,19 +96,19 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
 
     private MTLGraphicsConfig(CGraphicsDevice device, int pixfmt,
                               long configInfo, int maxTextureSize,
-                              ContextCapabilities oglCaps) {
+                              ContextCapabilities mtlCaps) {
         super(device);
 
         this.pixfmt = pixfmt;
         this.pConfigInfo = configInfo;
-        this.oglCaps = oglCaps;
+        this.mtlCaps = mtlCaps;
         this.maxTextureSize = maxTextureSize;
         context = new MTLContext(MTLRenderQueue.getInstance(), this);
         refPConfigInfo(pConfigInfo);
         // add a record to the Disposer so that we destroy the native
-        // CGLGraphicsConfigInfo data when this object goes away
+        // MTLGraphicsConfigInfo data when this object goes away
         Disposer.addRecord(disposerReferent,
-                           new CGLGCDisposerRecord(pConfigInfo));
+                           new MTLGCDisposerRecord(pConfigInfo));
     }
 
     @Override
@@ -145,7 +145,7 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
             MTLRenderQueue rq = MTLRenderQueue.getInstance();
             rq.lock();
             try {
-                // getCGLConfigInfo() creates and destroys temporary
+                // getMTLConfigInfo() creates and destroys temporary
                 // surfaces/contexts, so we should first invalidate the current
                 // Java-level context and flush the queue...
                 MTLContext.invalidateCurrentContext();
@@ -205,17 +205,13 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
         }
     }
 
-    public static boolean isCGLAvailable() {
-        return mtlAvailable;
-    }
-
     /**
      * Returns true if the provided capability bit is present for this config.
      * See MTLContext.java for a list of supported capabilities.
      */
     @Override
     public boolean isCapPresent(int cap) {
-        return ((oglCaps.getCaps() & cap) != 0);
+        return ((mtlCaps.getCaps() & cap) != 0);
     }
 
     @Override
@@ -265,9 +261,9 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
         return isCapPresent(CAPS_DOUBLEBUFFERED);
     }
 
-    private static class CGLGCDisposerRecord implements DisposerRecord {
+    private static class MTLGCDisposerRecord implements DisposerRecord {
         private long pCfgInfo;
-        public CGLGCDisposerRecord(long pCfgInfo) {
+        public MTLGCDisposerRecord(long pCfgInfo) {
             this.pCfgInfo = pCfgInfo;
         }
         public void dispose() {
@@ -382,8 +378,8 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
         }
     }
 
-    private static class CGLBufferCaps extends BufferCapabilities {
-        public CGLBufferCaps(boolean dblBuf) {
+    private static class MTLBufferCaps extends BufferCapabilities {
+        public MTLBufferCaps(boolean dblBuf) {
             super(imageCaps, imageCaps,
                   dblBuf ? FlipContents.UNDEFINED : null);
         }
@@ -392,13 +388,13 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
     @Override
     public BufferCapabilities getBufferCapabilities() {
         if (bufferCaps == null) {
-            bufferCaps = new CGLBufferCaps(isDoubleBuffered());
+            bufferCaps = new MTLBufferCaps(isDoubleBuffered());
         }
         return bufferCaps;
     }
 
-    private static class CGLImageCaps extends ImageCapabilities {
-        private CGLImageCaps() {
+    private static class MTLImageCaps extends ImageCapabilities {
+        private MTLImageCaps() {
             super(true);
         }
         public boolean isTrueVolatile() {
@@ -440,7 +436,7 @@ public final class MTLGraphicsConfig extends CGraphicsConfig
      */
     @Override
     public ContextCapabilities getContextCapabilities() {
-        return oglCaps;
+        return mtlCaps;
     }
 
     @Override

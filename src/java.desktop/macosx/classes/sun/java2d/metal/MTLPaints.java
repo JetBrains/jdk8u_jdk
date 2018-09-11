@@ -168,7 +168,7 @@ abstract class MTLPaints {
             }
 
             MTLSurfaceDataBase dstData = (MTLSurfaceDataBase)sg2d.surfaceData;
-            MTLGraphicsConfigBase gc = dstData.getOGLGraphicsConfig();
+            MTLGraphicsConfigBase gc = dstData.getMTLGraphicsConfig();
             if (!gc.isCapPresent(CAPS_EXT_GRAD_SHADER)) {
                 return false;
             }

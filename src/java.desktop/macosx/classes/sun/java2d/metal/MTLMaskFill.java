@@ -57,7 +57,7 @@ class MTLMaskFill extends BufferedMaskFill {
 
     protected MTLMaskFill(SurfaceType srcType, CompositeType compType) {
         super(MTLRenderQueue.getInstance(),
-              srcType, compType, MTLSurfaceDataBase.OpenGLSurface);
+              srcType, compType, MTLSurfaceDataBase.MTLSurface);
     }
 
     @Override

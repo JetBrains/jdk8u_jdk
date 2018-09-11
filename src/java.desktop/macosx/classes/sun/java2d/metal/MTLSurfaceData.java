@@ -124,7 +124,7 @@ public abstract class MTLSurfaceData extends MTLSurfaceDataBase {
             return new MTLOffScreenSurfaceData(pView, gc, r.width, r.height,
                     image, gc.getColorModel(), FLIP_BACKBUFFER);
         } else {
-            return new CGLVSyncOffScreenSurfaceData(pView, gc, r.width,
+            return new MTLVSyncOffScreenSurfaceData(pView, gc, r.width,
                     r.height, image, gc.getColorModel(), type);
         }
     }
@@ -277,11 +277,11 @@ public abstract class MTLSurfaceData extends MTLSurfaceDataBase {
      * belongs to is showed, it is first copied to the real private
      * FLIP_BACKBUFFER, which is then flipped.
      */
-    public static class CGLVSyncOffScreenSurfaceData extends
+    public static class MTLVSyncOffScreenSurfaceData extends
             MTLOffScreenSurfaceData {
         private MTLOffScreenSurfaceData flipSurface;
 
-        public CGLVSyncOffScreenSurfaceData(CPlatformView pView,
+        public MTLVSyncOffScreenSurfaceData(CPlatformView pView,
                                             MTLGraphicsConfig gc, int width, int height, Image image,
                                             ColorModel cm, int type) {
             super(pView, gc, width, height, image, cm, type);
@@ -335,35 +335,6 @@ public abstract class MTLSurfaceData extends MTLSurfaceDataBase {
         }
     }
 
-    // Mac OS X specific APIs for JOGL/Java2D bridge...
-
-    // given a surface create and attach GL context, then return it
-    private static native long createCGLContextOnSurface(MTLSurfaceData sd,
-                                                         long sharedContext);
-
-    public static long createOGLContextOnSurface(Graphics g, long sharedContext) {
-        SurfaceData sd = ((SunGraphics2D) g).surfaceData;
-        if ((sd instanceof MTLSurfaceData) == true) {
-            MTLSurfaceData cglsd = (MTLSurfaceData) sd;
-            return createCGLContextOnSurface(cglsd, sharedContext);
-        } else {
-            return 0L;
-        }
-    }
-
-    // returns whether or not the makeCurrent operation succeeded
-    static native boolean makeCGLContextCurrentOnSurface(MTLSurfaceData sd,
-                                                         long ctx);
-
-    public static boolean makeOGLContextCurrentOnSurface(Graphics g, long ctx) {
-        SurfaceData sd = ((SunGraphics2D) g).surfaceData;
-        if ((ctx != 0L) && ((sd instanceof MTLSurfaceData) == true)) {
-            MTLSurfaceData cglsd = (MTLSurfaceData) sd;
-            return makeCGLContextCurrentOnSurface(cglsd, ctx);
-        } else {
-            return false;
-        }
-    }
 
     // additional cleanup
     private static native void destroyCGLContext(long ctx);
@@ -375,7 +346,7 @@ public abstract class MTLSurfaceData extends MTLSurfaceDataBase {
     }
 
     public static void dispose(long pData, long pConfigInfo) {
-        OGLSurfaceData.dispose(pData, pConfigInfo);
+        MTLSurfaceData.dispose(pData, pConfigInfo);
         MTLGraphicsConfig.deRefPConfigInfo(pConfigInfo);
     }
 }

@@ -55,16 +55,12 @@ public class MTLContext extends BufferedContext {
     /**
      * Makes the given GraphicsConfig's context current to its associated
      * "scratch surface".  Each GraphicsConfig maintains a native context
-     * (GLXContext on Unix, HGLRC on Windows) as well as a native pbuffer
+     * (MTLDevice) as well as a native pbuffer
      * known as the "scratch surface".  By making the context current to the
      * scratch surface, we are assured that we have a current context for
      * the relevant GraphicsConfig, and can therefore perform operations
-     * depending on the capabilities of that GraphicsConfig.  For example,
-     * if the GraphicsConfig supports the GL_ARB_texture_non_power_of_two
-     * extension, then we should be able to make a non-pow2 texture for this
-     * GraphicsConfig once we make the context current to the scratch surface.
-     *
-     * This method should be used for operations with an OpenGL texture
+     * depending on the capabilities of that GraphicsConfig.
+     * This method should be used for operations with an MTL texture
      * as the destination surface (e.g. a sw->texture blit loop), or in those
      * situations where we may not otherwise have a current context (e.g.
      * when disposing a texture-based surface).

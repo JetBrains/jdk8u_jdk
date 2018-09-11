@@ -39,7 +39,7 @@
 extern MTLPixelFormat PixelFormats[];
 
 /**
- * Inner loop used for copying a source OpenGL "Surface" (window, pbuffer,
+ * Inner loop used for copying a source MTL "Surface" (window, pbuffer,
  * etc.) to a destination OpenGL "Surface".  Note that the same surface can
  * be used as both the source and destination, as is the case in a copyArea()
  * operation.  This method is invoked from MTLBlitLoops_IsoBlit() as well as
@@ -58,7 +58,7 @@ MTLBlitSurfaceToSurface(MTLContext *mtlc, BMTLSDOps *srcOps, BMTLSDOps *dstOps,
 }
 
 /**
- * Inner loop used for copying a source OpenGL "Texture" to a destination
+ * Inner loop used for copying a source MTL "Texture" to a destination
  * OpenGL "Surface".  This method is invoked from MTLBlitLoops_IsoBlit().
  *
  * This method will copy, scale, or transform the source texture into the
@@ -79,7 +79,7 @@ MTLBlitTextureToSurface(MTLContext *mtlc,
 
 /**
  * Inner loop used for copying a source system memory ("Sw") surface to a
- * destination OpenGL "Surface".  This method is invoked from
+ * destination MTL "Surface".  This method is invoked from
  * MTLBlitLoops_Blit().
  *
  * The standard glDrawPixels() mechanism is used to copy the source region
@@ -98,7 +98,7 @@ MTLBlitSwToSurface(MTLContext *mtlc, SurfaceDataRasInfo *srcInfo,
 
 /**
  * Inner loop used for copying a source system memory ("Sw") surface or
- * OpenGL "Surface" to a destination OpenGL "Surface", using an OpenGL texture
+ * MTL "Surface" to a destination OpenGL "Surface", using an MTL texture
  * tile as an intermediate surface.  This method is invoked from
  * MTLBlitLoops_Blit() for "Sw" surfaces and MTLBlitLoops_IsoBlit() for
  * "Surface" surfaces.
@@ -131,12 +131,12 @@ MTLBlitToSurfaceViaTexture(MTLContext *mtlc, SurfaceDataRasInfo *srcInfo,
  * destination OpenGL "Texture".  This method is invoked from
  * MTLBlitLoops_Blit().
  *
- * The source surface is effectively loaded into the OpenGL texture object,
+ * The source surface is effectively loaded into the MTL texture object,
  * which must have already been initialized by MTLSD_initTexture().  Note
  * that this method is only capable of copying the source surface into the
  * destination surface (i.e. no scaling or general transform is allowed).
  * This restriction should not be an issue as this method is only used
- * currently to cache a static system memory image into an OpenGL texture in
+ * currently to cache a static system memory image into an MTL texture in
  * a hidden-acceleration situation.
  */
 static void
@@ -147,8 +147,8 @@ MTLBlitSwToTexture(SurfaceDataRasInfo *srcInfo, MTPixelFormat *pf,
 }
 
 /**
- * General blit method for copying a native OpenGL surface (of type "Surface"
- * or "Texture") to another OpenGL "Surface".  If texture is JNI_TRUE, this
+ * General blit method for copying a native MTL surface (of type "Surface"
+ * or "Texture") to another MTL "Surface".  If texture is JNI_TRUE, this
  * method will invoke the Texture->Surface inner loop; otherwise, one of the
  * Surface->Surface inner loops will be invoked, depending on the transform
  * state.
@@ -169,7 +169,7 @@ MTLBlitLoops_IsoBlit(JNIEnv *env,
 
 /**
  * General blit method for copying a system memory ("Sw") surface to a native
- * OpenGL surface (of type "Surface" or "Texture").  If texture is JNI_TRUE,
+ * MTL surface (of type "Surface" or "Texture").  If texture is JNI_TRUE,
  * this method will invoke the Sw->Texture inner loop; otherwise, one of the
  * Sw->Surface inner loops will be invoked, depending on the transform state.
  */

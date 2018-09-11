@@ -206,8 +206,8 @@ public abstract class OGLSurfaceData extends SurfaceData
             oglRenderPipe = new OGLRenderer(rq);
             if (GraphicsPrimitive.tracingEnabled()) {
                 oglTextPipe = oglTextPipe.traceWrap();
-                //The wrapped oglRenderPipe will wrap the AA pipe as well...
-                //oglAAPgramPipe = oglRenderPipe.traceWrap();
+                //The wrapped mtlRenderPipe will wrap the AA pipe as well...
+                //oglAAPgramPipe = mtlRenderPipe.traceWrap();
             }
             oglAAPgramPipe = oglRenderPipe.getAAParallelogramPipe();
             oglTxRenderPipe =

@@ -88,7 +88,7 @@ class MTLBufImgOps extends BufferedBufImgOps {
         // Verify that the source surface is actually a texture and
         // that the operation is supported
         MTLSurfaceDataBase oglSrc = (MTLSurfaceDataBase)srcData;
-        MTLGraphicsConfigBase gc = oglSrc.getOGLGraphicsConfig();
+        MTLGraphicsConfigBase gc = oglSrc.getMTLGraphicsConfig();
         if (oglSrc.getType() != MTLSurfaceDataBase.TEXTURE ||
             !gc.isCapPresent(CAPS_EXT_BIOP_SHADER))
         {
