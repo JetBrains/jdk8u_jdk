@@ -857,6 +857,7 @@ javax/swing/JTree/4633594/JTreeFocusTest.java                                   
 javax/swing/JTree/4908142/bug4908142.java                                           8172065,8197552 macosx-all,windows-all
 javax/swing/JTree/4927934/bug4927934.java                                           8172063,8197552 macosx-all,windows-all
 javax/swing/JTree/6263446/bug6263446.java                                           8003839 macosx-all,windows-all
+javax/swing/JTree/6578666/bug6578666.java                                           JRE-948 macosx-all
 javax/swing/JTree/8003400/Test8003400.java                                          8197560 macosx-all,windows-all,linux-all
 javax/swing/JTree/DnD/LastNodeLowerHalfDrop.java                                    8159131 macosx-all,windows-all,linux-all
 javax/swing/JWindow/ShapedAndTranslucentWindows/PerPixelTranslucent.java            8164811 windows-all
