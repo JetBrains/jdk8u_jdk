@@ -162,6 +162,8 @@ java/awt/Graphics2D/MTGraphicsAccessTest/MTGraphicsAccessTest.java              
 java/awt/Graphics2D/WhiteTextColorTest.java                                         8054638 generic-all
 java/awt/GridLayout/LayoutExtraGaps/LayoutExtraGaps.java                            8000171 windows-all
 java/awt/JAWT/JAWT.sh                                                               8197798,8170729 generic-all
+java/awt/KeyboardFocusmanager/ConsumeNextMnemonicKeyTypedTest/ConsumeNextMnemonicKeyTypedTest.html JRE-948 macosx-all
+java/awt/KeyboardFocusmanager/TypeAhead/MenuItemActivatedTest/MenuItemActivatedTest.html JRE-948 macosx-all
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html        8158380,8198624 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/TestDialogTypeAhead.html                    8198626,8074807 generic-all
 java/awt/LightweightDispatcher/LWDispatcherMemoryLeakTest.java                      8163261 generic-all
