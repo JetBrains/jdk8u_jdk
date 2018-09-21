@@ -1333,7 +1333,8 @@ public class LWWindowPeer
             // 2. Save the window as a previously focused
             previouslyFocusedWindow = focusedWindow;
         } else if (becomesFocused && previouslyFocusedWindow != null) {
-            if (((LWWindowPeer)previouslyFocusedWindow.getPeer()).focusAllowedFor()) {
+          LWWindowPeer focusedWindowPeer = (LWWindowPeer)previouslyFocusedWindow.getPeer();
+          if (focusedWindowPeer != null && focusedWindowPeer.focusAllowedFor()) {
                 // 3. Use the previous focused window
                 eventWindow = previouslyFocusedWindow;
             }
