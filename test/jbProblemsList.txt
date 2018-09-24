@@ -691,7 +691,7 @@ javax/swing/JTextArea/4697612/bug4697612.java                                   
 tools/pack200/CommandLineTests.java                                                     8059906 generic-all
 tools/pack200/Pack200Test.java                                                                  solaris-all, macosx-all
 tools/pack200/UnpackerMemoryTest.java                                                   8140611 linux-all
-tools/launcher/FXLauncherTest.java                                                      8068049 linux-all,macosx-all
+tools/launcher/FXLauncherTest.java                                                      8068049,8078225 linux-all,macosx-all,windows-all
 tools/launcher/MultipleJRE.sh                                                           8180478 windows-all
 
 ############################################################################
@@ -874,6 +874,7 @@ sun/java2d/OpenGL/DrawBufImgOp.java                                             
 sun/java2d/OpenGL/DrawHugeImageTest.java                                          8155740 windows-all
 sun/java2d/XRenderBlitsTest.java                                                  8155740 windows-all
 java/awt/Robot/HiDPIMouseClick/HiDPIRobotMouseClick.java                          8155740 windows-all
+java/awt/hidpi/SetMaximizedBoundsTest.java                                        JRE-898 windows-all
 java/awt/hidpi/properties/HiDPIPropertiesWindowsTest.java                         8155740 windows-all
 java/awt/Graphics2D/ScaledTransform/ScaledTransform.java                          8155740 generic-all
 javax/swing/text/Utilities/8142966/SwingFontMetricsTest.java                      8155740 windows-all
