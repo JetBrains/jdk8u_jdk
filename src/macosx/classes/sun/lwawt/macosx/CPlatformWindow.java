@@ -1084,28 +1084,80 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
     }
 
     private void orderAboveSiblings() {
-        if (owner == null) {
-            return;
+        // Recursively pop up the windows from the very bottom, (i.e. root owner) so that
+        // the windows are ordered above their nearest owner; ancestors of the window,
+        // which is going to become 'main window', are placed above their siblings.
+        CPlatformWindow rootOwner = getRootOwner();
+        if (rootOwner.isVisible() && !rootOwner.isIconified()) {
+            rootOwner.execute(CWrapper.NSWindow::orderFront);
         }
-
-        // NOTE: the logic will fail if we have a hierarchy like:
-        //       visible root owner
-        //          invisible owner
-        //              visible dialog
-        // However, this is an unlikely scenario for real life apps
-        if (owner.isVisible()) {
-            // Recursively pop up the windows from the very bottom so that only
-            // the very top-most one becomes the main window
-            owner.orderAboveSiblings();
-
-            // Order the window to front of the stack of child windows
-            final long nsWindowSelfPtr = getNSWindowPtr();
-            final long nsWindowOwnerPtr = owner.getNSWindowPtr();
-            CWrapper.NSWindow.orderFront(nsWindowOwnerPtr);
-            CWrapper.NSWindow.orderWindow(nsWindowSelfPtr, CWrapper.NSWindow.NSWindowAbove, nsWindowOwnerPtr);
+        // Do not order child windows of iconified owner.
+        if (!rootOwner.isIconified()) {
+            final WindowAccessor windowAccessor = AWTAccessor.getWindowAccessor();
+            orderAboveSiblingsImpl(windowAccessor.getOwnedWindows(rootOwner.target));
         }
+    }
 
-        applyWindowLevel(target);
+    private CPlatformWindow getRootOwner() {
+        CPlatformWindow rootOwner = this;
+        while (rootOwner.owner != null) {
+            rootOwner = rootOwner.owner;
+        }
+        return rootOwner;
+    }
+
+    private boolean isOneOfOwnersOrSelf(CPlatformWindow window) {
+        while (window != null) {
+            if (this == window) {
+                return true;
+            }
+            window = window.owner;
+        }
+        return false;
+    }
+
+    private void orderAboveSiblingsImpl(Window[] windows) {
+        ArrayList<Window> childWindows = new ArrayList<Window>();
+
+        final ComponentAccessor componentAccessor = AWTAccessor.getComponentAccessor();
+        final WindowAccessor windowAccessor = AWTAccessor.getWindowAccessor();
+
+        // Go through the list of windows and perform ordering.
+        for (Window w : windows) {
+            boolean iconified = false;
+            final Object p = componentAccessor.getPeer(w);
+            if (p instanceof LWWindowPeer) {
+                CPlatformWindow pw = (CPlatformWindow)((LWWindowPeer)p).getPlatformWindow();
+                iconified = isIconified();
+                if (pw != null && pw.isVisible() && !iconified) {
+                    // If the window is one of ancestors of 'main window' or is going to become main by itself,
+                    // the window should be ordered above its siblings; otherwise the window is just ordered
+                    // above its nearest parent.
+                    if (pw.isOneOfOwnersOrSelf(this)) {
+                        pw.execute(CWrapper.NSWindow::orderFront);
+                    } else {
+                        pw.owner.execute(ownerPtr -> {
+                            pw.execute(ptr -> {
+                                CWrapper.NSWindow.orderWindow(ptr, CWrapper.NSWindow.NSWindowAbove, ownerPtr);
+                            });
+                        });
+                    }
+                    pw.applyWindowLevel(w);
+                }
+            }
+            // Retrieve the child windows for each window from the list except iconified ones
+            // and store them for future use.
+            // Note: we collect data about child windows even for invisible owners, since they may have
+            // visible children.
+            if (!iconified) {
+                childWindows.addAll(Arrays.asList(windowAccessor.getOwnedWindows(w)));
+            }
+        }
+        // If some windows, which have just been ordered, have any child windows, let's start new iteration
+        // and order these child windows.
+        if (!childWindows.isEmpty()) {
+            orderAboveSiblingsImpl(childWindows.toArray(new Window[0]));
+        }
     }
 
     protected void applyWindowLevel(Window target) {
