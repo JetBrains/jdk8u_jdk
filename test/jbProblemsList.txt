@@ -288,6 +288,7 @@ java/awt/geom/AffineTransform/InvalidTransformParameterTest.java                
 
 java/awt/grab/EmbeddedFrameTest1/EmbeddedFrameTest1.java                           7080150,8203918 macosx-all,linux-all,windows-all
 java/awt/grab/GrabOnUnfocusableToplevel/GrabOnUnfocusableToplevel.java             8169109 generic-all
+java/awt/im/memoryleak/InputContextMemoryLeakTest.java                             8023814 macosx-all,linux-all
 java/awt/image/DrawImage/EABlitTest.java                                           8028000 generic-all
 java/awt/image/DrawImage/IncorrectAlphaSurface2SW.java                             8056077 generic-all
 java/awt/image/DrawImage/IncorrectBounds.java                                      8169473 windows-all
