@@ -1277,7 +1277,7 @@ public class LWWindowPeer
     private boolean isOneOfOwnersOf(LWWindowPeer peer) {
         Window owner = (peer != null ? peer.getTarget().getOwner() : null);
         while (owner != null) {
-            if (owner.getPeer() == this) {
+            if ((LWWindowPeer)owner.getPeer() == this) {
                 return true;
             }
             owner = owner.getOwner();
@@ -1325,29 +1325,11 @@ public class LWWindowPeer
             grabbingWindow.ungrab();
         }
 
-        Window eventWindow = getTarget();
-
-        Window focusedWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
-        // 1. Every time we are loosing focus, we check if the current focused window is a Simple Window.
-        if (!becomesFocused && focusedWindow != null && ((LWWindowPeer)focusedWindow.getPeer()).isSimpleWindow()) {
-            // 2. Save the window as a previously focused
-            previouslyFocusedWindow = focusedWindow;
-        } else if (becomesFocused && previouslyFocusedWindow != null) {
-          LWWindowPeer focusedWindowPeer = (LWWindowPeer)previouslyFocusedWindow.getPeer();
-          if (focusedWindowPeer != null && focusedWindowPeer.focusAllowedFor()) {
-                // 3. Use the previous focused window
-                eventWindow = previouslyFocusedWindow;
-            }
-            // 4. Reset the previously focused window
-            previouslyFocusedWindow = null;
-        }
-
         KeyboardFocusManagerPeer kfmPeer = LWKeyboardFocusManagerPeer.getInstance();
-        kfmPeer.setCurrentFocusedWindow(becomesFocused ? eventWindow : null);
+        kfmPeer.setCurrentFocusedWindow(becomesFocused ? getTarget() : null);
 
         int eventID = becomesFocused ? WindowEvent.WINDOW_GAINED_FOCUS : WindowEvent.WINDOW_LOST_FOCUS;
-
-        WindowEvent windowEvent = new TimedWindowEvent(eventWindow, eventID, opposite, System.currentTimeMillis());
+        WindowEvent windowEvent = new TimedWindowEvent(getTarget(), eventID, opposite, System.currentTimeMillis());
 
         SunToolkit.setSystemGenerated(windowEvent);
         AWTAccessor.getAWTEventAccessor().setPosted(windowEvent);
@@ -1361,8 +1343,6 @@ public class LWWindowPeer
         // TODO: wrap in SequencedEvent
         postEvent(pe);
     }
-
-    private Window previouslyFocusedWindow = null;
 
     /*
      * Retrieves the owner of the peer.
