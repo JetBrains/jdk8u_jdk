@@ -489,6 +489,7 @@ java/net/DatagramSocket/SendDatagramToBadAddress.java                           
 
 java/nio/channels/AsyncCloseAndInterrupt.java                                        8068693 generic-all
 java/nio/channels/Selector/Wakeup.java                                               6963118 windows-all
+java/nio/channels/SocketChannel/AdaptSocket.java                                     8156002 generic-all
 java/nio/channels/DatagramChannel/ChangingAddress.java                               7141822 macosx-all
 java/nio/channels/FileChannel/LoopingTruncate.java                                   8137230 generic-all
 
