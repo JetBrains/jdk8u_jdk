@@ -289,8 +289,10 @@ AWT_ASSERT_APPKIT_THREAD;
         return;
     }
 
-    // Allow TSM to look at the event and potentially send back NSTextInputClient messages.
-    [self interpretKeyEvents:[NSArray arrayWithObject:event]];
+    // Allow TSM to look at the event and potentially send back NSTextInputClient messages
+    if (fInputMethodLOCKABLE) {
+        [self interpretKeyEvents:[NSArray arrayWithObject:event]];
+    }
 
     if (fEnablePressAndHold && [event willBeHandledByComplexInputMethod] && fInputMethodLOCKABLE) {
         fProcessingKeystroke = NO;
