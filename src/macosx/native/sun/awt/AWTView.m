@@ -65,6 +65,26 @@ static BOOL shouldUsePressAndHold() {
     return shouldUsePressAndHold;
 }
 
+#ifndef kCFCoreFoundationVersionNumber10_13_Max
+#define kCFCoreFoundationVersionNumber10_13_Max 1499
+#endif
+
+#define IS_OSX_GT10_13 (floor(kCFCoreFoundationVersionNumber) > \
+    kCFCoreFoundationVersionNumber10_13_Max)
+
+static BOOL abandonInputAfterPressAndHold() {
+    static int abandonInputAfterPressAndHold = -1;
+    if (abandonInputAfterPressAndHold != -1) {
+        return abandonInputAfterPressAndHold;
+    }
+
+    abandonInputAfterPressAndHold =
+        !CFPreferencesGetAppBooleanValue(
+            CFSTR("JBREAbandonInputAfterPressAndHoldDisabled"),
+            kCFPreferencesCurrentApplication, NULL);
+    return abandonInputAfterPressAndHold;
+}
+
 @implementation AWTView
 
 @synthesize _dropTarget;
@@ -285,18 +305,35 @@ AWT_ASSERT_APPKIT_THREAD;
     fProcessingKeystroke = YES;
     fKeyEventsNeeded = YES;
 
-    if ([event keyCode] == 24 && (([event modifierFlags] & (NSControlKeyMask | NSCommandKeyMask)) != 0)) {
+    if ([event keyCode] == kVK_ANSI_Equal && (([event modifierFlags] & (NSControlKeyMask | NSCommandKeyMask)) != 0)) {
         return;
     }
 
-    // Allow TSM to look at the event and potentially send back NSTextInputClient messages.
-    [self interpretKeyEvents:[NSArray arrayWithObject:event]];
+    // Allow TSM to look at the event and potentially send back NSTextInputClient messages
+    if (fInputMethodLOCKABLE) {
+        [self interpretKeyEvents:[NSArray arrayWithObject:event]];
+    }
 
-    if (fEnablePressAndHold && [event willBeHandledByComplexInputMethod]) {
+    if (fEnablePressAndHold && [event willBeHandledByComplexInputMethod] && fInputMethodLOCKABLE) {
         fProcessingKeystroke = NO;
         if (!fInPressAndHold) {
             fInPressAndHold = YES;
             fPAHNeedsToSelect = YES;
+        } else if (IS_OSX_GT10_13 && abandonInputAfterPressAndHold()) {
+            switch([event keyCode]) {
+                case kVK_Escape:
+                case kVK_Delete:
+                case kVK_Return:
+                case kVK_ForwardDelete:
+                case kVK_PageUp:
+                case kVK_PageDown:
+                case kVK_DownArrow:
+                case kVK_UpArrow:
+                case kVK_Home:
+                case kVK_End:
+                   [self abandonInput];
+                   break;
+            }
         }
         return;
     }
@@ -1200,6 +1237,12 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
     }
     fPAHNeedsToSelect = NO;
 
+    // Abandon input to reset IM and unblock input after entering accented symbols
+    // (macOS 10.14+ only)
+
+    if (IS_OSX_GT10_13 && abandonInputAfterPressAndHold()) {
+        [self abandonInput];
+    }
 }
 
 - (void) doCommandBySelector:(SEL)aSelector
