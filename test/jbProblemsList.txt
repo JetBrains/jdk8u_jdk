@@ -767,6 +767,7 @@ sun/security/provider/PolicyParser/ExtDirs.java                                 
 sun/security/provider/PolicyParser/ExtDirsChange.java                             8033271 generic-all
 sun/security/provider/PolicyParser/ExtDirsDefaultPolicy.java                      8033271 generic-all
 sun/security/provider/PolicyParser/PrincipalExpansionError.java                   8033271 generic-all
+sun/security/provider/X509Factory/BigCRL.java                                     8000268 linux-all,windows-all
 sun/security/tools/keytool/i18n.sh                                                8033271 generic-all
 
 sun/security/provider/SecureRandom/StrongSecureRandom.java                        8130151,8157344 generic-all
@@ -855,6 +856,7 @@ java/awt/Frame/NormalToIconified/NormalToIconifiedTest.java                     
 java/awt/Frame/ObscuredFrame/ObscuredFrameTest.java                               8172887 linux-all
 java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                      8172887 windows-all
 java/awt/Mixing/MixingInHwPanel.java                                              8172887 generic-all
+java/awt/event/MouseEvent/AcceptExtraButton/AcceptExtraButton.java                8194045 generic-all
 java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java            8172887 generic-all
 java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                            8172887 windows-all
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                           8172887 windows-all
