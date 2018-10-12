@@ -118,6 +118,7 @@ java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusSetVisibleTest.java         
 java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusToFrontTest.java                6848406 generic-all
 java/awt/Focus/ActualFocusedWindowTest/ActualFocusedWindowRetaining.java            6829264 generic-all
 java/awt/Focus/ChoiceFocus/ChoiceFocus.java                                         8169103 windows-all,macosx-all
+java/awt/Focus/ClearGlobalFocusOwnerTest/ClearGlobalFocusOwnerTest.java             JRE-898 macosx-all
 java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java                     8198618 macosx-all
 java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java       7124555 generic-all
 java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java 6986252 macosx-all
@@ -162,6 +163,7 @@ java/awt/Graphics2D/MTGraphicsAccessTest/MTGraphicsAccessTest.java              
 java/awt/Graphics2D/WhiteTextColorTest.java                                         8054638 generic-all
 java/awt/GridLayout/LayoutExtraGaps/LayoutExtraGaps.java                            8000171 windows-all
 java/awt/JAWT/JAWT.sh                                                               8197798 windows-all
+java/awt/KeyboardFocusmanager/TypeAhead/ButtonActionKeyTest/ButtonActionKeyTest.html JRE-898 macosx-all
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html        8158380,8198624 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/TestDialogTypeAhead.html                    8198626,8074807 generic-all
 java/awt/LightweightDispatcher/LWDispatcherMemoryLeakTest.java                      8163261 generic-all
@@ -598,8 +600,7 @@ javax/swing/JMenu/4515762/bug4515762.java                                       
 
 javax/swing/JMenu/4692443/bug4692443.java                                             8076178 generic-all
 javax/swing/JMenu/8072900/WrongSelectionOnMouseOver.java                              8142534 generic-all
-javax/swing/JMenuBar/4750590/bug4750590.java                                          8158496 windows-all
-javax/swing/JMenuBar/4750590/bug4750590.java                                          8076178 macosx-all
+javax/swing/JMenuBar/4750590/bug4750590.java                                          8076178,8158496 macosx-all,windows-all,linux-all
 javax/swing/JMenuItem/4171437/bug4171437.java                                         8040916 generic-all
 javax/swing/JMenuItem/4654927/bug4654927.java                                         8172536 generic-all
 javax/swing/JMenuItem/6209975/bug6209975.java                                         8025083 generic-all
@@ -607,7 +608,7 @@ javax/swing/JMenuItem/ActionListenerCalledTwice/ActionListenerCalledTwiceTest.ja
 javax/swing/JOptionPane/6464022/bug6464022.java                                       7124548 macosx-all
 javax/swing/JPopupMenu/4458079/bug4458079.java                                        8040917 generic-all
 javax/swing/JPopupMenu/4966112/bug4966112.java                                        8064915,8074385 generic-all
-javax/swing/JPopupMenu/6800513/bug6800513.java                                        8080868 macosx-all,windows-all
+javax/swing/JPopupMenu/6800513/bug6800513.java                                        8080868 generic-all
 javax/swing/JPopupMenu/6827786/bug6827786.java                                        8042378,8042378 generic-all
 javax/swing/JPopupMenu/6987844/bug6987844.java                                        8169956 generic-all
 javax/swing/JPopupMenu/7156657/bug7156657.java                                        7185563 generic-all
@@ -687,7 +688,7 @@ javax/swing/JTextArea/4697612/bug4697612.java                                   
 tools/pack200/CommandLineTests.java                                                     8059906 generic-all
 tools/pack200/Pack200Test.java                                                                  solaris-all, macosx-all
 tools/pack200/UnpackerMemoryTest.java                                                   8140611 linux-all
-tools/launcher/FXLauncherTest.java                                                      8068049 linux-all,macosx-all
+tools/launcher/FXLauncherTest.java                                                      8068049 generic-all
 tools/launcher/MultipleJRE.sh                                                           8180478 windows-all
 
 ############################################################################
