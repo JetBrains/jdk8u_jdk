@@ -248,6 +248,7 @@ java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java               
 java/awt/datatransfer/DragUnicodeBetweenJVMTest/DragUnicodeBetweenJVMTest.html      8017457 windows-all
 java/awt/dnd/BadSerializaionTest/BadSerializationTest.java                          8039082 generic-all
 java/awt/dnd/Button2DragTest/Button2DragTest.html                                   8144056 generic-all
+java/awt/dnd/DisposeFrameOnDragCrash/DisposeFrameOnDragTest.java                    8067271,JRE-689 macosx-all
 java/awt/dnd/DragInterceptorAppletTest/DragInterceptorAppletTest.html               8066096 generic-all
 java/awt/dnd/DropTargetEnterExitTest/ExtraDragEnterTest.java                        8029680 generic-all
 java/awt/dnd/DropTargetEnterExitTest/MissedDragExitTest.java                        8029680 generic-all
@@ -270,8 +271,8 @@ java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                                 
 java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java                  8032254 linux-all
 java/awt/event/MouseEvent/MouseClickTest/MouseClickTest.html                        8168389 windows-all,macosx-all
 java/awt/event/MouseEvent/SpuriousExitEnter/SpuriousExitEnter_3.java                6854300 generic-all
-java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion.java             8060176 windows-all,macosx-all
-java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_1.java           8060176 windows-all,macosx-all
+java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion.java             8060176 windows-all,macosx-all,linux-all
+java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_1.java           8060176 windows-all,macosx-all,linux-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_2.html           8060176 windows-all,macosx-all,linux-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_4.java           6956646 generic-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_3.html           6956646 generic-all
@@ -514,6 +515,7 @@ java/rmi/activation/Activatable/forceLogSnapshot/ForceLogSnapshot.java          
 java/rmi/activation/Activatable/inactiveGroup/InactiveGroup.java                      8085192 generic-all
 java/rmi/activation/Activatable/lookupActivationSystem/LookupActivationSystem.java    8085192 generic-all
 java/rmi/activation/Activatable/restartService/RestartService.java                    8085192 generic-all
+java/rmi/activation/Activatable/shutdownGracefully/ShutdownGracefully.java            8032050 generic-all
 java/rmi/activation/CommandEnvironment/SetChildEnv.java                               8085192 generic-all
 java/rmi/activation/Activatable/restartCrashedService/RestartCrashedService.java      8085192 generic-all
 java/rmi/activation/rmidViaInheritedChannel/RmidViaInheritedChannel.java              8019538 generic-all
@@ -864,7 +866,7 @@ java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                          
 java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                           8172887 windows-all
 java/io/File/SetLastModified.java                                                 8172887 generic-all
 javax/swing/JScrollBar/7163696/Test7163696.java                                   8172887 generic-all
-javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                      8172887,8065099 windows-all,macosx-all
+javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                      8172887,8065099 windows-all,macosx-all,linux-all
 javax/swing/dnd/7171812/bug7171812.java                                           8172887 windows-all
 javax/swing/plaf/basic/BasicTreeUI/8023474/bug8023474.java                        8172887 windows-all
 javax/swing/plaf/basic/Test6984643.java                                           8172887,8198340 windows-all
