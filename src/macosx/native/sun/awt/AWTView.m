@@ -1212,6 +1212,18 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
     }
     fPAHNeedsToSelect = NO;
 
+    // Abandon input to reset IM and unblock input after entering accented symbols
+    // (macOS 10.14+ only)
+
+    static NSOperatingSystemVersion minOSVersion = {
+        .majorVersion = 10,
+        .minorVersion = 14,
+        .patchVersion = 0
+    };
+
+    if ([NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:minOSVersion]) {
+        [self abandonInput];
+    }
 }
 
 - (void) doCommandBySelector:(SEL)aSelector
