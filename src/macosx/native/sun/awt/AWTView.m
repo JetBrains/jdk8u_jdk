@@ -289,7 +289,7 @@ AWT_ASSERT_APPKIT_THREAD;
     fProcessingKeystroke = YES;
     fKeyEventsNeeded = YES;
 
-    if ([event keyCode] == 24 && (([event modifierFlags] & (NSControlKeyMask | NSCommandKeyMask)) != 0)) {
+    if ([event keyCode] == kVK_ANSI_Equal && (([event modifierFlags] & (NSControlKeyMask | NSCommandKeyMask)) != 0)) {
         return;
     }
 
@@ -303,6 +303,12 @@ AWT_ASSERT_APPKIT_THREAD;
         if (!fInPressAndHold) {
             fInPressAndHold = YES;
             fPAHNeedsToSelect = YES;
+        } else if (floor(kCFCoreFoundationVersionNumber) >
+                   kCFCoreFoundationVersionNumber10_13_Max &&
+                   ([event keyCode] == kVK_Escape ||
+                    [event keyCode] == kVK_Delete))
+        {
+            [self abandonInput];
         }
         return;
     }
