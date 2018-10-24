@@ -304,11 +304,22 @@ AWT_ASSERT_APPKIT_THREAD;
             fInPressAndHold = YES;
             fPAHNeedsToSelect = YES;
         } else if (floor(kCFCoreFoundationVersionNumber) >
-                   kCFCoreFoundationVersionNumber10_13_Max &&
-                   ([event keyCode] == kVK_Escape ||
-                    [event keyCode] == kVK_Delete))
+                   kCFCoreFoundationVersionNumber10_13_Max)
         {
-            [self abandonInput];
+            switch([event keyCode]) {
+                case kVK_Escape:
+                case kVK_Delete:
+                case kVK_Return:
+                case kVK_ForwardDelete:
+                case kVK_PageUp:
+                case kVK_PageDown:
+                case kVK_DownArrow:
+                case kVK_UpArrow:
+                case kVK_Home:
+                case kVK_End:
+                   [self abandonInput];
+                   break;
+            }
         }
         return;
     }
