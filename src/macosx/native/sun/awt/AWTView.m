@@ -69,6 +69,9 @@ static BOOL shouldUsePressAndHold() {
 #define kCFCoreFoundationVersionNumber10_13_Max 1499
 #endif
 
+#define IS_OSX_GT10_13 (floor(kCFCoreFoundationVersionNumber) > \
+    kCFCoreFoundationVersionNumber10_13_Max)
+
 @implementation AWTView
 
 @synthesize _dropTarget;
@@ -303,9 +306,7 @@ AWT_ASSERT_APPKIT_THREAD;
         if (!fInPressAndHold) {
             fInPressAndHold = YES;
             fPAHNeedsToSelect = YES;
-        } else if (floor(kCFCoreFoundationVersionNumber) >
-                   kCFCoreFoundationVersionNumber10_13_Max)
-        {
+        } else if (IS_OSX_GT10_13) {
             switch([event keyCode]) {
                 case kVK_Escape:
                 case kVK_Delete:
@@ -1236,7 +1237,7 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
     // Abandon input to reset IM and unblock input after entering accented symbols
     // (macOS 10.14+ only)
 
-    if (floor(kCFCoreFoundationVersionNumber) > kCFCoreFoundationVersionNumber10_13_Max) {
+    if (IS_OSX_GT10_13) {
         [self abandonInput];
     }
 }
