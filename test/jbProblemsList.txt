@@ -552,6 +552,9 @@ sun/security/krb5/auto/SSL.java                                                 
 sun/security/krb5/auto/Unreachable.java                                               7164518 macosx-all
 com/sun/org/apache/xml/internal/security/transforms/ClassLoaderTest.java	          7147060 generic-all
 sun/security/pkcs11/Secmod/AddPrivateKey.java                                         6988842 solaris-all
+sun/security/pkcs11/KeyStore/SecretKeysBasic.sh                                       8209398 linux-all
+sun/security/pkcs11/Secmod/GetPrivateKey.java                                         8212134 generic-all
+sun/security/pkcs11/Secmod/JksSetPrivateKey.java                                      8212134 generic-all
 sun/security/pkcs11/ec/ReadCertificates.java                                          6988842 solaris-all
 sun/security/pkcs11/ec/ReadPKCS12.java                                                6988842 solaris-all
 sun/security/pkcs11/sslecc/ClientJSSEServerJSSE.java                                  6988842 solaris-all
@@ -852,6 +855,7 @@ com/sun/jdi/RedefineClearBreakpoint.sh                                          
 com/sun/nio/sctp/SctpChannel/SocketOptionTests.java                               8141694,8075066 linux-all
 com/sun/nio/sctp/SctpMultiChannel/SocketOptionTests.java                          8141694 linux-all
 sun/nio/cs/FindDecoderBugs.java                                                   8022224 linux-all
+sun/nio/ch/TestMaxCachedBufferSize.java                                           8212812 generic-all
 
 com/sun/awt/Translucency/WindowOpacity.java                                       8172887 windows-all
 java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html                  8172887 generic-all
