@@ -335,6 +335,25 @@ Java_sun_java2d_opengl_CGLGraphicsConfig_getCGLConfigInfo
     jint caps = CAPS_EMPTY;
     OGLContext_GetExtensionInfo(env, &caps);
 
+    CFStringRef fontSmoothingKey = CFSTR("CGFontRenderingFontSmoothingDisabled");
+    CFStringRef str = (CFStringRef)CFPreferencesCopyAppValue(
+            fontSmoothingKey, kCFPreferencesCurrentApplication);
+
+    if (str != NULL) {
+        NSString *fontSmoothing = (__bridge NSString *) str;
+
+        if ([fontSmoothing intValue]) {
+            J2dRlsTraceLn(J2D_TRACE_INFO,
+                          "LCD_SHADER: disabled via macOS settings");
+            caps ^= CAPS_EXT_LCD_SHADER;
+        }
+        CFRelease(str);
+    } else if (IS_OSX_GT10_13) {
+        J2dRlsTraceLn(J2D_TRACE_INFO,
+                      "LCD_SHADER: disabled on macOS 10.14+ by default");
+        caps ^= CAPS_EXT_LCD_SHADER;
+    }
+
     GLint value = 0;
     [sharedPixelFormat
         getValues: &value
