@@ -340,7 +340,7 @@ Java_sun_java2d_opengl_CGLGraphicsConfig_getCGLConfigInfo
             fontSmoothingKey, kCFPreferencesCurrentApplication);
 
     if (str != NULL) {
-        NSString *fontSmoothing = (__bridge NSString *) str;
+        NSString *fontSmoothing = (NSString *) str;
 
         if ([fontSmoothing intValue]) {
             J2dRlsTraceLn(J2D_TRACE_INFO,
