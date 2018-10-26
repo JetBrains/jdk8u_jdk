@@ -162,7 +162,7 @@ java/awt/Graphics2D/FlipDrawImage/FlipDrawImage.java                            
 java/awt/Graphics2D/MTGraphicsAccessTest/MTGraphicsAccessTest.java                  8145808 generic-all
 java/awt/Graphics2D/WhiteTextColorTest.java                                         8054638 generic-all
 java/awt/GridLayout/LayoutExtraGaps/LayoutExtraGaps.java                            8000171 windows-all
-java/awt/JAWT/JAWT.sh                                                               8197798 windows-all
+java/awt/JAWT/JAWT.sh                                                               8197798,8170729 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/ButtonActionKeyTest/ButtonActionKeyTest.html JRE-898 macosx-all
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html        8158380,8198624 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/TestDialogTypeAhead.html                    8198626,8074807 generic-all
@@ -546,6 +546,9 @@ sun/security/pkcs11/ec/TestKeyFactory.java                                      
 sun/security/krb5/auto/SSL.java                                                       8171496 generic-all
 sun/security/krb5/auto/Unreachable.java                                               7164518 macosx-all
 com/sun/org/apache/xml/internal/security/transforms/ClassLoaderTest.java	          7147060 generic-all
+sun/security/pkcs11/KeyStore/SecretKeysBasic.sh                                       8209398 linux-all
+sun/security/pkcs11/Secmod/GetPrivateKey.java                                         8212134 generic-all
+sun/security/pkcs11/Secmod/JksSetPrivateKey.java                                      8212134 generic-all
 sun/security/pkcs11/Secmod/AddPrivateKey.java                                         6988842 solaris-all
 sun/security/pkcs11/ec/ReadCertificates.java                                          6988842 solaris-all
 sun/security/pkcs11/ec/ReadPKCS12.java                                                6988842 solaris-all
