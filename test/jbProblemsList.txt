@@ -552,6 +552,9 @@ sun/security/krb5/auto/SSL.java                                                 
 sun/security/krb5/auto/Unreachable.java                                               7164518 macosx-all
 com/sun/org/apache/xml/internal/security/transforms/ClassLoaderTest.java	          7147060 generic-all
 sun/security/pkcs11/Secmod/AddPrivateKey.java                                         6988842 solaris-all
+sun/security/pkcs11/KeyStore/SecretKeysBasic.sh                                       8209398 linux-all
+sun/security/pkcs11/Secmod/GetPrivateKey.java                                         8212134 generic-all
+sun/security/pkcs11/Secmod/JksSetPrivateKey.java                                      8212134 generic-all
 sun/security/pkcs11/ec/ReadCertificates.java                                          6988842 solaris-all
 sun/security/pkcs11/ec/ReadPKCS12.java                                                6988842 solaris-all
 sun/security/pkcs11/sslecc/ClientJSSEServerJSSE.java                                  6988842 solaris-all
