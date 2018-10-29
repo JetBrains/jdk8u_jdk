@@ -65,6 +65,18 @@ static BOOL shouldUsePressAndHold() {
     return shouldUsePressAndHold;
 }
 
+static BOOL abandonInputAfterPressAndHold() {
+    static int abandonInputAfterPressAndHold = -1;
+    if (abandonInputAfterPressAndHold != -1) {
+        return abandonInputAfterPressAndHold;
+    }
+
+    abandonInputAfterPressAndHold =
+        !CFPreferencesGetAppBooleanValue(
+            CFSTR("JBREAbandonInputAfterPressAndHoldDisabled"),
+            kCFPreferencesCurrentApplication, NULL);
+    return abandonInputAfterPressAndHold;
+}
 
 @implementation AWTView
 
@@ -300,7 +312,7 @@ AWT_ASSERT_APPKIT_THREAD;
         if (!fInPressAndHold) {
             fInPressAndHold = YES;
             fPAHNeedsToSelect = YES;
-        } else if (IS_OSX_GT10_13) {
+        } else if (IS_OSX_GT10_13 && abandonInputAfterPressAndHold()) {
             switch([event keyCode]) {
                 case kVK_Escape:
                 case kVK_Delete:
@@ -1231,7 +1243,7 @@ JNF_CLASS_CACHE(jc_CInputMethod, "sun/lwawt/macosx/CInputMethod");
     // Abandon input to reset IM and unblock input after entering accented symbols
     // (macOS 10.14+ only)
 
-    if (IS_OSX_GT10_13) {
+    if (IS_OSX_GT10_13 && abandonInputAfterPressAndHold()) {
         [self abandonInput];
     }
 }
