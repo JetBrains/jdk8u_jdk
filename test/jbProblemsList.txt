@@ -845,6 +845,7 @@ com/sun/jdi/JdbVarargsTest.sh                                                   
 com/sun/jdi/NotAField.sh                                                          8145552 windows-all
 com/sun/jdi/Redefine-g.sh                                                         8145552 windows-all
 com/sun/jdi/RedefineAbstractClass.sh                                              8145552 windows-all
+com/sun/jdi/RedefineAnnotation.sh                                                 8031125,8149666 generic-all
 com/sun/jdi/RedefineImplementor.sh                                                8145552,8004127 generic-all
 com/sun/jdi/RedefineMulti.sh                                                      8145552 windows-all
 
