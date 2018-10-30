@@ -734,28 +734,15 @@ public class ImageView extends View {
                 newState |= HEIGHT_FLAG;
             }
 
-            int imageWidth = newImage.getWidth(imageObserver);
-            int imageHeight = newImage.getHeight(imageObserver);
-
             if (newWidth <= 0) {
-                if ((newState & HEIGHT_FLAG) != 0 && imageWidth > 0 && imageHeight > 0) {
-                    newWidth = imageWidth * newHeight / imageHeight;
-                }
-                else {
-                    newWidth = imageWidth;
-                }
+                newWidth = newImage.getWidth(imageObserver);
                 if (newWidth <= 0) {
                     newWidth = DEFAULT_WIDTH;
                 }
             }
 
             if (newHeight <= 0) {
-                if ((newState & WIDTH_FLAG) != 0 && imageWidth > 0 && imageHeight > 0) {
-                    newHeight = imageHeight * newWidth / imageWidth;
-                }
-                else {
-                    newHeight = imageHeight;
-                }
+                newHeight = newImage.getHeight(imageObserver);
                 if (newHeight <= 0) {
                     newHeight = DEFAULT_HEIGHT;
                 }
@@ -912,19 +899,22 @@ public class ImageView extends View {
 
             if (image == img) {
                 // Resize image if necessary:
-                boolean changed = (flags & (ImageObserver.WIDTH | ImageObserver.HEIGHT)) != 0 
-                        && (!getElement().getAttributes().isDefined(HTML.Attribute.WIDTH) 
-                        || !getElement().getAttributes().isDefined(HTML.Attribute.HEIGHT));
+                short changed = 0;
+                if ((flags & ImageObserver.HEIGHT) != 0 && !getElement().
+                      getAttributes().isDefined(HTML.Attribute.HEIGHT)) {
+                    changed |= 1;
+                }
+                if ((flags & ImageObserver.WIDTH) != 0 && !getElement().
+                      getAttributes().isDefined(HTML.Attribute.WIDTH)) {
+                    changed |= 2;
+                }
 
                 synchronized(ImageView.this) {
-                    boolean calcProportional = newWidth > 0 && newHeight > 0 &&
-                            (flags & ImageObserver.WIDTH) != 0 && (flags & ImageObserver.HEIGHT) != 0 &&
-                            ((state & WIDTH_FLAG) == 0 ^ (state & HEIGHT_FLAG) == 0);
-                    if ((flags & ImageObserver.WIDTH) != 0 && (state & WIDTH_FLAG) == 0) {
-                        width = calcProportional ? newWidth * height / newHeight : newWidth;
+                    if ((changed & 1) == 1 && (state & WIDTH_FLAG) == 0) {
+                        width = newWidth;
                     }
-                    if ((flags & ImageObserver.HEIGHT) != 0 && (state & HEIGHT_FLAG) == 0) {
-                        height = calcProportional ? newHeight * width / newWidth : newHeight;
+                    if ((changed & 2) == 2 && (state & HEIGHT_FLAG) == 0) {
+                        height = newHeight;
                     }
                     if ((state & LOADING_FLAG) == LOADING_FLAG) {
                         // No need to resize or repaint, still in the process of
@@ -932,7 +922,7 @@ public class ImageView extends View {
                         return true;
                     }
                 }
-                if (changed) {
+                if (changed != 0) {
                     // May need to resize myself, asynchronously:
                     safePreferenceChanged();
                     return true;
