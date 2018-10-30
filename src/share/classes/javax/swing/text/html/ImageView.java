@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,13 +24,41 @@
  */
 package javax.swing.text.html;
 
-import java.awt.*;
+import java.awt.Rectangle;
+import java.awt.Image;
+import java.awt.Container;
+import java.awt.Color;
+import java.awt.Shape;
+import java.awt.Graphics;
+import java.awt.Toolkit;
+
 import java.awt.image.ImageObserver;
-import java.net.*;
+import java.net.URL;
+import java.net.MalformedURLException;
+
 import java.util.Dictionary;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
+
+import javax.swing.GrayFilter;
+import javax.swing.ImageIcon;
+import javax.swing.Icon;
+import javax.swing.UIManager;
+import javax.swing.SwingUtilities;
+
+import javax.swing.text.JTextComponent;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.View;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.Element;
+import javax.swing.text.ViewFactory;
+import javax.swing.text.Position;
+import javax.swing.text.Segment;
+import javax.swing.text.Highlighter;
+import javax.swing.text.LayeredHighlighter;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.Document;
+import javax.swing.text.BadLocationException;
+
+import javax.swing.event.DocumentEvent;
 
 /**
  * View of an Image, intended to support the HTML &lt;IMG&gt; tag.
@@ -726,26 +754,14 @@ public class ImageView extends View {
             // anything that might cause the image to be loaded, and thus the
             // ImageHandler to be called.
             newWidth = getIntAttr(HTML.Attribute.WIDTH, -1);
+            newHeight = getIntAttr(HTML.Attribute.HEIGHT, -1);
+
             if (newWidth > 0) {
                 newState |= WIDTH_FLAG;
             }
-            newHeight = getIntAttr(HTML.Attribute.HEIGHT, -1);
+
             if (newHeight > 0) {
                 newState |= HEIGHT_FLAG;
-            }
-
-            if (newWidth <= 0) {
-                newWidth = newImage.getWidth(imageObserver);
-                if (newWidth <= 0) {
-                    newWidth = DEFAULT_WIDTH;
-                }
-            }
-
-            if (newHeight <= 0) {
-                newHeight = newImage.getHeight(imageObserver);
-                if (newHeight <= 0) {
-                    newHeight = DEFAULT_HEIGHT;
-                }
             }
 
             // Make sure the image starts loading:
@@ -909,12 +925,41 @@ public class ImageView extends View {
                     changed |= 2;
                 }
 
-                synchronized(ImageView.this) {
-                    if ((changed & 1) == 1 && (state & WIDTH_FLAG) == 0) {
-                        width = newWidth;
+                /**
+                 * If the image properties (height and width) have been loaded,
+                 * then figure out if scaling is necessary based on the
+                 * specified HTML attributes.
+                 */
+                if (((flags & ImageObserver.HEIGHT) != 0) &&
+                    ((flags & ImageObserver.WIDTH) != 0)) {
+                    double proportion = 0.0;
+                    final int specifiedWidth = getIntAttr(HTML.Attribute.WIDTH, -1);
+                    final int specifiedHeight = getIntAttr(HTML.Attribute.HEIGHT, -1);
+                    /**
+                     * If either of the attributes are not specified, then calculate the
+                     * proportion for the specified dimension wrt actual value, and then
+                     * apply the same proportion to the unspecified dimension as well,
+                     * so that the aspect ratio of the image is maintained.
+                     */
+                    if (specifiedWidth != -1 ^ specifiedHeight != -1) {
+                        if (specifiedWidth <= 0) {
+                            proportion = specifiedHeight / ((double)newHeight);
+                            newWidth = (int)(proportion * newWidth);
+                        }
+
+                        if (specifiedHeight <= 0) {
+                            proportion = specifiedWidth / ((double)newWidth);
+                            newHeight = (int)(proportion * newHeight);
+                        }
+                        changed |= 3;
                     }
-                    if ((changed & 2) == 2 && (state & HEIGHT_FLAG) == 0) {
+                }
+                synchronized(ImageView.this) {
+                    if ((changed & 1) == 1 && (state & HEIGHT_FLAG) == 0) {
                         height = newHeight;
+                    }
+                    if ((changed & 2) == 2 && (state & WIDTH_FLAG) == 0) {
+                        width = newWidth;
                     }
                     if ((state & LOADING_FLAG) == LOADING_FLAG) {
                         // No need to resize or repaint, still in the process of
