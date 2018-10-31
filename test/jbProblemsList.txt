@@ -139,6 +139,7 @@ java/awt/Focus/WindowIsFocusableAccessByThreadsTest/WindowIsFocusableAccessByThr
 java/awt/Focus/WrongKeyTypedConsumedTest/WrongKeyTypedConsumedTest.java             8169096 macosx-all,windows-all,linux-all
 java/awt/FontClass/CreateFont/bigfont.html                                          6868690 generic-all
 java/awt/FontClass/CreateFont/fileaccess/FontFile.java                              8076151 generic-all
+java/awt/Frame/DecoratedFrameInsets/DecoratedFrameInsetsTest.java                   8212962 linux-all
 java/awt/Frame/InvisibleOwner/InvisibleOwner.java                                   8169111 generic-all
 java/awt/Frame/LayoutOnMaximizeTest/LayoutOnMaximizeTest.java                       8169472 windows-all
 java/awt/Frame/UnfocusableMaximizedFrameResizablity/UnfocusableMaximizedFrameResizablity.java 7158623 macosx-all
@@ -167,6 +168,7 @@ java/awt/KeyboardFocusmanager/TypeAhead/MenuItemActivatedTest/MenuItemActivatedT
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html        8158380,8198624 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/TestDialogTypeAhead.html                    8198626,8074807 generic-all
 java/awt/LightweightDispatcher/LWDispatcherMemoryLeakTest.java                      8163261 generic-all
+java/awt/List/EmptyListEventTest/EmptyListEventTest.java                            JRE-898 macosx-all
 java/awt/List/FirstItemRemoveTest/FirstItemRemoveTest.html                          8169461 windows-all,linux-all
 java/awt/List/NofocusListDblClickTest/NofocusListDblClickTest.java                  7125471 generic-all
 java/awt/Menu/OpensWithNoGrab/OpensWithNoGrab.java                                  7037728 linux-all
@@ -251,6 +253,7 @@ java/awt/dnd/DropTargetEnterExitTest/ExtraDragEnterTest.java                    
 java/awt/dnd/DropTargetEnterExitTest/MissedDragExitTest.java                        8029680 generic-all
 java/awt/dnd/ImageTransferTest/ImageTransferTest.java                               8176556 generic-all
 java/awt/dnd/FileListBetweenJVMsTest/FileListBetweenJVMsTest.html                   7124379 generic-all
+java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                             JRE-1011 generic-all
 java/awt/dnd/URIListBetweenJVMsTest/URIListBetweenJVMsTest.html                     7124379,8171510,8201284 macosx-all,linux-all linux:7124379,8201284-macosx:7124379,8171510
 java/awt/dnd/MissingDragExitEventTest/MissingDragExitEventTest.java                 8030121 generic-all
 java/awt/dnd/MissingEventsOnModalDialog/MissingEventsOnModalDialogTest.java         8164464 linux-all,macosx-all,windows-all
@@ -267,6 +270,7 @@ java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                                
 java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                                     7156316,8160623 generic-all
 java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java                  8032254 linux-all
 java/awt/event/MouseEvent/MouseClickTest/MouseClickTest.html                        8168389 windows-all,macosx-all,linux-all
+java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                              JRE-892 generic-all
 java/awt/event/MouseEvent/SpuriousExitEnter/SpuriousExitEnter_3.java                6854300 generic-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion.java             8060176 macosx-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_1.java           8060176 macosx-all
@@ -664,6 +668,7 @@ javax/swing/SwingUtilities/TestBadBreak/TestBadBreak.java                       
 javax/swing/ToolTipManager/Test6256140.java                                           8167009 generic-all
 javax/swing/plaf/basic/BasicMenuUI/4983388/bug4983388.java                            8042383 macosx-all,linux-all,windows-all
 javax/swing/plaf/basic/BasicHTML/4251579/bug4251579.java                              8137101 generic-all
+javax/swing/plaf/basic/BasicTreeUI/8023474/bug8023474.java                            JRE-802 generic-all
 javax/swing/plaf/nimbus/8041642/bug8041642.java                                       8140237 generic-all
 javax/swing/plaf/nimbus/8057791/bug8057791.java                                       8160438 macosx-all
 javax/swing/plaf/synth/7158712/bug7158712.java                                        8170722 generic-all
@@ -674,6 +679,7 @@ javax/swing/text/AbstractDocument/6968363/Test6968363.java                      
 javax/swing/text/CSSBorder/6796710/bug6796710.java                                    8003533 generic-all
 javax/swing/text/DefaultEditorKit/4278839/bug4278839.java                             8063107 generic-all
 javax/swing/text/GlyphPainter2/6427244/bug6427244.java                                8050988 generic-all
+javax/swing/text/StyledEditorKit/4506788/bug4506788.java                              JRE-1012 generic-all
 javax/swing/text/View/8048110/bug8048110.java                                         8145644 generic-all
 javax/swing/text/View/8014863/bug8014863.java                                         8041944 generic-all
 javax/swing/text/html/HTMLEditorKit/5043626/bug5043626.java                           8076178 generic-all
@@ -863,17 +869,13 @@ java/awt/Frame/ObscuredFrame/ObscuredFrameTest.java                             
 java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                      8172887 windows-all
 java/awt/Mixing/MixingInHwPanel.java                                              8172887 generic-all
 java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java            8172887 generic-all
-java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                            8172887 windows-all
-java/awt/dnd/NoFormatsCrashTest/NoFormatsCrashTest.html                           8172887 windows-all
 java/io/File/SetLastModified.java                                                 8172887 generic-all
 javax/swing/JScrollBar/7163696/Test7163696.java                                   8172887 generic-all
 javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                      8172887,8065099 windows-all,macosx-all
 javax/swing/dnd/7171812/bug7171812.java                                           8172887,8041447 windows-all,linux-all
-javax/swing/plaf/basic/BasicTreeUI/8023474/bug8023474.java                        8172887 windows-all
 javax/swing/plaf/basic/Test6984643.java                                           8172887,8198340 windows-all
 javax/swing/plaf/nimbus/8041642/ScrollBarThumbVisibleTest.java                    8172887 generic-all
 javax/swing/text/JTextComponent/5074573/bug5074573.java                           8155740 generic-all
-javax/swing/text/StyledEditorKit/4506788/bug4506788.java                          8155740 windows-all
 sun/java2d/DirectX/OpaqueImageToSurfaceBlitTest/OpaqueImageToSurfaceBlitTest.java 8155740 windows-all
 sun/java2d/DrawXORModeTest.java                                                   8155740 generic-all
 sun/java2d/OpenGL/CustomCompositeTest.java                                        8155740 windows-all
