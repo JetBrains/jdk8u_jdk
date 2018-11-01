@@ -172,6 +172,7 @@ java/awt/List/EmptyListEventTest/EmptyListEventTest.java                        
 java/awt/List/FirstItemRemoveTest/FirstItemRemoveTest.html                          8169461 windows-all,linux-all
 java/awt/List/NofocusListDblClickTest/NofocusListDblClickTest.java                  7125471 generic-all
 java/awt/Menu/OpensWithNoGrab/OpensWithNoGrab.java                                  7037728 linux-all
+java/awt/MenuBar/8007006/bug8007006.java                                            8202886 macosx-all
 java/awt/Mixing/HWDisappear.java                                                    8068305 generic-all
 java/awt/Mixing/LWPopupMenu.java                                                    8143295 generic-all
 java/awt/Mixing/MixingOnDialog.java                                                 4049668 generic-all
@@ -269,6 +270,7 @@ java/awt/event/KeyEvent/CorrectTime/CorrectTime.java                            
 java/awt/event/KeyEvent/ExtendedKeyCode/ExtendedKeyCodeTest.java                    8169476 windows-all,macosx-all,linux-all
 java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                                    8169474 windows-all,linux-all
 java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                                     7156316,8160623 generic-all
+java/awt/event/KeyEvent/SwallowKeyEvents/SwallowKeyEvents.java                      JRE-1018 macosx-all
 java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java                  8032254 linux-all
 java/awt/event/MouseEvent/MouseClickTest/MouseClickTest.html                        8168389 windows-all,macosx-all,linux-all
 java/awt/event/MouseEvent/RobotLWTest/RobotLWTest.html                              JRE-892 generic-all
