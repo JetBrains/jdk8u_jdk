@@ -248,6 +248,7 @@ java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java               
 java/awt/datatransfer/DragUnicodeBetweenJVMTest/DragUnicodeBetweenJVMTest.html      8017457 windows-all
 java/awt/dnd/BadSerializaionTest/BadSerializationTest.java                          8039082 generic-all
 java/awt/dnd/Button2DragTest/Button2DragTest.html                                   8144056 generic-all
+java/awt/dnd/DisposeFrameOnDragCrash/DisposeFrameOnDragTest.java                    JRE-1017 macosx-all
 java/awt/dnd/DragInterceptorAppletTest/DragInterceptorAppletTest.html               8066096 generic-all
 java/awt/dnd/DropTargetEnterExitTest/ExtraDragEnterTest.java                        8029680 generic-all
 java/awt/dnd/DropTargetEnterExitTest/MissedDragExitTest.java                        8029680 generic-all
