@@ -176,14 +176,13 @@ java/awt/Focus/ActualFocusedWindowTest/ActualFocusedWindowRetaining.java generic
 # https://bugs.openjdk.java.net/browse/JDK-8169103
 java/awt/Focus/ChoiceFocus/ChoiceFocus.java                              windows-all
 
-# https://bugs.openjdk.java.net/browse/JDK-8078413
-java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java          generic-all
+java/awt/Focus/ClearGlobalFocusOwnerTest/ClearGlobalFocusOwnerTest.java             JRE-898 macosx-all
+java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java                     8198618 windows-all,macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-7124555
 java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java generic-all
 
-# https://bugs.openjdk.java.net/browse/JDK-6986252
-java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java generic-all
+java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java 6986252 generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8015886
 java/awt/Focus/DeiconifiedFrameLoosesFocus/DeiconifiedFrameLoosesFocus.html generic-all
@@ -444,9 +443,9 @@ java/awt/Paint/PaintNativeOnUpdate.java                              generic-all
 #the test fails with the applied fix
 java/awt/Paint/bug8024864.java                                       generic-all
 
+java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java            JRE-898 macosx-all
 # excluded from regular runs since the test was not run
 # see http://download.java.net/openjdk/testresults/8/
-java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java  generic-all
 java/awt/ScrollPane/bug8077409Test.java                              generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8140329
@@ -549,6 +548,8 @@ java/awt/event/InputEvent/EventWhenTest/EventWhenTest.java           generic-all
 # https://bugs.openjdk.java.net/browse/JDK-8158362
 java/awt/event/KeyEvent/AltCharAcceleratorTest/AltCharAcceleratorTest.java generic-all
 
+java/awt/event/KeyEvent/DeadKey/DeadKeyMacOSXInputText.java                         JRE-898 macosx-all
+
 # https://bugs.openjdk.java.net/browse/JDK-8145652
 java/awt/event/KeyEvent/DeadKey/DeadKeySystemAssertionDialog.java    generic-all
 
@@ -564,6 +565,8 @@ java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                     windows-all
 # https://bugs.openjdk.java.net/browse/JDK-7156316
 # https://bugs.openjdk.java.net/browse/JDK-8160623
 java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                      generic-all
+
+java/awt/event/KeyEvent/SwallowKeyEvents/SwallowKeyEvents.java                      JRE-1018 macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8032254
 java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java   linux-all
@@ -1036,6 +1039,8 @@ javax/swing/JComponent/7154030/bug7154030.java                       generic-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8016559
 javax/swing/JEditorPane/6917744/bug6917744.java                      windows-all
+
+javax/swing/JEditorPane/8195095/ImageViewTest.java   8202656 windows-all,macosx-all
 
 # https://bugs.openjdk.java.net/browse/JDK-8042380
 javax/swing/JFileChooser/4524490/bug4524490.java                     generic-all
