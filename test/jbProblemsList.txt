@@ -545,6 +545,7 @@ com/sun/security/sasl/gsskerb/AuthOnly.java                                     
 sun/security/pkcs11/ec/TestKeyFactory.java                                            8026976 generic-all
 sun/security/krb5/auto/SSL.java                                                       8171496 generic-all
 sun/security/krb5/auto/Unreachable.java                                               7164518 macosx-all
+sun/security/krb5/auto/ReplayCacheTestProc.java                                       8167611 generic-all
 com/sun/org/apache/xml/internal/security/transforms/ClassLoaderTest.java	          7147060 generic-all
 sun/security/pkcs11/KeyStore/SecretKeysBasic.sh                                       8209398 linux-all
 sun/security/pkcs11/Secmod/GetPrivateKey.java                                         8212134 generic-all
