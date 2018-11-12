@@ -879,10 +879,9 @@ public class DefaultEditorKit extends EditorKit {
                         isPrintableMask = ((SunToolkit)tk).isPrintableCharacter(c, mod);
                     }
 
-                    if (isPrintableMask) {
-                        if ((c >= 0x20) && (c != 0x7F)) {
-                            target.replaceSelection(content);
-                        }
+                    if ((isPrintableMask && (c >= 0x20) && (c != 0x7F)) ||
+                        (!isPrintableMask && (c >= 0x200C) && (c <= 0x200D))) {
+                        target.replaceSelection(content);
                     }
                 }
             }
