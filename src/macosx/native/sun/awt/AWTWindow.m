@@ -274,6 +274,10 @@ AWT_NS_WINDOW_IMPLEMENTATION
             [self.nsWindow setCollectionBehavior:NSWindowCollectionBehaviorDefault];
         }
     }
+
+    if (self.ownerWindow != NULL && ![self.ownerWindow.nsWindow isOnActiveSpace]) {
+        [self.nsWindow setCollectionBehavior:NSWindowCollectionBehaviorCanJoinAllSpaces];
+     }
 }
 
 - (id) initWithPlatformWindow:(JNFWeakJObjectWrapper *)platformWindow
