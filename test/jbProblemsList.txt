@@ -268,6 +268,7 @@ java/awt/event/KeyEvent/CorrectTime/CorrectTime.java                            
 java/awt/event/KeyEvent/ExtendedKeyCode/ExtendedKeyCodeTest.java                    8169476 windows-all,macosx-all
 java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                                    8169474 windows-all
 java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                                     7156316,8160623 generic-all
+java/awt/event/KeyEvent/SwallowKeyEvents/SwallowKeyEvents.java                      JRE-1018 macosx-all
 java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java                  8032254 linux-all
 java/awt/event/MouseEvent/MouseClickTest/MouseClickTest.html                        8168389 windows-all,macosx-all
 java/awt/event/MouseEvent/SpuriousExitEnter/SpuriousExitEnter_3.java                6854300 generic-all
@@ -550,6 +551,7 @@ com/sun/security/sasl/gsskerb/AuthOnly.java                                     
 sun/security/pkcs11/ec/TestKeyFactory.java                                            8026976 generic-all
 sun/security/krb5/auto/SSL.java                                                       8171496 generic-all
 sun/security/krb5/auto/Unreachable.java                                               7164518 macosx-all
+sun/security/krb5/auto/ReplayCacheTestProc.java                                       8167611 generic-all
 com/sun/org/apache/xml/internal/security/transforms/ClassLoaderTest.java	          7147060 generic-all
 sun/security/pkcs11/Secmod/AddPrivateKey.java                                         6988842 solaris-all
 sun/security/pkcs11/KeyStore/SecretKeysBasic.sh                                       8209398 linux-all
