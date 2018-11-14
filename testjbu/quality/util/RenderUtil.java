@@ -42,6 +42,9 @@ import static org.junit.Assert.assertTrue;
 
 public class RenderUtil {
 
+    static final int WAITING_TIME = 30000; // waiting time in milliseconds
+    static final int SLEEPING_TIME = 100; // sleeping time in milliseconds
+
     private static BufferedImage captureScreen(Window belowWindow, Rectangle rect) {
         ID pool = Foundation.invoke("NSAutoreleasePool", "new");
         try {
@@ -112,8 +115,11 @@ public class RenderUtil {
 
         Rectangle screenRect;
         Robot r = new Robot();
+        int time = WAITING_TIME;
         while (!Color.black.equals(r.getPixelColor(p[0].x, p[0].y))) {
-            Thread.sleep(100);
+            Thread.sleep(SLEEPING_TIME);
+            if ((time -= SLEEPING_TIME) <= 0)
+                break;
         }
         screenRect = new Rectangle(p[0].x + 5, p[0].y + 5, width, height);
 
