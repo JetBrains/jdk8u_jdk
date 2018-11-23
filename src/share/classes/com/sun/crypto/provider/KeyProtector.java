@@ -351,7 +351,7 @@ final class KeyProtector {
                                                       SunJCE.getInstance(),
                                                       "PBEWithMD5AndTripleDES");
             cipher.init(Cipher.DECRYPT_MODE, sKey, params);
-            return soForKeyProtector.getKey(cipher);
+            return (Key)soForKeyProtector.getObject(cipher);
         } catch (NoSuchAlgorithmException ex) {
             // Note: this catch needed to be here because of the
             // later catch of GeneralSecurityException
