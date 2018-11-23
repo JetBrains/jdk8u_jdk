@@ -39,6 +39,11 @@ import java.util.concurrent.CountDownLatch;
  * Description: Tests that user input continues normally after using Press&Hold feature of maxOS.
  * Robot holds down sample key so accent popup menu may appear and then types sample text.
  * Test passes if the sample text was typed correctly.
+ *
+ * Note: Test works with English keyboard layout.
+ * Test requires system property ApplePressAndHoldEnabled=true (default value for macOS >= 10.7).
+ * MacOS accessibility permission should also be granted for the application launching this test,
+ * so Robot is able to access keyboard (use System Preferences->Security&Privacy->Accessibility->Privacy).
  */
 
 public class KeyPressAndHoldTest {
@@ -54,9 +59,11 @@ public class KeyPressAndHoldTest {
 
     private static final int PAUSE = 2000;
 
-    private static volatile String result;
+    private static volatile String result="";
 
     private static Robot robot;
+
+    private static int exitValue = 0;
 
     private static int getMajorMinorMacOsVersion() {
         int version = 0;
@@ -102,6 +109,17 @@ public class KeyPressAndHoldTest {
     }
 
     /*
+     * Just check if accent popup appears, select no accent
+     */
+    private static void checkAccentPopup() {
+        holdDownSampleKey();
+        robot.keyPress(KeyEvent.VK_KP_DOWN);
+        robot.keyRelease(KeyEvent.VK_KP_DOWN);
+        robot.delay(PAUSE);
+        robot.waitForIdle();
+    }
+
+    /*
      * Type sample by selecting accent for the sample key from the popup dialog
      */
     private static void sample() {
@@ -112,7 +130,7 @@ public class KeyPressAndHoldTest {
     }
 
     /*
-     * Do not select any accent for the sample key but press backspace to delete the key
+     * Do not select any accent for the sample key but press Backspace to delete it
      */
     private static void sampleBS() {
         holdDownSampleKey();
@@ -122,7 +140,7 @@ public class KeyPressAndHoldTest {
     }
 
     /*
-     * Do not select any accent for the sample key from the popup dialog
+     * Do not select any accent for the sample key from the popup dialog just press Esc
      */
     private static void sampleNoAccent() {
         holdDownSampleKey();
@@ -132,13 +150,22 @@ public class KeyPressAndHoldTest {
     }
 
     /*
-     * Miss to select any accent for the sample key
+     * Miss to select any accent for the sample key by pressing 0
      */
     private static void sampleMisprint() {
         holdDownSampleKey();
         robot.keyPress(KeyEvent.VK_0);
         robot.keyRelease(KeyEvent.VK_0);
         typeSampleBody();
+    }
+
+    private static void checkResult(String testName, String expected) {
+        if (expected.equals(result)) {
+            System.out.println(testName + ": ok");
+        } else {
+            System.err.println(testName + ": failed, expected \"" + expected + "\", but received \"" + result + "\"");
+            exitValue = 1;
+        }
     }
 
     public static void main(String[] args) throws InterruptedException, InvocationTargetException {
@@ -207,46 +234,32 @@ public class KeyPressAndHoldTest {
             SwingUtilities.invokeLater(frameRunner);
             frameGainedFocus.await();
 
-            holdDownSampleKey();
+            checkAccentPopup();
             if (PRESS_AND_HOLD_IS_DISABLED.equals(result)) {
                 throw new RuntimeException("ERROR: Test requires ApplePressAndHoldEnabled system property set to true");
             }
             SwingUtilities.invokeLater(cleanTextArea);
 
-            int exitValue = 0;
-
             sample();
-            if (!SAMPLE.equals(result)) {
-                System.err.println("Bad sample: expected \"" + SAMPLE + "\", but received \"" + result + "\"");
-                exitValue = 1;
-            }
+            checkResult("AccentChar", SAMPLE);
             SwingUtilities.invokeLater(cleanTextArea);
 
             sampleBS();
-            if (!SAMPLE_BS.equals(result)) {
-                System.err.println("Bad sample: expected \"" + SAMPLE_BS + "\", but received \"" + result + "\"");
-                exitValue = 1;
-            }
+            checkResult("BackspaceAccentChar", SAMPLE_BS);
             SwingUtilities.invokeLater(cleanTextArea);
 
             sampleNoAccent();
-            if (!SAMPLE_NO_ACCENT.equals(result)) {
-                System.err.println("Bad sample: expected \"" + SAMPLE_NO_ACCENT + "\", but received \"" + result + "\"");
-                exitValue = 1;
-            }
+            checkResult("NoAccentChar", SAMPLE_NO_ACCENT);
             SwingUtilities.invokeLater(cleanTextArea);
 
             sampleMisprint();
-            if (!SAMPLE_MISPRINT.equals(result)) {
-                System.err.println("Bad sample: expected \"" + SAMPLE_MISPRINT + "\", but received \"" + result + "\"");
-                exitValue = 1;
-            }
+            checkResult("MisprintAccentChar", SAMPLE_MISPRINT);
             SwingUtilities.invokeLater(cleanTextArea);
 
             if (exitValue == 0) {
                 System.out.println("TEST PASSED");
             } else {
-                throw new RuntimeException("TEST FAILED: User input did not continue normally after accent menu popup");
+                throw new RuntimeException("TEST FAILED: Some samples were typed incorrectly");
             }
 
         } catch (AWTException awtException) {
