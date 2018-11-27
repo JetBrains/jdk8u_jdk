@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,7 +26,10 @@
 package sun.security.tools.keytool;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.CodeSigner;
+import java.security.CryptoPrimitive;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
@@ -64,12 +67,16 @@ import java.security.cert.X509CRLEntry;
 import java.security.cert.X509CRLSelector;
 import javax.security.auth.x500.X500Principal;
 import java.util.Base64;
+
+import sun.security.util.DisabledAlgorithmConstraints;
+import sun.security.util.KeyUtil;
 import sun.security.util.ObjectIdentifier;
 import sun.security.pkcs10.PKCS10;
 import sun.security.pkcs10.PKCS10Attribute;
 import sun.security.provider.X509Factory;
 import sun.security.provider.certpath.CertStoreHelper;
 import sun.security.util.Password;
+import sun.security.util.SecurityProviderConstants;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -147,6 +154,7 @@ public final class Main {
     private boolean kssave = false;
     private boolean noprompt = false;
     private boolean trustcacerts = false;
+    private boolean nowarn = false;
     private boolean protectedPath = false;
     private boolean srcprotectedPath = false;
     private CertificateFactory cf = null;
@@ -158,6 +166,21 @@ public final class Main {
 
     private List<String> ids = new ArrayList<>();   // used in GENCRL
     private List<String> v3ext = new ArrayList<>();
+
+    // In-place importkeystore is special.
+    // A backup is needed, and no need to prompt for deststorepass.
+    private boolean inplaceImport = false;
+    private String inplaceBackupName = null;
+
+    // Warnings on weak algorithms etc
+    private List<String> weakWarnings = new ArrayList<>();
+
+    private static final DisabledAlgorithmConstraints DISABLED_CHECK =
+            new DisabledAlgorithmConstraints(
+                    DisabledAlgorithmConstraints.PROPERTY_CERTPATH_DISABLED_ALGS);
+
+    private static final Set<CryptoPrimitive> SIG_PRIMITIVE_SET = Collections
+            .unmodifiableSet(EnumSet.of(CryptoPrimitive.SIGNATURE));
 
     enum Command {
         CERTREQ("Generates.a.certificate.request",
@@ -317,7 +340,7 @@ public final class Main {
     private static final String NONE = "NONE";
     private static final String P11KEYSTORE = "PKCS11";
     private static final String P12KEYSTORE = "PKCS12";
-    private final String keyAlias = "mykey";
+    private static final String keyAlias = "mykey";
 
     // for i18n
     private static final java.util.ResourceBundle rb =
@@ -353,6 +376,7 @@ public final class Main {
                 throw e;
             }
         } finally {
+            printWeakWarnings(false);
             for (char[] pass : passwords) {
                 if (pass != null) {
                     Arrays.fill(pass, ' ');
@@ -420,12 +444,10 @@ public final class Main {
                 command = IMPORTCERT;
             } else if (collator.compare(flags, "-importpassword") == 0) {
                 command = IMPORTPASS;
-            }
-            /*
-             * Help
-             */
-            else if (collator.compare(flags, "-help") == 0) {
+            } else if (collator.compare(flags, "-help") == 0) {
                 help = true;
+            } else if (collator.compare(flags, "-nowarn") == 0) {
+                nowarn = true;
             }
 
             /*
@@ -1053,8 +1075,13 @@ public final class Main {
             doChangeKeyPasswd(alias);
             kssave = true;
         } else if (command == LIST) {
+            if (storePass == null
+                    && !KeyStoreUtil.isWindowsKeyStore(storetype)) {
+                printNoIntegrityWarning();
+            }
+
             if (alias != null) {
-                doPrintEntry(alias, out, true);
+                doPrintEntry(rb.getString("the.certificate"), alias, out);
             } else {
                 doPrintEntries(out);
             }
@@ -1138,6 +1165,65 @@ public final class Main {
                         fout.write(bout.toByteArray());
                     }
                 }
+            }
+        }
+
+        if (isKeyStoreRelated(command)
+                && !token && !nullStream && ksfname != null) {
+
+            // JKS storetype warning on the final result keystore
+            File f = new File(ksfname);
+            if (f.exists()) {
+                // Read the first 4 bytes to determine
+                // if we're dealing with JKS/JCEKS type store
+                String realType = keyStoreType(f);
+                if (realType.equalsIgnoreCase("JKS")
+                    || realType.equalsIgnoreCase("JCEKS")) {
+                    boolean allCerts = true;
+                    for (String a : Collections.list(keyStore.aliases())) {
+                        if (!keyStore.entryInstanceOf(
+                                a, TrustedCertificateEntry.class)) {
+                            allCerts = false;
+                            break;
+                        }
+                    }
+                    // Don't warn for "cacerts" style keystore.
+                    if (!allCerts) {
+                        weakWarnings.add(String.format(
+                                rb.getString("jks.storetype.warning"),
+                                realType, ksfname));
+                    }
+                }
+                if (inplaceImport) {
+                    String realSourceStoreType =
+                        keyStoreType(new File(inplaceBackupName));
+                    String format =
+                            realType.equalsIgnoreCase(realSourceStoreType) ?
+                            rb.getString("backup.keystore.warning") :
+                            rb.getString("migrate.keystore.warning");
+                    weakWarnings.add(
+                            String.format(format,
+                                    srcksfname,
+                                    realSourceStoreType,
+                                    inplaceBackupName,
+                                    realType));
+                }
+            }
+        }
+    }
+
+    private String keyStoreType(File f) throws IOException {
+        int MAGIC = 0xfeedfeed;
+        int JCEKS_MAGIC = 0xcececece;
+        try (DataInputStream dis = new DataInputStream(
+            new FileInputStream(f))) {
+            int xMagic = dis.readInt();
+            if (xMagic == MAGIC) {
+                return "JKS";
+            } else if (xMagic == JCEKS_MAGIC) {
+                return "JCEKS";
+            } else {
+                return "Non JKS/JCEKS";
             }
         }
     }
@@ -1716,15 +1802,9 @@ public final class Main {
     /**
      * Prints a single keystore entry.
      */
-    private void doPrintEntry(String alias, PrintStream out,
-                              boolean printWarning)
+    private void doPrintEntry(String label, String alias, PrintStream out)
         throws Exception
     {
-        if (storePass == null && printWarning
-                && !KeyStoreUtil.isWindowsKeyStore(storetype)) {
-            printWarning();
-        }
-
         if (keyStore.containsAlias(alias) == false) {
             MessageFormat form = new MessageFormat
                 (rb.getString("Alias.alias.does.not.exist"));
@@ -2044,14 +2124,19 @@ public final class Main {
     private void doPrintEntries(PrintStream out)
         throws Exception
     {
-        if (storePass == null
-                && !KeyStoreUtil.isWindowsKeyStore(storetype)) {
-            printWarning();
-        } else {
-            out.println();
+        // Adjust displayed keystore type if needed.
+        String keystoreTypeToPrint = keyStore.getType();
+        if ("JKS".equalsIgnoreCase(keystoreTypeToPrint)) {
+            if (ksfile != null && ksfile.exists()) {
+                String realType = keyStoreType(ksfile);
+                // If the magic number does not conform to JKS
+                // then it must be PKCS12
+                if (!"JKS".equalsIgnoreCase(realType)) {
+                    keystoreTypeToPrint = P12KEYSTORE;
+                }
+            }
         }
-
-        out.println(rb.getString("Keystore.type.") + keyStore.getType());
+        out.println(rb.getString("Keystore.type.") + keystoreTypeToPrint);
         out.println(rb.getString("Keystore.provider.") +
                 keyStore.getProvider().getName());
         out.println();
@@ -2069,7 +2154,7 @@ public final class Main {
         for (Enumeration<String> e = keyStore.aliases();
                                         e.hasMoreElements(); ) {
             String alias = e.nextElement();
-            doPrintEntry(alias, out, false);
+            doPrintEntry("<" + alias + ">", alias, out);
             if (verbose || rfc) {
                 out.println(rb.getString("NEWLINE"));
                 out.println(rb.getString
@@ -2344,6 +2429,15 @@ public final class Main {
             if (i < (certs.length-1)) {
                 out.println();
             }
+            checkWeak(oneInMany(rb.getString("the.certificate"), i, certs.length), x509Cert);
+        }
+    }
+
+    private static String oneInMany(String label, int i, int num) {
+        if (num == 1) {
+            return label;
+        } else {
+            return String.format(rb.getString("one.in.many"), label, i+1, num);
         }
     }
 
@@ -3350,30 +3444,37 @@ public final class Main {
         // Use the subject distinguished name as the key into the hash table.
         // All certificates associated with the same subject distinguished
         // name are stored in the same hash table entry as a vector.
-        Hashtable<Principal, Vector<Certificate>> certs = null;
+        Hashtable<Principal, Vector<Pair<String,X509Certificate>>> certs = null;
         if (keyStore.size() > 0) {
-            certs = new Hashtable<Principal, Vector<Certificate>>(11);
+            certs = new Hashtable<>(11);
             keystorecerts2Hashtable(keyStore, certs);
         }
         if (trustcacerts) {
             if (caks!=null && caks.size()>0) {
                 if (certs == null) {
-                    certs = new Hashtable<Principal, Vector<Certificate>>(11);
+                    certs = new Hashtable<>(11);
                 }
                 keystorecerts2Hashtable(caks, certs);
             }
         }
 
         // start building chain
-        Vector<Certificate> chain = new Vector<>(2);
-        if (buildChain((X509Certificate)certToVerify, chain, certs)) {
-            Certificate[] newChain = new Certificate[chain.size()];
+        Vector<Pair<String,X509Certificate>> chain = new Vector<>(2);
+        if (buildChain(
+                new Pair<>(rb.getString("the.input"),
+                           (X509Certificate) certToVerify),
+                chain, certs)) {
+            for (Pair<String,X509Certificate> p : chain) {
+                checkWeak(p.fst, p.snd);
+            }
+            Certificate[] newChain =
+                    new Certificate[chain.size()];
             // buildChain() returns chain with self-signed root-cert first and
             // user-cert last, so we need to invert the chain before we store
             // it
             int j=0;
             for (int i=chain.size()-1; i>=0; i--) {
-                newChain[j] = chain.elementAt(i);
+                newChain[j] = chain.elementAt(i).snd;
                 j++;
             }
             return newChain;
@@ -3402,8 +3503,10 @@ public final class Main {
             return true;
         }
 
+        Principal issuer = certToVerify.snd.getIssuerDN();
+
         // Get the issuer's certificate(s)
-        Vector<Certificate> vec = certs.get(issuer);
+        Vector<Pair<String,X509Certificate>> vec = certs.get(issuer);
         if (vec == null) {
             return false;
         }
@@ -3411,13 +3514,12 @@ public final class Main {
         // Try out each certificate in the vector, until we find one
         // whose public key verifies the signature of the certificate
         // in question.
-        for (Enumeration<Certificate> issuerCerts = vec.elements();
+        for (Enumeration<Pair<String,X509Certificate>> issuerCerts = vec.elements();
              issuerCerts.hasMoreElements(); ) {
-            X509Certificate issuerCert
-                = (X509Certificate)issuerCerts.nextElement();
-            PublicKey issuerPubKey = issuerCert.getPublicKey();
+            Pair<String,X509Certificate> issuerCert = issuerCerts.nextElement();
+            PublicKey issuerPubKey = issuerCert.snd.getPublicKey();
             try {
-                certToVerify.verify(issuerPubKey);
+                certToVerify.snd.verify(issuerPubKey);
             } catch (Exception e) {
                 continue;
             }
@@ -3466,10 +3568,11 @@ public final class Main {
     /**
      * Stores the (leaf) certificates of a keystore in a hashtable.
      * All certs belonging to the same CA are stored in a vector that
-     * in turn is stored in the hashtable, keyed by the CA's subject DN
+     * in turn is stored in the hashtable, keyed by the CA's subject DN.
+     * Each cert comes with a string label that shows its origin and alias.
      */
     private void keystorecerts2Hashtable(KeyStore ks,
-                Hashtable<Principal, Vector<Certificate>> hash)
+                Hashtable<Principal, Vector<Pair<String,X509Certificate>>> hash)
         throws Exception {
 
         for (Enumeration<String> aliases = ks.aliases();
@@ -3478,13 +3581,20 @@ public final class Main {
             Certificate cert = ks.getCertificate(alias);
             if (cert != null) {
                 Principal subjectDN = ((X509Certificate)cert).getSubjectDN();
-                Vector<Certificate> vec = hash.get(subjectDN);
+                Pair<String,X509Certificate> pair = new Pair<>(
+                        String.format(
+                                rb.getString(ks == caks ?
+                                        "alias.in.cacerts" :
+                                        "alias.in.keystore"),
+                                alias),
+                        (X509Certificate)cert);
+                Vector<Pair<String,X509Certificate>> vec = hash.get(subjectDN);
                 if (vec == null) {
-                    vec = new Vector<Certificate>();
-                    vec.addElement(cert);
+                    vec = new Vector<>();
+                    vec.addElement(pair);
                 } else {
-                    if (!vec.contains(cert)) {
-                        vec.addElement(cert);
+                    if (!vec.contains(pair)) {
+                        vec.addElement(pair);
                     }
                 }
                 hash.put(subjectDN, vec);
@@ -4055,6 +4165,81 @@ public final class Main {
             throw new RuntimeException(e);
         }
         return ext;
+    }
+
+    private boolean isTrustedCert(Certificate cert) throws KeyStoreException {
+        if (caks != null && caks.getCertificateAlias(cert) != null) {
+            return true;
+        } else {
+            String inKS = keyStore.getCertificateAlias(cert);
+            return inKS != null && keyStore.isCertificateEntry(inKS);
+        }
+    }
+
+    private void checkWeak(String label, String sigAlg, Key key) {
+
+        if (sigAlg != null && !DISABLED_CHECK.permits(
+                SIG_PRIMITIVE_SET, sigAlg, null)) {
+            weakWarnings.add(String.format(
+                    rb.getString("whose.sigalg.risk"), label, sigAlg));
+        }
+        if (key != null && !DISABLED_CHECK.permits(SIG_PRIMITIVE_SET, key)) {
+            weakWarnings.add(String.format(
+                    rb.getString("whose.key.risk"),
+                    label,
+                    String.format(rb.getString("key.bit"),
+                            KeyUtil.getKeySize(key), key.getAlgorithm())));
+        }
+    }
+
+    private void checkWeak(String label, Certificate[] certs)
+            throws KeyStoreException {
+        for (int i = 0; i < certs.length; i++) {
+            Certificate cert = certs[i];
+            if (cert instanceof X509Certificate) {
+                X509Certificate xc = (X509Certificate)cert;
+                String fullLabel = label;
+                if (certs.length > 1) {
+                    fullLabel = oneInMany(label, i, certs.length);
+                }
+                checkWeak(fullLabel, xc);
+            }
+        }
+    }
+
+    private void checkWeak(String label, Certificate cert)
+            throws KeyStoreException {
+        if (cert instanceof X509Certificate) {
+            X509Certificate xc = (X509Certificate)cert;
+            // No need to check the sigalg of a trust anchor
+            String sigAlg = isTrustedCert(cert) ? null : xc.getSigAlgName();
+            checkWeak(label, sigAlg, xc.getPublicKey());
+        }
+    }
+
+    private void checkWeak(String label, PKCS10 p10) {
+        checkWeak(label, p10.getSigAlg(), p10.getSubjectPublicKeyInfo());
+    }
+
+    private void checkWeak(String label, CRL crl, Key key) {
+        if (crl instanceof X509CRLImpl) {
+            X509CRLImpl impl = (X509CRLImpl)crl;
+            checkWeak(label, impl.getSigAlgName(), key);
+        }
+    }
+
+    private void printWeakWarnings(boolean newLine) {
+        if (!weakWarnings.isEmpty() && !nowarn) {
+            System.err.println("\nWarning:");
+            for (String warning : weakWarnings) {
+                System.err.println(warning);
+            }
+            if (newLine) {
+                // When calling before a yes/no prompt, add a new line
+                System.err.println();
+            }
+        }
+        weakWarnings.clear();
     }
 
     /**
