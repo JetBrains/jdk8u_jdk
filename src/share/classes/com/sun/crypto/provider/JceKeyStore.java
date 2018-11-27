@@ -27,12 +27,14 @@ package com.sun.crypto.provider;
 
 import java.io.*;
 import java.util.*;
+import java.security.AccessController;
 import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Key;
 import java.security.PrivateKey;
+import java.security.PrivilegedAction;
 import java.security.KeyStoreSpi;
 import java.security.KeyStoreException;
 import java.security.UnrecoverableKeyException;
@@ -40,6 +42,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateException;
 import javax.crypto.SealedObject;
+
+import sun.misc.ObjectInputFilter;
 
 /**
  * This class provides the keystore implementation referred to as "jceks".
@@ -835,11 +839,21 @@ public final class JceKeyStore extends KeyStoreSpi {
                         // read the sealed key
                         try {
                             ois = new ObjectInputStream(dis);
+                            final ObjectInputStream ois2 = ois;
+                            // Set a deserialization checker
+                            AccessController.doPrivileged(
+                                (PrivilegedAction<Void>)() -> {
+                                    ObjectInputFilter.Config.setObjectInputFilter(
+                                        ois2, new DeserializationChecker());
+                                    return null;
+                            });
                             entry.sealedKey = (SealedObject)ois.readObject();
                             // NOTE: don't close ois here since we are still
                             // using dis!!!
                         } catch (ClassNotFoundException cnfe) {
                             throw new IOException(cnfe.getMessage());
+                        } catch (InvalidClassException ice) {
+                            throw new IOException("Invalid secret key format");
                         }
 
                         // Add the entry to the list
