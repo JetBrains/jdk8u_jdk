@@ -270,9 +270,10 @@ public class AixVirtualMachine extends HotSpotVirtualMachine {
     // checks for the file.
     private File createAttachFile(int pid) throws IOException {
         String fn = ".attach_pid" + pid;
-        String path = "/proc/" + pid + "/cwd/" + fn;
+        String path =  "/proc/"+ pid + "/cwd/" + fn;
         File f = new File(path);
         try {
+            f = f.getCanonicalFile();
             f.createNewFile();
         } catch (IOException x) {
             f = new File(tmpdir, fn);
