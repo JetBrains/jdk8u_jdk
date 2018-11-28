@@ -236,7 +236,8 @@ public class KeyPressAndHoldTest {
 
             checkAccentPopup();
             if (PRESS_AND_HOLD_IS_DISABLED.equals(result)) {
-                throw new RuntimeException("ERROR: Test requires ApplePressAndHoldEnabled system property set to true");
+                throw new RuntimeException("ERROR: Holding a key down causes the key repeat instead of " +
+                        "accent menu popup, check if ApplePressAndHoldEnabled system property is set to true");
             }
             SwingUtilities.invokeLater(cleanTextArea);
 
