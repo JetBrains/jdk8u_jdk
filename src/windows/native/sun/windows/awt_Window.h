@@ -247,6 +247,8 @@ public:
     static void _RepositionSecurityWarning(void* param);
     static void _SetFullScreenExclusiveModeState(void* param);
     static void _OverrideHandle(void *param);
+    static void _GetNativeWindowSize(void* param);
+    static void _AdjustBoundsOnDPIChange(void* param);
 
     inline static BOOL IsResizing() {
         return sm_resizing;

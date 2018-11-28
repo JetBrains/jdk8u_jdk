@@ -569,8 +569,6 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
 
     @Override // PlatformWindow
     public void setVisible(boolean visible) {
-        final long nsWindowPtr = getNSWindowPtr();
-
         // Configure stuff
         updateIconImages();
         updateFocusabilityForAutoRequestFocus(false);
@@ -652,7 +650,7 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
                     }
                     switch (frameState) {
                         case Frame.ICONIFIED:
-                            CWrapper.NSWindow.miniaturize(nsWindowPtr);
+                            execute(CWrapper.NSWindow::miniaturize);
                             break;
                         case Frame.MAXIMIZED_BOTH:
                             maximize();
@@ -674,41 +672,31 @@ public class CPlatformWindow extends CFRetainedResource implements PlatformWindo
         if (visible) {
             // Order myself above my parent
             if (owner != null && owner.isVisible()) {
+                owner.execute(ownerPtr -> {
+                    execute(ptr -> {
+                        CWrapper.NSWindow.orderWindow(ptr, CWrapper.NSWindow.NSWindowAbove, ownerPtr);
+                    });
+                });
                 applyWindowLevel(target);
             }
-        }
 
-
-        // Actually show or hide the window
-        LWWindowPeer blocker = (peer == null)? null : peer.getBlocker();
-        if (blocker == null || !visible) {
-
-            // If it ain't blocked, or is being hidden, go regular way
-            if (visible) {
-
-                CWrapper.NSWindow.makeFirstResponder(nsWindowPtr, contentView.getAWTView());
-
-                boolean isPopup = (target.getType() == Window.Type.POPUP);
-                if (isPopup) {
-                    // Popups in applets don't activate applet's process
-                    CWrapper.NSWindow.orderFrontRegardless(nsWindowPtr);
-                } else {
-                    CWrapper.NSWindow.orderFront(nsWindowPtr);
+            // Order my own children above myself
+            for (Window w : target.getOwnedWindows()) {
+                WindowPeer p = (WindowPeer)w.getPeer();
+                if (p instanceof LWWindowPeer) {
+                    CPlatformWindow pw = (CPlatformWindow)((LWWindowPeer)p).getPlatformWindow();
+                    if (pw != null && pw.isVisible()) {
+                        pw.execute(childPtr -> {
+                            execute(ptr -> {
+                                CWrapper.NSWindow.orderWindow(childPtr, CWrapper.NSWindow.NSWindowAbove, ptr);
+                            });
+                        });
+                        pw.applyWindowLevel(w);
+                    }
                 }
-
-                boolean isKeyWindow = CWrapper.NSWindow.isKeyWindow(nsWindowPtr);
-                if (!isKeyWindow) {
-                  CWrapper.NSWindow.makeKeyWindow(nsWindowPtr);
-                }
-            } else {
-                // immediately hide the window
-                CWrapper.NSWindow.orderOut(nsWindowPtr);
-                // process the close
-                CWrapper.NSWindow.close(nsWindowPtr);
             }
         }
 
-        // Order my own children above myself
         // Deal with the blocker of the window being shown
         if (blocker != null && visible) {
             // Make sure the blocker is above its siblings
