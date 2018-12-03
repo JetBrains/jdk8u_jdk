@@ -112,6 +112,7 @@ AwtDialog* AwtDialog::Create(jobject peer, jobject parent)
         PDATA pData;
         AwtWindow* awtParent = NULL;
         HWND hwndParent = NULL;
+
         target = env->GetObjectField(peer, AwtObject::targetID);
         JNI_CHECK_NULL_GOTO(target, "null target", done);
 
@@ -786,11 +787,9 @@ Java_sun_awt_windows_WDialogPeer_createAwtDialog(JNIEnv *env, jobject self,
 {
     TRY;
 
-    PDATA pData;
     AwtToolkit::CreateComponent(self, parent,
                                 (AwtToolkit::ComponentFactory)
                                 AwtDialog::Create);
-    JNI_CHECK_PEER_CREATION_RETURN(self);
 
     CATCH_BAD_ALLOC;
 }

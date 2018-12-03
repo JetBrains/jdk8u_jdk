@@ -96,10 +96,9 @@ AwtScrollPane* AwtScrollPane::Create(jobject self, jobject parent)
 
         PDATA pData;
         AwtComponent* awtParent;
-        JNI_CHECK_PEER_GOTO(parent, done);
 
+        JNI_CHECK_PEER_GOTO(parent, done);
         awtParent = (AwtComponent*)pData;
-        JNI_CHECK_NULL_GOTO(awtParent, "null awtParent", done);
 
         target = env->GetObjectField(self, AwtObject::targetID);
         JNI_CHECK_NULL_GOTO(target, "null target", done);
@@ -197,15 +196,7 @@ void AwtScrollPane::SetScrollInfo(int orient, int max, int page,
     // and the page size changes
     posAfter = GetScrollPos(orient);
     if (posBefore != posAfter) {
-        if(max==0 && posAfter==0) {
-            // Caller used nMin==nMax idiom to hide scrollbar.
-            // On the new themes (Windows XP, Vista) this would reset
-            // scroll position to zero ("just inside the range") (6404832).
-            //
-            PostScrollEvent(orient, SB_THUMBPOSITION, posBefore);
-        }else{
-            PostScrollEvent(orient, SB_THUMBPOSITION, posAfter);
-        }
+        PostScrollEvent(orient, SB_THUMBPOSITION, posAfter);
     }
 }
 
@@ -264,8 +255,11 @@ void AwtScrollPane::RecalcSizes(int parentWidth, int parentHeight,
                       (policy == java_awt_ScrollPane_SCROLLBARS_ALWAYS));
         env->DeleteLocalRef(hAdj);
     } else {
-        SetScrollInfo(SB_HORZ, 0, 0,
+        /* Set scroll info to imitate the behaviour and since we don't
+            need to display it, explicitly don't show the bar */
+        SetScrollInfo(SB_HORZ, childWidth - 1, parentWidth,
                       (policy == java_awt_ScrollPane_SCROLLBARS_ALWAYS));
+        ::ShowScrollBar(GetHWnd(), SB_HORZ, false);
     }
 
     if (needsVert) {
@@ -276,8 +270,11 @@ void AwtScrollPane::RecalcSizes(int parentWidth, int parentHeight,
                       (policy == java_awt_ScrollPane_SCROLLBARS_ALWAYS));
         env->DeleteLocalRef(vAdj);
     } else {
-        SetScrollInfo(SB_VERT, 0, 0,
+        /* Set scroll info to imitate the behaviour and since we don't
+            need to display it, explicitly don't show the bar */
+        SetScrollInfo(SB_VERT, childHeight - 1, parentHeight,
                       (policy == java_awt_ScrollPane_SCROLLBARS_ALWAYS));
+        ::ShowScrollBar(GetHWnd(), SB_VERT, false);
     }
 
     env->DeleteLocalRef(target);
@@ -679,11 +676,10 @@ Java_sun_awt_windows_WScrollPanePeer_create(JNIEnv *env, jobject self,
 
     DTRACE_PRINTLN2("%x: WScrollPanePeer.create(%x)", self, parent);
 
-    PDATA pData;
-    JNI_CHECK_PEER_RETURN(parent);
     AwtToolkit::CreateComponent(self, parent,
                                 (AwtToolkit::ComponentFactory)
                                 AwtScrollPane::Create);
+    PDATA pData;
     JNI_CHECK_PEER_CREATION_RETURN(self);
     ((AwtScrollPane*)pData)->VerifyState();
 

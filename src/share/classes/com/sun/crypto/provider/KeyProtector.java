@@ -162,6 +162,9 @@ final class KeyProtector {
                 pbeParams.init(encodedParams);
                 PBEParameterSpec pbeSpec =
                         pbeParams.getParameterSpec(PBEParameterSpec.class);
+                if (pbeSpec.getIterationCount() > MAX_ITERATION_COUNT) {
+                    throw new IOException("PBE iteration count too large");
+                }
 
                 // create PBE key from password
                 PBEKeySpec pbeKeySpec = new PBEKeySpec(this.password);

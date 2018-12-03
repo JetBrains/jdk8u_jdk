@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -21,27 +21,20 @@
  * questions.
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.rmi.AlreadyBoundException;
 import java.rmi.MarshalledObject;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Objects;
 import java.security.Security;
+import java.util.Objects;
 
 import org.testng.Assert;
-import org.testng.TestNG;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -49,15 +42,12 @@ import org.testng.annotations.Test;
 /*
  * @test
  * @library /java/rmi/testlibrary
- * @modules java.rmi/sun.rmi.registry
- *          java.rmi/sun.rmi.server
- *          java.rmi/sun.rmi.transport
- *          java.rmi/sun.rmi.transport.tcp
  * @build TestLibrary
  * @summary Test filters for the RMI Registry
  * @run testng/othervm RegistryFilterTest
  * @run testng/othervm
- *        -Dsun.rmi.registry.registryFilter=!java.lang.Long;!RegistryFilterTest$RejectableClass
+ *        -Dsun.rmi.registry.registryFilter=!java.lang.Long;!RegistryFilterTest$RejectableClass;maxdepth=19
+ *        -Dtest.maxdepth=19
  *        RegistryFilterTest
  * @run testng/othervm/policy=security.policy
  *        -Djava.security.properties=${test.src}/java.security-extra1
@@ -68,21 +58,16 @@ public class RegistryFilterTest {
     private static int port;
     private static Registry registry;
 
-    static final int REGISTRY_MAX_ARRAY = 10000;
+    static final int REGISTRY_MAX_DEPTH = 20;
+
+    static final int REGISTRY_MAX_ARRAY = 1_000_000;
 
     static final String registryFilter =
             System.getProperty("sun.rmi.registry.registryFilter",
                     Security.getProperty("sun.rmi.registry.registryFilter"));
 
-    @DataProvider(name = "bindAllowed")
-    static Object[][] bindAllowedObjects() {
-        Object[][] objects = {
-        };
-        return objects;
-    }
-
     /**
-     * Data RMI Regiry bind test.
+     * Data RMI Registry bind test.
      * - name
      * - Object
      * - true/false if object is blacklisted by a filter (implicit or explicit)
@@ -93,9 +78,11 @@ public class RegistryFilterTest {
         Object[][] data = {
                 { "byte[max]", new XX(new byte[REGISTRY_MAX_ARRAY]), false },
                 { "String", new XX("now is the time"), false},
-                { "String[]", new XX(new String[3]), false},
-                { "Long[4]", new XX(new Long[4]), registryFilter != null },
+                { "String[3]", new XX(new String[3]), false},
+                { "Long[4]", new XX(new Long[4]), false },
+                { "Object[REGISTRY_MAX_ARRAY]", new XX(new Object[REGISTRY_MAX_ARRAY]), false },
                 { "rej-byte[toobig]", new XX(new byte[REGISTRY_MAX_ARRAY + 1]), true },
+                { "rej-Object[toobig]", new XX(new Object[REGISTRY_MAX_ARRAY + 1]), true },
                 { "rej-MarshalledObject", createMarshalledObject(), true },
                 { "rej-RejectableClass", new RejectableClass(), registryFilter != null},
         };
@@ -125,7 +112,7 @@ public class RegistryFilterTest {
 
 
     /*
-     * Test registry rejects an object with the max array size  + 1.
+     * Test registry rejects an object with the max array size + 1.
      */
     @Test(dataProvider="bindData")
     public void simpleBind(String name, Remote obj, boolean blacklisted) throws RemoteException, AlreadyBoundException, NotBoundException {
@@ -139,9 +126,9 @@ public class RegistryFilterTest {
     }
 
     /*
-    * Test registry rejects an object with a well known class
-    * if blacklisted in the security properties.
-    */
+     * Test registry rejects an object with a well known class
+     * if blacklisted in the security properties.
+     */
     @Test
     public void simpleRejectableClass() throws RemoteException, AlreadyBoundException, NotBoundException {
         RejectableClass r1 = null;
@@ -150,9 +137,46 @@ public class RegistryFilterTest {
             r1 = new RejectableClass();
             registry.bind(name, r1);
             registry.unbind(name);
-            Assert.assertNull(registryFilter, "Registry filter should not have rejected");
+            Assert.assertNull(registryFilter, "Registry filter should have rejected");
         } catch (Exception rex) {
-            Assert.assertNotNull(registryFilter, "Registry filter should have rejected");
+            Assert.assertNotNull(registryFilter, "Registry filter should not have rejected");
+        }
+    }
+
+    /*
+     * Test registry does not reject an object with depth at the built-in limit.
+     */
+    @Test
+    public void simpleDepthBuiltinNonRejectable() throws RemoteException, AlreadyBoundException, NotBoundException {
+        int depthOverride = Integer.getInteger("test.maxdepth", REGISTRY_MAX_DEPTH);
+        depthOverride = Math.min(depthOverride, REGISTRY_MAX_DEPTH);
+        System.out.printf("overrideDepth: %d, filter: %s%n", depthOverride, registryFilter);
+        try {
+            String name = "reject2";
+            DepthRejectableClass r1 = DepthRejectableClass.create(depthOverride);
+            registry.bind(name, r1);
+            registry.unbind(name);
+        } catch (Exception rex) {
+            Assert.fail("Registry filter should not have rejected depth: "
+                            + depthOverride);
+        }
+    }
+
+    /*
+     * Test registry rejects an object with depth at the limit + 1.
+     */
+    @Test
+    public void simpleDepthRejectable() throws RemoteException, AlreadyBoundException, NotBoundException {
+        int depthOverride = Integer.getInteger("test.maxdepth", REGISTRY_MAX_DEPTH);
+        depthOverride = Math.min(depthOverride, REGISTRY_MAX_DEPTH);
+        System.out.printf("overrideDepth: %d, filter: %s%n", depthOverride, registryFilter);
+        try {
+            String name = "reject3";
+            DepthRejectableClass r1 = DepthRejectableClass.create(depthOverride + 1);
+            registry.bind(name, r1);
+            Assert.fail("Registry filter should have rejected depth: " + depthOverride + 1);
+        } catch (Exception rex) {
+            // Rejection expected
         }
     }
 
@@ -173,6 +197,7 @@ public class RegistryFilterTest {
             return super.toString() + "//" + Objects.toString(obj);
         }
     }
+
     /**
      * A simple Serializable Remote object that is passed by value.
      * It and its contents are checked by the Registry serial filter.
@@ -181,6 +206,27 @@ public class RegistryFilterTest {
         private static final long serialVersionUID = 362498820763181264L;
 
         RejectableClass() {}
+    }
+
+    /**
+     * A simple Serializable Remote object that is passed by value.
+     * It and its contents are checked by the Registry serial filter.
+     */
+    static class DepthRejectableClass implements Serializable, Remote {
+        private static final long serialVersionUID = 362498820763181264L;
+        private final DepthRejectableClass next;
+
+        private DepthRejectableClass(DepthRejectableClass next) {
+            this.next = next;
+        }
+
+        static DepthRejectableClass create(int depth) {
+            DepthRejectableClass next = new DepthRejectableClass(null);
+            for (int i = 1; i < depth; i++) {
+                next = new DepthRejectableClass(next);
+            }
+            return next;
+        }
     }
 
 }

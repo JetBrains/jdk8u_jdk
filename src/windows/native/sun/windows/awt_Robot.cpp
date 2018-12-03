@@ -307,7 +307,7 @@ jintArray AwtRobot::GetRGBPixels(jobject bounds) // bounds is IN/OUT param
 
 // copy pixels into Java array
     env->SetIntArrayRegion(pixelArray, 0, numPixels, (jint *)pixelData);
-    delete pinfo;
+    delete[] pinfo;
 
     // free all the GDI objects we made
     ::SelectObject(hdcMem, hOldBitmap);

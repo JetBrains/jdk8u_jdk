@@ -215,9 +215,9 @@ public class KDC {
         SENSITIVE_ACCOUNTS,
     };
 
-    static {
-        System.setProperty("sun.net.spi.nameservice.provider.1", "ns,mock");
-    }
+    //static {
+    //    System.setProperty("sun.net.spi.nameservice.provider.1", "ns,mock");
+    //}
 
     /**
      * A standalone KDC server.
@@ -826,7 +826,9 @@ public class KDC {
                 throw new KrbException(Krb5.KDC_ERR_SUMTYPE_NOSUPP); // TODO
             }
             Ticket t = new Ticket(
-                    service,
+                    System.getProperty("test.kdc.diff.sname") != null ?
+                        new PrincipalName("xx" + service.toString()) :
+                        service,
                     new EncryptedData(skey, enc.asn1Encode(), KeyUsage.KU_TICKET)
             );
             EncTGSRepPart enc_part = new EncTGSRepPart(

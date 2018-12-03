@@ -42,7 +42,7 @@ import java.security.NoSuchProviderException;
  * <p> Given any Serializable object, one can create a SealedObject
  * that encapsulates the original object, in serialized
  * format (i.e., a "deep copy"), and seals (encrypts) its serialized contents,
- * using a cryptographic algorithm such as DES, to protect its
+ * using a cryptographic algorithm such as AES, to protect its
  * confidentiality.  The encrypted content can later be decrypted (with
  * the corresponding algorithm using the correct decryption key) and
  * de-serialized, yielding the original object.

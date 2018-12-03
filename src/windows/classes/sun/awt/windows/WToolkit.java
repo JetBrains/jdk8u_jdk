@@ -30,13 +30,20 @@ import java.awt.im.InputMethodHighlight;
 import java.awt.im.spi.InputMethodDescriptor;
 import java.awt.image.*;
 import java.awt.peer.*;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.datatransfer.Clipboard;
+import java.awt.TextComponent;
 import java.awt.TrayIcon;
 import java.beans.PropertyChangeListener;
+import java.lang.ref.WeakReference;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import javax.swing.text.JTextComponent;
+
 import sun.awt.AppContext;
+import sun.awt.AWTAccessor;
 import sun.awt.AWTAutoShutdown;
 import sun.awt.LightweightFrame;
 import sun.awt.SunToolkit;
@@ -1114,6 +1121,73 @@ public final class WToolkit extends SunToolkit implements Runnable {
            ((WWindowPeer)w.getPeer()).ungrab();
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // The following code is used for support of automatic showing of the touch
+    // keyboard for text components and is accessed only from EDT.
+    ///////////////////////////////////////////////////////////////////////////
+    private static final WeakReference<Component> NULL_COMPONENT_WR =
+        new WeakReference<>(null);
+    private volatile WeakReference<Component> compOnTouchDownEvent =
+        NULL_COMPONENT_WR;
+    private volatile WeakReference<Component> compOnMousePressedEvent =
+        NULL_COMPONENT_WR;
+
+    private boolean isComponentValidForTouchKeyboard(Component comp) {
+        if ((comp != null) && comp.isEnabled() && comp.isFocusable() &&
+            (((comp instanceof TextComponent) &&
+                    ((TextComponent) comp).isEditable()) ||
+                ((comp instanceof JTextComponent) &&
+                    ((JTextComponent) comp).isEditable()))) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void showOrHideTouchKeyboard(Component comp, AWTEvent e) {
+        if (!(comp instanceof TextComponent) &&
+            !(comp instanceof JTextComponent)) {
+            return;
+        }
+
+        if ((e instanceof MouseEvent) && isComponentValidForTouchKeyboard(comp)) {
+            MouseEvent me = (MouseEvent) e;
+            if (me.getID() == MouseEvent.MOUSE_PRESSED) {
+                if (AWTAccessor.getMouseEventAccessor().isCausedByTouchEvent(me)) {
+                    compOnTouchDownEvent = new WeakReference<>(comp);
+                } else {
+                    compOnMousePressedEvent = new WeakReference<>(comp);
+                }
+            } else if (me.getID() == MouseEvent.MOUSE_RELEASED) {
+                if (AWTAccessor.getMouseEventAccessor().isCausedByTouchEvent(me)) {
+                    if (compOnTouchDownEvent.get() == comp) {
+                        showTouchKeyboard(true);
+                    }
+                    compOnTouchDownEvent = NULL_COMPONENT_WR;
+                } else {
+                    if (compOnMousePressedEvent.get() == comp) {
+                        showTouchKeyboard(false);
+                    }
+                    compOnMousePressedEvent = NULL_COMPONENT_WR;
+                }
+            }
+        } else if (e instanceof FocusEvent) {
+            FocusEvent fe = (FocusEvent) e;
+            if (fe.getID() == FocusEvent.FOCUS_LOST) {
+                // Hide the touch keyboard, if not a text component gains focus.
+                if (!isComponentValidForTouchKeyboard(fe.getOppositeComponent())) {
+                    hideTouchKeyboard();
+                }
+            }
+        }
+    }
+
+    private native void showTouchKeyboard(boolean causedByTouchEvent);
+    private native void hideTouchKeyboard();
+    ///////////////////////////////////////////////////////////////////////////
+    // End of the touch keyboard related code.
+    ///////////////////////////////////////////////////////////////////////////
 
     @Override
     public native boolean syncNativeQueue(final long timeout);

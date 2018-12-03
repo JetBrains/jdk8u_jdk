@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -52,11 +52,10 @@ import sun.security.jca.GetInstance.Instance;
  * authentication and integrity assurance of digital data.
  *
  * <p> The signature algorithm can be, among others, the NIST standard
- * DSA, using DSA and SHA-1. The DSA algorithm using the
- * SHA-1 message digest algorithm can be specified as {@code SHA1withDSA}.
- * In the case of RSA, there are multiple choices for the message digest
- * algorithm, so the signing algorithm could be specified as, for example,
- * {@code MD2withRSA}, {@code MD5withRSA}, or {@code SHA1withRSA}.
+ * DSA, using DSA and SHA-256. The DSA algorithm using the
+ * SHA-256 message digest algorithm can be specified as {@code SHA256withDSA}.
+ * In the case of RSA the signing algorithm could be specified as, for example,
+ * {@code SHA256withRSA}.
  * The algorithm name must be specified, as there is no default.
  *
  * <p> A Signature object can be used to generate and verify digital
@@ -438,6 +437,10 @@ public abstract class Signature extends SignatureSpi {
         return this.provider;
     }
 
+    private String getProviderName() {
+        return (provider == null)  ? "(no provider)" : provider.getName();
+    }
+
     void chooseFirstProvider() {
         // empty, overridden in Delegate
     }
@@ -459,7 +462,7 @@ public abstract class Signature extends SignatureSpi {
 
         if (!skipDebug && pdebug != null) {
             pdebug.println("Signature." + algorithm +
-                " verification algorithm from: " + this.provider.getName());
+                " verification algorithm from: " + getProviderName());
         }
     }
 
@@ -508,7 +511,7 @@ public abstract class Signature extends SignatureSpi {
 
         if (!skipDebug && pdebug != null) {
             pdebug.println("Signature." + algorithm +
-                " verification algorithm from: " + this.provider.getName());
+                " verification algorithm from: " + getProviderName());
         }
     }
 
@@ -529,7 +532,7 @@ public abstract class Signature extends SignatureSpi {
 
         if (!skipDebug && pdebug != null) {
             pdebug.println("Signature." + algorithm +
-                " signing algorithm from: " + this.provider.getName());
+                " signing algorithm from: " + getProviderName());
         }
     }
 
@@ -552,7 +555,7 @@ public abstract class Signature extends SignatureSpi {
 
         if (!skipDebug && pdebug != null) {
             pdebug.println("Signature." + algorithm +
-                " signing algorithm from: " + this.provider.getName());
+                " signing algorithm from: " + getProviderName());
         }
     }
 
@@ -1048,7 +1051,7 @@ public abstract class Signature extends SignatureSpi {
                             debug.println("Further warnings of this type will "
                                 + "be suppressed");
                         }
-                        new Exception("Call trace").printStackTrace();
+                        new Exception("Debug call trace").printStackTrace();
                     }
                 }
                 Exception lastException = null;

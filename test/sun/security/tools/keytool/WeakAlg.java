@@ -23,13 +23,14 @@
 
 /*
  * @test
- * @bug 8171319
+ * @bug 8171319 8177569 8182879
  * @summary keytool should print out warnings when reading or generating
   *         cert/cert req using weak algorithms
  * @library /lib/testlibrary
  * @run main/othervm/timeout=600 -Duser.language=en -Duser.country=US WeakAlg
  */
 
+import jdk.testlibrary.Asserts;
 import jdk.testlibrary.SecurityTools;
 import jdk.testlibrary.OutputAnalyzer;
 import sun.security.tools.KeyStoreUtil;
@@ -37,6 +38,8 @@ import sun.security.util.DisabledAlgorithmConstraints;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -53,6 +56,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class WeakAlg {
+
+    static String sep = File.separator;
+    static String cacerts_location = System.getProperty("java.home") +
+        sep + "lib" + sep + "security" + sep + "cacerts";
 
     public static void main(String[] args) throws Throwable {
 
@@ -75,7 +82,8 @@ public class WeakAlg {
                 .shouldMatch("<b>.*512-bit RSA key.*risk")
                 .shouldContain("512-bit RSA key (weak)");
 
-        // Multiple warnings for multiple cert in -printcert or -list or -exportcert
+        // Multiple warnings for multiple cert in -printcert
+        // or -list or -exportcert
 
         // -certreq, -printcertreq, -gencert
         checkCertReq("a", "", null);
@@ -130,25 +138,161 @@ public class WeakAlg {
         kt("-delete -alias b");
         kt("-printcrl -file b.crl")
                 .shouldContain("WARNING: not verified");
+
+        jksTypeCheck();
+
+        checkInplaceImportKeyStore();
+    }
+
+    static void jksTypeCheck() throws Exception {
+
+        rm("ks");
+        rm("ks2");
+
+        kt("-genkeypair -alias a -storetype pkcs12 -dname CN=A")
+                .shouldNotContain("Warning:");
+        kt("-list")
+                .shouldNotContain("Warning:");
+        kt("-list -storetype jks") // no warning if PKCS12 used as JKS
+                .shouldNotContain("Warning:");
+        kt("-exportcert -alias a -file a.crt")
+                .shouldNotContain("Warning:");
+
+        // warn if migrating to JKS
+        importkeystore("ks", "ks2", "-deststoretype jks")
+                .shouldContain("JKS keystore uses a proprietary format");
+
+        rm("ks");
+        rm("ks2");
+        rm("ks3");
+
+        // no warning if all certs
+        kt("-importcert -alias b -file a.crt -storetype jks -noprompt")
+                .shouldNotContain("Warning:");
+        kt("-genkeypair -alias a -dname CN=A")
+                .shouldContain("JKS keystore uses a proprietary format");
+        kt("-list")
+                .shouldContain("JKS keystore uses a proprietary format");
+        kt("-exportcert -alias a -file a.crt")
+                .shouldContain("JKS keystore uses a proprietary format");
+        kt("-printcert -file a.crt") // no warning if keystore not touched
+                .shouldNotContain("Warning:");
+        kt("-certreq -alias a -file a.req")
+               .shouldContain("JKS keystore uses a proprietary format");
+        kt("-printcertreq -file a.req") // no warning if keystore not touched
+                .shouldNotContain("Warning:");
+
+        // Earlier than JDK 9 defaults to JKS
+        importkeystore("ks", "ks2", "")
+                .shouldContain("Warning:");
+
+        importkeystore("ks", "ks3", "-deststoretype pkcs12")
+                .shouldNotContain("Warning:");
+
+        rm("ks");
+
+        kt("-genkeypair -alias a -dname CN=A -storetype jceks")
+                .shouldContain("JCEKS keystore uses a proprietary format");
+        kt("-list -storetype jceks")
+                .shouldContain("JCEKS keystore uses a proprietary format");
+        kt("-importcert -alias b -file a.crt -noprompt -storetype jceks")
+                .shouldContain("JCEKS keystore uses a proprietary format");
+        kt("-exportcert -alias a -file a.crt -storetype jceks")
+                .shouldContain("JCEKS keystore uses a proprietary format");
+        kt("-printcert -file a.crt")
+                .shouldNotContain("Warning:");
+        kt("-certreq -alias a -file a.req -storetype jceks")
+                .shouldContain("JCEKS keystore uses a proprietary format");
+        kt("-printcertreq -file a.req")
+                .shouldNotContain("Warning:");
+        kt("-genseckey -alias c -keyalg AES -keysize 128 -storetype jceks")
+                .shouldContain("JCEKS keystore uses a proprietary format");
     }
 
     static void checkImportKeyStore() throws Exception {
 
-        saveStore();
+        rm("ks2");
+        rm("ks3");
 
-        rm("ks");
-        kt("-importkeystore -srckeystore ks2 -srcstorepass changeit")
+        importkeystore("ks", "ks2", "")
                 .shouldContain("3 entries successfully imported")
                 .shouldContain("Warning")
                 .shouldMatch("<b>.*512-bit RSA key.*risk")
                 .shouldMatch("<a>.*MD5withRSA.*risk");
 
-        rm("ks");
-        kt("-importkeystore -srckeystore ks2 -srcstorepass changeit -srcalias a")
+        importkeystore("ks", "ks3", "-srcalias a")
                 .shouldContain("Warning")
                 .shouldMatch("<a>.*MD5withRSA.*risk");
+    }
 
-        reStore();
+    static void checkInplaceImportKeyStore() throws Exception {
+
+        rm("ks");
+        genkeypair("a", "");
+
+        // Same type backup
+        importkeystore("ks", "ks", "")
+                .shouldContain("Warning:")
+                .shouldMatch(".*ks.old");
+
+        importkeystore("ks", "ks", "")
+                .shouldContain("Warning:")
+                .shouldMatch(".*ks.old2");
+
+        importkeystore("ks", "ks", "-srcstoretype jks") // it knows real type
+                .shouldContain("Warning:")
+                .shouldMatch(".*ks.old3");
+
+        String cPath = new File("ks").getCanonicalPath();
+
+        importkeystore("ks", cPath, "")
+                .shouldContain("Warning:")
+                .shouldMatch(".*ks.old4");
+
+        // Migration
+        importkeystore("ks", "ks", "-deststoretype jks")
+                .shouldContain("Warning:")
+                .shouldContain("JKS keystore uses a proprietary format")
+                .shouldMatch("The original.*ks.old5");
+
+        KeyStore test_ks = KeyStore.getInstance("JKS");
+        test_ks.load(new FileInputStream(new File("ks")),
+                "changeit".toCharArray());
+        Asserts.assertEQ(
+                    test_ks.getType(), "JKS");
+
+        importkeystore("ks", "ks", "-deststoretype PKCS12")
+                .shouldContain("Warning:")
+                .shouldNotContain("proprietary format")
+                .shouldMatch("Migrated.*Non.*JKS.*ks.old6");
+
+        test_ks = KeyStore.getInstance("PKCS12");
+        test_ks.load(new FileInputStream(new File("ks")),
+                "changeit".toCharArray());
+        Asserts.assertEQ(
+                test_ks.getType(), "PKCS12");
+
+        test_ks = KeyStore.getInstance("JKS");
+        test_ks.load(new FileInputStream(new File("ks.old6")),
+                "changeit".toCharArray());
+        Asserts.assertEQ(
+                test_ks.getType(), "JKS");
+
+        // One password prompt is enough for migration
+        kt0("-importkeystore -srckeystore ks -destkeystore ks", "changeit")
+                .shouldMatch("backed.*ks.old7");
+
+        // But three if importing to a different keystore
+        rm("ks2");
+        kt0("-importkeystore -srckeystore ks -destkeystore ks2",
+                    "changeit")
+                .shouldContain("Keystore password is too short");
+
+        kt0("-importkeystore -srckeystore ks -destkeystore ks2",
+                "changeit", "changeit", "changeit")
+                .shouldContain("Importing keystore ks to ks2...")
+                .shouldNotContain("original")
+                .shouldNotContain("Migrated");
     }
 
     static void checkImport() throws Exception {
@@ -181,7 +325,7 @@ public class WeakAlg {
                 .shouldMatch("The input.*MD5withRSA.*risk")
                 .shouldNotContain("[no]");
 
-        // cert is self-signed cacerts
+        // JDK-8177569: no warning for sigalg of trusted cert
         String weakSigAlgCA = null;
         KeyStore ks = KeyStoreUtil.getCacertsKeyStore();
         if (ks != null) {
@@ -205,12 +349,40 @@ public class WeakAlg {
             }
         }
         if (weakSigAlgCA != null) {
+            // The following 2 commands still have a warning on why not using
+            // the -cacerts option directly.
+            kt("-list -keystore " + cacerts_location)
+                    .shouldNotContain("risk");
+            kt("-list -v -keystore " + cacerts_location)
+                    .shouldNotContain("risk");
+
+            // -printcert will always show warnings
+            kt("-printcert -file ca.cert")
+                    .shouldContain("name: " + weakSigAlgCA + " (weak)")
+                    .shouldContain("Warning")
+                    .shouldMatch("The certificate.*" + weakSigAlgCA + ".*risk");
+            kt("-printcert -file ca.cert -trustcacerts") // -trustcacerts useless
+                    .shouldContain("name: " + weakSigAlgCA + " (weak)")
+                    .shouldContain("Warning")
+                    .shouldMatch("The certificate.*" + weakSigAlgCA + ".*risk");
+
+            // Importing with -trustcacerts ignore CA cert's sig alg
             kt("-delete -alias d");
             kt("-importcert -alias d -trustcacerts -file ca.cert", "no")
                     .shouldContain("Certificate already exists in system-wide CA")
+                    .shouldNotContain("risk")
+                    .shouldContain("Do you still want to add it to your own keystore?");
+            kt("-importcert -alias d -trustcacerts -file ca.cert -noprompt")
+                    .shouldNotContain("risk")
+                    .shouldNotContain("[no]");
+
+            // but not without -trustcacerts
+            kt("-delete -alias d");
+            kt("-importcert -alias d -file ca.cert", "no")
+                    .shouldContain("name: " + weakSigAlgCA + " (weak)")
                     .shouldContain("Warning")
                     .shouldMatch("The input.*" + weakSigAlgCA + ".*risk")
-                    .shouldContain("Do you still want to add it to your own keystore?");
+                    .shouldContain("Trust this certificate?");
             kt("-importcert -alias d -file ca.cert -noprompt")
                     .shouldContain("Warning")
                     .shouldMatch("The input.*" + weakSigAlgCA + ".*risk")
@@ -261,6 +433,26 @@ public class WeakAlg {
                 .shouldNotContain("[no]");
 
         // install reply
+
+        reStore();
+        certreq("c", "");
+        gencert("a-c", "");
+        kt("-importcert -alias c -file a-c.cert")
+                .shouldContain("Warning")
+                .shouldMatch("Issuer <a>.*MD5withRSA.*risk");
+
+        // JDK-8177569: no warning for sigalg of trusted cert
+        reStore();
+        // Change a into a TrustedCertEntry
+        kt("-exportcert -alias a -file a.cert");
+        kt("-delete -alias a");
+        kt("-importcert -alias a -file a.cert -noprompt");
+        kt("-list -alias a -v")
+                .shouldNotContain("weak")
+                .shouldNotContain("Warning");
+        // This time a is trusted and no warning on its weak sig alg
+        kt("-importcert -alias c -file a-c.cert")
+                .shouldNotContain("Warning");
 
         reStore();
 
@@ -466,17 +658,22 @@ public class WeakAlg {
         }
     }
 
-    // Fast keytool execution by directly calling its main() method
     static OutputAnalyzer kt(String cmd, String... input) {
+        return kt0("-keystore ks -storepass changeit " +
+                "-keypass changeit " + cmd, input);
+    }
+
+    // Fast keytool execution by directly calling its main() method
+    static OutputAnalyzer kt0(String cmd, String... input) {
         PrintStream out = System.out;
         PrintStream err = System.err;
         InputStream ins = System.in;
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         ByteArrayOutputStream berr = new ByteArrayOutputStream();
         boolean succeed = true;
+        String sout;
+        String serr;
         try {
-            cmd = "-keystore ks -storepass changeit " +
-                    "-keypass changeit " + cmd;
             System.out.println("---------------------------------------------");
             System.out.println("$ keytool " + cmd);
             System.out.println();
@@ -500,19 +697,26 @@ public class WeakAlg {
             System.setOut(out);
             System.setErr(err);
             System.setIn(ins);
+            sout = new String(bout.toByteArray());
+            serr = new String(berr.toByteArray());
+            System.out.println("STDOUT:\n" + sout + "\nSTDERR:\n" + serr);
         }
-        String sout = new String(bout.toByteArray());
-        String serr = new String(berr.toByteArray());
-        System.out.println("STDOUT:\n" + sout + "\nSTDERR:\n" + serr);
         if (!succeed) {
             throw new RuntimeException();
         }
         return new OutputAnalyzer(sout, serr);
     }
 
+    static OutputAnalyzer importkeystore(String src, String dest,
+                                         String options) {
+        return kt0("-importkeystore "
+                + "-srckeystore " + src + " -destkeystore " + dest
+                + " -srcstorepass changeit -deststorepass changeit " + options);
+    }
+
     static OutputAnalyzer genkeypair(String alias, String options) {
         return kt("-genkeypair -alias " + alias + " -dname CN=" + alias
-                + " -keyalg RSA -storetype JKS " + options);
+                + " -keyalg RSA -storetype PKCS12 " + options);
     }
 
     static OutputAnalyzer certreq(String alias, String options) {

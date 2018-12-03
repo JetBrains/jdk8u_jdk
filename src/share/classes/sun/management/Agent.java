@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -34,7 +34,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
@@ -88,7 +87,7 @@ public class Agent {
     // return empty property set
     private static Properties parseString(String args) {
         Properties argProps = new Properties();
-        if (args != null) {
+        if (args != null && !args.trim().equals("")) {
             for (String option : args.split(",")) {
                 String s[] = option.split("=", 2);
                 String name = s[0].trim();
@@ -160,53 +159,59 @@ public class Agent {
             throw new RuntimeException(getText(INVALID_STATE, "Agent already started"));
         }
 
-        Properties argProps = parseString(args);
-        Properties configProps = new Properties();
+        try {
+            Properties argProps = parseString(args);
+            Properties configProps = new Properties();
 
-        // Load the management properties from the config file
-        // if config file is not specified readConfiguration implicitly
-        // reads <java.home>/lib/management/management.properties
+            // Load the management properties from the config file
+            // if config file is not specified readConfiguration implicitly
+            // reads <java.home>/lib/management/management.properties
 
-        String fname = System.getProperty(CONFIG_FILE);
-        readConfiguration(fname, configProps);
+            String fname = System.getProperty(CONFIG_FILE);
+            readConfiguration(fname, configProps);
 
-        // management properties can be overridden by system properties
-        // which take precedence
-        Properties sysProps = System.getProperties();
-        synchronized (sysProps) {
-            configProps.putAll(sysProps);
-        }
+            // management properties can be overridden by system properties
+            // which take precedence
+            Properties sysProps = System.getProperties();
+            synchronized (sysProps) {
+                configProps.putAll(sysProps);
+            }
 
-        // if user specifies config file into command line for either
-        // jcmd utilities or attach command it overrides properties set in
-        // command line at the time of VM start
-        String fnameUser = argProps.getProperty(CONFIG_FILE);
-        if (fnameUser != null) {
-            readConfiguration(fnameUser, configProps);
-        }
+            // if user specifies config file into command line for either
+            // jcmd utilities or attach command it overrides properties set in
+            // command line at the time of VM start
+            String fnameUser = argProps.getProperty(CONFIG_FILE);
+            if (fnameUser != null) {
+                readConfiguration(fnameUser, configProps);
+            }
 
-        // arguments specified in command line of jcmd utilities
-        // override both system properties and one set by config file
-        // specified in jcmd command line
-        configProps.putAll(argProps);
+            // arguments specified in command line of jcmd utilities
+            // override both system properties and one set by config file
+            // specified in jcmd command line
+            configProps.putAll(argProps);
 
-        // jcmd doesn't allow to change ThreadContentionMonitoring, but user
-        // can specify this property inside config file, so enable optional
-        // monitoring functionality if this property is set
-        final String enableThreadContentionMonitoring =
-                configProps.getProperty(ENABLE_THREAD_CONTENTION_MONITORING);
+            // jcmd doesn't allow to change ThreadContentionMonitoring, but user
+            // can specify this property inside config file, so enable optional
+            // monitoring functionality if this property is set
+            final String enableThreadContentionMonitoring =
+                    configProps.getProperty(ENABLE_THREAD_CONTENTION_MONITORING);
 
-        if (enableThreadContentionMonitoring != null) {
-            ManagementFactory.getThreadMXBean().
-                    setThreadContentionMonitoringEnabled(true);
-        }
+            if (enableThreadContentionMonitoring != null) {
+                ManagementFactory.getThreadMXBean().
+                        setThreadContentionMonitoringEnabled(true);
+            }
 
-        String jmxremotePort = configProps.getProperty(JMXREMOTE_PORT);
-        if (jmxremotePort != null) {
-            jmxServer = ConnectorBootstrap.
-                    startRemoteConnectorServer(jmxremotePort, configProps);
+            String jmxremotePort = configProps.getProperty(JMXREMOTE_PORT);
+            if (jmxremotePort != null) {
+                jmxServer = ConnectorBootstrap.
+                        startRemoteConnectorServer(jmxremotePort, configProps);
 
-            startDiscoveryService(configProps);
+                startDiscoveryService(configProps);
+            } else {
+                throw new AgentConfigurationError(INVALID_JMXREMOTE_PORT, "No port specified");
+            }
+        } catch (AgentConfigurationError err) {
+            error(err);
         }
     }
 
@@ -261,7 +266,7 @@ public class Agent {
             }
 
         } catch (AgentConfigurationError e) {
-            error(e.getError(), e.getParams());
+            error(e);
         } catch (Exception e) {
             error(e);
         }
@@ -491,28 +496,33 @@ public class Agent {
         throw new RuntimeException(keyText);
     }
 
-    public static void error(String key, String[] params) {
-        if (params == null || params.length == 0) {
-            error(key);
-        } else {
-            StringBuffer message = new StringBuffer(params[0]);
-            for (int i = 1; i < params.length; i++) {
-                message.append(" " + params[i]);
-            }
-            error(key, message.toString());
-        }
-    }
-
     public static void error(String key, String message) {
         String keyText = getText(key);
         System.err.print(getText("agent.err.error") + ": " + keyText);
         System.err.println(": " + message);
-        throw new RuntimeException(keyText);
+        throw new RuntimeException(keyText + ": " + message);
     }
 
     public static void error(Exception e) {
         e.printStackTrace();
         System.err.println(getText(AGENT_EXCEPTION) + ": " + e.toString());
+        throw new RuntimeException(e);
+    }
+
+    public static void error(AgentConfigurationError e) {
+        String keyText = getText(e.getError());
+        String[] params = e.getParams();
+
+        System.err.print(getText("agent.err.error") + ": " + keyText);
+
+        if (params != null && params.length != 0) {
+           StringBuffer message = new StringBuffer(params[0]);
+           for (int i = 1; i < params.length; i++) {
+               message.append(" " + params[i]);
+           }
+           System.err.println(": " + message);
+        }
+        e.printStackTrace();
         throw new RuntimeException(e);
     }
 

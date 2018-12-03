@@ -94,7 +94,8 @@ class GTKEngine {
     static enum Settings {
         GTK_FONT_NAME,
         GTK_ICON_SIZES,
-        GTK_XFT_DPI
+        GTK_CURSOR_BLINK,
+        GTK_CURSOR_BLINK_TIME
     }
 
     /* Custom regions are needed for representing regions that don't exist

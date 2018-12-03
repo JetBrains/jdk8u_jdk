@@ -128,7 +128,8 @@ public class XRPMBlitLoops {
         }
 
         if (vImg == null || vImg.getWidth() < w || vImg.getHeight() < h ||
-            // Sometimes we get volatile image of wrong dest surface type, so recreating it
+            // Sometimes we get volatile image of wrong dest surface type,
+            // so recreating it
             !(vImg.getDestSurface() instanceof XRSurfaceData))
         {
             if (vImg != null) {

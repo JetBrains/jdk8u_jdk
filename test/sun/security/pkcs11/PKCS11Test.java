@@ -528,6 +528,8 @@ public abstract class PKCS11Test {
             PKCS11_BASE + "/nss/lib/windows-i586/".replace('/', SEP)});
         osMap.put("Windows-amd64-64", new String[]{
             PKCS11_BASE + "/nss/lib/windows-amd64/".replace('/', SEP)});
+        osMap.put("MacOSX-x86_64-64", new String[]{
+            PKCS11_BASE + "/nss/lib/macosx-x86_64/"});
     }
 
     private final static char[] hexDigits = "0123456789abcdef".toCharArray();

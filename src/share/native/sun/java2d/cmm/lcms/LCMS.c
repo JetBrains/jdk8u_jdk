@@ -391,12 +391,12 @@ JNIEXPORT jbyteArray JNICALL Java_sun_java2d_cmm_lcms_LCMS_getTagNative
 {
     lcmsProfile_p sProf = (lcmsProfile_p)jlong_to_ptr(id);
     TagSignature_t sig;
-    cmsInt32Number tagSize;
+    cmsUInt32Number tagSize;
 
     jbyte* dataArray = NULL;
     jbyteArray data = NULL;
 
-    jint bufSize;
+    cmsUInt32Number bufSize;
 
     sig.j = tagSig;
 
@@ -644,7 +644,12 @@ JNIEXPORT jobject JNICALL Java_sun_java2d_cmm_lcms_LCMS_getProfileID
 {
     jclass clsLcmsProfile;
     jobject cmmProfile;
-    jfieldID fid = (*env)->GetFieldID (env,
+    jfieldID fid;
+
+    if (pf == NULL) {
+        return NULL;
+    }
+    fid = (*env)->GetFieldID (env,
         (*env)->GetObjectClass(env, pf),
         "cmmProfile", "Lsun/java2d/cmm/Profile;");
     if (fid == NULL) {
@@ -834,7 +839,7 @@ static cmsHPROFILE _writeCookedTag(const cmsHPROFILE pfTarget,
     for (i = 0; i < tagCount; i++) {
         cmsBool isTagReady = FALSE;
         const cmsTagSignature s = cmsGetTagSignature(pfTarget, i);
-        const cmsInt32Number tagSize = cmsReadRawTag(pfTarget, s, NULL, 0);
+        const cmsUInt32Number tagSize = cmsReadRawTag(pfTarget, s, NULL, 0);
 
         if (s == sig) {
             // skip the user supplied tag

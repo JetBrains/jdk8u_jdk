@@ -5950,7 +5950,7 @@ Version 1.6.32beta09 [August 3, 2017]
   Require cmake-2.8.8 in CMakeLists.txt. Revised symlink creation,
     no longer using deprecated cmake LOCATION feature (Clifford Yapp).
   Fixed five-byte error in the calculation of IDAT maximum possible size.
-
+  
 Version 1.6.32beta10 [August 5, 2017]
   Moved chunk-length check into a png_check_chunk_length() private
     function (Suggested by Max Stepin).

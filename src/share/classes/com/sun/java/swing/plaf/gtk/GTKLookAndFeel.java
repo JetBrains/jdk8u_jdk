@@ -366,7 +366,17 @@ public class GTKLookAndFeel extends SynthLookAndFeel {
         int vProgWidth  =  22 - (progXThickness * 2);
         int vProgHeight =  80 - (progYThickness * 2);
 
-        Integer caretBlinkRate = Integer.valueOf(500);
+        Integer caretBlinkRate;
+        if (Boolean.FALSE.equals(GTKEngine.INSTANCE.getSetting(
+                GTKEngine.Settings.GTK_CURSOR_BLINK))) {
+            caretBlinkRate = Integer.valueOf(0);
+        } else {
+            caretBlinkRate = (Integer) GTKEngine.INSTANCE.getSetting(
+                    GTKEngine.Settings.GTK_CURSOR_BLINK_TIME);
+            if (caretBlinkRate == null) {
+                caretBlinkRate = Integer.valueOf(500);
+            }
+        }
         Insets zeroInsets = new InsetsUIResource(0, 0, 0, 0);
 
         Double defaultCaretAspectRatio = new Double(0.025);
