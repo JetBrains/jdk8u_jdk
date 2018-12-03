@@ -162,12 +162,8 @@ class PangoFonts {
          */
         double dsize = size;
         int dpi = 96;
-        Object xftDPI = Toolkit.getDefaultToolkit().getDesktopProperty("gnome.Xft/DPI");
-        Object value = xftDPI;
-
-        if (!(value instanceof Integer)) {
-            value = GTKEngine.INSTANCE.getSetting(GTKEngine.Settings.GTK_XFT_DPI);
-        }
+        Object value =
+            Toolkit.getDefaultToolkit().getDesktopProperty("gnome.Xft/DPI");
         if (value instanceof Integer) {
             dpi = ((Integer)value).intValue() / 1024;
             if (dpi == -1) {
@@ -180,12 +176,6 @@ class PangoFonts {
              * 72 dpi, so we need to adjust for that.
              */
             dsize = ((double)(dpi * size)/ 72.0);
-
-            if (xftDPI == null) {
-                // [tav] used to indicate the 96/72 scale correction to the client app
-                AWTAccessor.getToolkitAccessor().setDesktopProperty(
-                    Toolkit.getDefaultToolkit(), "gnome.Xft/DPI", value);
-            }
         } else {
             /* If there's no property, GTK scales for the resolution
              * reported by the Xserver using the formula listed above.
