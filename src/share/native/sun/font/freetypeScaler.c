@@ -1147,6 +1147,11 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
     int error, imageSize;
     UInt16 width, height;
     GlyphInfo *glyphInfo;
+<<<<<<< HEAD
+=======
+    int glyph_index;
+    int renderFlags = FT_LOAD_DEFAULT, target;
+>>>>>>> 8489ac7... 8214002: Cannot use italic font style if the font has embedded bitmap
     FT_GlyphSlot ftglyph;
     FT_Library library;
 
