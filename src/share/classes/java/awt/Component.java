@@ -1170,20 +1170,16 @@ public abstract class Component implements ImageObserver, MenuContainer,
             return false;
         }
 
-        AffineTransform tx = graphicsConfig != null ? graphicsConfig.getDefaultTransform() : new AffineTransform();
-        AffineTransform newTx = gc != null ? gc.getDefaultTransform() : new AffineTransform();
+        GraphicsConfiguration oldGraphicsConfig = graphicsConfig;
         graphicsConfig = gc;
-        if (tx.getScaleX() != newTx.getScaleX() ||
-            tx.getScaleY() != newTx.getScaleY())
-        {
-            firePropertyChange("graphicsContextScaleTransform", tx, newTx);
-        }
 
+        boolean res = false;
         ComponentPeer peer = getPeer();
         if (peer != null) {
-            return peer.updateGraphicsData(gc);
+            res = peer.updateGraphicsData(gc);
         }
-        return false;
+        firePropertyChange("graphicsConfiguration", oldGraphicsConfig, graphicsConfig);
+        return res;
     }
 
     /**

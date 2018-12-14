@@ -24,6 +24,7 @@
  */
 package javax.swing.plaf.basic;
 
+import java.awt.geom.AffineTransform;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -1857,9 +1858,13 @@ public abstract class BasicTextUI extends TextUI implements ViewFactory {
                 updateCursor();
                 modelChanged();
             }
-            if (propertyName.equals("graphicsContextScaleTransform")) {
-                // force re-layout of the document view
-                forwardPreferenceChangeToView(rootView);
+            if (propertyName.equals("graphicsConfiguration")) {
+                AffineTransform tx = oldValue != null ? ((GraphicsConfiguration)oldValue).getDefaultTransform() : new AffineTransform();
+                AffineTransform newTx = newValue != null ? ((GraphicsConfiguration)newValue).getDefaultTransform() : new AffineTransform();
+                if (tx.getScaleX() != newTx.getScaleX() || tx.getScaleY() != newTx.getScaleY()) {
+                    // force re-layout of the document view
+                    forwardPreferenceChangeToView(rootView);
+                }
             }
             BasicTextUI.this.propertyChange(evt);
         }
