@@ -129,6 +129,7 @@ java/awt/Focus/NoAutotransferToDisabledCompTest/NoAutotransferToDisabledCompTest
 java/awt/Focus/NonFocusableWindowTest/NonfocusableOwnerTest.java                    8151979 generic-all
 java/awt/Focus/OwnedWindowFocusIMECrashTest/OwnedWindowFocusIMECrashTest.java       8169110 generic-all
 java/awt/Focus/ResetMostRecentFocusOwnerTest/ResetMostRecentFocusOwnerTest.java     8168294 generic-all
+java/awt/Focus/RollbackFocusFromAnotherWindowTest/RollbackFocusFromAnotherWindowTest.java JRE-898 macosx-all,linux-all
 java/awt/Focus/ShowFrameCheckForegroundTest/ShowFrameCheckForegroundTest.java       8028701 macosx-all,windows-all,linux-all
 java/awt/Focus/SimpleWindowActivationTest/SimpleWindowActivationTest.java           8159599 macosx-all,windows-all,linux-all
 java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                                   7156130 generic-all
@@ -242,6 +243,7 @@ java/awt/Window/BackgroundIsNotUpdated/BackgroundIsNotUpdated.java              
 java/awt/Window/Grab/GrabTest.java                                                  8047703 generic-all
 java/awt/Window/GrabSequence/GrabSequence.java                                      6848409 macosx-all,windows-all,linux-all
 java/awt/Window/WindowsLeak/WindowsLeak.java                                        8028486 macosx-all
+java/awt/Window/WindowOwnedByEmbeddedFrameTest/WindowOwnedByEmbeddedFrameTest.java  8130655 macosx-all
 java/awt/Window/WindowType/WindowType.java                                          8051857 linux-all
 java/awt/Focus/RequestFocusAndHideTest/RequestFocusAndHideTest.java                 8051857 generic-all
 java/awt/List/SetBackgroundTest/SetBackgroundTest.java                              8051857 linux-all
@@ -283,6 +285,7 @@ java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_2.html       
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_4.java           6956646 generic-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_3.html           6956646 generic-all
 java/awt/event/MouseWheelEvent/WheelModifier/WheelModifier.java                     8169475 generic-all
+java/awt/font/PhoneticExtensions/PhoneticExtensionsGlyphTest.java                   8202696 windows-all
 java/awt/font/TextLayout/CombiningPerf.java                                         8192931,7043170 generic-all
 java/awt/font/TextLayout/OSXLigatureTest.java                                       7162125 macosx-all
 
@@ -664,6 +667,8 @@ javax/swing/JTree/4908142/bug4908142.java                                       
 javax/swing/JTree/4927934/bug4927934.java                                             8172063 generic-all
 javax/swing/JTree/6263446/bug6263446.java                                             8003839 generic-all
 javax/swing/JTree/8003400/Test8003400.java                                            8011259 generic-all
+javax/swing/LookAndFeel/8145547/DemandGTK2.sh                                         8193546 linux-all
+javax/swing/LookAndFeel/8145547/DemandGTK3.sh                                         8215539 linux-all
 javax/swing/MultiUIDefaults/4300666/bug4300666.java                                   7105119 macosx-all
 javax/swing/Popup/TaskbarPositionTest.java                                            8165854 macosx-all
 javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                          8065099,8208565 macosx-all,linux-all
@@ -753,7 +758,8 @@ sun/tools/jstatd/TestJstatdExternalRegistry.java                 8165727 generic
 # located at directory containing spaces in its name
 # 2. it requires jar which does not exist in our OpenJDK builds
 # 3.
-javax/imageio/stream/StreamCloserLeak/run_test.sh                    generic-all
+javax/imageio/plugins/bmp/BMP8BPPLoadTest.java                                    8212914 generic-all
+javax/imageio/stream/StreamCloserLeak/run_test.sh                                 generic-all
 
 sun/awt/datatransfer/SuplementaryCharactersTransferTest.java                      8011371 generic-all
 sun/awt/dnd/8024061/bug8024061.java                                               8142540 linux-all
@@ -768,6 +774,8 @@ sun/java2d/SunGraphics2D/DrawImageBilinear.java                                 
 sun/java2d/SunGraphics2D/PolyVertTest.java                                        6986565,6258137 generic-all
 sun/java2d/SunGraphics2D/SimplePrimQuality.java                                   6992007,7124403 generic-all
 sun/java2d/SunGraphics2D/SourceClippingBlitTest/SourceClippingBlitTest.java       8196191,8159142 windows-all,macosx-all,linux-all
+sun/java2d/cmm/ColorConvertOp/ColConvCCMTest.java                                 8196572 generic-all
+sun/java2d/cmm/ColorConvertOp/MTColConvTest.java                                  8196572 generic-all
 
 # it blocks jtreg on Windows
 sun/java2d/X11SurfaceData/SharedMemoryPixmapsTest/SharedMemoryPixmapsTest.sh      7184899 generic-all
@@ -789,6 +797,7 @@ sun/security/provider/PolicyParser/PrincipalExpansionError.java                 
 sun/security/tools/keytool/i18n.sh                                                8033271 generic-all
 
 sun/security/provider/SecureRandom/StrongSecureRandom.java                        8130151,8157344 generic-all
+sun/security/ssl/com/sun/net/ssl/internal/ssl/X509KeyManager/PreferredKey.java    8176354 generic-all
 sun/security/ssl/com/sun/net/ssl/internal/ssl/X509TrustManagerImpl/ClientServer.java 8011134 generic-all
 sun/security/ssl/javax/net/ssl/NewAPIs/CheckMyTrustedKeystore.java                8039130 generic-all
 sun/security/ssl/javax/net/ssl/NewAPIs/SSLEngine/Basics.java                      8039130 generic-all
@@ -853,6 +862,7 @@ com/sun/jdi/GetLocalVariables4Test.sh                                           
 com/sun/jdi/JdbMethodExitTest.sh                                                  8145552,8171483 generic-all
 com/sun/jdi/JdbMissStep.sh                                                        8145552 windows-all
 com/sun/jdi/JdbVarargsTest.sh                                                     8145552 windows-all
+com/sun/jdi/LineNumberInfo.java                                                   8181500 generic-all
 com/sun/jdi/NotAField.sh                                                          8145552 windows-all
 com/sun/jdi/Redefine-g.sh                                                         8145552 windows-all
 com/sun/jdi/RedefineAbstractClass.sh                                              8145552 windows-all
@@ -864,8 +874,12 @@ com/sun/jdi/ConstantPoolInfoGC.java                                             
 com/sun/jdi/DoubleAgentTest.java                                                  8054066 generic-all
 com/sun/jdi/InvokeHangTest.java                                                   6648858 generic-all
 com/sun/jdi/RedefineClearBreakpoint.sh                                            8151887 generic-all
+com/sun/jndi/ldap/DisconnectNPETest.java                                          8205330 generic-all
 com/sun/nio/sctp/SctpChannel/SocketOptionTests.java                               8141694,8075066 linux-all
 com/sun/nio/sctp/SctpMultiChannel/SocketOptionTests.java                          8141694 linux-all
+
+com/sun/tools/attach/StartManagementAgent.java                                    8195088 generic-all
+
 sun/nio/cs/FindDecoderBugs.java                                                   8022224 linux-all
 
 com/sun/awt/Translucency/WindowOpacity.java                                       8172887 windows-all
