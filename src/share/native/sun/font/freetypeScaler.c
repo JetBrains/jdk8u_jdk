@@ -265,7 +265,7 @@ Java_sun_font_FreetypeFontScaler_initIDs(
         }
     }
 #endif
-    if (!fontConf) {
+    if (fontConf) {
         (*env)->ReleaseStringUTFChars(env, jreFontConfName, fontConf);
     }
 }
