@@ -25,6 +25,9 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CountDownLatch;
 
@@ -41,9 +44,9 @@ import java.util.concurrent.CountDownLatch;
  * Test passes if the sample text was typed correctly.
  *
  * Note: Test works with English keyboard layout.
- * Test requires system property ApplePressAndHoldEnabled=true (default value for macOS >= 10.7).
- * MacOS accessibility permission should also be granted for the application launching this test,
- * so Robot is able to access keyboard (use System Preferences->Security&Privacy->Accessibility->Privacy).
+ * Test requires system property ApplePressAndHoldEnabled=1 (default value for macOS >= 10.7).
+ * MacOS accessibility permission should also be granted for the application launching this test, so
+ * Java Robot is able to access keyboard (use System Preferences -> Security&Privacy -> Privacy tab -> Accessibility).
  */
 
 public class KeyPressAndHoldTest {
@@ -55,8 +58,6 @@ public class KeyPressAndHoldTest {
     private static final String SAMPLE_NO_ACCENT = "echantillon";
     private static final String SAMPLE_MISPRINT = "e0chantillon";
 
-    private static final String PRESS_AND_HOLD_IS_DISABLED = "eeeeeeeeee";
-
     private static final int PAUSE = 2000;
 
     private static volatile String result="";
@@ -65,6 +66,9 @@ public class KeyPressAndHoldTest {
 
     private static int exitValue = 0;
 
+    /*
+     * Returns macOS major and minor version as an integer
+     */
     private static int getMajorMinorMacOsVersion() {
         int version = 0;
         String versionProp = System.getProperty("os.version");
@@ -81,6 +85,19 @@ public class KeyPressAndHoldTest {
             }
         }
         return version;
+    }
+
+    /*
+     * Returns ApplePressAndHoldEnabled system property value
+     */
+    private static String getApplePressAndHoldValue() throws IOException, InterruptedException {
+        Process readDefaults = new ProcessBuilder("defaults", "read", "-g", "ApplePressAndHoldEnabled")
+                .redirectError(ProcessBuilder.Redirect.INHERIT).start();
+        readDefaults.waitFor();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(readDefaults.getInputStream()))) {
+            return reader.readLine();
+        }
     }
 
     /*
@@ -109,17 +126,6 @@ public class KeyPressAndHoldTest {
     }
 
     /*
-     * Just check if accent popup appears, select no accent
-     */
-    private static void checkAccentPopup() {
-        holdDownSampleKey();
-        robot.keyPress(KeyEvent.VK_KP_DOWN);
-        robot.keyRelease(KeyEvent.VK_KP_DOWN);
-        robot.delay(PAUSE);
-        robot.waitForIdle();
-    }
-
-    /*
      * Type sample by selecting accent for the sample key from the popup dialog
      */
     private static void sample() {
@@ -140,9 +146,19 @@ public class KeyPressAndHoldTest {
     }
 
     /*
-     * Do not select any accent for the sample key from the popup dialog just press Esc
+     * Do not select any accent for the sample key from the popup dialog just press key down
      */
     private static void sampleNoAccent() {
+        holdDownSampleKey();
+        robot.keyPress(KeyEvent.VK_KP_DOWN);
+        robot.keyRelease(KeyEvent.VK_KP_DOWN);
+        typeSampleBody();
+    }
+
+    /*
+     * Do not select any accent for the sample key from the popup dialog just press Esc
+     */
+    private static void sampleNoAccentEsc() {
         holdDownSampleKey();
         robot.keyPress(KeyEvent.VK_ESCAPE);
         robot.keyRelease(KeyEvent.VK_ESCAPE);
@@ -168,7 +184,7 @@ public class KeyPressAndHoldTest {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException, InvocationTargetException {
+    public static void main(String[] args) throws InterruptedException, InvocationTargetException, IOException {
 
         if (GraphicsEnvironment.isHeadless()) {
             throw new RuntimeException("ERROR: Cannot execute the test in headless environment");
@@ -180,6 +196,12 @@ public class KeyPressAndHoldTest {
         } else if (osVersion < 107) {
             System.out.println("TEST SKIPPED: No Press&Hold feature for Snow Leopard or lower MacOS version");
             return;
+        }
+
+        final String applePressAndHoldValue = getApplePressAndHoldValue();
+        if (!"1".equals(applePressAndHoldValue)) {
+            System.out.println("ApplePressAndHoldEnabled = " + applePressAndHoldValue);
+            throw new RuntimeException("TEST ERROR: ApplePressAndHoldEnabled system property must be set to 1");
         }
 
         final JFrame frame = new JFrame(KeyPressAndHoldTest.class.getName());
@@ -234,13 +256,6 @@ public class KeyPressAndHoldTest {
             SwingUtilities.invokeLater(frameRunner);
             frameGainedFocus.await();
 
-            checkAccentPopup();
-            if (PRESS_AND_HOLD_IS_DISABLED.equals(result)) {
-                throw new RuntimeException("ERROR: Holding a key down causes the key repeat instead of " +
-                        "accent menu popup, check if ApplePressAndHoldEnabled system property is set to true");
-            }
-            SwingUtilities.invokeLater(cleanTextArea);
-
             sample();
             checkResult("AccentChar", SAMPLE);
             SwingUtilities.invokeLater(cleanTextArea);
@@ -251,6 +266,10 @@ public class KeyPressAndHoldTest {
 
             sampleNoAccent();
             checkResult("NoAccentChar", SAMPLE_NO_ACCENT);
+            SwingUtilities.invokeLater(cleanTextArea);
+
+            sampleNoAccentEsc();
+            checkResult("NoAccentCharEsc", SAMPLE_NO_ACCENT);
             SwingUtilities.invokeLater(cleanTextArea);
 
             sampleMisprint();
