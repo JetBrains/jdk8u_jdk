@@ -652,6 +652,7 @@ javax/swing/JOptionPane/7138665/bug7138665.java                                 
 javax/swing/JPopupMenu/6495920/bug6495920.java                                        7033533 linux-all
 javax/swing/JTable/4220171/bug4220171.java                                            7033533 linux-all
 javax/swing/Security/6657138/ComponentTest.java                                       7033533 linux-all
+javax/swing/text/FlowView/LayoutTest.java                                             7033533 linux-all
 javax/swing/text/html/CSS/4530474/bug4530474.java                                     7033533,8194941 generic-all
 javax/swing/JTable/6263446/bug6263446.java                                            8169959 generic-all
 javax/swing/JTableHeader/6884066/bug6884066.java                                      8169952 generic-all
