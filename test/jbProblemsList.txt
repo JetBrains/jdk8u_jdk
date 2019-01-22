@@ -683,6 +683,7 @@ javax/swing/system/6799345/TestShutdown.java                                    
 javax/swing/text/AbstractDocument/6968363/Test6968363.java                            8144188 generic-all
 javax/swing/text/CSSBorder/6796710/bug6796710.java                                    8003533 generic-all
 javax/swing/text/DefaultEditorKit/4278839/bug4278839.java                             8063107 generic-all
+javax/swing/text/FlowView/LayoutTest.java                                             7033533 linux-all
 javax/swing/text/GlyphPainter2/6427244/bug6427244.java                                8050988 generic-all
 javax/swing/text/StyledEditorKit/4506788/bug4506788.java                              JRE-1012 generic-all
 javax/swing/text/View/8048110/bug8048110.java                                         8145644 generic-all
