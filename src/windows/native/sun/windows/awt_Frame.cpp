@@ -32,6 +32,8 @@
 #include "ComCtl32Util.h"
 
 #include <windowsx.h>
+#include <uxtheme.h>
+#include <dwmapi.h>
 
 #include <java_lang_Integer.h>
 #include <sun_awt_windows_WEmbeddedFrame.h>
@@ -126,6 +128,7 @@ AwtFrame::AwtFrame() {
     m_zoomed = FALSE;
     m_maxBoundsSet = FALSE;
     m_forceResetZoomed = FALSE;
+    m_pHasCustomDecoration = NULL;
 
     isInManualMoveOrSize = FALSE;
     grabbedHitTest = 0;
@@ -1695,6 +1698,126 @@ ret:
 
     delete nmbs;
 }
+
+// {start} Custom Decoration Support
+
+BOOL AwtFrame::HasCustomDecoration()
+{
+    if (!m_pHasCustomDecoration) {
+        m_pHasCustomDecoration = new BOOL;
+        JNIEnv *env = (JNIEnv *) JNU_GetEnv(jvm, JNI_VERSION_1_2);
+        *m_pHasCustomDecoration = JNU_CallMethodByName(env, NULL, GetTarget(env), "hasCustomDecoration", "()Z").z;
+    }
+    return *m_pHasCustomDecoration;
+}
+
+void GetSysInsets(RECT* insets) {
+    static RECT* sysInsets = NULL;
+
+    if (!sysInsets) {
+        sysInsets = new RECT;
+        sysInsets->left = sysInsets->right = ::GetSystemMetrics(SM_CXSIZEFRAME);
+        sysInsets->top = sysInsets->bottom = ::GetSystemMetrics(SM_CYSIZEFRAME);
+        sysInsets->top += ::GetSystemMetrics(SM_CYCAPTION);
+    }
+    ::CopyRect(insets, sysInsets);
+}
+
+LRESULT HitTestNCA(AwtFrame* frame, int x, int y) {
+    POINT ptMouse = {x, y};
+    RECT rcWindow;
+    RECT insets;
+
+    GetSysInsets(&insets);
+    GetWindowRect(frame->GetHWnd(), &rcWindow);
+
+    // Get the frame rectangle, adjusted for the style without a caption.
+    RECT rcFrame = {0};
+    AdjustWindowRectEx(&rcFrame, WS_OVERLAPPEDWINDOW & ~WS_CAPTION, FALSE, NULL);
+
+    USHORT uRow = 1;
+    USHORT uCol = 1;
+    BOOL fOnResizeBorder = FALSE;
+
+    JNIEnv *env = (JNIEnv *) JNU_GetEnv(jvm, JNI_VERSION_1_2);
+    if (JNU_CallMethodByName(env, NULL, frame->GetPeer(env),
+                             "hitTestCustomDecoration", "(II)Z",
+                             frame->ScaleDownX(ptMouse.x - rcWindow.left),
+                             frame->ScaleDownY(ptMouse.y - rcWindow.top)).z)
+    {
+        return HTNOWHERE;
+    }
+
+    if (ptMouse.y >= rcWindow.top &&
+        ptMouse.y < rcWindow.top + insets.top)
+    {
+        fOnResizeBorder = (ptMouse.y < (rcWindow.top - rcFrame.top));
+        uRow = 0;
+    } else if (ptMouse.y < rcWindow.bottom &&
+               ptMouse.y >= rcWindow.bottom - insets.bottom) {
+        uRow = 2;
+    }
+
+    if (ptMouse.x >= rcWindow.left &&
+        ptMouse.x < rcWindow.left + insets.left)
+    {
+        uCol = 0;
+    } else if (ptMouse.x < rcWindow.right &&
+               ptMouse.x >= rcWindow.right - insets.right)
+    {
+        uCol = 2;
+    }
+
+    LRESULT hitTests[3][3] = {
+            {HTTOPLEFT, fOnResizeBorder ? HTTOP : HTCAPTION, HTTOPRIGHT},
+            {HTLEFT, HTNOWHERE, HTRIGHT},
+            {HTBOTTOMLEFT, HTBOTTOM, HTBOTTOMRIGHT},
+    };
+
+    return hitTests[uRow][uCol];
+}
+
+MsgRouting AwtFrame::WmNcCalcSize(BOOL wParam, LPNCCALCSIZE_PARAMS lpncsp, LRESULT& retVal)
+{
+    if (!wParam || !HasCustomDecoration()) {
+        return AwtWindow::WmNcCalcSize(wParam, lpncsp, retVal);
+    }
+    BOOL fDwmEnabled = FALSE;
+
+    if (SUCCEEDED(DwmIsCompositionEnabled(&fDwmEnabled)) && fDwmEnabled) {
+        RECT insets;
+        GetSysInsets(&insets);
+
+        lpncsp->rgrc[0].left   = lpncsp->rgrc[0].left   + insets.left - 2;
+        lpncsp->rgrc[0].top    = lpncsp->rgrc[0].top    + 0; // insets.top - 2
+        lpncsp->rgrc[0].right  = lpncsp->rgrc[0].right  - insets.right + 2;
+        lpncsp->rgrc[0].bottom = lpncsp->rgrc[0].bottom - insets.bottom + 2;
+
+        retVal = 0L;
+        return mrConsume;
+    }
+    return mrDoDefault;
+}
+
+MsgRouting AwtFrame::WmNcHitTest(UINT x, UINT y, LRESULT& retVal)
+{
+    if (!HasCustomDecoration()) {
+        return AwtWindow::WmNcHitTest(x, y, retVal);
+    }
+    if (::IsWindow(GetModalBlocker(GetHWnd()))) {
+        retVal = HTCLIENT;
+        return mrConsume;
+    }
+    BOOL fDwmEnabled = FALSE;
+
+    if (SUCCEEDED(DwmIsCompositionEnabled(&fDwmEnabled)) && fDwmEnabled) {
+        retVal = HitTestNCA(this, x, y);
+        return retVal == HTNOWHERE ? mrDoDefault : mrConsume;
+    }
+    return mrDoDefault;
+}
+
+// {end} Custom Decoration Support
 
 /************************************************************************
  * WFramePeer native methods

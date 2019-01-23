@@ -489,7 +489,7 @@ $(eval $(call SetupNativeCompilation,BUILD_LIBAWT, \
     LDFLAGS_SUFFIX_windows := kernel32.lib user32.lib gdi32.lib winspool.lib \
         imm32.lib ole32.lib uuid.lib shell32.lib \
         comdlg32.lib winmm.lib comctl32.lib shlwapi.lib \
-        delayimp.lib jvm.lib $(WIN_JAVA_LIB) advapi32.lib \
+        delayimp.lib jvm.lib $(WIN_JAVA_LIB) advapi32.lib dwmapi.lib uxtheme.lib \
         -DELAYLOAD:user32.dll -DELAYLOAD:gdi32.dll \
         -DELAYLOAD:shell32.dll -DELAYLOAD:winmm.dll \
         -DELAYLOAD:winspool.drv -DELAYLOAD:imm32.dll \

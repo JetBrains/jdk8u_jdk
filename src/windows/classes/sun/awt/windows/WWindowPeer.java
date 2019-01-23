@@ -36,6 +36,7 @@ import java.beans.*;
 
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import sun.java2d.SunGraphics2D;
 import sun.util.logging.PlatformLogger;
@@ -995,5 +996,19 @@ public class WWindowPeer extends WPanelPeer implements WindowPeer,
             }
         }
         return err;
+    }
+
+    private volatile List<Rectangle> hitTestSpots;
+
+    private void setCustomDecorationHitTestSpots(List<Rectangle> hitTestSpots) {
+        this.hitTestSpots = new CopyOnWriteArrayList<>(hitTestSpots);
+    }
+
+    private boolean hitTestCustomDecoration(int x, int y) {
+        if (hitTestSpots == null) return false;
+        for (Rectangle spot : hitTestSpots) {
+            if (spot.contains(x, y)) return true;
+        }
+        return false;
     }
 }

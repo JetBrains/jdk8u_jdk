@@ -3936,6 +3936,15 @@ public class Window extends Container implements Accessible {
         }
     }
 
+    private volatile boolean hasCustomDecoration;
+
+    boolean hasCustomDecoration() {
+        return hasCustomDecoration;
+    }
+
+    void setHasCustomDecoration() {
+        hasCustomDecoration = true;
+    }
 
     // ************************** MIXING CODE *******************************
 
