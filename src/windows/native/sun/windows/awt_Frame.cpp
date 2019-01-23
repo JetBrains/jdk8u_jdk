@@ -1787,11 +1787,16 @@ MsgRouting AwtFrame::WmNcCalcSize(BOOL wParam, LPNCCALCSIZE_PARAMS lpncsp, LRESU
     if (SUCCEEDED(DwmIsCompositionEnabled(&fDwmEnabled)) && fDwmEnabled) {
         RECT insets;
         GetSysInsets(&insets);
+        static int xBorder = ::GetSystemMetrics(SM_CXBORDER);
+        static int yBorder = ::GetSystemMetrics(SM_CYBORDER);
 
-        lpncsp->rgrc[0].left   = lpncsp->rgrc[0].left   + insets.left - 2;
-        lpncsp->rgrc[0].top    = lpncsp->rgrc[0].top    + 0; // insets.top - 2
-        lpncsp->rgrc[0].right  = lpncsp->rgrc[0].right  - insets.right + 2;
-        lpncsp->rgrc[0].bottom = lpncsp->rgrc[0].bottom - insets.bottom + 2;
+        if (::IsZoomed(GetHWnd())) {
+            // When maximized we should include insets or otherwise the client area edges get out of a screen
+            lpncsp->rgrc[0].left = lpncsp->rgrc[0].left + insets.left - xBorder;
+            lpncsp->rgrc[0].top = lpncsp->rgrc[0].top + insets.bottom - yBorder; // do not count caption
+            lpncsp->rgrc[0].right = lpncsp->rgrc[0].right - insets.right + xBorder;
+            lpncsp->rgrc[0].bottom = lpncsp->rgrc[0].bottom - insets.bottom + yBorder;
+        }
 
         retVal = 0L;
         return mrConsume;
