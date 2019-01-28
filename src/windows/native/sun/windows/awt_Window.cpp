@@ -230,6 +230,8 @@ AwtWindow::AwtWindow() {
 
     fullScreenExclusiveModeState = FALSE;
     m_overriddenHwnd = NULL;
+
+    ::SetRect(&m_boundsOnDPIChange, 0, 0, 0, 0);
 }
 
 AwtWindow::~AwtWindow()
@@ -968,7 +970,8 @@ MsgRouting AwtWindow::WmDPIChanged(UINT xDPI, UINT yDPI, RECT* bounds) {
                            bounds->right - bounds->left, bounds->bottom - bounds->top,
                            SWP_NOZORDER | SWP_NOACTIVATE);
     } else {
-        // DPI of this screen changed. Store the new bounds for async update.
+        // Either DPI of this screen changed, or the window moved to a new screen by a shortcut (shift+meta+arrow).
+        // Store the new bounds for async update.
         ::CopyRect(&m_boundsOnDPIChange, bounds);
     }
     return mrConsume;
