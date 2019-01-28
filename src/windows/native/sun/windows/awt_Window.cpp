@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -225,6 +225,8 @@ AwtWindow::AwtWindow() {
     m_alwaysOnTop = false;
 
     fullScreenExclusiveModeState = FALSE;
+
+    ::SetRect(&m_boundsOnDPIChange, 0, 0, 0, 0);
 }
 
 AwtWindow::~AwtWindow()
@@ -963,7 +965,8 @@ MsgRouting AwtWindow::WmDPIChanged(UINT xDPI, UINT yDPI, RECT* bounds) {
                            bounds->right - bounds->left, bounds->bottom - bounds->top,
                            SWP_NOZORDER | SWP_NOACTIVATE);
     } else {
-        // DPI of this screen changed. Store the new bounds for async update.
+        // Either DPI of this screen changed, or the window moved to a new screen by a shortcut (shift+meta+arrow).
+        // Store the new bounds for async update.
         ::CopyRect(&m_boundsOnDPIChange, bounds);
     }
     return mrConsume;
