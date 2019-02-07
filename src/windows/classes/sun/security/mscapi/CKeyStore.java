@@ -47,6 +47,8 @@ import java.util.*;
 
 import sun.security.util.Debug;
 
+import sun.security.util.Debug;
+
 /**
  * Implementation of key store for Windows using the Microsoft Crypto API.
  *
@@ -182,6 +184,7 @@ abstract class CKeyStore extends KeyStoreSpi {
     private static final String KEYSTORE_COMPATIBILITY_MODE_PROP =
         "sun.security.mscapi.keyStoreCompatibilityMode";
     private final boolean keyStoreCompatibilityMode;
+    private static final Debug debug = Debug.getInstance("keystore");
 
     /*
      * The keystore entries.
@@ -711,6 +714,11 @@ abstract class CKeyStore extends KeyStoreSpi {
 
         } catch (KeyStoreException e) {
             throw new IOException(e);
+        }
+
+        if (debug != null) {
+            debug.println("MSCAPI keystore load: entry count: " +
+                    entries.size());
         }
     }
 
