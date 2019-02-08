@@ -2480,6 +2480,8 @@ static jobject gtk2_get_setting(JNIEnv *env, Setting property)
             return get_boolean_property(env, settings, "gtk-cursor-blink");
         case GTK_CURSOR_BLINK_TIME:
             return get_integer_property(env, settings, "gtk-cursor-blink-time");
+        case GTK_XFT_DPI:
+            return get_integer_property(env, settings, "gtk-xft-dpi");
     }
 
     return NULL;
