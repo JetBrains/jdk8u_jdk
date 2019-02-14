@@ -94,8 +94,6 @@ class SmartHolderBase {
 public:
     SmartHolderBase() : m_pointer(NULL) {}
 
-    SmartHolderBase& operator=(const SmartHolderBase&) = delete;
-
     void Attach(T* other) {
         Clean();
         m_pointer = other;
