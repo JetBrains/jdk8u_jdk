@@ -584,6 +584,67 @@ static void registerFontW(GdiFontMapInfo *fmi, jobject fontToFileMap,
     }
 }
 
+static void populateFontFileNameFromRegistryKey(HKEY regKey, GdiFontMapInfo *fmi, jobject fontToFileMap)
+{
+#define MAX_BUFFER (FILENAME_MAX+1)
+    const wchar_t wname[MAX_BUFFER];
+    const char data[MAX_BUFFER];
+
+    DWORD type;
+    LONG ret;
+    HKEY hkeyFonts;
+    DWORD dwNameSize;
+    DWORD dwDataValueSize;
+    DWORD nval;
+    DWORD dwNumValues, dwMaxValueNameLen, dwMaxValueDataLen;
+
+    /* Use the windows registry to map font names to files */
+    ret = RegOpenKeyEx(regKey,
+                       FONTKEY_NT, 0L, KEY_READ, &hkeyFonts);
+    if (ret != ERROR_SUCCESS) {
+        return;
+    }
+
+    ret = RegQueryInfoKeyW(hkeyFonts, NULL, NULL, NULL, NULL, NULL, NULL,
+                           &dwNumValues, &dwMaxValueNameLen,
+                           &dwMaxValueDataLen, NULL, NULL);
+
+    if (ret != ERROR_SUCCESS ||
+        dwMaxValueNameLen >= MAX_BUFFER ||
+        dwMaxValueDataLen >= MAX_BUFFER) {
+        RegCloseKey(hkeyFonts);
+        return;
+    }
+    for (nval = 0; nval < dwNumValues; nval++ ) {
+        dwNameSize = MAX_BUFFER;
+        dwDataValueSize = MAX_BUFFER;
+        ret = RegEnumValueW(hkeyFonts, nval, (LPWSTR)wname, &dwNameSize,
+                            NULL, &type, (LPBYTE)data, &dwDataValueSize);
+
+        if (ret != ERROR_SUCCESS) {
+            break;
+        }
+        if (type != REG_SZ) { /* REG_SZ means a null-terminated string */
+            continue;
+        }
+
+        if (!RegistryToBaseTTNameW((LPWSTR)wname) ) {
+            /* If the filename ends with ".ttf" or ".otf" also accept it.
+             * Not expecting to need to do this for .ttc files.
+             * Also note this code is not mirrored in the "A" (win9x) path.
+             */
+            LPWSTR dot = wcsrchr((LPWSTR)data, L'.');
+            if (dot == NULL || ((wcsicmp(dot, L".ttf") != 0)
+                                  && (wcsicmp(dot, L".otf") != 0))) {
+                continue;  /* not a TT font... */
+            }
+        }
+        registerFontW(fmi, fontToFileMap, (LPWSTR)wname, (LPWSTR)data);
+    }
+
+    RegCloseKey(hkeyFonts);
+}
+
 /* Obtain all the fontname -> filename mappings.
  * This is called once and the results returned to Java code which can
  * use it for lookups to reduce or avoid the need to search font files.
@@ -593,23 +654,10 @@ Java_sun_awt_Win32FontManager_populateFontFileNameMap0
 (JNIEnv *env, jclass obj, jobject fontToFileMap,
  jobject fontToFamilyMap, jobject familyToFontListMap, jobject locale)
 {
-#define MAX_BUFFER (FILENAME_MAX+1)
-    const wchar_t wname[MAX_BUFFER];
-    const char cname[MAX_BUFFER];
-    const char data[MAX_BUFFER];
-
-    DWORD type;
-    LONG ret;
-    HKEY hkeyFonts;
-    DWORD dwNameSize;
-    DWORD dwDataValueSize;
-    DWORD nval;
-    LPCSTR fontKeyName;
-    DWORD dwNumValues, dwMaxValueNameLen, dwMaxValueDataLen;
-    DWORD numValues = 0;
     jclass classID;
     jmethodID putMID;
     GdiFontMapInfo fmi;
+    LOGFONTW lfw;
 
     /* Check we were passed all the maps we need, and do lookup of
      * methods for JNI up-calls
@@ -669,89 +717,20 @@ Java_sun_awt_Win32FontManager_populateFontFileNameMap0
     if (screenDC == NULL) {
         return;
     }
-    /* Enumerate fonts via GDI to build maps of fonts and families */
-    if (IS_NT) {
-        LOGFONTW lfw;
-        memset(&lfw, 0, sizeof(lfw));
-        lfw.lfCharSet = DEFAULT_CHARSET;  /* all charsets */
-        wcscpy(lfw.lfFaceName, L"");      /* one face per family (CHECK) */
-        EnumFontFamiliesExW(screenDC, &lfw,
-                            (FONTENUMPROCW)EnumFamilyNamesW,
-                            (LPARAM)(&fmi), 0L);
-    } else {
-        LOGFONT lfa;
-        memset(&lfa, 0, sizeof(lfa));
-        lfa.lfCharSet = DEFAULT_CHARSET; /* all charsets */
-        strcpy(lfa.lfFaceName, "");      /* one face per family */
-        ret = EnumFontFamiliesExA(screenDC, &lfa,
-                            (FONTENUMPROCA)EnumFamilyNamesA,
-                            (LPARAM)(&fmi), 0L);
-    }
 
-    /* Use the windows registry to map font names to files */
-    fontKeyName = (IS_NT) ? FONTKEY_NT : FONTKEY_WIN;
-    ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                       fontKeyName, 0L, KEY_READ, &hkeyFonts);
-    if (ret != ERROR_SUCCESS) {
-        ReleaseDC(NULL, screenDC);
-        screenDC = NULL;
-        return;
-    }
+    memset(&lfw, 0, sizeof(lfw));
+    lfw.lfCharSet = DEFAULT_CHARSET;  /* all charsets */
+    wcscpy(lfw.lfFaceName, L"");      /* one face per family (CHECK) */
+    EnumFontFamiliesExW(screenDC, &lfw,
+                        (FONTENUMPROCW)EnumFamilyNamesW,
+                        (LPARAM)(&fmi), 0L);
 
-    if (IS_NT) {
-        ret = RegQueryInfoKeyW(hkeyFonts, NULL, NULL, NULL, NULL, NULL, NULL,
-                               &dwNumValues, &dwMaxValueNameLen,
-                               &dwMaxValueDataLen, NULL, NULL);
-    } else {
-        ret = RegQueryInfoKeyA(hkeyFonts, NULL, NULL, NULL, NULL, NULL, NULL,
-                               &dwNumValues, &dwMaxValueNameLen,
-                               &dwMaxValueDataLen, NULL, NULL);
-    }
-    if (ret != ERROR_SUCCESS ||
-        dwMaxValueNameLen >= MAX_BUFFER ||
-        dwMaxValueDataLen >= MAX_BUFFER) {
-        RegCloseKey(hkeyFonts);
-        ReleaseDC(NULL, screenDC);
-        screenDC = NULL;
-        return;
-    }
-    for (nval = 0; nval < dwNumValues; nval++ ) {
-        dwNameSize = MAX_BUFFER;
-        dwDataValueSize = MAX_BUFFER;
-        if (IS_NT) {
-            ret = RegEnumValueW(hkeyFonts, nval, (LPWSTR)wname, &dwNameSize,
-                                NULL, &type, (LPBYTE)data, &dwDataValueSize);
-        } else {
-            ret = RegEnumValueA(hkeyFonts, nval, (LPSTR)cname, &dwNameSize,
-                                NULL, &type, (LPBYTE)data, &dwDataValueSize);
-        }
-        if (ret != ERROR_SUCCESS) {
-            break;
-        }
-        if (type != REG_SZ) { /* REG_SZ means a null-terminated string */
-            continue;
-        }
-        if (IS_NT) {
-            if (!RegistryToBaseTTNameW((LPWSTR)wname) ) {
-                /* If the filename ends with ".ttf" or ".otf" also accept it.
-                 * Not expecting to need to do this for .ttc files.
-                 * Also note this code is not mirrored in the "A" (win9x) path.
-                 */
-                LPWSTR dot = wcsrchr((LPWSTR)data, L'.');
-                if (dot == NULL || ((wcsicmp(dot, L".ttf") != 0)
-                                      && (wcsicmp(dot, L".otf") != 0))) {
-                    continue;  /* not a TT font... */
-                }
-            }
-            registerFontW(&fmi, fontToFileMap, (LPWSTR)wname, (LPWSTR)data);
-        } else {
-            if (!RegistryToBaseTTNameA((LPSTR)cname)) {
-                continue; /* not a TT font... */
-            }
-            registerFontA(&fmi, fontToFileMap, cname, (LPCSTR)data);
-        }
-    }
-    RegCloseKey(hkeyFonts);
+    populateFontFileNameFromRegistryKey(HKEY_LOCAL_MACHINE, &fmi, fontToFileMap);
+    /* Starting from Windows 10 Preview Build 17704 fonts are installed into user's home folder by default,
+     * and are listed in user's registry section
+     */
+    populateFontFileNameFromRegistryKey(HKEY_CURRENT_USER, &fmi, fontToFileMap);
+
     ReleaseDC(NULL, screenDC);
     screenDC = NULL;
 }
