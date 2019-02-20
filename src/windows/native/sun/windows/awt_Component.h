@@ -583,7 +583,7 @@ public:
                                     LPNCCALCSIZE_PARAMS lpncsp,
                                     LRESULT &retVal);
     virtual MsgRouting WmNcPaint(HRGN hrgn);
-    virtual MsgRouting WmNcHitTest(UINT x, UINT y, LRESULT &retVal);
+    virtual MsgRouting WmNcHitTest(int x, int y, LRESULT &retVal);
     virtual MsgRouting WmSysCommand(UINT uCmdType, int xPos, int yPos);
     virtual MsgRouting WmExitSizeMove();
     virtual MsgRouting WmEnterMenuLoop(BOOL isTrackPopupMenu);

@@ -118,7 +118,7 @@ public:
     MsgRouting WmShowWindow(BOOL show, UINT status);
     MsgRouting WmDPIChanged(UINT xDPI, UINT yDPI, RECT* bounds);
     MsgRouting WmNcCalcSize(BOOL fCalcValidRects, LPNCCALCSIZE_PARAMS lpncsp, LRESULT& retVal);
-    MsgRouting WmNcHitTest(UINT x, UINT y, LRESULT& retVal);
+    MsgRouting WmNcHitTest(int x, int y, LRESULT& retVal);
 
     virtual MsgRouting WmSysCommand(UINT uCmdType, int xPos, int yPos);
 

@@ -1724,7 +1724,6 @@ void GetSysInsets(RECT* insets) {
 }
 
 LRESULT HitTestNCA(AwtFrame* frame, int x, int y) {
-    POINT ptMouse = {x, y};
     RECT rcWindow;
     RECT insets;
 
@@ -1739,31 +1738,30 @@ LRESULT HitTestNCA(AwtFrame* frame, int x, int y) {
     USHORT uCol = 1;
     BOOL fOnResizeBorder = FALSE;
 
-    JNIEnv *env = (JNIEnv *) JNU_GetEnv(jvm, JNI_VERSION_1_2);
-    if (JNU_CallMethodByName(env, NULL, frame->GetPeer(env),
-                             "hitTestCustomDecoration", "(II)Z",
-                             frame->ScaleDownX(ptMouse.x - rcWindow.left),
-                             frame->ScaleDownY(ptMouse.y - rcWindow.top)).z)
+    if (y >= rcWindow.top &&
+        y < rcWindow.top + insets.top)
     {
-        return HTNOWHERE;
-    }
-
-    if (ptMouse.y >= rcWindow.top &&
-        ptMouse.y < rcWindow.top + insets.top)
-    {
-        fOnResizeBorder = (ptMouse.y < (rcWindow.top - rcFrame.top));
+        JNIEnv *env = (JNIEnv *) JNU_GetEnv(jvm, JNI_VERSION_1_2);
+        if (JNU_CallMethodByName(env, NULL, frame->GetPeer(env),
+                                 "hitTestCustomDecoration", "(II)Z",
+                                 frame->ScaleDownX(x - rcWindow.left),
+                                 frame->ScaleDownY(y - rcWindow.top)).z)
+        {
+            return HTNOWHERE;
+        }
+        fOnResizeBorder = (y < (rcWindow.top - rcFrame.top));
         uRow = 0;
-    } else if (ptMouse.y < rcWindow.bottom &&
-               ptMouse.y >= rcWindow.bottom - insets.bottom) {
+    } else if (y < rcWindow.bottom &&
+               y >= rcWindow.bottom - insets.bottom) {
         uRow = 2;
     }
 
-    if (ptMouse.x >= rcWindow.left &&
-        ptMouse.x < rcWindow.left + insets.left)
+    if (x >= rcWindow.left &&
+        x < rcWindow.left + insets.left)
     {
         uCol = 0;
-    } else if (ptMouse.x < rcWindow.right &&
-               ptMouse.x >= rcWindow.right - insets.right)
+    } else if (x < rcWindow.right &&
+               x >= rcWindow.right - insets.right)
     {
         uCol = 2;
     }
@@ -1804,7 +1802,7 @@ MsgRouting AwtFrame::WmNcCalcSize(BOOL wParam, LPNCCALCSIZE_PARAMS lpncsp, LRESU
     return mrDoDefault;
 }
 
-MsgRouting AwtFrame::WmNcHitTest(UINT x, UINT y, LRESULT& retVal)
+MsgRouting AwtFrame::WmNcHitTest(int x, int y, LRESULT& retVal)
 {
     if (!HasCustomDecoration()) {
         return AwtWindow::WmNcHitTest(x, y, retVal);
