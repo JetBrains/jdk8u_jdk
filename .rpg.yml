@@ -1,0 +1,146 @@
+Skip to content
+Your account has been flagged.
+Because of that, your profile is hidden from the public. If you believe this is a mistake, contact support to have your account status reviewed.
+
+install antbuild
+Repositories0
+Code846
+Commits10
+Issues38
+Marketplace0
+Topics0
+Wikis3
+Users0
+Languages
+274 HTML
+175 XML
+84 Text
+67 Ant Build System
+54 Java
+35 Makefile
+23 Shell
+18 Nix
+9 C++
+6 Markdown
+Advanced search 
+846 code results
+@chamerling
+chamerling/soa4all-installer – AntActionsSpec.xml
+Showing the top four matches Last indexed on Jun 26, 2018
+XML
+		<antcall order="afterpacks" buildresource="antBuild.xml" verbose="no">
+			<property name="install.path" value="$INSTALL_PATH" />
+@NCIP
+NCIP/lexevs – izpack-lexbig.xml
+Showing the top four matches Last indexed on Jun 27, 2018
+XML
+            <fileset dir="./antbuild/root" targetdir="$INSTALL_PATH" casesensitive="no">
+                <include name="*"/>
+            <description>Installs a single non-redistributable Java archive containing all code required for invocation of the product API, and related administration tools.</description>
+            <fileset dir="./antbuild/runtime" targetdir="$INSTALL_PATH/runtime" casesensitive="no">
+@lexevs
+lexevs/lexevs – izpack-lexbig.xml
+Showing the top four matches Last indexed on Jun 27, 2018
+XML
+            <fileset dir="./antbuild/root" targetdir="$INSTALL_PATH" casesensitive="no">
+                <include name="*"/>
+            <description>Installs a single non-redistributable Java archive containing all code required for invocation of the product API, and related administration tools.</description>
+            <fileset dir="./antbuild/runtime" targetdir="$INSTALL_PATH/runtime" casesensitive="no">
+@AprilAndFriends
+AprilAndFriends/hltypes – Android.AdbBuild.targets
+Showing the top two matches Last indexed on Jun 30, 2018
+XML
+  <Target Name="_AddAntBuild"
+          DependsOnTargets="Link;">
+    <ItemGroup>
+      <AntBuild Include="$(TargetPath)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_AddAdbDeploy"
+          DependsOnTargets="AntBuild;">
+@AprilAndFriends
+AprilAndFriends/hltypes – Android.AdbBuild.targets
+Showing the top two matches Last indexed on Jun 30, 2018
+XML
+  <Target Name="_AddAntBuild"
+          DependsOnTargets="Link;">
+    <ItemGroup>
+      <AntBuild Include="$(TargetPath)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_AddAdbDeploy"
+          DependsOnTargets="AntBuild;">
+@AprilAndFriends
+AprilAndFriends/hltypes – Android.AdbBuild.targets
+Showing the top two matches Last indexed on Jun 30, 2018
+XML
+  <Target Name="_AddAntBuild"
+          DependsOnTargets="Link;">
+    <ItemGroup>
+      <AntBuild Include="$(TargetPath)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_AddAdbDeploy"
+          DependsOnTargets="AntBuild;">
+@AprilAndFriends
+AprilAndFriends/hltypes – Android.AdbBuild.targets
+Showing the top two matches Last indexed on Jun 30, 2018
+XML
+  <Target Name="_AddAntBuild"
+          DependsOnTargets="Link;">
+    <ItemGroup>
+      <AntBuild Include="$(TargetPath)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_AddAdbDeploy"
+          DependsOnTargets="AntBuild;">
+@pele90
+pele90/catevil – Android.AdbBuild.targets
+Showing the top two matches Last indexed on Jul 13, 2018
+XML
+  <Target Name="_AddAntBuild"
+          DependsOnTargets="Link;">
+    <ItemGroup>
+      <AntBuild Include="$(TargetPath)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_AddAdbDeploy"
+          DependsOnTargets="AntBuild;">
+@pele90
+pele90/catevil – Android.AdbBuild.targets
+Showing the top two matches Last indexed on Jul 13, 2018
+XML
+  <Target Name="_AddAntBuild"
+          DependsOnTargets="Link;">
+    <ItemGroup>
+      <AntBuild Include="$(TargetPath)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_AddAdbDeploy"
+          DependsOnTargets="AntBuild;">
+@cryptomator
+cryptomator/cryptomator-mac – build.sh
+Showing the top two matches Last indexed on Sep 20, 2018
+Shell
+command -v ant >/dev/null 2>&1 || { echo >&2 "ant not found. Fix by 'brew install ant'."; exit 1; }
+command -v curl >/dev/null 2>&1 || { echo >&2 "curl not found."; exit 1; }
+command -v codesign >/dev/null 2>&1 || { echo >&2 "codesign not found. Fix by 'xcode-select --install'."; exit 1; }
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.
