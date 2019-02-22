@@ -1,41 +1,44 @@
-java/awt/event/TextEvent/TextEventSequenceTest/TextEventSequenceTest.java                 windows-all
-java/awt/Robot/RobotExtraButton/RobotExtraButton.java                                     windows-all
-java/awt/FileDialog/FileDialogMemoryLeak/FileDialogLeakTest.java                          windows-all
-java/awt/Focus/ClearGlobalFocusOwnerTest/ClearGlobalFocusOwnerTest.java                   macosx-all
-java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java                           macosx-all,windows-all
-java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java linux-all,macosx-all,windows-all
-java/awt/Focus/ContainerFocusAutoTransferTest/ContainerFocusAutoTransferTest.java         macosx-all
-java/awt/Focus/FocusTransitionTest/FocusTransitionTest.java                               windows-all,macosx-all
-java/awt/Focus/FrameMinimizeTest/FrameMinimizeTest.java                                   macosx-all,linux-all
-java/awt/Focus/InputVerifierTest3/InputVerifierTest3.java                                 macosx-all
-java/awt/Focus/ModalDialogActivationTest/ModalDialogActivationTest.java                   macosx-all
-java/awt/Graphics/LineClipTest.java                                                       windows-all,macosx-all
-java/awt/KeyboardFocusmanager/TypeAhead/ButtonActionKeyTest/ButtonActionKeyTest.html      macosx-all
-java/awt/Robot/HiDPIScreenCapture/HiDPIRobotScreenCaptureTest.java                        windows-all
-java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java                  macosx-all
-java/awt/Toolkit/SunDisplayChangerLeakTest/SunDisplayChangerLeakTest.java                 linux-all,windows-all
-java/awt/event/KeyEvent/8020209/bug8020209.java                                           macosx-all
-java/awt/event/KeyEvent/DeadKey/DeadKeyMacOSXInputText.java                               macosx-all
-java/awt/event/KeyEvent/DeadKey/deadKeyMacOSX.java                                        macosx-all
-java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                                          windows-all,macosx-all
-java/awt/hidpi/ClientAreaOriginWindowsTest.java                                           windows-all
-java/awt/hidpi/DrawOnFrameGraphicsTest.java                                               windows-all
-java/awt/hidpi/DrawOnFrameGraphicsTest.java                                               windows-all
-java/awt/hidpi/properties/HiDPIPropertiesUnixTest.java                                    linux-all,macosx-all
+java/awt/event/TextEvent/TextEventSequenceTest/TextEventSequenceTest.java                 nobug windows-all
+java/awt/Robot/RobotExtraButton/RobotExtraButton.java                                     nobug windows-all
+java/awt/FileDialog/FileDialogMemoryLeak/FileDialogLeakTest.java                          nobug windows-all
+java/awt/Focus/ClearGlobalFocusOwnerTest/ClearGlobalFocusOwnerTest.java                   nobug macosx-all
+java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java                           nobug macosx-all,windows-all
+java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java nobug linux-all,macosx-all,windows-all
+java/awt/Focus/ContainerFocusAutoTransferTest/ContainerFocusAutoTransferTest.java         nobug macosx-all
+java/awt/Focus/FocusTransitionTest/FocusTransitionTest.java                               nobug windows-all,macosx-all
+java/awt/Focus/FrameMinimizeTest/FrameMinimizeTest.java                                   nobug macosx-all,linux-all
+java/awt/Focus/InputVerifierTest3/InputVerifierTest3.java                                 nobug macosx-all
+java/awt/Focus/ModalDialogActivationTest/ModalDialogActivationTest.java                   nobug macosx-all
+java/awt/Graphics/LineClipTest.java                                                       nobug windows-all,macosx-all
+java/awt/KeyboardFocusmanager/TypeAhead/ButtonActionKeyTest/ButtonActionKeyTest.html      nobug macosx-all
+java/awt/Robot/HiDPIScreenCapture/HiDPIRobotScreenCaptureTest.java                        nobug windows-all
+java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java                  nobug macosx-all
+java/awt/Toolkit/SunDisplayChangerLeakTest/SunDisplayChangerLeakTest.java                 nobug linux-all,windows-all
+java/awt/Window/8027025/Test8027025.java                                                  nobug macosx-all
+java/awt/Window/AlwaysOnTop/AlwaysOnTopFieldTest.java                                     nobug linux-all
+java/awt/event/KeyEvent/8020209/bug8020209.java                                           nobug macosx-all
+java/awt/event/KeyEvent/DeadKey/DeadKeyMacOSXInputText.java                               nobug macosx-all
+java/awt/event/KeyEvent/DeadKey/deadKeyMacOSX.java                                        nobug macosx-all
+java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                                          nobug windows-all,macosx-all
+java/awt/hidpi/ClientAreaOriginWindowsTest.java                                           nobug windows-all
+java/awt/hidpi/DrawOnFrameGraphicsTest.java                                               nobug windows-all
+java/awt/hidpi/DrawOnFrameGraphicsTest.java                                               nobug windows-all
+java/awt/hidpi/properties/HiDPIPropertiesUnixTest.java                                    nobug linux-all,macosx-all
 
-javax/swing/JFrame/NSTexturedJFrame/NSTexturedJFrame.java                                 macosx-all
-javax/swing/JInternalFrame/8069348/bug8069348.java                                        macosx-all,windows-all
-javax/swing/JInternalFrame/8160248/JInternalFrameDraggingTest.java                        macosx-all,windows-all
-javax/swing/JPopupMenu/7154841/bug7154841.java                                            macosx-all
-javax/swing/JTable/8133919/DrawGridLInesTest.java                                         linux-all
-javax/swing/dnd/7171812/bug7171812.java                                                   macosx-all,windows-all
-javax/swing/text/FlowView/LayoutTest.java                                                 windows-all
-javax/swing/text/View/8156217/FPMethodCalledTest.java                                     linux-all,macosx-all
+javax/swing/JFrame/NSTexturedJFrame/NSTexturedJFrame.java                                 nobug macosx-all
+javax/swing/JInternalFrame/8069348/bug8069348.java                                        nobug macosx-all,windows-all
+javax/swing/JInternalFrame/8160248/JInternalFrameDraggingTest.java                        nobug macosx-all,windows-all
+javax/swing/JInternalFrame/InternalFrameIsNotCollectedTest.java                           nobug linux-all
+javax/swing/JPopupMenu/7154841/bug7154841.java                                            nobug macosx-all
+javax/swing/JTable/8133919/DrawGridLInesTest.java                                         nobug linux-all
+javax/swing/dnd/7171812/bug7171812.java                                                   nobug macosx-all,windows-all
+javax/swing/text/FlowView/LayoutTest.java                                                 nobug windows-all
+javax/swing/text/View/8156217/FPMethodCalledTest.java                                     nobug linux-all,macosx-all
 
-jb/javax/swing/JDialog/JDialog1054.java                                                   macosx-all
-jb/javax/swing/JDialog/JDialog186.java                                                    linux-all,macosx-all,windows-all
-jb/javax/swing/JDialog/JDialog705.java                                                    macosx-all
-jb/javax/swing/JDialog/JDialog741/JDialog741.html                                         linux-all,macosx-all,windows-all
-jb/sun/awt/macos/KeyPressAndHoldTest.java                                                 macosx-all
-jb/sun/awt/macos/MoveFocusShortcutTest.java                                               macosx-all
-jb/sun/lwawt/macosx/NSEvent/nsevent422.sh                                                 macosx-all
+jb/javax/swing/JDialog/JDialog1054.java                                                   nobug macosx-all
+jb/javax/swing/JDialog/JDialog186.java                                                    nobug linux-all,macosx-all,windows-all
+jb/javax/swing/JDialog/JDialog705.java                                                    nobug macosx-all
+jb/javax/swing/JDialog/JDialog741/JDialog741.html                                         nobug linux-all,macosx-all,windows-all
+jb/sun/awt/macos/KeyPressAndHoldTest.java                                                 nobug macosx-all
+jb/sun/awt/macos/MoveFocusShortcutTest.java                                               nobug macosx-all
+jb/sun/lwawt/macosx/NSEvent/nsevent422.sh                                                 nobug macosx-all
