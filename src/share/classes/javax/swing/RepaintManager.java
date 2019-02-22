@@ -1058,10 +1058,13 @@ public class RepaintManager
                             getDefaultScreenDevice().getDefaultConfiguration();
         }
         Dimension maxSize = getDoubleBufferMaximumSize();
+        // Desktop env may report empty size for expired displays
+        int maxWidth = maxSize.width > 0 ? maxSize.width : 1;
+        int maxHeight = maxSize.height > 0 ? maxSize.height : 1;
         int width = proposedWidth < 1 ? 1 :
-            (proposedWidth > maxSize.width? maxSize.width : proposedWidth);
+            (proposedWidth > maxWidth? maxWidth : proposedWidth);
         int height = proposedHeight < 1 ? 1 :
-            (proposedHeight > maxSize.height? maxSize.height : proposedHeight);
+            (proposedHeight > maxHeight? maxHeight : proposedHeight);
         VolatileImage image = volatileMap.get(config);
         if (image == null || image.getWidth() < width ||
                              image.getHeight() < height) {
@@ -1094,10 +1097,14 @@ public class RepaintManager
         }
         doubleBuffer = standardDoubleBuffer;
 
+        // Desktop env may report empty size for expired displays
+        int maxWidth = maxSize.width > 0 ? maxSize.width : 1;
+        int maxHeight = maxSize.height > 0 ? maxSize.height : 1;
+
         width = proposedWidth < 1? 1 :
-                  (proposedWidth > maxSize.width? maxSize.width : proposedWidth);
+                  (proposedWidth > maxWidth? maxWidth : proposedWidth);
         height = proposedHeight < 1? 1 :
-                  (proposedHeight > maxSize.height? maxSize.height : proposedHeight);
+                  (proposedHeight > maxHeight? maxHeight : proposedHeight);
 
         if (doubleBuffer.needsReset || (doubleBuffer.image != null &&
                                         (doubleBuffer.size.width < width ||
