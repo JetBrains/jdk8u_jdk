@@ -1723,6 +1723,7 @@ void GetSysInsets(RECT* insets) {
     ::CopyRect(insets, sysInsets);
 }
 
+// The method follows the guide: https://docs.microsoft.com/en-us/windows/desktop/dwm/customframe
 LRESULT HitTestNCA(AwtFrame* frame, int x, int y) {
     RECT rcWindow;
     RECT insets;
@@ -1734,6 +1735,7 @@ LRESULT HitTestNCA(AwtFrame* frame, int x, int y) {
     RECT rcFrame = {0};
     AdjustWindowRectEx(&rcFrame, WS_OVERLAPPEDWINDOW & ~WS_CAPTION, FALSE, NULL);
 
+    // Determine if the hit test is for resizing. Default middle (1,1).
     USHORT uRow = 1;
     USHORT uCol = 1;
     BOOL fOnResizeBorder = FALSE;
