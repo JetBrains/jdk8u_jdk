@@ -636,6 +636,17 @@ CGGI_CreateImageForGlyph
     CGFloat x = -info->topLeftX;
     CGFloat y = canvas->image->height + info->topLeftY;
 
+    Boolean status = false;
+    Boolean appleFontSmoothingEnabled =
+        CFPreferencesGetAppBooleanValue(CFSTR("AppleFontSmoothing"),
+                                        kCFPreferencesCurrentApplication,
+                                        &status);
+
+    if (status) {
+        CGContextSetAllowsFontSmoothing(canvas->context, appleFontSmoothingEnabled);
+        CGContextSetShouldSmoothFonts(canvas->context, appleFontSmoothingEnabled);
+    }
+
     if (glyphDescriptor == &argb) {
         CGAffineTransform matrix = CGContextGetTextMatrix(canvas->context);
         CGFloat fontSize = sqrt(fabs(matrix.a * matrix.d - matrix.b * matrix.c));
