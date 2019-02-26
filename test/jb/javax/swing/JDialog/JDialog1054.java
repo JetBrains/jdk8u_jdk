@@ -120,11 +120,9 @@ public class JDialog1054 {
                 Window window = e.getWindow();
                 if (window == nonModalDialog) {
                     nonModalDialogGainedFocus.countDown();
-                }
-                if (window == modalDialog) {
+                } else if (window == modalDialog) {
                     modalDialogGainedFocus.countDown();
-                }
-                if (window == owner) {
+                } else if (window == owner) {
                     ownerGainedFocus.countDown();
                 }
             }
@@ -169,7 +167,7 @@ public class JDialog1054 {
             SwingUtilities.invokeLater(frameRunner);
             if(!nonModalDialogGainedFocus.await(timeout, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Test ERROR: Cannot focus on non-modal dialog");
-            };
+            }
             System.out.println("Non-modal dialog gained focus");
             // Wait for a while to improve the visibility of the test run
             Thread.sleep(pause);
@@ -179,7 +177,7 @@ public class JDialog1054 {
                 SwingUtilities.invokeLater(frameFocusRequester);
                 if(!ownerGainedFocus.await(timeout, TimeUnit.MILLISECONDS)) {
                     throw new RuntimeException("Test ERROR: Cannot focus on owner frame");
-                };
+                }
                 System.out.println("Owner frame gained focus");
                 // Wait for a while to improve the visibility of the test run
                 Thread.sleep(pause);
@@ -189,7 +187,7 @@ public class JDialog1054 {
             SwingUtilities.invokeLater(modalDialogRunner);
             if(!modalDialogGainedFocus.await(timeout, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Test ERROR: Cannot focus on modal dialog");
-            };
+            }
             System.out.println("Modal dialog gained focus");
             // Wait for a while before screen capture so any graphic effects appear
             Thread.sleep(pause);
