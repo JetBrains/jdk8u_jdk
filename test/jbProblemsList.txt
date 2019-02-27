@@ -234,9 +234,6 @@ java/awt/Toolkit/ToolkitPropertyTest/ToolkitPropertyTest_Enable.java            
 java/awt/TrayIcon/PopupMenuLeakTest/PopupMenuLeakTest.java                          8039081 generic-all
 java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java                 7107528 generic-all
 
-# fixed in 8_112
-java/awt/Window/AlwaysOnTop/AlwaysOnTopFieldTest.java                               7081594 macosx-all
-
 java/awt/Window/AlwaysOnTop/SyncAlwaysOnTopFieldTest.java                           8198739 windows-all
 java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java                          8032450,8169530 generic-all
 java/awt/Window/BackgroundIsNotUpdated/BackgroundIsNotUpdated.java                  8142536 generic-all
