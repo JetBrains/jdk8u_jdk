@@ -37,5 +37,4 @@ jb/javax/swing/JDialog/JDialog186.java                                          
 jb/javax/swing/JDialog/JDialog705.java                                                    macosx-all
 jb/javax/swing/JDialog/JDialog741/JDialog741.html                                         linux-all,macosx-all,windows-all
 jb/sun/awt/macos/KeyPressAndHoldTest.java                                                 macosx-all
-jb/sun/awt/macos/MoveFocusShortcutTest.java                                               macosx-all
 jb/sun/lwawt/macosx/NSEvent/nsevent422.sh                                                 macosx-all
