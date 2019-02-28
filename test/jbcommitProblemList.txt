@@ -40,5 +40,4 @@ jb/javax/swing/JDialog/JDialog186.java                                          
 jb/javax/swing/JDialog/JDialog705.java                                                    nobug macosx-all
 jb/javax/swing/JDialog/JDialog741/JDialog741.html                                         nobug linux-all,macosx-all,windows-all
 jb/sun/awt/macos/KeyPressAndHoldTest.java                                                 nobug macosx-all
-jb/sun/awt/macos/MoveFocusShortcutTest.java                                               nobug macosx-all
 jb/sun/lwawt/macosx/NSEvent/nsevent422.sh                                                 nobug macosx-all
