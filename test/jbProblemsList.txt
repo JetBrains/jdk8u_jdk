@@ -213,7 +213,6 @@ java/awt/Multiscreen/MultiScreenInsetsTest/MultiScreenInsetsTest.java           
 java/awt/Multiscreen/MultiScreenLocationTest/MultiScreenLocationTest.java           8155744 linux-all
 java/awt/event/TextEvent/TextEventSequenceTest/TextEventSequenceTest.java           8077686 linux-all
 javax/swing/JComboBox/8015300/Test8015300.java                                      8077686 linux-all
-java/awt/Paint/ComponentIsNotDrawnAfterRemoveAddTest/ComponentIsNotDrawnAfterRemoveAddTest.java 8139581 generic-all
 java/awt/Paint/ExposeOnEDT.java                                                     8169104 windows-all
 java/awt/Paint/PaintNativeOnUpdate.java                                             8028000 generic-all
 
