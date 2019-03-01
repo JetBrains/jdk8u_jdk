@@ -52,6 +52,7 @@
 @public
     CGContextRef context;
     vImage_Buffer *image;
+    Boolean smoothFonts;
 }
 @end;
 
@@ -458,6 +459,15 @@ CGGI_InitCanvas(CGGI_GlyphCanvas *canvas,
     CGContextSetFontSize(canvas->context, 1);
     CGContextSaveGState(canvas->context);
 
+    Boolean status = false;
+    canvas->smoothFonts = CFPreferencesGetAppBooleanValue(CFSTR("AppleFontSmoothing"),
+                                                          kCFPreferencesCurrentApplication,
+                                                          &status);
+    if (!status ) {
+        canvas->smoothFonts = YES;
+    }
+
+
     CGColorSpaceRelease(colorSpace);
 }
 
@@ -636,16 +646,8 @@ CGGI_CreateImageForGlyph
     CGFloat x = -info->topLeftX;
     CGFloat y = canvas->image->height + info->topLeftY;
 
-    Boolean status = false;
-    Boolean appleFontSmoothingEnabled =
-        CFPreferencesGetAppBooleanValue(CFSTR("AppleFontSmoothing"),
-                                        kCFPreferencesCurrentApplication,
-                                        &status);
-
-    if (status) {
-        CGContextSetAllowsFontSmoothing(canvas->context, appleFontSmoothingEnabled);
-        CGContextSetShouldSmoothFonts(canvas->context, appleFontSmoothingEnabled);
-    }
+    CGContextSetAllowsFontSmoothing(canvas->context, canvas->smoothFonts);
+    CGContextSetShouldSmoothFonts(canvas->context, canvas->smoothFonts);
 
     if (glyphDescriptor == &argb) {
         CGAffineTransform matrix = CGContextGetTextMatrix(canvas->context);
