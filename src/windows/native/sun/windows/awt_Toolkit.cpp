@@ -680,19 +680,10 @@ BOOL AwtToolkit::Initialize(BOOL localPump) {
 
     CATCH_BAD_ALLOC_RET(FALSE);
 
-    SYSTEM_INFO si;
-    ::ZeroMemory(&si, sizeof(SYSTEM_INFO));
-    ::GetNativeSystemInfo(&si);
-    BOOL is_x86 = (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL);
-
-    BOOL is_wow64;
-    ::IsWow64Process(::GetCurrentProcess(), &is_wow64);
-    if (!is_x86 && !is_wow64) { // [tav] EnableNonClientDpiScaling crashes on x86 or WOW64, so just not using it
-        HMODULE hLibUser32Dll = JDK_LoadSystemLibrary("User32.dll");
-        if (hLibUser32Dll != NULL) {
-            lpEnableNonClientDpiScaling = (EnableNonClientDpiScalingFunc*)GetProcAddress(hLibUser32Dll, "EnableNonClientDpiScaling");
-            ::FreeLibrary(hLibUser32Dll);
-        }
+    HMODULE hLibUser32Dll = JDK_LoadSystemLibrary("User32.dll");
+    if (hLibUser32Dll != NULL) {
+        lpEnableNonClientDpiScaling = (EnableNonClientDpiScalingFunc*)GetProcAddress(hLibUser32Dll, "EnableNonClientDpiScaling");
+        ::FreeLibrary(hLibUser32Dll);
     }
 
     if (tk.m_isWin8OrLater && tk.m_touchKbrdAutoShowIsEnabled) {

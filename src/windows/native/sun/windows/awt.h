@@ -64,7 +64,7 @@ typedef enum _DPI_AWARENESS {
     DPI_AWARENESS_PER_MONITOR_AWARE  = 2
 } DPI_AWARENESS;
 */
-typedef BOOL(EnableNonClientDpiScalingFunc)(HWND);
+typedef BOOL(WINAPI EnableNonClientDpiScalingFunc)(HWND);
 //#endif
 
 // val >= 0 todo [tav] until switch to VS'12
