@@ -373,6 +373,9 @@ java/io/CharArrayReader/OverflowInRead.java                                     
 # https://bugs.openjdk.java.net/browse/JDK-6501010
 java/io/File/GetXSpace.java                                                        generic-all
 
+java/io/FileOutputStream/AtomicAppend.java                                         8202290 macosx-all
+java/nio/channels/FileChannel/AtomicAppend.java                                    8202290 macosx-all
+
 # Test ignored: Test truncates system files when run as root, see 7042603
 java/io/IOException/LastErrorString.java                                           7042603 generic-all
 
