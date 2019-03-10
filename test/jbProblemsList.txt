@@ -207,7 +207,7 @@ java/awt/Mouse/TitleBarDoubleClick/TitleBarDoubleClick.html                     
 java/awt/MouseAdapter/MouseAdapterUnitTest/MouseAdapterUnitTest.java                8012577 generic-all
 java/awt/MouseInfo/GetPointerInfoTest.java                                          8130741,8158798 generic-all
 java/awt/MouseInfo/JContainerMousePositionTest.java                                 8028484 generic-all
-java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java             7124230,8036915 macosx-all,linux-all
+java/awt/Multiscreen/LocationRelativeToTest/LocationRelativeToTest.java             7124230,8036915 macosx-all,linux-all,windows-all
 java/awt/Multiscreen/MouseEventTest/MouseEventTest.java                             8155744 linux-all
 java/awt/Multiscreen/MultiScreenInsetsTest/MultiScreenInsetsTest.java               8134669 linux-all
 java/awt/Multiscreen/MultiScreenLocationTest/MultiScreenLocationTest.java           8155744 linux-all
@@ -375,6 +375,9 @@ java/io/CharArrayReader/OverflowInRead.java                                     
 # http://bugs.java.com/view_bug.do?bug_id=6501010
 # https://bugs.openjdk.java.net/browse/JDK-6501010
 java/io/File/GetXSpace.java                                                        generic-all
+
+java/io/FileOutputStream/AtomicAppend.java                                         8202290 macosx-all
+java/nio/channels/FileChannel/AtomicAppend.java                                    8202290 macosx-all
 
 # Test ignored: Test truncates system files when run as root, see 7042603
 java/io/IOException/LastErrorString.java                                           7042603 generic-all
