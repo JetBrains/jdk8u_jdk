@@ -58,7 +58,13 @@ class CoTaskStringHolder {
 public:
     CoTaskStringHolder() : m_str(NULL) {}
 
+    CoTaskStringHolder(CoTaskStringHolder& other) {
+        m_str = other.m_str;
+        other.m_str = NULL;
+    }
+
     CoTaskStringHolder& operator=(CoTaskStringHolder& other) {
+        if (m_str == other.m_str) return *this;
         Clean();
         m_str = other.m_str;
         other.m_str = NULL;
@@ -84,8 +90,10 @@ private:
     LPTSTR m_str;
 
     void Clean() {
-        if (m_str)
+        if (m_str) {
             ::CoTaskMemFree(m_str);
+            m_str = NULL;
+        }
     }
 };
 
@@ -95,6 +103,7 @@ public:
     SmartHolderBase() : m_pointer(NULL) {}
 
     void Attach(T* other) {
+        if (m_pointer == other) return;
         Clean();
         m_pointer = other;
     }
@@ -114,8 +123,10 @@ protected:
     T* m_pointer;
 
     virtual void Clean() {
-        if (m_pointer)
+        if (m_pointer) {
             delete m_pointer;
+            m_pointer = NULL;
+        }
     }
 };
 
@@ -126,8 +137,10 @@ class SmartHolder : public SmartHolderBase<T> {
 template <typename T>
 class SmartHolder<T[]> : public SmartHolderBase<T> {
     virtual void Clean() {
-        if (m_pointer)
+        if (m_pointer) {
             delete [] m_pointer;
+            m_pointer = NULL;
+        }
     }
 };
 
@@ -515,10 +528,9 @@ private:
         HWND hdlg;
         OLE_HRT(pWindow->GetWindow(&hdlg));
 
-        HWND parent = ::GetParent(hdlg);
         jobject peer = data->peer;
-        env->CallVoidMethod(peer, AwtFileDialog::setHWndMID, (jlong)parent);
-        ::SetProp(parent, ModalDialogPeerProp, reinterpret_cast<HANDLE>(peer));
+        env->CallVoidMethod(peer, AwtFileDialog::setHWndMID, (jlong)hdlg);
+        ::SetProp(hdlg, ModalDialogPeerProp, reinterpret_cast<HANDLE>(peer));
 
         // fix for 4508670 - disable CS_SAVEBITS
         DWORD style = ::GetClassLong(hdlg, GCL_STYLE);
@@ -527,13 +539,13 @@ private:
         // set appropriate icon for parentless dialogs
         jobject awtParent = env->GetObjectField(peer, AwtFileDialog::parentID);
         if (awtParent == NULL) {
-            ::SendMessage(parent, WM_SETICON, (WPARAM)ICON_BIG,
+            ::SendMessage(hdlg, WM_SETICON, (WPARAM)ICON_BIG,
                           (LPARAM)AwtToolkit::GetInstance().GetAwtIcon());
         } else {
             AwtWindow *awtWindow = (AwtWindow *)JNI_GET_PDATA(awtParent);
-            ::SendMessage(parent, WM_SETICON, (WPARAM)ICON_BIG,
+            ::SendMessage(hdlg, WM_SETICON, (WPARAM)ICON_BIG,
                           (LPARAM)(awtWindow->GetHIcon()));
-            ::SendMessage(parent, WM_SETICON, (WPARAM)ICON_SMALL,
+            ::SendMessage(hdlg, WM_SETICON, (WPARAM)ICON_SMALL,
                           (LPARAM)(awtWindow->GetHIconSm()));
             env->DeleteLocalRef(awtParent);
         }
@@ -624,7 +636,12 @@ AwtFileDialog::Show(void *p)
               parentless dialogs we use NULL to show them in the taskbar,
               and for all other dialogs AwtToolkit's HWND is used.
             */
-        HWND hwndOwner = awtParent ? AwtToolkit::GetInstance().GetHWnd() : NULL;
+        /* [moklev] This fix does not needed anymore
+         * Tested on Windows 10 with example from JDK-4080029
+         * Revert the fix and set the proper parent to keep correct position of modal dialogs
+         */
+//        HWND hwndOwner = awtParent ? AwtToolkit::GetInstance().GetHWnd() : NULL;
+        HWND hwndOwner = awtParent ? awtParent->GetHWnd() : NULL;
 
         if (title == NULL || env->GetStringLength(title)==0) {
             title = JNU_NewStringPlatform(env, L" ");
@@ -715,16 +732,23 @@ AwtFileDialog::Show(void *p)
             OLE_HRT(pfd->SetFileTypes(s_fileFilterCount, s_fileFilterSpec));
             OLE_HRT(pfd->SetFileTypeIndex(1));
 
-            IShellItemPtr directoryItem;
-            OLE_NEXT_TRY
-            OLE_HRT(CreateShellItem(directoryBuffer, directoryItem));
-            OLE_HRT(pfd->SetFolder(directoryItem));
-            OLE_CATCH
-
-            CoTaskStringHolder shortName = GetShortName(fileBuffer);
-            if (shortName) {
-                OLE_HRT(pfd->SetFileName(shortName));
+            {
+                IShellItemPtr directoryItem;
+                OLE_TRY
+                OLE_HRT(CreateShellItem(directoryBuffer, directoryItem));
+                OLE_HRT(pfd->SetFolder(directoryItem));
+                OLE_CATCH
             }
+
+            {
+                CoTaskStringHolder shortName = GetShortName(fileBuffer);
+                if (shortName) {
+                    OLE_TRY
+                    OLE_HRT(pfd->SetFileName(shortName));
+                    OLE_CATCH
+                }
+            }
+
             OLE_CATCH
         }
 
@@ -785,7 +809,7 @@ AwtFileDialog::Show(void *p)
 
         AwtDialog::ModalActivateNextWindow(NULL, target, peer);
 
-        if (useCommonItemDialog) {
+        if (!useCommonItemDialog) {
             VERIFY(::SetCurrentDirectory(currentDirectory));
         }
 
