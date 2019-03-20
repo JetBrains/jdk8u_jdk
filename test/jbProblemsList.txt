@@ -882,6 +882,7 @@ com/sun/nio/sctp/SctpMultiChannel/SocketOptionTests.java                        
 com/sun/tools/attach/StartManagementAgent.java                                    8195088 generic-all
 
 sun/nio/cs/FindDecoderBugs.java                                                   8022224 linux-all
+sun/nio/ch/TestMaxCachedBufferSize.java                                           8212812 windows-all
 
 com/sun/awt/Translucency/WindowOpacity.java                                       8172887 windows-all
 java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html                  8172887 generic-all
