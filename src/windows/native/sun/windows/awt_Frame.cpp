@@ -1782,23 +1782,24 @@ MsgRouting AwtFrame::WmNcCalcSize(BOOL wParam, LPNCCALCSIZE_PARAMS lpncsp, LRESU
     if (!wParam || !HasCustomDecoration()) {
         return AwtWindow::WmNcCalcSize(wParam, lpncsp, retVal);
     }
+    // When undecorated, the client area should occupy the whole frame
+    if (!m_isUndecorated) {
+        RECT insets;
+        GetSysInsets(&insets);
+        RECT* rect = &lpncsp->rgrc[0];
 
-    RECT insets;
-    GetSysInsets(&insets);
-    RECT* rect = &lpncsp->rgrc[0];
-
-    rect->left = rect->left + insets.left;
-    if (::IsZoomed(GetHWnd())) {
-        lpncsp->rgrc[0].top = lpncsp->rgrc[0].top + insets.bottom;
+        rect->left = rect->left + insets.left;
+        if (::IsZoomed(GetHWnd())) {
+            lpncsp->rgrc[0].top = lpncsp->rgrc[0].top + insets.bottom;
+        }
+        else {
+            // this makes the native caption go uncovered
+            // int yBorder = ::GetSystemMetrics(SM_CYBORDER);
+            // lpncsp->rgrc[0].top = lpncsp->rgrc[0].top + yBorder;
+        }
+        rect->right = rect->right - insets.right;
+        rect->bottom = rect->bottom - insets.bottom;
     }
-    else {
-        // this makes the native caption go uncovered
-        // int yBorder = ::GetSystemMetrics(SM_CYBORDER);
-        // lpncsp->rgrc[0].top = lpncsp->rgrc[0].top + yBorder;
-    }
-    rect->right = rect->right - insets.right;
-    rect->bottom = rect->bottom - insets.bottom;
-
     retVal = 0L;
     return mrConsume;
 }
