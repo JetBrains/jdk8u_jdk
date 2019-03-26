@@ -30,7 +30,12 @@
 #import "CoreTextSupport.h"
 #import "fontscalerdefs.h" // contains the definition of GlyphInfo struct
 
+#import	<QuartzCore/CIImage.h>
+#import	<QuartzCore/CIContext.h>
+#import	<QuartzCore/CIFilter.h>
+
 #import "sun_awt_SunHints.h"
+#define DEFAULT_SMOOTH_POWER 220
 
 //#define USE_IMAGE_ALIGNED_MEMORY 1
 //#define CGGI_DEBUG 1
@@ -53,6 +58,7 @@
     CGContextRef context;
     vImage_Buffer *image;
     Boolean smoothFonts;
+    int inputPower;
 }
 @end;
 
@@ -463,11 +469,17 @@ CGGI_InitCanvas(CGGI_GlyphCanvas *canvas,
     canvas->smoothFonts = CFPreferencesGetAppBooleanValue(CFSTR("AppleFontSmoothing"),
                                                           kCFPreferencesCurrentApplication,
                                                           &status);
-    if (!status ) {
+    if (!status) {
         canvas->smoothFonts = YES;
     }
 
+    canvas->inputPower = CFPreferencesGetAppIntegerValue(
+            CFSTR("JBRFontSmoothPower"), kCFPreferencesCurrentApplication,
+            &status);
 
+    if (!status) {
+        canvas->inputPower = DEFAULT_SMOOTH_POWER;
+    }
     CGColorSpaceRelease(colorSpace);
 }
 
@@ -646,9 +658,6 @@ CGGI_CreateImageForGlyph
     CGFloat x = -info->topLeftX;
     CGFloat y = canvas->image->height + info->topLeftY;
 
-    CGContextSetAllowsFontSmoothing(canvas->context, canvas->smoothFonts);
-    CGContextSetShouldSmoothFonts(canvas->context, canvas->smoothFonts);
-
     if (glyphDescriptor == &argb) {
         CGAffineTransform matrix = CGContextGetTextMatrix(canvas->context);
         CGFloat fontSize = sqrt(fabs(matrix.a * matrix.d - matrix.b * matrix.c));
@@ -683,6 +692,27 @@ CGGI_CreateImageForGlyph
         CGContextShowGlyphsAtPoint(canvas->context, x, y, &glyph, 1);
     }
 
+    if (canvas->smoothFonts) {
+        CGImageRef imgRef = CGBitmapContextCreateImage(canvas->context);
+
+        CIImage *img = [CIImage imageWithCGImage:imgRef];
+
+        CIFilter *filter = [CIFilter filterWithName:@"CIGammaAdjust"];
+        [filter setDefaults];
+        [filter setValue:img forKey:kCIInputImageKey];
+
+        [filter setValue:@(canvas->inputPower / 100.0f) forKey:@"inputPower"];
+
+        CIImage *res = [filter valueForKey:kCIOutputImageKey];
+        CIContext *context = [CIContext contextWithCGContext:canvas->context
+                              options:nil];
+        [context drawImage:res inRect:CGRectMake(0, 0,
+                            canvas->image->width,
+                            canvas->image->height)
+                  fromRect:CGRectMake(0, 0,
+                          canvas->image->width,
+                          canvas->image->height)];
+    }
     // copy the glyph from the canvas into the info
     (*glyphDescriptor->copyFxnPtr)(canvas, info);
 }
