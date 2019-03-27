@@ -693,6 +693,8 @@ CGGI_CreateImageForGlyph
     }
 
     if (canvas->smoothFonts) {
+        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
         CGImageRef imgRef = CGBitmapContextCreateImage(canvas->context);
 
         CIImage *img = [CIImage imageWithCGImage:imgRef];
@@ -701,7 +703,8 @@ CGGI_CreateImageForGlyph
         [filter setDefaults];
         [filter setValue:img forKey:kCIInputImageKey];
 
-        [filter setValue:@(canvas->inputPower / 100.0f) forKey:@"inputPower"];
+        [filter setValue:[NSNumber numberWithFloat:canvas->inputPower / 100.0f]
+                  forKey:@"inputPower"];
 
         CIImage *res = [filter valueForKey:kCIOutputImageKey];
         CIContext *context = [CIContext contextWithCGContext:canvas->context
@@ -712,6 +715,8 @@ CGGI_CreateImageForGlyph
                   fromRect:CGRectMake(0, 0,
                           canvas->image->width,
                           canvas->image->height)];
+        CGImageRelease(imgRef);
+        [pool drain];
     }
     // copy the glyph from the canvas into the info
     (*glyphDescriptor->copyFxnPtr)(canvas, info);
