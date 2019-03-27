@@ -42,7 +42,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DirectColorModel;
 import java.awt.image.VolatileImage;
 import java.awt.image.WritableRaster;
-import java.security.AccessController;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
@@ -66,8 +65,6 @@ import sun.java2d.pipe.hw.AccelDeviceEventNotifier;
 import sun.lwawt.LWComponentPeer;
 import sun.lwawt.macosx.CPlatformView;
 import sun.lwawt.macosx.CThreading;
-import sun.security.action.GetBooleanAction;
-
 import java.security.PrivilegedAction;
 
 public final class CGLGraphicsConfig extends CGraphicsConfig
@@ -86,12 +83,10 @@ public final class CGLGraphicsConfig extends CGraphicsConfig
     private OGLContext context;
     private final Object disposerReferent = new Object();
     private final int maxTextureSize;
-    private static final boolean forceLCDText =
-            AccessController.doPrivileged(new GetBooleanAction("java2d.forceLCDText"));
 
     private static native boolean initCGL();
     private static native long getCGLConfigInfo(int displayID, int visualnum,
-                                                int swapInterval, boolean forceLCDText);
+                                                int swapInterval);
     private static native int getOGLCapabilities(long configInfo);
 
     private static final HashMap<Long, Integer> pGCRefCounts = new HashMap<>();
@@ -165,7 +160,7 @@ public final class CGLGraphicsConfig extends CGraphicsConfig
                 OGLContext.invalidateCurrentContext();
 
                 cfginfo = getCGLConfigInfo(device.getCGDisplayID(), pixfmt,
-                        kOpenGLSwapInterval, forceLCDText);
+                        kOpenGLSwapInterval);
                 if (cfginfo != 0L) {
                     textureSize = nativeGetMaxTextureSize();
                     // 7160609: GL still fails to create a square texture of this

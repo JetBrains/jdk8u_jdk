@@ -194,7 +194,7 @@ Java_sun_java2d_opengl_CGLGraphicsConfig_initCGL
 JNIEXPORT jlong JNICALL
 Java_sun_java2d_opengl_CGLGraphicsConfig_getCGLConfigInfo
     (JNIEnv *env, jclass cglgc,
-     jint displayID, jint pixfmt, jint swapInterval, jboolean forceLCDText)
+     jint displayID, jint pixfmt, jint swapInterval)
 {
   jlong ret = 0L;
   JNF_COCOA_ENTER(env);
@@ -202,7 +202,6 @@ Java_sun_java2d_opengl_CGLGraphicsConfig_getCGLConfigInfo
   [retArray addObject: [NSNumber numberWithInt: (int)displayID]];
   [retArray addObject: [NSNumber numberWithInt: (int)pixfmt]];
   [retArray addObject: [NSNumber numberWithInt: (int)swapInterval]];
-  [retArray addObject: [NSNumber numberWithBool: (BOOL)forceLCDText]];
   if ([NSThread isMainThread]) {
       [GraphicsConfigUtil _getCGLConfigInfo: retArray];
   } else {
@@ -223,7 +222,6 @@ Java_sun_java2d_opengl_CGLGraphicsConfig_getCGLConfigInfo
     jint displayID = (jint)[(NSNumber *)[argValue objectAtIndex: 0] intValue];
     jint pixfmt = (jint)[(NSNumber *)[argValue objectAtIndex: 1] intValue];
     jint swapInterval = (jint)[(NSNumber *)[argValue objectAtIndex: 2] intValue];
-    jboolean forceLCDText = (jboolean)[(NSNumber *)[argValue objectAtIndex: 3] intValue];
     JNIEnv *env = [ThreadUtilities getJNIEnvUncached];
     [argValue removeAllObjects];
 
@@ -337,22 +335,33 @@ Java_sun_java2d_opengl_CGLGraphicsConfig_getCGLConfigInfo
     jint caps = CAPS_EMPTY;
     OGLContext_GetExtensionInfo(env, &caps);
 
-    if (!forceLCDText) {
-        Boolean status = false;
-        Boolean fontSmoothingDisabled =
-        CFPreferencesGetAppBooleanValue(
+    Boolean status = false;
+    Boolean fontSmoothingDisabled =
+            CFPreferencesGetAppBooleanValue(
             CFSTR("CGFontRenderingFontSmoothingDisabled"),
             kCFPreferencesCurrentApplication, &status);
 
-        if (status) {
-            if (fontSmoothingDisabled) {
-                J2dRlsTraceLn(J2D_TRACE_INFO,
-                              "LCD_SHADER: disabled via macOS settings");
-                caps &= ~CAPS_EXT_LCD_SHADER;
-            }
-        } else if (IS_OSX_GT10_13) {
+    if (status) {
+        if (fontSmoothingDisabled) {
             J2dRlsTraceLn(J2D_TRACE_INFO,
-                          "LCD_SHADER: disabled on macOS 10.14+ by default");
+                    "LCD_SHADER: disabled via macOS settings");
+            caps &= ~CAPS_EXT_LCD_SHADER;
+        }
+    } else if (IS_OSX_GT10_13) {
+        // Adding support for "Use font smoothing when available" setting
+        Boolean status = false;
+        Boolean smoothFonts = CFPreferencesGetAppBooleanValue(
+                CFSTR("AppleFontSmoothing"),
+                kCFPreferencesCurrentApplication,
+                &status);
+
+        if (!status) {
+            smoothFonts = YES;
+        }
+
+        if (!smoothFonts) {
+            J2dRlsTraceLn(J2D_TRACE_INFO,
+                    "LCD_SHADER: disabled on macOS 10.14+ by default");
             caps &= ~CAPS_EXT_LCD_SHADER;
         }
     }
