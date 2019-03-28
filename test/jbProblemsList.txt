@@ -233,6 +233,7 @@ java/awt/Toolkit/ToolkitPropertyTest/ToolkitPropertyTest_Enable.java            
 java/awt/TrayIcon/PopupMenuLeakTest/PopupMenuLeakTest.java                          8039081 generic-all
 java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java                 7107528 generic-all
 
+java/awt/WMSpecificTests/Mutter/MutterMaximizeTest.java                             8179312 linux-all
 java/awt/Window/AlwaysOnTop/SyncAlwaysOnTopFieldTest.java                           8198739 windows-all
 java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java                          8032450,8169530 generic-all
 java/awt/Window/BackgroundIsNotUpdated/BackgroundIsNotUpdated.java                  8142536 generic-all
@@ -671,7 +672,7 @@ javax/swing/JTree/8003400/Test8003400.java                                      
 javax/swing/LookAndFeel/8145547/DemandGTK2.sh                                         8193546 linux-all
 javax/swing/LookAndFeel/8145547/DemandGTK3.sh                                         8215539 linux-all
 javax/swing/MultiUIDefaults/4300666/bug4300666.java                                   7105119 macosx-all
-javax/swing/Popup/TaskbarPositionTest.java                                            8165854 macosx-all
+javax/swing/Popup/TaskbarPositionTest.java                                            8165854,8065097 macosx-all,linux-all
 javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                          8065099,8208565 macosx-all,linux-all
 javax/swing/RepaintManager/IconifyTest/IconifyTest.java                               8008119 generic-all
 javax/swing/SpringLayout/4726194/bug4726194.java                                      8198399 generic-all
@@ -888,6 +889,7 @@ com/sun/awt/Translucency/WindowOpacity.java                                     
 java/awt/DataFlavor/MissedHtmlAndRtfBug/MissedHtmlAndRtfBug.html                  8172887 generic-all
 java/awt/Focus/FocusEmbeddedFrameTest/FocusEmbeddedFrameTest.java                 8172887 windows-all
 java/awt/Focus/ModalBlockedStealsFocusTest/ModalBlockedStealsFocusTest.html       6849362 generic-all
+java/awt/Frame/FrameLocation/FrameLocation.java                                   8019803 macosx-all,linux-all
 java/awt/Frame/NormalToIconified/NormalToIconifiedTest.java                       8172887 generic-all
 java/awt/Frame/ObscuredFrame/ObscuredFrameTest.java                               8172887 linux-all
 java/awt/FullScreen/TranslucentWindow/TranslucentWindow.java                      8172887 windows-all
@@ -895,9 +897,9 @@ java/awt/Mixing/MixingInHwPanel.java                                            
 java/awt/event/MouseEvent/EnterAsGrabbedEvent/EnterAsGrabbedEvent.java            8172887 generic-all
 java/io/File/SetLastModified.java                                                 8172887 generic-all
 javax/swing/JScrollBar/7163696/Test7163696.java                                   8172887 generic-all
-javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                      8172887,8065099 windows-all,macosx-all
+javax/swing/PopupFactory/6276087/NonOpaquePopupMenuTest.java                      8172887,8065099 windows-all,macosx-all,linux-all
 javax/swing/dnd/7171812/bug7171812.java                                           8172887,8041447 windows-all,linux-all
-javax/swing/plaf/basic/Test6984643.java                                           8172887,8198340 windows-all
+javax/swing/plaf/basic/Test6984643.java                                           8172887,8198340 windows-all,linux-all
 javax/swing/plaf/nimbus/8041642/ScrollBarThumbVisibleTest.java                    8172887 generic-all
 javax/swing/text/JTextComponent/5074573/bug5074573.java                           8155740 generic-all
 sun/java2d/DirectX/OpaqueImageToSurfaceBlitTest/OpaqueImageToSurfaceBlitTest.java 8155740 windows-all
