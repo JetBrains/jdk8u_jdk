@@ -444,6 +444,12 @@ public:
         return lpEnableNonClientDpiScaling != NULL ? lpEnableNonClientDpiScaling(hwnd) : FALSE;
     }
 
+    static INLINE BOOL AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle, BOOL bMenu, DWORD dwExStyle, UINT dpi)
+    {
+        return lpAdjustWindowRectExForDpi != NULL ?
+            lpAdjustWindowRectExForDpi(lpRect, dwStyle, bMenu, dwExStyle, dpi) : ::AdjustWindowRectEx(lpRect, dwStyle, bMenu, dwExStyle);
+    }
+
     HANDLE m_waitEvent;
     DWORD eventNumber;
 private:
@@ -506,6 +512,7 @@ private:
     CriticalSection m_Sync;
 
     static EnableNonClientDpiScalingFunc *lpEnableNonClientDpiScaling;
+    static AdjustWindowRectExForDpiFunc *lpAdjustWindowRectExForDpi;
 
 /* track display changes - used by palette-updating code.
    This is a workaround for a windows bug that prevents
