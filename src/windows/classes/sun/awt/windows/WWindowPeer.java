@@ -610,12 +610,10 @@ public class WWindowPeer extends WPanelPeer implements WindowPeer,
      */
     @Override
     public void displayChanged() {
-<<<<<<< HEAD
-        updateGC();
-        adjustBoundsOnDPIChange();
-=======
-        SunToolkit.executeOnEventHandlerThread(target, this::updateGC);
->>>>>>> 99f7f53... 8207070: Webstart app popup on wrong screen in a one-screen setup changing to multi-monitor
+        SunToolkit.executeOnEventHandlerThread(target, ()->{
+            updateGC();
+            adjustBoundsOnDPIChange();
+        });
     }
 
     private native void adjustBoundsOnDPIChange();
