@@ -250,7 +250,7 @@ java/awt/datatransfer/DragImage/MultiResolutionDragImageTest.java               
 java/awt/datatransfer/DragUnicodeBetweenJVMTest/DragUnicodeBetweenJVMTest.html      8017457 windows-all
 java/awt/dnd/BadSerializaionTest/BadSerializationTest.java                          8039082 generic-all
 java/awt/dnd/Button2DragTest/Button2DragTest.html                                   8144056 generic-all
-java/awt/dnd/DisposeFrameOnDragCrash/DisposeFrameOnDragTest.java                    JRE-1017 macosx-all
+java/awt/dnd/DisposeFrameOnDragCrash/DisposeFrameOnDragTest.java                    JRE-1017,8031423 macosx-all,windows-all
 java/awt/dnd/DragInterceptorAppletTest/DragInterceptorAppletTest.html               8066096 generic-all
 java/awt/dnd/DropTargetEnterExitTest/ExtraDragEnterTest.java                        8029680 generic-all
 java/awt/dnd/DropTargetEnterExitTest/MissedDragExitTest.java                        8029680 generic-all
@@ -584,6 +584,7 @@ sun/security/krb5/auto/tools/KinitConfPlusProps.java                            
 
 javax/swing/AbstractButton/6711682/bug6711682.java                                    8060765 windows-all,macosx-all,linux-all
 javax/swing/JColorChooser/Test6541987.java                                            8143021 windows-all,linux-all,macosx-all
+javax/swing/JColorChooser/Test6827032.java                                            8197825 windows-all
 javax/swing/JColorChooser/Test7194184.java                                            8076178 generic-all
 javax/swing/JComboBox/4743225/bug4743225.java                                         8171302 generic-all
 javax/swing/JComboBox/6236162/bug6236162.java                                         8028707 windows-all,macosx-all,linux-all
@@ -627,6 +628,7 @@ javax/swing/JMenuBar/4750590/bug4750590.java                                    
 javax/swing/JMenuItem/4171437/bug4171437.java                                         8040916 generic-all
 javax/swing/JMenuItem/4654927/bug4654927.java                                         8172536 generic-all
 javax/swing/JMenuItem/6209975/bug6209975.java                                         8025083 generic-all
+javax/swing/JMenuItem/8152981/MenuItemIconTest.java                                   8159135 windows-all
 javax/swing/JMenuItem/ActionListenerCalledTwice/ActionListenerCalledTwiceTest.java    8139169 macosx-all
 javax/swing/JOptionPane/6464022/bug6464022.java                                       7124548 macosx-all
 javax/swing/JPopupMenu/4458079/bug4458079.java                                        8040917 generic-all
@@ -838,6 +840,8 @@ java/awt/image/MultiResolutionImageCommonTest.java                              
 java/awt/image/MultiResolutionImageTest.java                                      JRE-128 generic-all
 
 com/sun/java/swing/plaf/windows/Test8173145.java                                  8173145,8198334 windows-all
+
+com/sun/jdi/FieldWatchpoints.java                                                 8206438 generic-all
 
 # ignored
 com/sun/crypto/provider/Cipher/DES/PerformanceTest.java                                   generic-all
