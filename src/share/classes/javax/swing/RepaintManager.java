@@ -110,6 +110,12 @@ public class RepaintManager
 
     boolean   doubleBufferingEnabled = true;
 
+    // Constants used for creating volatile double buffer if the underlying
+    // graphics system reports invalid values. They are large enough to handle
+    // 4K resolution
+    private static final int BUFFER_DEFAULT_WIDTH = 3840;
+    private static final int BUFFER_DEFAULT_HEIGHT = 2160;
+
     private Dimension doubleBufferMaxSize;
 
     private boolean isCustomMaxBufferSizeSet = false;
@@ -1059,8 +1065,8 @@ public class RepaintManager
         }
         Dimension maxSize = getDoubleBufferMaximumSize();
         // Desktop env may report empty size for expired displays
-        int maxWidth = maxSize.width > 0 ? maxSize.width : 1;
-        int maxHeight = maxSize.height > 0 ? maxSize.height : 1;
+        int maxWidth = maxSize.width > 0 ? maxSize.width : BUFFER_DEFAULT_WIDTH;
+        int maxHeight = maxSize.height > 0 ? maxSize.height : BUFFER_DEFAULT_HEIGHT;
         int width = proposedWidth < 1 ? 1 :
             (proposedWidth > maxWidth? maxWidth : proposedWidth);
         int height = proposedHeight < 1 ? 1 :
