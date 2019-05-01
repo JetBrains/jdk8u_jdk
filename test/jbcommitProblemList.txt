@@ -1,4 +1,3 @@
-java/awt/event/TextEvent/TextEventSequenceTest/TextEventSequenceTest.java                 nobug windows-all
 java/awt/Robot/RobotExtraButton/RobotExtraButton.java                                     nobug windows-all
 java/awt/FileDialog/FileDialogMemoryLeak/FileDialogLeakTest.java                          nobug windows-all
 java/awt/Focus/ClearGlobalFocusOwnerTest/ClearGlobalFocusOwnerTest.java                   nobug macosx-all
