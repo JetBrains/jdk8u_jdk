@@ -110,12 +110,6 @@ public class RepaintManager
 
     boolean   doubleBufferingEnabled = true;
 
-    // Constants used for creating volatile double buffer if the underlying
-    // graphics system reports invalid values. They are large enough to handle
-    // 4K resolution
-    private static final int BUFFER_DEFAULT_WIDTH = 3840;
-    private static final int BUFFER_DEFAULT_HEIGHT = 2160;
-
     private Dimension doubleBufferMaxSize;
 
     private boolean isCustomMaxBufferSizeSet = false;
@@ -1064,13 +1058,10 @@ public class RepaintManager
                             getDefaultScreenDevice().getDefaultConfiguration();
         }
         Dimension maxSize = getDoubleBufferMaximumSize();
-        // Desktop env may report empty size for expired displays
-        int maxWidth = maxSize.width > 0 ? maxSize.width : BUFFER_DEFAULT_WIDTH;
-        int maxHeight = maxSize.height > 0 ? maxSize.height : BUFFER_DEFAULT_HEIGHT;
         int width = proposedWidth < 1 ? 1 :
-            (proposedWidth > maxWidth? maxWidth : proposedWidth);
+            (proposedWidth > maxSize.width? maxSize.width : proposedWidth);
         int height = proposedHeight < 1 ? 1 :
-            (proposedHeight > maxHeight? maxHeight : proposedHeight);
+            (proposedHeight > maxSize.height? maxSize.height : proposedHeight);
         VolatileImage image = volatileMap.get(config);
         if (image == null || image.getWidth() < width ||
                              image.getHeight() < height) {
@@ -1103,14 +1094,10 @@ public class RepaintManager
         }
         doubleBuffer = standardDoubleBuffer;
 
-        // Desktop env may report empty size for expired displays
-        int maxWidth = maxSize.width > 0 ? maxSize.width : 1;
-        int maxHeight = maxSize.height > 0 ? maxSize.height : 1;
-
         width = proposedWidth < 1? 1 :
-                  (proposedWidth > maxWidth? maxWidth : proposedWidth);
+                  (proposedWidth > maxSize.width? maxSize.width : proposedWidth);
         height = proposedHeight < 1? 1 :
-                  (proposedHeight > maxHeight? maxHeight : proposedHeight);
+                  (proposedHeight > maxSize.height? maxSize.height : proposedHeight);
 
         if (doubleBuffer.needsReset || (doubleBuffer.image != null &&
                                         (doubleBuffer.size.width < width ||
@@ -1193,8 +1180,15 @@ public class RepaintManager
                     GraphicsConfiguration gc = gd.getDefaultConfiguration();
                     virtualBounds = virtualBounds.union(gc.getBounds());
                 }
-                doubleBufferMaxSize = new Dimension(virtualBounds.width,
-                                                    virtualBounds.height);
+                doubleBufferMaxSize =
+                        // Sometimes underlying desktop environment reports
+                        // incorrect gc bounds (w=0,h=0). Replace them with
+                        // maximum values (as we do for headless mode)
+                        new Dimension(
+                                virtualBounds.width == 0 ?
+                                        Integer.MAX_VALUE : virtualBounds.width,
+                                virtualBounds.height == 0 ?
+                                        Integer.MAX_VALUE : virtualBounds.height);
             } catch (HeadlessException e) {
                 doubleBufferMaxSize = new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
             }
