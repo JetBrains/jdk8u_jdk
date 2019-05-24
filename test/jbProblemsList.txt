@@ -94,7 +94,7 @@ java/awt/Choice/ChoiceMouseWheelTest/ChoiceMouseWheelTest.java                  
 java/awt/Choice/ItemStateChangeTest/ItemStateChangeTest.java                        8169108 windows-all
 java/awt/Choice/RemoveAllShrinkTest/RemoveAllShrinkTest.java                        8047703 generic-all
 java/awt/Component/F10TopToplevel/F10TopToplevel.html                               7105576 windows-all
-java/awt/Component/PaintAll/PaintAll.java                                           8169104 windows-all
+java/awt/Component/PaintAll/PaintAll.java                                           8169104 windows-all,linux-all
 java/awt/Component/PrintAllXcheckJNI/PrintAllXcheckJNI.java                         6857809 linux-all
 java/awt/Component/SetEnabledPerformance/SetEnabledPerformance.java                 8165863 macosx-all
 java/awt/Component/TreeLockDeadlock/TreeLockDeadlock.java                           8170261 generic-all
@@ -135,7 +135,7 @@ java/awt/Focus/SimpleWindowActivationTest/SimpleWindowActivationTest.java       
 java/awt/Focus/ToFrontFocusTest/ToFrontFocus.html                                   7156130 generic-all
 java/awt/Focus/TranserFocusToWindow/TranserFocusToWindow.java                       7035459,6848810 generic-all
 java/awt/Focus/TypeAhead/TestFocusFreeze.java                                       8198622 macosx-all,windows-all,linux-all
-java/awt/Focus/WindowInitialFocusTest/WindowInitialFocusTest.html                   8169100 windows-all
+java/awt/Focus/WindowInitialFocusTest/WindowInitialFocusTest.html                   8169100 windows-all,linux-all
 java/awt/Focus/WindowIsFocusableAccessByThreadsTest/WindowIsFocusableAccessByThreadsTest.java 8169099 generic-all
 java/awt/Focus/WrongKeyTypedConsumedTest/WrongKeyTypedConsumedTest.java             8169096 macosx-all,windows-all,linux-all
 java/awt/FontClass/CreateFont/bigfont.html                                          6868690 generic-all
@@ -233,9 +233,7 @@ java/awt/Toolkit/ToolkitPropertyTest/ToolkitPropertyTest_Enable.java            
 java/awt/TrayIcon/PopupMenuLeakTest/PopupMenuLeakTest.java                          8039081 generic-all
 java/awt/Robot/AcceptExtraMouseButtons/AcceptExtraMouseButtons.java                 7107528 generic-all
 
-# fixed in 8_112
-java/awt/Window/AlwaysOnTop/AlwaysOnTopFieldTest.java                               7081594 macosx-all
-
+java/awt/WMSpecificTests/Mutter/MutterMaximizeTest.java                             8179312 linux-all
 java/awt/Window/AlwaysOnTop/SyncAlwaysOnTopFieldTest.java                           8198739 windows-all
 java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java                          8032450,8169530 generic-all
 java/awt/Window/BackgroundIsNotUpdated/BackgroundIsNotUpdated.java                  8142536 generic-all
