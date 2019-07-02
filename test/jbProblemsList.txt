@@ -609,7 +609,8 @@ javax/swing/JFrame/4962534/bug4962534.html                                      
 javax/swing/JFrame/8016356/bug8016356.java                                            8169955 windows-all
 javax/swing/JInternalFrame/5066752/bug5066752.java                                    8007719 generic-all
 javax/swing/JInternalFrame/8020708/bug8020708.java                                    8032568 generic-all
-javax/swing/JInternalFrame/8069348/bug8069348.java                                    8208570 linux-all
+javax/swing/JInternalFrame/8069348/bug8069348.java                                    8208570 linux-all,macosx-all
+javax/swing/JInternalFrame/8160248/JInternalFrameDraggingTest.java                    8186513 generic-all
 javax/swing/JInternalFrame/Test6325652.java                                           8196467,8160880 linux-all,macosx-all,windows-all
 javax/swing/JInternalFrame/Test6505027.java                                           8172535 generic-all
 javax/swing/JLabel/6596966/bug6596966.java                                            8040914 linux-all,macosx-all,windows-all

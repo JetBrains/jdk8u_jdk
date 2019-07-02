@@ -29,7 +29,6 @@ java/awt/hidpi/properties/HiDPIPropertiesUnixTest.java                          
 
 javax/swing/JFrame/NSTexturedJFrame/NSTexturedJFrame.java                                 nobug macosx-all
 javax/swing/JInternalFrame/8069348/bug8069348.java                                        nobug macosx-all,windows-all
-javax/swing/JInternalFrame/8160248/JInternalFrameDraggingTest.java                        nobug macosx-all,windows-all
 javax/swing/JInternalFrame/InternalFrameIsNotCollectedTest.java                           nobug linux-all
 javax/swing/JPopupMenu/7154841/bug7154841.java                                            nobug macosx-all
 javax/swing/JTable/8133919/DrawGridLInesTest.java                                         nobug linux-all
