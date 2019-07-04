@@ -867,12 +867,9 @@ endif
 ifeq ($(OPENJDK_TARGET_OS), solaris)
   HARFBUZZ_CFLAGS += -DHAVE_SOLARIS_ATOMIC_OPS
 endif
-ifeq ($(OPENJDK_TARGET_OS), macosx)
-  HARFBUZZ_CFLAGS += -DHAVE_CORETEXT
-endif
-ifneq ($(OPENJDK_TARGET_OS), macosx)
-  LIBFONTMANAGER_EXCLUDE_FILES += harfbuzz/hb-coretext.cpp
-endif
+
+LIBFONTMANAGER_EXCLUDE_FILES += harfbuzz/hb-coretext.cpp
+
 # hb-ft.cc is not presently needed, and requires freetype 2.4.2 or later.
 LIBFONTMANAGER_EXCLUDE_FILES += harfbuzz/hb-ft.cpp
 
