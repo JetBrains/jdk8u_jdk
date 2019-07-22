@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 1997, 2018, Oracle and/or its affiliates. All rights reserved.
-=======
  * Copyright (c) 1997, 2019, Oracle and/or its affiliates. All rights reserved.
->>>>>>> c8849f4... 8218674: HTML Tooltip with "img=src" on component doesn't show
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -983,33 +979,10 @@ public class ImageView extends View {
                  * specified HTML attributes.
                  */
                 if (((flags & ImageObserver.HEIGHT) != 0) &&
-<<<<<<< HEAD
-                    ((flags & ImageObserver.WIDTH) != 0)) {
-                    double proportion = 0.0;
-                    final int specifiedWidth = getIntAttr(HTML.Attribute.WIDTH, -1);
-                    final int specifiedHeight = getIntAttr(HTML.Attribute.HEIGHT, -1);
-                    /**
-                     * If either of the attributes are not specified, then calculate the
-                     * proportion for the specified dimension wrt actual value, and then
-                     * apply the same proportion to the unspecified dimension as well,
-                     * so that the aspect ratio of the image is maintained.
-                     */
-                    if (specifiedWidth != -1 ^ specifiedHeight != -1) {
-                        if (specifiedWidth <= 0) {
-                            proportion = specifiedHeight / ((double)newHeight);
-                            newWidth = (int)(proportion * newWidth);
-                        }
-
-                        if (specifiedHeight <= 0) {
-                            proportion = specifiedWidth / ((double)newWidth);
-                            newHeight = (int)(proportion * newHeight);
-                        }
-=======
                      ((flags & ImageObserver.WIDTH) != 0)) {
                         Dimension d = adjustWidthHeight(newWidth, newHeight);
                         newWidth = d.width;
                         newHeight = d.height;
->>>>>>> c8849f4... 8218674: HTML Tooltip with "img=src" on component doesn't show
                         changed |= 3;
                 }
                 synchronized(ImageView.this) {
