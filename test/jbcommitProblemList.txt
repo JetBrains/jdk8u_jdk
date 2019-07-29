@@ -26,6 +26,7 @@ java/awt/hidpi/ClientAreaOriginWindowsTest.java                                 
 java/awt/hidpi/DrawOnFrameGraphicsTest.java                                               nobug windows-all
 java/awt/hidpi/DrawOnFrameGraphicsTest.java                                               nobug windows-all
 java/awt/hidpi/properties/HiDPIPropertiesUnixTest.java                                    nobug linux-all,macosx-all
+java/awt/image/DrawImage/UnmanagedDrawImagePerformance.java                               nobug windows-all
 
 javax/swing/JFrame/NSTexturedJFrame/NSTexturedJFrame.java                                 nobug macosx-all
 javax/swing/JInternalFrame/8069348/bug8069348.java                                        nobug macosx-all,windows-all
