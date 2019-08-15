@@ -325,15 +325,15 @@ static NSObject *sAttributeNamesLOCK = nil;
         }
 
         JavaComponentAccessibility *child = [self createWithParent:parent accessible:jchild role:childJavaRole index:childIndex withEnv:env withView:parent->fView];
-        
+
         (*env)->DeleteLocalRef(env, jchild);
         (*env)->DeleteLocalRef(env, jchildJavaRole);
-        
+
         [children addObject:child];
         childIndex++;
     }
     (*env)->DeleteLocalRef(env, jchildrenAndRoles);
-    
+
     return children;
 }
 
@@ -1170,7 +1170,7 @@ static NSObject *sAttributeNamesLOCK = nil;
     // Need to handle popupmenus differently.
     //
     // At least for now don't handle combo box menus.
-    // This may change when later fixing issues which currently 
+    // This may change when later fixing issues which currently
     // exist for combo boxes, but for now the following is only
     // for JPopupMenus, not for combobox menus.
     id parent = [self parent];
@@ -1352,7 +1352,7 @@ static NSObject *sAttributeNamesLOCK = nil;
     NSWindow* hostWindow = [[self->fView window] retain];
     jobject focused = JNFCallStaticObjectMethod(env, jm_getFocusOwner, fComponent); // AWT_THREADING Safe (AWTRunLoop)
     [hostWindow release];
-    
+
     if (focused != NULL) {
         if (JNFIsInstanceOf(env, focused, &sjc_Accessible)) {
             value = [JavaComponentAccessibility createWithAccessible:focused withEnv:env withView:fView];
