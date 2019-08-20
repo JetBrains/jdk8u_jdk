@@ -81,6 +81,24 @@ public abstract class SunFontManager implements FontSupport, FontManagerForSGE {
         }
     }
 
+    private static class TTFilterIdea extends TTFilter {
+        final private boolean positive;
+        final private HashSet<String> ideaSet;
+
+        public TTFilterIdea(boolean positive, HashSet<String> ideaSet) {
+            this.positive = positive;
+            this.ideaSet = ideaSet;
+        }
+
+        @Override
+        public boolean accept(File dir, String name) {
+            if (super.accept(dir, name) && ideaSet.contains(name)) {
+                return positive;
+            }
+            return !positive;
+        }
+    }
+
     private static class T1Filter implements FilenameFilter {
         public boolean accept(File dir,String name) {
             if (noType1Font) {
@@ -189,6 +207,7 @@ public abstract class SunFontManager implements FontSupport, FontManagerForSGE {
     boolean loadedAllFontFiles = false;
     HashMap<String,String> jreFontMap;
     HashSet<String> jreBundledFontFiles;
+    HashSet<String> ideaFontSet;
     String[] jreOtherFontFiles;
     boolean noOtherJREFontFiles = false; // initial assumption.
 
@@ -223,6 +242,8 @@ public abstract class SunFontManager implements FontSupport, FontManagerForSGE {
     private static final FilenameFilter ttFilter = new TTFilter();
     private static final FilenameFilter t1Filter = new T1Filter();
 
+    private FilenameFilter ttFilterIdea;
+    private FilenameFilter ttFilterJre;
     private Font[] allFonts;
     private String[] allFamilies; // cache for default locale only
     private Locale lastDefaultLocale;
@@ -316,6 +337,23 @@ public abstract class SunFontManager implements FontSupport, FontManagerForSGE {
 
         jreFontMap.put("Roboto light", "Roboto-Light.ttf");
         jreFontMap.put("Roboto thin", "Roboto-Thin.ttf");
+
+        ideaFontSet = new HashSet<>();
+        ideaFontSet.add("FiraCode-Bold.ttf");
+        ideaFontSet.add("FiraCode-Light.ttf");
+        ideaFontSet.add("FiraCode-Medium.ttf");
+        ideaFontSet.add("FiraCode-Retina.ttf");
+        ideaFontSet.add("FiraCode-Regular.ttf");
+        ideaFontSet.add("SourceCodePro-BoldIt.ttf");
+        ideaFontSet.add("SourceCodePro-Regular.ttf");
+        ideaFontSet.add("SourceCodePro-Bold.ttf");
+        ideaFontSet.add("SourceCodePro-It.ttf");
+        ideaFontSet.add("Inconsolata.ttf");
+        ideaFontSet.add("Roboto-Light.ttf");
+        ideaFontSet.add("Roboto-Thin.ttf");
+
+        ttFilterIdea = new TTFilterIdea(true, ideaFontSet);
+        ttFilterJre = new TTFilterIdea(false, ideaFontSet);
 
         for (String ffile : jreFontMap.values()) {
             jreBundledFontFiles.add(ffile);
@@ -412,8 +450,7 @@ public abstract class SunFontManager implements FontSupport, FontManagerForSGE {
                             /* Linux font configuration uses these fonts */
                             registerFontDir(jreFontDirName);
                         }
-                        registerFontsInDir(jreFontDirName, true, Font2D.JRE_RANK,
-                                           true, false);
+                        registerJREFonts();
 
                         /* Create the font configuration and get any font path
                          * that might be specified.
@@ -3335,6 +3372,18 @@ public abstract class SunFontManager implements FontSupport, FontManagerForSGE {
                     fontRank==Font2D.UNKNOWN_RANK ?
                     Font2D.TYPE1_RANK : fontRank,
                     defer, resolveSymLinks);
+    }
+
+    protected void registerJREFonts() {
+        File pathFile = new File(jreFontDirName);
+        addDirFonts(jreFontDirName, pathFile, ttFilterIdea,
+                    FONTFORMAT_TRUETYPE, true,
+                    Font2D.IDEA_RANK,
+                    true, false);
+        addDirFonts(jreFontDirName, pathFile, ttFilterJre,
+                FONTFORMAT_TRUETYPE, true,
+                Font2D.JRE_RANK,
+                true, false);
     }
 
     protected void registerFontDir(String path) {
