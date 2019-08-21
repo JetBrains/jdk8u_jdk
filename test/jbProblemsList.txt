@@ -844,6 +844,8 @@ com/sun/java/swing/plaf/windows/Test8173145.java                                
 com/sun/jdi/FieldWatchpoints.java                                                 8206438 generic-all
 
 # ignored
+com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithProviderChange.java          8228440 generic-all
+com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithRemoveAddProvider.java       8228440 generic-all
 com/sun/crypto/provider/Cipher/DES/PerformanceTest.java                                   generic-all
 com/sun/jdi/PopAndInvokeTest.java                                                         generic-all
 com/sun/security/auth/callback/DialogCallbackHandler/Default.java                         generic-all
@@ -932,3 +934,14 @@ sun/security/mscapi/SignatureOffsets.java          	                            
 sun/security/mscapi/SmallPrimeExponentP.java       	                              JRE-720 windows-all
 
 sun/tools/native2ascii/Native2AsciiTests.sh                                       JRE-738 windows-all
+
+java/text/BreakIterator/BreakIteratorTest.java                                    8229922 generic-all
+java/text/Format/DateFormat/DateFormatTest.java                                   8229922 generic-all
+java/text/Format/DateFormat/NonGregorianFormatTest.java                           8229922 generic-all
+java/text/Format/MessageFormat/LargeMessageFormat.java                            8229922 generic-all
+java/text/Format/NumberFormat/NumberRegression.java                               8229922 generic-all
+java/text/Format/NumberFormat/NumberTest.java                                     8229922 generic-all
+java/util/Calendar/CalendarRegression.java                                        8229922 generic-all
+java/util/Calendar/JapanEraNameCompatTest.java                                    8229922 generic-all
+java/util/TimeZone/HongKong.java                                                  8229922 generic-all
+sun/text/IntHashtable/Bug4170614Test.sh                                           8229922 generic-all
