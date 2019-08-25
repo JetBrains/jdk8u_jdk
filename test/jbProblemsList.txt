@@ -945,3 +945,8 @@ java/util/Calendar/CalendarRegression.java                                      
 java/util/Calendar/JapanEraNameCompatTest.java                                    8229922 generic-all
 java/util/TimeZone/HongKong.java                                                  8229922 generic-all
 sun/text/IntHashtable/Bug4170614Test.sh                                           8229922 generic-all
+
+security/infra/java/security/cert/CertPathValidator/certification/ActalisCA.java  8224768 generic-all
+
+com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithProviderChange.java    8228440 generic-all
+com/sun/crypto/provider/Cipher/AES/TestAESCiphers/TestAESWithRemoveAddProvider.java 8228440 generic-all
