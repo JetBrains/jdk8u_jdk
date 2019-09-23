@@ -187,6 +187,7 @@ java/awt/Modal/LWModalTest/LWModalTest.java                                     
 java/awt/Modal/ModalDialogOrderingTest/ModalDialogOrderingTest.java                 8066259 generic-all
 java/awt/Modal/ModalInternalFrameTest/ModalInternalFrameTest.java                   8159599 generic-all
 java/awt/Mouse/MouseComboBoxTest/MouseComboBoxTest.java                             8052166 generic-all
+java/awt/Mouse/MouseComboBoxTest/MouseComboBoxTest.java                             8052166 generic-all
 java/awt/Mouse/EnterExitEvents/DragWindowOutOfFrameTest.java                        8023562 macosx-all,windows-all,linux-all
 java/awt/Mouse/EnterExitEvents/DragWindowTest.java                                  8023562 macosx-all,windows-all,linux-all
 java/awt/Mouse/EnterExitEvents/ModalDialogEnterExitEventsTest.java                  8165619 generic-all
@@ -267,7 +268,7 @@ java/awt/event/KeyEvent/AltCharAcceleratorTest/AltCharAcceleratorTest.java      
 java/awt/event/KeyEvent/DeadKey/DeadKeySystemAssertionDialog.java                   8145652 generic-all
 java/awt/event/KeyEvent/CorrectTime/CorrectTime.java                                6626492 generic-all
 java/awt/event/KeyEvent/ExtendedKeyCode/ExtendedKeyCodeTest.java                    8169476 windows-all,macosx-all,linux-all
-java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                                    8169474 windows-all,linux-all
+java/awt/event/KeyEvent/KeyChar/KeyCharTest.java                                    8169474 windows-all,linux-all,macosx-all
 java/awt/event/KeyEvent/KeyTyped/CtrlASCII.html                                     7156316,8160623 generic-all
 java/awt/event/KeyEvent/SwallowKeyEvents/SwallowKeyEvents.java                      JRE-1018 macosx-all,linux-all
 java/awt/event/MouseEvent/EventTimeInFuture/EventTimeInFuture.java                  8032254 linux-all
@@ -353,7 +354,7 @@ javax/sound/sampled/DirectAudio/bug6400879.java                                 
 # jdk_beans
 
 java/beans/XMLEncoder/Test6570354.java                                             8015593 macosx-all
-java/beans/Introspector/Test8027648.java                                           8030123 linux-all
+java/beans/Introspector/Test8027648.java                                           8030123 linux-all,windows-all
 
 ############################################################################
 
