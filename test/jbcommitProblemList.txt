@@ -13,6 +13,7 @@ java/awt/Graphics/LineClipTest.java                                             
 java/awt/KeyboardFocusmanager/TypeAhead/ButtonActionKeyTest/ButtonActionKeyTest.html      nobug macosx-all
 java/awt/List/ActionAfterRemove/ActionAfterRemove.java                                    nobug windows-all,macosx-all
 java/awt/Menu/NullMenuLabelTest/NullMenuLabelTest.java                                    nobug linux-all
+java/awt/MenuBar/MenuBarSetFont/MenuBarSetFont.java.MenuBarSetFont                        nobug windows-all
 java/awt/Robot/HiDPIScreenCapture/HiDPIRobotScreenCaptureTest.java                        nobug windows-all
 java/awt/ScrollPane/ScrollPanePreferredSize/ScrollPanePreferredSize.java                  nobug macosx-all
 java/awt/Toolkit/SunDisplayChangerLeakTest/SunDisplayChangerLeakTest.java                 nobug linux-all,windows-all
