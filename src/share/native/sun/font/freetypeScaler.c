@@ -1284,9 +1284,6 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
     /* generate bitmap if it is not done yet
      e.g. if algorithmic styling is performed and style was added to outline */
     if (ftglyph->format == FT_GLYPH_FORMAT_OUTLINE) {
-<<<<<<< HEAD
-        error = FT_Render_Glyph(ftglyph, context->renderFlags);
-=======
         FT_BBox bbox;
         int w, h;
         FT_Outline_Get_CBox(&(ftglyph->outline), &bbox);
@@ -1296,8 +1293,7 @@ Java_sun_font_FreetypeFontScaler_getGlyphImageNative(
             glyphInfo = getNullGlyphImage();
             return ptr_to_jlong(glyphInfo);
         }
-        error = FT_Render_Glyph(ftglyph, FT_LOAD_TARGET_MODE(target));
->>>>>>> 38db25a... 8225286: Better rendering of native glyphs
+        error = FT_Render_Glyph(ftglyph, context->renderFlags);
         if (error != 0) {
             return ptr_to_jlong(getNullGlyphImage());
         }
