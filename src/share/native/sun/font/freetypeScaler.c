@@ -30,16 +30,10 @@
 #include "sun_font_FreetypeFontScaler.h"
 
 #include <stdlib.h>
-<<<<<<< HEAD
 #if defined(_WIN32) || defined(MACOSX)
 #define DISABLE_FONTCONFIG
 #endif
 
-=======
-#if !defined(_WIN32) && !defined(__APPLE_)
-#include <dlfcn.h>
-#endif
->>>>>>> 118b777... 8217731: Font rendering and glyph spacing changed from jdk-8 to jdk-11
 #include <math.h>
 
 #ifndef DISABLE_FONTCONFIG
@@ -54,16 +48,13 @@
 #include FT_SIZES_H
 #include FT_OUTLINE_H
 #include FT_SYNTHESIS_H
-<<<<<<< HEAD
+#include FT_MODULE_H
 #include FT_LCD_FILTER_H
 
 #ifndef DISABLE_FONTCONFIG
 /* Use bundled fontconfig.h for now */
 #include "fontconfig.h"
 #endif
-=======
-#include FT_MODULE_H
->>>>>>> 118b777... 8217731: Font rendering and glyph spacing changed from jdk-8 to jdk-11
 
 #include "fontscaler.h"
 
