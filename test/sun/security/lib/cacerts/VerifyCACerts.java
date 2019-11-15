@@ -26,7 +26,7 @@
  * @test
  * @bug 8189131 8198240 8191844 8189949 8191031 8196141 8204923 8195774 8199779
  *      8209452 8209506 8210432 8195793 8216577 8222089 8222133 8222137 8222136
- *      8223499 8225392
+ *      8223499 8225392 8232019
  * @summary Check root CA entries in cacerts file
  */
 import java.io.ByteArrayInputStream;
@@ -57,12 +57,7 @@ public class VerifyCACerts {
     // SHA-256 of cacerts, can be generated with
     // shasum -a 256 cacerts | sed -e 's/../&:/g' | tr '[:lower:]' '[:upper:]' | cut -c1-95
     private static final String CHECKSUM
-            = "4E:21:94:7C:1D:49:28:BB:34:B0:40:DF:AE:19:B4:41:C6:B5:8A:EE:EB:D5:DE:B4:EF:07:AF:63:18:73:A6:FE";
-
-    // SHA-256 of cacerts, can be generated with
-    // shasum -a 256 cacerts | sed -e 's/../&:/g' | tr '[:lower:]' '[:upper:]' | cut -c1-95
-    private static final String CHECKSUM
-            = "4E:21:94:7C:1D:49:28:BB:34:B0:40:DF:AE:19:B4:41:C6:B5:8A:EE:EB:D5:DE:B4:EF:07:AF:63:18:73:A6:FE";
+            = "C7:BE:67:B5:2E:35:17:5E:95:3E:61:68:F8:CF:D0:FB:7F:21:63:91:1E:C2:4D:A2:FE:1B:D4:D4:FA:86:52:7E";
 
     // map of cert alias to SHA-256 fingerprint
     @SuppressWarnings("serial")
@@ -284,6 +279,7 @@ public class VerifyCACerts {
         if (!checksum.equals(CHECKSUM)) {
             atLeastOneFailed = true;
             System.err.println("ERROR: wrong checksum\n" + checksum);
+            System.err.println("Expected checksum\n" + CHECKSUM);
         }
 
         KeyStore ks = KeyStore.getInstance("JKS");
