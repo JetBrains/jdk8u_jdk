@@ -77,7 +77,6 @@ public abstract class CGLSurfaceData extends OGLSurfaceData {
             pPeerData = pView.getAWTView();
             isOpaque = pView.isOpaque();
         }
-        CGLGraphicsConfig.refPConfigInfo(pConfigInfo);
         initOps(pConfigInfo, pPeerData, 0, 0, 0, isOpaque);
     }
 
@@ -94,7 +93,6 @@ public abstract class CGLSurfaceData extends OGLSurfaceData {
             layerPtr = layer.getPointer();
             isOpaque = layer.isOpaque();
         }
-        CGLGraphicsConfig.refPConfigInfo(pConfigInfo);
         initOps(pConfigInfo, 0, layerPtr, 0, 0, isOpaque);
     }
 
@@ -384,10 +382,5 @@ public abstract class CGLSurfaceData extends OGLSurfaceData {
         if (ctx != 0L) {
             destroyCGLContext(ctx);
         }
-    }
-
-    static void dispose(long pData, long pConfigInfo) {
-        OGLSurfaceData.dispose(pData, pConfigInfo);
-        CGLGraphicsConfig.deRefPConfigInfo(pConfigInfo);
     }
 }
