@@ -165,6 +165,7 @@ java/awt/Graphics2D/FlipDrawImage/FlipDrawImage.java                            
 java/awt/Graphics2D/MTGraphicsAccessTest/MTGraphicsAccessTest.java                  8145808 generic-all
 java/awt/Graphics2D/WhiteTextColorTest.java                                         8054638 generic-all
 java/awt/GridLayout/LayoutExtraGaps/LayoutExtraGaps.java                            8000171 windows-all
+java/awt/Gtk/GtkVersionTest/GtkVersionTest.java                                     8237068 linux-all
 java/awt/JAWT/JAWT.sh                                                               8197798,8170729 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/SubMenuShowTest/SubMenuShowTest.html        8158380,8198624 generic-all
 java/awt/KeyboardFocusmanager/TypeAhead/TestDialogTypeAhead.html                    8198626,8074807 generic-all
