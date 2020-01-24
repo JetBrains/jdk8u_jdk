@@ -118,7 +118,7 @@ java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusSetVisibleTest.java         
 java/awt/Focus/AutoRequestFocusTest/AutoRequestFocusToFrontTest.java                6848406 generic-all
 java/awt/Focus/ActualFocusedWindowTest/ActualFocusedWindowRetaining.java            6829264 generic-all
 java/awt/Focus/ChoiceFocus/ChoiceFocus.java                                         8169103 windows-all,macosx-all,linux-all
-java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java                     8198618 macosx-all
+java/awt/Focus/ClearLwQueueBreakTest/ClearLwQueueBreakTest.java                     8198618 macosx-all,linux-all
 java/awt/Focus/CloseDialogActivateOwnerTest/CloseDialogActivateOwnerTest.java       7124555 generic-all
 java/awt/Focus/ConsumeNextKeyTypedOnModalShowTest/ConsumeNextKeyTypedOnModalShowTest.java 6986252 macosx-all
 java/awt/Focus/DeiconifiedFrameLoosesFocus/DeiconifiedFrameLoosesFocus.html         8015886 generic-all
