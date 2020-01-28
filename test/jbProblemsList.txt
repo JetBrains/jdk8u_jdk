@@ -164,6 +164,7 @@ java/awt/Graphics2D/FillTexturePaint/FillTexturePaint.java                      
 java/awt/Graphics2D/FlipDrawImage/FlipDrawImage.java                                8169462 windows-all
 java/awt/Graphics2D/MTGraphicsAccessTest/MTGraphicsAccessTest.java                  8145808 generic-all
 java/awt/Graphics2D/WhiteTextColorTest.java                                         8054638 generic-all
+java/awt/GraphicsDevice/IncorrectDisplayModeExitFullscreen.java                     8134672 linux-all
 java/awt/GridLayout/LayoutExtraGaps/LayoutExtraGaps.java                            8000171 windows-all
 java/awt/Gtk/GtkVersionTest/GtkVersionTest.java                                     8237068 linux-all
 java/awt/JAWT/JAWT.sh                                                               8197798,8170729 generic-all
@@ -237,6 +238,7 @@ java/awt/WMSpecificTests/Mutter/MutterMaximizeTest.java                         
 java/awt/Window/AlwaysOnTop/SyncAlwaysOnTopFieldTest.java                           8198739 windows-all
 java/awt/Window/AlwaysOnTop/TestAlwaysOnTopBeforeShow.java                          8032450,8169530 generic-all
 java/awt/Window/BackgroundIsNotUpdated/BackgroundIsNotUpdated.java                  8142536 generic-all
+java/awt/Window/GetScreenLocation/GetScreenLocationTest.java                        8225787 linux-all
 java/awt/Window/Grab/GrabTest.java                                                  8047703 generic-all
 java/awt/Window/GrabSequence/GrabSequence.java                                      6848409 macosx-all,windows-all,linux-all
 java/awt/Window/WindowsLeak/WindowsLeak.java                                        8028486 macosx-all
@@ -282,6 +284,7 @@ java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_2.html       
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_4.java           6956646 generic-all
 java/awt/event/MouseWheelEvent/InfiniteRecursion/InfiniteRecursion_3.html           6956646 generic-all
 java/awt/event/MouseWheelEvent/WheelModifier/WheelModifier.java                     8169475 generic-all
+java/awt/font/FontScaling/FontScalingTest.java                                      8159465 linux-all
 java/awt/font/PhoneticExtensions/PhoneticExtensionsGlyphTest.java                   8202696 windows-all
 java/awt/font/TextLayout/CombiningPerf.java                                         8192931,7043170 generic-all
 java/awt/font/TextLayout/OSXLigatureTest.java                                       7162125 macosx-all
@@ -635,6 +638,7 @@ javax/swing/JMenuItem/ActionListenerCalledTwice/ActionListenerCalledTwiceTest.ja
 javax/swing/JOptionPane/6464022/bug6464022.java                                       7124548 macosx-all
 javax/swing/JPopupMenu/4458079/bug4458079.java                                        8040917 generic-all
 javax/swing/JPopupMenu/4966112/bug4966112.java                                        8064915,8074385 generic-all
+javax/swing/JPopupMenu/6694823/bug6694823.java                                        7182533 linux-all
 javax/swing/JPopupMenu/6800513/bug6800513.java                                        8080868 generic-all
 javax/swing/JPopupMenu/6827786/bug6827786.java                                        8042378,8042378 generic-all
 javax/swing/JPopupMenu/6987844/bug6987844.java                                        8169956 generic-all
