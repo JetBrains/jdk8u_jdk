@@ -59,6 +59,11 @@ public class VerifyCACerts {
     private static final String CHECKSUM
             = "4E:21:94:7C:1D:49:28:BB:34:B0:40:DF:AE:19:B4:41:C6:B5:8A:EE:EB:D5:DE:B4:EF:07:AF:63:18:73:A6:FE";
 
+    // SHA-256 of cacerts, can be generated with
+    // shasum -a 256 cacerts | sed -e 's/../&:/g' | tr '[:lower:]' '[:upper:]' | cut -c1-95
+    private static final String CHECKSUM
+            = "4E:21:94:7C:1D:49:28:BB:34:B0:40:DF:AE:19:B4:41:C6:B5:8A:EE:EB:D5:DE:B4:EF:07:AF:63:18:73:A6:FE";
+
     // map of cert alias to SHA-256 fingerprint
     @SuppressWarnings("serial")
     private static final Map<String, String> FINGERPRINT_MAP
