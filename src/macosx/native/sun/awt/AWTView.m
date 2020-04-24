@@ -161,6 +161,11 @@ AWT_ASSERT_APPKIT_THREAD;
         fInputMethodLOCKABLE = NULL;
     }
 
+    if (rolloverTrackingArea != nil) {
+        [self removeTrackingArea:rolloverTrackingArea];
+        [rolloverTrackingArea release];
+        rolloverTrackingArea = nil;
+    }
 
     [super dealloc];
 }
