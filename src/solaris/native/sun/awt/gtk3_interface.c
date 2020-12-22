@@ -2806,7 +2806,7 @@ static void transform_detail_string (const gchar *detail,
       fp_gtk_style_context_set_junction_sides (context, GTK_JUNCTION_TOP);
     }
   else if ((detail[0] == 'h' || detail[0] == 'v') &&
-           strncmp (&detail[1], "scrollbar_", 9) == 0)
+           strncmp (&detail[1], "scrollbar_", 10) == 0)
     {
       fp_gtk_style_context_add_class (context, "button");
       fp_gtk_style_context_add_class (context, "scrollbar");
