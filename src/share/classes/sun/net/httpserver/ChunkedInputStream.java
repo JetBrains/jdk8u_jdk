@@ -150,6 +150,16 @@ class ChunkedInputStream extends LeftOverInputStream {
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        super.close();
+        // Set the state when close request InputStream manually
+        remaining = 0;
+        if (t.getConnection().getState() != HttpConnection.State.RESPONSE) {
+            t.getServerImpl().requestCompleted (t.getConnection());
+        }
+    }
+
     /**
      * returns the number of bytes available to read in the current chunk
      * which may be less than the real amount, but we'll live with that

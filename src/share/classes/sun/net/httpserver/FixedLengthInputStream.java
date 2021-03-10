@@ -63,6 +63,16 @@ class FixedLengthInputStream extends LeftOverInputStream {
         return n;
     }
 
+    @Override
+    public void close() throws IOException {
+        super.close();
+        // Set the state when close request InputStream manually
+        remaining = 0;
+        if (t.getConnection().getState() != HttpConnection.State.RESPONSE) {
+            t.getServerImpl().requestCompleted (t.getConnection());
+        }
+    }
+
     public int available () throws IOException {
         if (eof) {
             return 0;
